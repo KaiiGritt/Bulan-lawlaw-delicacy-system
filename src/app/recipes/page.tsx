@@ -14,7 +14,7 @@ export default function RecipesPage() {
     : mockRecipes.filter(recipe => recipe.difficulty === selectedDifficulty);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-cream-50 to-green-50 py-12">
+    <div className="main-h-screen bg-gradient-to-br from-cream-50 to-green-50 py-12">
       <div className="container mx-auto px-4">
         {/* Page Header */}
         <div className="text-center mb-16 fade-in-up">

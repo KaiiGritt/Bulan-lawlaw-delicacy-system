@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
-import { prisma } from '@/lib/prisma'
-
+import { authOptions } from '../../lib/auth'
+import { prisma } from '../../lib/prisma'
 // POST /api/seller-application - Submit seller application
 export async function POST(request: NextRequest) {
   try {

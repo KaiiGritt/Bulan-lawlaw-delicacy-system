@@ -1,15 +1,20 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
 interface CartItem {
   id: string;
-  name: string;
-  price: number;
+  productId: string;
   quantity: number;
-  image: string;
+  product: {
+    id: string;
+    name: string;
+    price: number;
+    image: string;
+  };
 }
 
 interface CustomerInfo {
@@ -30,26 +35,9 @@ interface PaymentInfo {
   cvv?: string;
 }
 
-// Mock cart data - in a real app, this would come from context/state management
-const mockCartItems: CartItem[] = [
-  {
-    id: '1',
-    name: 'Fresh Lawlaw',
-    price: 150,
-    quantity: 2,
-    image: '/images/fresh-lawlaw.jpg',
-  },
-  {
-    id: '2',
-    name: 'Dried Lawlaw',
-    price: 200,
-    quantity: 1,
-    image: '/images/dried-lawlaw.jpg',
-  },
-];
-
 export default function CheckoutPage() {
-  const [cartItems] = useState<CartItem[]>(mockCartItems);
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [loading, setLoading] = useState(true);
   const [customerInfo, setCustomerInfo] = useState<CustomerInfo>({
     firstName: '',
     lastName: '',
@@ -63,8 +51,35 @@ export default function CheckoutPage() {
   const [paymentInfo, setPaymentInfo] = useState<PaymentInfo>({ method: 'cod' });
   const [isProcessing, setIsProcessing] = useState(false);
   const [orderPlaced, setOrderPlaced] = useState(false);
+  const [error, setError] = useState('');
+  const router = useRouter();
 
-  const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  useEffect(() => {
+    fetchCartItems();
+  }, []);
+
+  const fetchCartItems = async () => {
+    try {
+      const response = await fetch('/api/cart');
+      if (response.ok) {
+        const items = await response.json();
+        setCartItems(items);
+      } else if (response.status === 401) {
+        // User not authenticated, redirect to login
+        router.push('/login');
+        return;
+      } else {
+        setError('Failed to load cart items');
+      }
+    } catch (error) {
+      console.error('Error fetching cart:', error);
+      setError('Failed to load cart items');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const subtotal = cartItems.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
   const shipping = subtotal > 500 ? 0 : 50;
   const tax = Math.round(subtotal * 0.12);
   const total = subtotal + shipping + tax;
@@ -78,23 +93,100 @@ export default function CheckoutPage() {
   };
 
   const handlePlaceOrder = async () => {
+    setError('');
+
     // Basic validation
     const requiredFields = ['firstName', 'lastName', 'email', 'phone', 'address', 'city', 'province', 'zipCode'];
     const isValid = requiredFields.every(field => customerInfo[field as keyof CustomerInfo].trim() !== '');
 
     if (!isValid) {
-      alert('Please fill in all required fields');
+      setError('Please fill in all required fields');
+      return;
+    }
+
+    if (cartItems.length === 0) {
+      setError('Your cart is empty');
       return;
     }
 
     setIsProcessing(true);
 
-    // Mock order processing
-    setTimeout(() => {
+    try {
+      const shippingAddress = {
+        street: customerInfo.address,
+        city: customerInfo.city,
+        state: customerInfo.province,
+        zipCode: customerInfo.zipCode,
+        country: 'Philippines'
+      };
+
+      const billingAddress = shippingAddress; // Same as shipping for now
+
+      const response = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          shippingAddress,
+          billingAddress,
+          paymentMethod: paymentInfo.method,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setOrderPlaced(true);
+        // Redirect to products page after successful order
+        setTimeout(() => {
+          router.push('/products');
+        }, 3000); // Redirect after 3 seconds to show success message
+      } else {
+        setError(data.error || 'Failed to place order');
+      }
+    } catch (error) {
+      console.error('Error placing order:', error);
+      setError('An error occurred while placing your order');
+    } finally {
       setIsProcessing(false);
-      setOrderPlaced(true);
-    }, 2000);
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-cream-50 to-green-50 py-12">
+        <div className="container mx-auto px-4">
+          <div className="text-center py-16">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-green mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading checkout...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (cartItems.length === 0) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-cream-50 to-green-50 py-12">
+        <div className="container mx-auto px-4">
+          <div className="text-center py-16">
+            <div className="text-6xl mb-6">🛒</div>
+            <h1 className="text-4xl font-bold text-primary-green mb-4">Your Cart is Empty</h1>
+            <p className="text-xl text-gray-600 mb-8 max-w-md mx-auto">
+              You need items in your cart to proceed to checkout.
+            </p>
+            <Link
+              href="/products"
+              className="btn-hover inline-block bg-primary-green text-white px-8 py-4 rounded-2xl font-semibold text-lg hover:bg-leaf-green transition-colors duration-300"
+            >
+              Start Shopping
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (orderPlaced) {
     return (
@@ -104,7 +196,7 @@ export default function CheckoutPage() {
             <div className="text-6xl mb-6">🎉</div>
             <h1 className="text-4xl font-bold text-primary-green mb-4">Order Placed Successfully!</h1>
             <p className="text-xl text-gray-600 mb-8">
-              Thank you for your order. We'll send you a confirmation email shortly.
+              Thank you for your order. We&apos;ll send you a confirmation email shortly.
             </p>
             <div className="bg-white rounded-2xl shadow-lg p-6 mb-8">
               <h2 className="text-2xl font-bold text-primary-green mb-4">Order Summary</h2>
@@ -145,18 +237,18 @@ export default function CheckoutPage() {
                   <div key={item.id} className="flex items-center space-x-4 p-4 bg-gray-50 rounded-xl">
                     <div className="relative w-16 h-16 rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center">
                       <Image
-                        src={item.image || "/api/placeholder/64/64"}
-                        alt={item.name}
+                        src={item.product.image || "/api/placeholder/64/64"}
+                        alt={item.product.name}
                         fill
                         className="object-cover"
                       />
                     </div>
                     <div className="flex-1">
-                      <h3 className="font-semibold text-primary-green">{item.name}</h3>
+                      <h3 className="font-semibold text-primary-green">{item.product.name}</h3>
                       <p className="text-gray-600">Quantity: {item.quantity}</p>
                     </div>
                     <div className="text-right">
-                      <p className="font-bold text-primary-green">₱{item.price * item.quantity}</p>
+                      <p className="font-bold text-primary-green">₱{item.product.price * item.quantity}</p>
                     </div>
                   </div>
                 ))}
@@ -325,6 +417,12 @@ export default function CheckoutPage() {
                 </div>
               </div>
             </div>
+
+            {error && (
+              <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-xl">
+                <p className="text-red-700 text-sm">{error}</p>
+              </div>
+            )}
 
             <button
               onClick={handlePlaceOrder}

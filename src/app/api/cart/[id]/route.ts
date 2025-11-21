@@ -1,14 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
-import { prisma } from '@/lib/prisma'
-
-interface RouteParams {
-  params: { id: string }
-}
+import { authOptions } from '../../../lib/auth'
+import { prisma } from '../../../lib/prisma'
 
 // PUT /api/cart/[id] - Update cart item quantity
-export async function PUT(request: NextRequest, { params }: RouteParams) {
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await getServerSession(authOptions)
 
@@ -29,10 +25,12 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
       )
     }
 
+    const { id } = await params
+
     // Verify the cart item belongs to the user
     const cartItem = await prisma.cartItem.findFirst({
       where: {
-        id: params.id,
+        id,
         userId: session.user.id
       },
       include: { product: true }
@@ -54,7 +52,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     }
 
     const updatedItem = await prisma.cartItem.update({
-      where: { id: params.id },
+      where: { id },
       data: { quantity },
       include: { product: true }
     })
@@ -70,7 +68,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 }
 
 // DELETE /api/cart/[id] - Remove item from cart
-export async function DELETE(request: NextRequest, { params }: RouteParams) {
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await getServerSession(authOptions)
 
@@ -81,10 +79,12 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
       )
     }
 
+    const { id } = await params
+
     // Verify the cart item belongs to the user
     const cartItem = await prisma.cartItem.findFirst({
       where: {
-        id: params.id,
+        id,
         userId: session.user.id
       }
     })
@@ -97,7 +97,7 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
     }
 
     await prisma.cartItem.delete({
-      where: { id: params.id }
+      where: { id }
     })
 
     return NextResponse.json({ message: 'Item removed from cart' })

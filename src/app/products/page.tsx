@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 
 interface Product {
   id: string;
@@ -11,12 +12,31 @@ interface Product {
   category: 'fresh' | 'dried' | 'processed';
   image: string;
   stock: number;
+  user: {
+    id: string;
+    name: string;
+    email: string;
+    sellerApplication: {
+      businessName: string;
+    } | null;
+  };
+  rating: number;
+  comments: Array<{
+    id: string;
+    content: string;
+    rating: number;
+    user: { name: string };
+    createdAt: string;
+  }>;
 }
 
 export default function ProductsPage() {
+  const searchParams = useSearchParams();
+  const searchQuery = searchParams.get('search') || '';
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [addingToCart, setAddingToCart] = useState<string | null>(null);
 
   useEffect(() => {
     fetchProducts();
@@ -36,22 +56,62 @@ export default function ProductsPage() {
     }
   };
 
+  const handleAddToCart = async (productId: string) => {
+    setAddingToCart(productId);
+    try {
+      const response = await fetch('/api/cart', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          productId,
+          quantity: 1
+        }),
+      });
+
+      if (response.ok) {
+        alert('Product added to cart successfully!');
+      } else if (response.status === 401) {
+        alert('Please login to add items to cart');
+      } else {
+        const error = await response.json();
+        alert(error.error || 'Failed to add product to cart');
+      }
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+      alert('Failed to add product to cart');
+    } finally {
+      setAddingToCart(null);
+    }
+  };
+
   const categories = ['All', 'Fresh', 'Dried', 'Processed'];
-  const filteredProducts = selectedCategory === 'All'
+  let filteredProducts = selectedCategory === 'All'
     ? products
     : products.filter(product => product.category === selectedCategory);
+
+  // Apply search filter if search query exists
+  if (searchQuery.trim()) {
+    const query = searchQuery.toLowerCase();
+    filteredProducts = filteredProducts.filter(product =>
+      product.name.toLowerCase().includes(query) ||
+      product.description.toLowerCase().includes(query) ||
+      product.user.name.toLowerCase().includes(query) ||
+      (product.user.sellerApplication?.businessName?.toLowerCase().includes(query))
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-cream-50 to-green-50 py-12">
       <div className="container mx-auto px-4">
         {/* Page Header */}
         <div className="text-center mb-16 fade-in-up">
-            <div>
-              <h1 className="text-5xl font-bold text-primary-green mb-4">Our Lawlaw Delicacies</h1>
-              <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                Discover the finest selection of fresh and processed Lawlaw products from trusted fishermen in Bulan
-              </p>
-            </div>
+          <div>
+            <h1 className="text-5xl font-bold text-primary-green mb-4">Our Lawlaw Delicacies</h1>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              Discover the finest selection of fresh and processed Lawlaw products from trusted fishermen in Bulan
+            </p>
           </div>
         </div>
 
@@ -65,7 +125,7 @@ export default function ProductsPage() {
                   onClick={() => setSelectedCategory(category)}
                   className={`px-6 py-3 rounded-xl font-medium transition-all duration-300 ${
                     selectedCategory === category
-                      ? 'bg-primary-green text-gray-400 shadow-md'
+                      ? 'bg-primary-green text-white shadow-md'
                       : 'text-gray-700 hover:bg-white/60 hover:text-primary-green'
                   }`}
                 >
@@ -95,7 +155,7 @@ export default function ProductsPage() {
               <div className="relative h-64 image-overlay group">
                 <div className="absolute top-4 left-4">
                   <span className="bg-primary-green/90 backdrop-blur-sm text-white px-3 py-1 rounded-full text-sm font-medium">
-                    {product.category}
+                    {product.category.charAt(0).toUpperCase() + product.category.slice(1)}
                   </span>
                 </div>
                 <div className="absolute top-4 right-4">
@@ -116,6 +176,38 @@ export default function ProductsPage() {
                 <h3 className="text-xl font-semibold text-primary-green mb-2">{product.name}</h3>
                 <p className="text-gray-600 mb-3 line-clamp-2">{product.description}</p>
 
+                {/* Business Name */}
+                {product.user.sellerApplication?.businessName && (
+                  <p className="text-sm text-gray-500 mb-2">
+                    By {product.user.sellerApplication.businessName}
+                  </p>
+                )}
+
+                {/* Rating */}
+                <div className="flex items-center mb-3">
+                  <div className="flex items-center">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <svg
+                        key={star}
+                        className={`w-4 h-4 ${
+                          star <= Math.floor(product.rating || 0)
+                            ? 'text-yellow-400 fill-current'
+                            : 'text-gray-300'
+                        }`}
+                        viewBox="0 0 24 24"
+                      >
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                      </svg>
+                    ))}
+                  </div>
+                  <span className="ml-2 text-sm text-gray-600">
+                    ({product.rating?.toFixed(1) || '0.0'})
+                  </span>
+                  <span className="ml-2 text-sm text-gray-500">
+                    ({product.comments?.length || 0} reviews)
+                  </span>
+                </div>
+
                 <div className="flex items-center justify-between mb-4">
                   <span className="text-2xl font-bold text-primary-green">₱{product.price}</span>
                   <span className="text-sm text-gray-500">Stock: {product.stock}</span>
@@ -128,10 +220,18 @@ export default function ProductsPage() {
                   >
                     View Details
                   </Link>
-                  <button className="btn-hover bg-banana-leaf text-white px-4 py-3 rounded-xl font-medium hover:bg-leaf-green transition-colors duration-300">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.1 5H19M7 13l-1.1 5M7 13h10m0 0v8a2 2 0 01-2 2H9a2 2 0 01-2-2v-8" />
-                    </svg>
+                  <button
+                    onClick={() => handleAddToCart(product.id)}
+                    disabled={addingToCart === product.id}
+                    className="btn-hover bg-banana-leaf text-white px-4 py-3 rounded-xl font-medium hover:bg-leaf-green transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {addingToCart === product.id ? (
+                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                    ) : (
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.1 5H19M7 13l-1.1 5M7 13h10m0 0v8a2 2 0 01-2 2H9a2 2 0 01-2-2v-8" />
+                      </svg>
+                    )}
                   </button>
                 </div>
               </div>
@@ -170,5 +270,6 @@ export default function ProductsPage() {
           </div>
         </div>
       </div>
+    </div>
   );
 }

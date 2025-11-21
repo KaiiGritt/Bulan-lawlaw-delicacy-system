@@ -30,6 +30,21 @@ async function main() {
     }
   })
 
+  // Create seller application for test user
+  await prisma.sellerApplication.upsert({
+    where: { userId: user.id },
+    update: {},
+    create: {
+      userId: user.id,
+      businessName: 'Test Seller Business',
+      businessType: 'Retail',
+      description: 'A test seller application for demonstration purposes.',
+      contactNumber: '+1234567890',
+      address: '123 Test Street, Test City',
+      status: 'pending'
+    }
+  })
+
   // Create products
   const products = [
     {
@@ -40,6 +55,7 @@ async function main() {
       category: 'fresh',
       image: '/images/fresh-lawlaw.jpg',
       stock: 50,
+      userId: user.id,
     },
     {
       id: '2',
@@ -49,6 +65,7 @@ async function main() {
       category: 'dried',
       image: '/images/dried-lawlaw.jpg',
       stock: 30,
+      userId: user.id,
     },
     {
       id: '3',
@@ -58,6 +75,7 @@ async function main() {
       category: 'processed',
       image: '/images/lawlaw-fillets.jpg',
       stock: 25,
+      userId: user.id,
     },
   ]
 

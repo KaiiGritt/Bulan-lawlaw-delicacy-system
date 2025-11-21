@@ -3,9 +3,10 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
-import { Providers } from "./providers";
+import ClientLayout from "./components/ClientLayout";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { authOptions } from "../app/lib/auth";
+import { Providers } from "./providers";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -30,11 +31,9 @@ export default async function RootLayout({
         className={`${inter.variable} antialiased bg-gradient-to-br from-cream-50 to-green-50 min-h-screen`}
       >
         <Providers>
-          {!session && <Header />}
-          <main className="min-h-screen">
+          <ClientLayout session={session}>
             {children}
-          </main>
-          {!session && <Footer />}
+          </ClientLayout>
         </Providers>
       </body>
     </html>

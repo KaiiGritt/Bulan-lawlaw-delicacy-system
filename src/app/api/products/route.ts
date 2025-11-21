@@ -1,12 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
-import { prisma } from '@/lib/prisma'
+import { authOptions } from '../../lib/auth'
+import { prisma } from '../../lib/prisma'
 
 // GET /api/products - Get all products
 export async function GET() {
   try {
     const products = await prisma.product.findMany({
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            sellerApplication: {
+              select: {
+                businessName: true
+              }
+            }
+          }
+        }
+      },
       orderBy: { createdAt: 'desc' }
     })
     return NextResponse.json(products)
@@ -32,9 +46,9 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { name, description, price, category, image, stock } = body
+    const { name, description, price, category, image, stock, userId } = body
 
-    if (!name || !description || !price || !category || !image) {
+    if (!name || !description || !price || !category || !image || !userId) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
@@ -48,7 +62,8 @@ export async function POST(request: NextRequest) {
         price: parseFloat(price),
         category,
         image,
-        stock: stock ? parseInt(stock) : 0
+        stock: stock ? parseInt(stock) : 0,
+        userId
       }
     })
 

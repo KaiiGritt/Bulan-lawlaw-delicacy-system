@@ -1,16 +1,15 @@
-# Checkout Page Implementation TODO
+# TODO: Implement Order Cancellation in Admin Dashboard
 
-## Pending Tasks
-- [ ] Test the page for proper rendering and functionality
+## Tasks
+- [x] Create API route: /api/admin/orders/route.ts to fetch all orders for admin
+- [x] Create API route: /api/admin/orders/[id]/cancel/route.ts to allow admins to cancel orders directly
+- [x] Update admin/page.tsx to implement the 'orders' tab content:
+  - Fetch all orders
+  - Display orders with status, user, items
+  - Add buttons for cancelling orders (for pending/processing)
+  - Add buttons for approving/rejecting pending cancellations (adminApprovalRequired=true)
+  - Handle UI interactions and refresh after actions
 
-## Completed Tasks
-- [x] Analyze existing cart page, mock data, and theme
-- [x] Understand project structure and Filipino theme colors
-- [x] Update TODO.md with checkout tasks
-- [x] Create checkout page at frontend/src/app/checkout/page.tsx
-- [x] Include cart items review section (read-only)
-- [x] Add customer information form (billing and shipping details)
-- [x] Implement payment method selection (mock for MVP)
-- [x] Add order summary with totals
-- [x] Implement place order functionality with mock processing
-- [x] Ensure responsive design and Filipino theme consistency
+## Followup
+- [ ] Test the new functionality
+- [ ] Ensure proper error handling and notifications

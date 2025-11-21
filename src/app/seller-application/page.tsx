@@ -139,7 +139,7 @@ export default function SellerApplicationPage() {
 
             <div className="text-center">
               <Link
-                href="/dashboard"
+                href="/profile"
                 className="btn-hover inline-block bg-primary-green text-white px-8 py-4 rounded-xl font-semibold hover:bg-leaf-green transition-colors duration-300"
               >
                 Back to Dashboard

@@ -2,8 +2,58 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
+import { useEffect, useState } from 'react';
+
+interface Product {
+  id: string;
+  name: string;
+  price: number;
+  image: string;
+  description: string;
+}
+
+interface Recipe {
+  id: string;
+  title: string;
+  description: string;
+  difficulty: string;
+  prepTime: number;
+  cookTime: number;
+  image: string;
+}
 
 export default function Home() {
+  const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
+  const [featuredRecipes, setFeaturedRecipes] = useState<Recipe[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [productsRes, recipesRes] = await Promise.all([
+          fetch('/api/products'),
+          fetch('/api/recipes')
+        ]);
+
+        if (productsRes.ok) {
+          const products = await productsRes.json();
+          setFeaturedProducts(products.slice(0, 3)); // Get first 3 products
+        }
+
+        if (recipesRes.ok) {
+          const recipes = await recipesRes.json();
+          setFeaturedRecipes(recipes.slice(0, 3)); // Get first 3 recipes
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
@@ -29,13 +79,13 @@ export default function Home() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
                 href="/products"
-                className="btn-hover bg-primary-green text-black px-8 py-4 rounded-2xl font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-300"
+                className="btn-hover bg-primary-green text-white px-8 py-4 rounded-2xl font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-300"
               >
                 Shop Fresh Lawlaw
               </Link>
               <Link
                 href="/recipes"
-                className="btn-hover bg-white text-#2d5a3d px-8 py-4 rounded-2xl font-semibold text-lg shadow-lg hover:shadow-xl border-2 border-primary-green transition-all duration-300"
+                className="btn-hover bg-white text-primary-green px-8 py-4 rounded-2xl font-semibold text-lg shadow-lg hover:shadow-xl border-2 border-primary-green transition-all duration-300"
               >
                 Learn to Cook
               </Link>
@@ -65,59 +115,45 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              {
-                id: 1,
-                name: "Fresh Lawlaw",
-                price: 250,
-                image: "/api/placeholder/400/300",
-                description: "Premium fresh lawlaw, caught this morning"
-              },
-              {
-                id: 2,
-                name: "Dried Lawlaw",
-                price: 180,
-                image: "/api/placeholder/400/300",
-                description: "Traditionally dried, perfect for storage"
-              },
-              {
-                id: 3,
-                name: "Lawlaw Patties",
-                price: 320,
-                image: "/api/placeholder/400/300",
-                description: "Ready-to-cook patties with local spices"
-              }
-            ].map((product, index) => (
-              <div
-                key={product.id}
-                className="card-hover bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100 fade-in-up"
-                style={{ animationDelay: `${index * 0.2}s` }}
-              >
-                <div className="relative h-64 image-overlay">
-                  <Image
-                    src={product.image}
-                    alt={product.name}
-                    fill
-                    className="object-cover"
-                  />
-                  <div className="absolute top-4 right-4 bg-warm-orange text-white px-3 py-1 rounded-full text-sm font-medium">
-                    ₱{product.price}
+          {loading ? (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {[...Array(3)].map((_, index) => (
+                <div key={index} className="bg-gray-200 rounded-2xl h-80 animate-pulse"></div>
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {featuredProducts.map((product, index) => (
+                <div
+                  key={product.id}
+                  className="card-hover bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100 fade-in-up"
+                  style={{ animationDelay: `${index * 0.2}s` }}
+                >
+                  <div className="relative h-64 image-overlay">
+                    <Image
+                      src={product.image || "/api/placeholder/400/300"}
+                      alt={product.name}
+                      fill
+                      className="object-cover"
+                    />
+                    <div className="absolute top-4 right-4 bg-warm-orange text-white px-3 py-1 rounded-full text-sm font-medium">
+                      ₱{product.price}
+                    </div>
+                  </div>
+                  <div className="p-6">
+                    <h3 className="text-xl font-semibold text-primary-green mb-2">{product.name}</h3>
+                    <p className="text-gray-600 mb-4">{product.description}</p>
+                    <Link
+                      href={`/products/${product.id}`}
+                      className="btn-hover inline-block bg-primary-green text-white px-6 py-3 rounded-xl font-medium hover:bg-leaf-green transition-colors duration-300"
+                    >
+                      View Details
+                    </Link>
                   </div>
                 </div>
-                <div className="p-6">
-                  <h3 className="text-xl font-semibold text-primary-green mb-2">{product.name}</h3>
-                  <p className="text-gray-600 mb-4">{product.description}</p>
-                  <Link
-                    href={`/products/${product.id}`}
-                    className="btn-hover inline-block bg-primary-green text-white px-6 py-3 rounded-xl font-medium hover:bg-leaf-green transition-colors duration-300"
-                  >
-                    View Details
-                  </Link>
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
 
           <div className="text-center mt-12">
             <Link
@@ -140,65 +176,48 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[
-              {
-                id: 1,
-                title: "Fried Lawlaw Delight",
-                description: "Crispy, golden perfection in every bite",
-                difficulty: "Beginner",
-                time: "25 mins",
-                image: "/api/placeholder/400/250"
-              },
-              {
-                id: 2,
-                title: "Lawlaw Sinigang",
-                description: "Tangy tamarind soup with fresh vegetables",
-                difficulty: "Intermediate",
-                time: "45 mins",
-                image: "/api/placeholder/400/250"
-              },
-              {
-                id: 3,
-                title: "Grilled Lawlaw Skewers",
-                description: "Smoky, flavorful skewers with local spices",
-                difficulty: "Easy",
-                time: "30 mins",
-                image: "/api/placeholder/400/250"
-              }
-            ].map((recipe, index) => (
-              <div
-                key={recipe.id}
-                className="card-hover bg-white rounded-2xl shadow-lg overflow-hidden fade-in-up"
-                style={{ animationDelay: `${index * 0.2}s` }}
-              >
-                <div className="relative h-48 image-overlay">
-                  <Image
-                    src={recipe.image}
-                    alt={recipe.title}
-                    fill
-                    className="object-cover"
-                  />
-                  <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-medium text-primary-green">
-                    {recipe.difficulty}
+          {loading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {[...Array(3)].map((_, index) => (
+                <div key={index} className="bg-gray-200 rounded-2xl h-72 animate-pulse"></div>
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {featuredRecipes.map((recipe, index) => (
+                <div
+                  key={recipe.id}
+                  className="card-hover bg-white rounded-2xl shadow-lg overflow-hidden fade-in-up"
+                  style={{ animationDelay: `${index * 0.2}s` }}
+                >
+                  <div className="relative h-48 image-overlay">
+                    <Image
+                      src={recipe.image || "/api/placeholder/400/250"}
+                      alt={recipe.title}
+                      fill
+                      className="object-cover"
+                    />
+                    <div className="absolute top-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-medium text-primary-green">
+                      {recipe.difficulty}
+                    </div>
+                    <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-medium text-gray-700">
+                      {recipe.prepTime + recipe.cookTime} mins
+                    </div>
                   </div>
-                  <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-medium text-gray-700">
-                    {recipe.time}
+                  <div className="p-6">
+                    <h3 className="text-xl font-semibold text-primary-green mb-2">{recipe.title}</h3>
+                    <p className="text-gray-600 mb-4">{recipe.description}</p>
+                    <Link
+                      href={`/recipes/${recipe.id}`}
+                      className="btn-hover inline-block bg-warm-orange text-white px-6 py-3 rounded-xl font-medium hover:bg-earth-brown transition-colors duration-300"
+                    >
+                      Start Cooking
+                    </Link>
                   </div>
                 </div>
-                <div className="p-6">
-                  <h3 className="text-xl font-semibold text-primary-green mb-2">{recipe.title}</h3>
-                  <p className="text-gray-600 mb-4">{recipe.description}</p>
-                  <Link
-                    href={`/recipes/${recipe.id}`}
-                    className="btn-hover inline-block bg-warm-orange text-white px-6 py-3 rounded-xl font-medium hover:bg-earth-brown transition-colors duration-300"
-                  >
-                    Start Cooking
-                  </Link>
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
 
           <div className="text-center mt-12">
             <Link

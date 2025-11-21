@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth'
-import { prisma } from '@/lib/prisma'
+import { authOptions } from '../../lib/auth'
+import { prisma } from '../../lib/prisma'
+import { sendOrderConfirmation, sendAdminOrderNotification, sendSellerOrderNotification } from '../../lib/email'
+import { Prisma } from '@prisma/client'
 
 // POST /api/checkout - Process checkout
 export async function POST(request: NextRequest) {
@@ -51,14 +53,14 @@ export async function POST(request: NextRequest) {
     }
 
     // Create order in a transaction
-    const result = await prisma.$transaction(async (tx: any) => {
+    const result = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       // Create the order
       const order = await tx.order.create({
         data: {
           userId: session.user.id,
           totalAmount,
-          shippingAddress,
-          billingAddress,
+          shippingAddress: JSON.stringify(shippingAddress),
+          billingAddress: JSON.stringify(billingAddress),
           paymentMethod,
           status: 'processing'
         }
@@ -80,7 +82,7 @@ export async function POST(request: NextRequest) {
       for (const item of cartItems) {
         await tx.product.update({
           where: { id: item.productId },
-          data: { stock: (item.product as any).stock - item.quantity }
+          data: { stock: item.product.stock - item.quantity }
         })
       }
 
@@ -91,6 +93,87 @@ export async function POST(request: NextRequest) {
 
       return order
     })
+
+    // Send order confirmation email to buyer
+    try {
+      const orderItems = cartItems.map((item: { product: { price: any }; quantity: any }) => ({
+        product: item.product,
+        quantity: item.quantity,
+        price: item.product.price
+      }))
+
+      await sendOrderConfirmation(session.user.email!, {
+        orderId: result.id,
+        totalAmount,
+        shippingAddress,
+        orderItems
+      })
+    } catch (emailError) {
+      console.error('Failed to send order confirmation email:', emailError)
+      // Don't fail the order if email fails
+    }
+
+    // Create notification for the user
+    try {
+      await prisma.notification.create({
+        data: {
+          userId: session.user.id,
+          title: 'Order Placed Successfully',
+          message: `Your order #${result.id.slice(-8)} has been placed and is being processed. We'll notify you when it ships.`,
+          type: 'order_update'
+        }
+      })
+    } catch (notificationError) {
+      console.error('Failed to create order notification:', notificationError)
+      // Don't fail the order if notification creation fails
+    }
+
+    // Send notifications to sellers and admins
+    try {
+      // Get all admin users
+      const admins = await prisma.user.findMany({
+        where: { role: 'admin' }
+      })
+
+      // Send admin notifications
+      for (const admin of admins) {
+        try {
+          await sendAdminOrderNotification(admin.email, {
+            orderId: result.id,
+            buyerName: session.user.name || 'Customer',
+            buyerEmail: session.user.email!,
+            totalAmount,
+            itemCount: cartItems.length
+          })
+        } catch (adminEmailError) {
+          console.error(`Failed to send admin notification to ${admin.email}:`, adminEmailError)
+        }
+      }
+
+      // Send seller notifications for each product
+      for (const item of cartItems) {
+        try {
+          const seller = await prisma.user.findUnique({
+            where: { id: item.product.userId }
+          })
+
+          if (seller && seller.email) {
+            await sendSellerOrderNotification(seller.email, {
+              orderId: result.id,
+              buyerName: session.user.name || 'Customer',
+              productName: item.product.name,
+              quantity: item.quantity,
+              totalAmount: item.product.price * item.quantity
+            })
+          }
+        } catch (sellerEmailError) {
+          console.error(`Failed to send seller notification for product ${item.product.name}:`, sellerEmailError)
+        }
+      }
+    } catch (notificationError) {
+      console.error('Failed to send seller/admin notifications:', notificationError)
+      // Don't fail the order if notifications fail
+    }
 
     return NextResponse.json({
       message: 'Order placed successfully',
