@@ -1,0 +1,217 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  password  String
+  role      String   @default("user") // user, admin, seller
+  blocked   Boolean  @default(false)
+  profilePicture String?
+  emailVerified Boolean @default(false)
+  emailVerificationToken String?
+  emailVerificationTokenExpiry DateTime?
+  resetToken String?
+  resetTokenExpiry DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  cartItems CartItem[]
+  orders    Order[]
+  products  Product[]
+  sellerApplication SellerApplication?
+  sentMessages Message[]
+  sellerConversations Conversation[] @relation("SellerConversations")
+  buyerConversations Conversation[] @relation("BuyerConversations")
+  notifications Notification[]
+  comments Comment[]
+
+  @@map("users")
+}
+model Product {
+  id          String   @id @default(cuid())
+  name        String
+  description String
+  price       Float
+  category    String   // fresh, dried, processed
+  image       String
+  stock       Int      @default(0)
+  userId      String
+  status      String   @default("pending") // pending, approved, rejected
+  rating      Float    @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  cartItems CartItem[]
+  orderItems OrderItem[]
+  conversations Conversation[]
+  comments Comment[]
+
+  @@map("products")
+}
+
+model Recipe {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  ingredients String   // JSON string array
+  instructions String  // JSON string array
+  image       String
+  prepTime    Int
+  cookTime    Int
+  servings    Int
+  difficulty  String   // Beginner, Intermediate, Advanced
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("recipes")
+}
+
+model CartItem {
+  id        String  @id @default(cuid())
+  userId    String
+  productId String
+  quantity  Int     @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productId])
+  @@map("cart_items")
+}
+
+model Order {
+  id          String      @id @default(cuid())
+  userId      String
+  status      String      @default("pending") // pending, processing, shipped, delivered, cancelled
+  totalAmount Float
+  shippingAddress String
+  billingAddress  String
+  paymentMethod   String
+  adminApprovalRequired Boolean @default(false) // For cancelled orders requiring admin approval
+  cancellationReason String?
+  cancelledAt DateTime?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  // Relations
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  orderItems OrderItem[]
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id        String  @id @default(cuid())
+  orderId   String
+  productId String
+  quantity  Int
+  price     Float   // Price at time of order
+  createdAt DateTime @default(now())
+
+  // Relations
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id])
+
+  @@map("order_items")
+}
+
+model SellerApplication {
+  id            String   @id @default(cuid())
+  userId        String   @unique
+  businessName  String
+  businessType  String
+  description   String
+  contactNumber String
+  address       String
+  status        String   @default("pending") // pending, approved, rejected
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("seller_applications")
+}
+
+model Conversation {
+  id            String   @id @default(cuid())
+  sellerId      String
+  buyerId       String
+  productId     String
+  status        String   @default("active") // active, closed
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  seller User @relation("SellerConversations", fields: [sellerId], references: [id], onDelete: Cascade)
+  buyer  User @relation("BuyerConversations", fields: [buyerId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  messages Message[]
+
+  @@unique([sellerId, buyerId, productId])
+  @@map("conversations")
+}
+
+model Message {
+  id             String   @id @default(cuid())
+  conversationId String
+  senderId       String
+  content        String
+  isRead         Boolean  @default(false)
+  createdAt      DateTime @default(now())
+
+  // Relations
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender       User         @relation(fields: [senderId], references: [id], onDelete: Cascade)
+
+  @@map("messages")
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  title     String
+  message   String
+  type      String   // seller_approval, order_update, etc.
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notifications")
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  productId String
+  userId    String
+  rating    Int      // 1-5 stars
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([productId, userId])
+  @@map("comments")
+}

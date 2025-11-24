@@ -1,0 +1,276 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+  --primary-green: #2d5a3d;
+  --secondary-brown: #8b4513;
+  --accent-cream: #f5f5dc;
+  --warm-orange: #d2691e;
+  --soft-green: #90a955;
+  --leaf-green: #4a7c59;
+  --banana-leaf: #8fbc8f;
+  --earth-brown: #a0522d;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary-green: var(--primary-green);
+  --color-secondary-brown: var(--secondary-brown);
+  --color-accent-cream: var(--accent-cream);
+  --color-warm-orange: var(--warm-orange);
+  --color-soft-green: var(--soft-green);
+  --color-leaf-green: var(--leaf-green);
+  --color-banana-leaf: var(--banana-leaf);
+  --color-earth-brown: var(--earth-brown);
+  --color-cream-50: #fefdf9;
+  --color-green-50: #f0fdf4;
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  line-height: 1.6;
+}
+
+/* Custom animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes steam {
+  0%, 100% {
+    opacity: 0.3;
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: translateY(-10px) scale(1.1);
+  }
+}
+
+@keyframes gentleBounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-5px);
+  }
+  60% {
+    transform: translateY(-3px);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes crossfade {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* Utility classes */
+.fade-in-up {
+  animation: fadeInUp 0.6s ease-out forwards;
+}
+
+.steam-effect {
+  animation: steam 3s ease-in-out infinite;
+}
+
+.gentle-bounce {
+  animation: gentleBounce 2s infinite;
+}
+
+.slide-in-right {
+  animation: slideInRight 0.5s ease-out forwards;
+}
+
+.crossfade {
+  animation: crossfade 0.3s ease-in-out;
+}
+
+/* Glassmorphism effect */
+.glassmorphism {
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+/* Natural textures */
+.leaf-texture {
+  background-image: radial-gradient(circle at 20% 80%, rgba(74, 124, 89, 0.1) 0%, transparent 50%),
+                    radial-gradient(circle at 80% 20%, rgba(143, 188, 143, 0.1) 0%, transparent 50%);
+}
+
+.woven-texture {
+  background-image: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 10px,
+    rgba(160, 82, 45, 0.05) 10px,
+    rgba(160, 82, 45, 0.05) 20px
+  );
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--accent-cream);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--leaf-green);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-green);
+}
+
+/* Focus styles */
+.focus-ring:focus {
+  outline: 2px solid var(--warm-orange);
+  outline-offset: 2px;
+}
+
+/* Button hover effects */
+.btn-hover {
+  transition: all 0.3s ease;
+}
+
+.btn-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Card hover effects */
+.card-hover {
+  transition: all 0.3s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+/* Image overlay effects */
+.image-overlay {
+  position: relative;
+  overflow: hidden;
+}
+
+.image-overlay::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(45, 90, 61, 0.1), rgba(210, 105, 30, 0.1));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.image-overlay:hover::before {
+  opacity: 1;
+}
+
+/* Floating elements */
+.floating {
+  animation: gentleBounce 3s ease-in-out infinite;
+}
+
+/* Parallax effect */
+.parallax {
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+  .mobile-stack {
+    flex-direction: column;
+  }
+
+  .mobile-full {
+    width: 100%;
+  }
+
+  .mobile-center {
+    text-align: center;
+  }
+}
+
+/* Print styles for recipes */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  .print-break {
+    page-break-before: always;
+  }
+}
+
+/* Button text emphasis and visibility */
+button, .btn, [role="button"] {
+  font-weight: 600 !important;
+  letter-spacing: 0.025em !important;
+  text-transform: none !important;
+}
+
+.btn-primary, .btn-secondary, .btn-accent {
+  font-weight: 700 !important;
+  letter-spacing: 0.05em !important;
+}
+
+/* Form button emphasis */
+input[type="submit"], button[type="submit"] {
+  font-weight: 700 !important;
+  letter-spacing: 0.05em !important;
+  text-transform: uppercase !important;
+  font-size: 0.95rem !important;
+}
+
+/* Button text visibility - let Tailwind classes control text color for proper contrast */
+/* Removed forced white color to allow natural text colors from className */
+
+/* Link emphasis for navigation */
+nav a, .nav-link {
+  font-weight: 600 !important;
+  letter-spacing: 0.025em !important;
+}
