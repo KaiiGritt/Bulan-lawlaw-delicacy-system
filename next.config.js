@@ -7,11 +7,8 @@ const nextConfig = {
       },
     ],
   },
-  turbopack: {
-    root: __dirname,
-  },
+  // Removed deprecated turbopack config to fix build warning
   experimental: {
-    turbopack: false,
   },
 };
 
