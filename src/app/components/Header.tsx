@@ -37,38 +37,37 @@ export default function Header() {
     }
   };
 
-  useEffect(() => {
-    if (!session) return;
+useEffect(() => {
+  if (!session?.user) return;
 
-    async function fetchData() {
-      try {
-        const notifRes = await fetch('/api/notifications');
-        if (notifRes.ok) {
-          const notifData = await notifRes.json();
-          setUnreadNotifications(notifData.unreadCount);
-        }
-
-        const msgRes = await fetch('/api/chat/conversations');
-        if (msgRes.ok) {
-          const conversations = await msgRes.json();
-          const unread = conversations.filter((conv: any) => {
-            const lastMessage = conv.messages[conv.messages.length - 1];
-            return (
-              lastMessage &&
-              lastMessage.sender &&
-              session.user &&
-              lastMessage.sender.id !== session.user.id
-            );
-          }).length;
-          setUnreadMessages(unread);
-        }
-      } catch (err) {
-        console.error(err);
+  async function fetchData() {
+    try {
+      const notifRes = await fetch('/api/notifications');
+      if (notifRes.ok) {
+        const notifData = await notifRes.json();
+        setUnreadNotifications(notifData.unreadCount);
       }
-    }
 
-    fetchData();
-  }, [session]);
+      const msgRes = await fetch('/api/chat/conversations');
+      if (msgRes.ok) {
+        const conversations = await msgRes.json();
+        const unread = conversations.filter((conv: any) => {
+          const lastMessage = conv.messages[conv.messages.length - 1];
+          return (
+            lastMessage?.sender?.id !== undefined &&
+            lastMessage?.sender?.id !== session.user!.id
+          );
+        }).length;
+        setUnreadMessages(unread);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  fetchData();
+}, [session]);
+
 
   // Input change handler
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
