@@ -1,14 +1,10 @@
-// Updated Header component with mobile Home icon (shown only when not logged in)
-// and hidden on both mobile and desktop when logged in.
-
 'use client';
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { useSession, signOut } from 'next-auth/react';
-import { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
+import { useState, useEffect, FormEvent, ChangeEvent } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { motion, AnimatePresence } from 'framer-motion';
 import {
   Search,
   Home,
@@ -18,7 +14,7 @@ import {
   User,
   Bell,
   MessageCircle,
-  LogIn
+  LogIn,
 } from 'lucide-react';
 
 export default function Header() {
@@ -33,7 +29,8 @@ export default function Header() {
 
   const showMobileSearch = pathname === '/products' || pathname === '/recipes';
 
-  const handleSearch = (e) => {
+  // Typed form event handler
+  const handleSearch = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (searchQuery.trim()) {
       router.push(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
@@ -54,9 +51,14 @@ export default function Header() {
         const msgRes = await fetch('/api/chat/conversations');
         if (msgRes.ok) {
           const conversations = await msgRes.json();
-          const unread = conversations.filter((conv) => {
+          const unread = conversations.filter((conv: any) => {
             const lastMessage = conv.messages[conv.messages.length - 1];
-            return lastMessage && lastMessage.sender && session.user && lastMessage.sender.id !== session.user.id;
+            return (
+              lastMessage &&
+              lastMessage.sender &&
+              session.user &&
+              lastMessage.sender.id !== session.user.id
+            );
           }).length;
           setUnreadMessages(unread);
         }
@@ -68,14 +70,27 @@ export default function Header() {
     fetchData();
   }, [session]);
 
+  // Input change handler
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setSearchQuery(e.target.value);
+  };
+
   return (
     <>
       <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b shadow-sm">
         <div className="container mx-auto px-6 py-4 flex items-center justify-between gap-6">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-3 flex-shrink-0">
-            <Image src="/logo.png" alt="Logo" width={50} height={50} className="rounded-lg" />
-            <span className="text-2xl font-bold text-primary-green">Lawlaw Delights</span>
+            <Image
+              src="/logo.png"
+              alt="Logo"
+              width={50}
+              height={50}
+              className="rounded-lg"
+            />
+            <span className="text-2xl font-bold text-primary-green">
+              Lawlaw Delights
+            </span>
           </Link>
 
           {/* Desktop Search */}
@@ -88,7 +103,7 @@ export default function Header() {
               type="text"
               placeholder="Search for products, recipes..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={handleInputChange}
               className="bg-transparent outline-none w-full text-gray-700 placeholder-gray-400"
             />
           </form>
@@ -96,7 +111,6 @@ export default function Header() {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-8">
             <div className="flex items-center gap-6 text-gray-700">
-              {/* Home icon hidden when logged in */}
               {!session && (
                 <Link href="/" className="hover:text-primary-green">
                   <Home className="w-6 h-6" />
@@ -146,10 +160,10 @@ export default function Header() {
                 <LogIn className="w-6 h-6" />
               </Link>
             )}
-
           </div>
         </div>
 
+        {/* Mobile Search */}
         {showMobileSearch && (
           <div className="md:hidden px-4 pb-2 pt-2 flex items-center gap-3">
             <form
@@ -161,7 +175,7 @@ export default function Header() {
                 type="text"
                 placeholder="Search for products..."
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={handleInputChange}
                 className="bg-transparent outline-none w-full text-gray-700 placeholder-gray-400"
               />
             </form>
@@ -181,8 +195,6 @@ export default function Header() {
       {/* MOBILE BOTTOM NAVIGATION */}
       <nav className="fixed bottom-0 left-0 right-0 bg-white border-t shadow-md z-50 md:hidden">
         <div className="flex justify-around items-center h-16 text-gray-700">
-
-          {/* HOME ICON for mobile (shown only when NOT logged in) */}
           {!session && (
             <Link href="/" className="flex flex-col items-center text-xs">
               <Home className="w-6 h-6" />
@@ -219,7 +231,10 @@ export default function Header() {
             </Link>
           )}
 
-          <Link href={session ? '/profile' : '/login'} className="flex flex-col items-center text-xs">
+          <Link
+            href={session ? '/profile' : '/login'}
+            className="flex flex-col items-center text-xs"
+          >
             <User className="w-6 h-6" />
             <span className="text-[10px]">{session ? 'Profile' : 'Login'}</span>
           </Link>
