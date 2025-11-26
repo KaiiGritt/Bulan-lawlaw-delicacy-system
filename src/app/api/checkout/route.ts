@@ -94,24 +94,28 @@ export async function POST(request: NextRequest) {
       return order
     })
 
-    // Send order confirmation email to buyer
-    try {
-      const orderItems = cartItems.map((item: { product: { price: any }; quantity: any }) => ({
-        product: item.product,
-        quantity: item.quantity,
-        price: item.product.price
-      }))
+      // Send order confirmation email to buyer
+      try {
+        // Ensure product includes the required 'name' property for the OrderItem type
+        const orderItems = cartItems.map((item: { product: { name: string; price: any }; quantity: any }) => ({
+          product: {
+            name: item.product.name,
+            price: item.product.price
+          },
+          quantity: item.quantity,
+          price: item.product.price
+        }))
 
-      await sendOrderConfirmation(session.user.email!, {
-        orderId: result.id,
-        totalAmount,
-        shippingAddress,
-        orderItems
-      })
-    } catch (emailError) {
-      console.error('Failed to send order confirmation email:', emailError)
-      // Don't fail the order if email fails
-    }
+        await sendOrderConfirmation(session.user.email!, {
+          orderId: result.id,
+          totalAmount,
+          shippingAddress,
+          orderItems
+        })
+      } catch (emailError) {
+        console.error('Failed to send order confirmation email:', emailError)
+        // Don't fail the order if email fails
+      }
 
     // Create notification for the user
     try {
