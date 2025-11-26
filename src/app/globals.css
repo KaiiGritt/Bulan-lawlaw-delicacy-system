@@ -12,6 +12,44 @@
   --banana-leaf: #8fbc8f;
   --earth-brown: #a0522d;
 }
+=======
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary-green: var(--primary-green);
+  --color-secondary-brown: var(--secondary-brown);
+  --color-accent-cream: var(--accent-cream);
+  --color-warm-orange: var(--warm-orange);
+  --color-soft-green: var(--soft-green);
+  --color-leaf-green: var(--leaf-green);
+  --color-banana-leaf: var(--banana-leaf);
+  --color-earth-brown: var(--earth-brown);
+}
+=======
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary-green: var(--primary-green);
+  --color-secondary-brown: var(--secondary-brown);
+  --color-accent-cream: var(--accent-cream);
+  --color-warm-orange: var(--warm-orange);
+  --color-soft-green: var(--soft-green);
+  --color-leaf-green: var(--leaf-green);
+  --color-banana-leaf: var(--banana-leaf);
+  --color-earth-brown: var(--earth-brown);
+
+  --color-mariner-50: var(--mariner-50);
+  --color-mariner-100: var(--mariner-100);
+  --color-mariner-200: var(--mariner-200);
+  --color-mariner-300: var(--mariner-300);
+  --color-mariner-400: var(--mariner-400);
+  --color-mariner-500: var(--mariner-500);
+  --color-mariner-600: var(--mariner-600);
+  --color-mariner-700: var(--mariner-700);
+  --color-mariner-800: var(--mariner-800);
+  --color-mariner-900: var(--mariner-900);
+  --color-mariner-950: var(--mariner-950);
+}
 
 @theme inline {
   --color-background: var(--background);

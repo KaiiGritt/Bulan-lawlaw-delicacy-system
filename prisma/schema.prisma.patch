@@ -1,0 +1,17 @@
+<<<<<<< enum ProductStatus {
+  draft
+  pending
+  approved
+  rejected
+  live
+}
+=======
+enum ProductStatus {
+  draft
+  pending
+  approved
+  rejected
+  live
+  deleted
+}
+>>>>>>> EXTEND_PRODUCTSTATUS_WITH_DELETED

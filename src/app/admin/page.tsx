@@ -1,29 +1,30 @@
+
+
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import UsersTab from "./UsersTab";
+import toast, { Toaster } from 'react-hot-toast';
+import {
+  CheckCircleIcon,
+  XCircleIcon,
+  ChevronDownIcon,
+  ChevronUpIcon,
+  Bars3Icon,
+  ArrowLeftIcon,
+} from '@heroicons/react/24/outline';
 import { motion, AnimatePresence } from 'framer-motion';
+
+type TabId = 'overview' | 'users' | 'products' | 'orders' | 'analytics' | 'sellerApplications';
+
 
 interface AdminStats {
   totalUsers: number;
   totalProducts: number;
   totalOrders: number;
   totalRevenue: number;
-  recentOrders: Array<{
-    id: string;
-    totalAmount: number;
-    status: string;
-    createdAt: string;
-    user: { name: string; email: string };
-    orderItems: Array<{ product: { name: string } }>;
-  }>;
-  pendingProducts: Array<{
-    id: string;
-    name: string;
-    createdAt: string;
-    user: { name: string };
-  }>;
   pendingSellerApplications: Array<{
     id: string;
     businessName: string;
@@ -32,6 +33,17 @@ interface AdminStats {
     createdAt: string;
     user: { id: string; name: string | null; email: string };
   }>;
+}
+
+interface OrderItem {
+  id: string;
+  quantity: number;
+  price: number;
+  product: {
+    id: string;
+    name: string;
+    image?: string;
+  };
 }
 
 interface Order {
@@ -43,7 +55,7 @@ interface Order {
   paymentMethod: string;
   adminApprovalRequired: boolean;
   cancellationReason?: string;
-  cancelledAt?: string;
+  cancelledAt?: string | null;
   createdAt: string;
   updatedAt: string;
   user: {
@@ -51,88 +63,115 @@ interface Order {
     name: string | null;
     email: string;
   };
-  orderItems: Array<{
-    id: string;
-    quantity: number;
-    price: number;
-    product: {
-      id: string;
-      name: string;
-      image: string;
-    };
-  }>;
+  orderItems: OrderItem[];
 }
 
-export default function AdminDashboard() {
-  const [activeTab, setActiveTab] = useState('overview');
+function StatCard({ label, value, icon }: { label: string; value: string | number; icon?: string }) {
+  return (
+    <div className="bg-white rounded-2xl p-4 shadow border border-gray-100">
+      <div className="flex items-center gap-4">
+        <div className="w-12 h-12 rounded-lg bg-primary-green/10 flex items-center justify-center text-2xl">{icon}</div>
+        <div>
+          <p className="text-sm text-gray-500">{label}</p>
+          <p className="text-xl font-bold text-primary-green">{value}</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function AdminPage() {
+  const [activeTab, setActiveTab] = useState<TabId>('overview');
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [orders, setOrders] = useState<Order[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
-  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [showCancelModal, setShowCancelModal] = useState(false);
   const [cancellationReason, setCancellationReason] = useState('');
+  const [expandedOrders, setExpandedOrders] = useState<{ [key: string]: boolean }>({});
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
-    if (activeTab === 'overview') {
-      fetchStats();
-    } else if (activeTab === 'orders') {
-      fetchOrders();
-    }
+    // load overview on mount
+    fetchOverview();
+  }, []);
+
+  useEffect(() => {
+    if (activeTab === 'overview') fetchOverview();
+    else if (activeTab === 'orders') fetchOrders();
+    else if (activeTab === 'sellerApplications') fetchOverview(); // stats includes pending apps
+    // other tabs load on demand if needed
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab]);
 
-  const fetchStats = async () => {
+  // small loading UI
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-cream-50 to-green-50">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-4 border-primary-green"></div>
+      </div>
+    );
+  }
+
+  async function fetchOverview() {
+    setLoading(true);
     try {
-      setLoading(true);
       const res = await fetch('/api/admin/stats');
-      if (!res.ok) throw new Error('Failed to fetch admin statistics');
+      if (!res.ok) throw new Error('Failed to fetch stats');
       const data = await res.json();
       setStats(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      console.error(err);
+      toast.error('Failed to load dashboard stats');
     } finally {
       setLoading(false);
     }
-  };
+  }
 
-  const fetchOrders = async () => {
+  async function fetchOrders() {
+    setLoading(true);
     try {
-      setLoading(true);
       const res = await fetch('/api/admin/orders');
       if (!res.ok) throw new Error('Failed to fetch orders');
       const data = await res.json();
       setOrders(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      console.error(err);
+      toast.error('Failed to load orders');
     } finally {
       setLoading(false);
     }
-  };
+  }
 
-  const handleApplication = async (id: string, status: 'approved' | 'rejected') => {
+  // Approve/reject seller application
+  async function handleApplication(appId: string, status: 'approved' | 'rejected') {
     try {
-      const res = await fetch(`/api/admin/seller-applications/${id}`, {
+      const res = await fetch(`/api/admin/seller-applications/${appId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status }),
       });
-
       if (!res.ok) {
         const text = await res.text();
-        console.error(`${status} failed:`, res.status, text);
-        throw new Error(`Failed to ${status} application`);
+        console.error('application patch failed', res.status, text);
+        throw new Error('Failed to update application');
       }
-
-      fetchStats(); // refresh dashboard
+      toast.success(`Application ${status}`);
+      fetchOverview();
     } catch (err) {
       console.error(err);
-      alert(err instanceof Error ? err.message : 'Something went wrong');
+      toast.error('Error updating application');
     }
-  };
+  }
 
-  const handleCancelOrder = async () => {
-    if (!selectedOrder || !cancellationReason.trim()) return;
+  // Cancel order (admin-initiated)
+  async function handleCancelOrder() {
+    if (!selectedOrder) return;
+    if (!cancellationReason.trim()) {
+      toast.error('Please provide a cancellation reason');
+      return;
+    }
 
     try {
       const res = await fetch(`/api/admin/orders/${selectedOrder.id}/cancel`, {
@@ -140,45 +179,58 @@ export default function AdminDashboard() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ reason: cancellationReason }),
       });
-
-      if (res.ok) {
-        alert('Order cancelled successfully');
-        setShowCancelModal(false);
-        setSelectedOrder(null);
-        setCancellationReason('');
-        fetchOrders(); // Refresh orders
-      } else {
-        const error = await res.json();
-        alert(error.error || 'Failed to cancel order');
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ error: 'Failed' }));
+        throw new Error(err?.error || 'Failed to cancel');
       }
+      toast.success('Order cancelled');
+      setShowCancelModal(false);
+      setSelectedOrder(null);
+      setCancellationReason('');
+      fetchOrders();
     } catch (err) {
       console.error(err);
-      alert('Failed to cancel order');
+      toast.error('Failed to cancel order');
     }
-  };
+  }
 
-  const handleApproveCancellation = async (orderId: string, approved: boolean) => {
+  // Approve or reject cancellation requested by user
+  async function handleApproveCancellation(orderId: string, approved: boolean) {
     try {
       const res = await fetch(`/api/admin/orders/${orderId}/approve-cancellation`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ approved }),
       });
-
-      if (res.ok) {
-        alert(approved ? 'Cancellation approved' : 'Cancellation rejected');
-        fetchOrders(); // Refresh orders
-      } else {
-        const error = await res.json();
-        alert(error.error || 'Failed to process cancellation');
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ error: 'Failed' }));
+        throw new Error(err?.error || 'Failed to update');
       }
+      toast.success(approved ? 'Cancellation approved' : 'Cancellation rejected');
+      fetchOrders();
     } catch (err) {
       console.error(err);
-      alert('Failed to process cancellation');
+      toast.error('Failed to process cancellation');
     }
-  };
+  }
 
-  const getStatusColor = (status: string) => {
+  function toggleExpand(orderId: string) {
+    setExpandedOrders(prev => ({ ...prev, [orderId]: !prev[orderId] }));
+  }
+
+  function openCancelModal(order: Order) {
+    setSelectedOrder(order);
+    setCancellationReason('');
+    setShowCancelModal(true);
+  }
+
+  function openConfirmModal(order: Order) {
+    setSelectedOrder(order);
+    setShowConfirmModal(true);
+  }
+
+  // utility to show status color
+  function statusClasses(status: string) {
     switch (status) {
       case 'pending': return 'bg-yellow-100 text-yellow-800';
       case 'processing': return 'bg-blue-100 text-blue-800';
@@ -187,310 +239,550 @@ export default function AdminDashboard() {
       case 'cancelled': return 'bg-red-100 text-red-800';
       default: return 'bg-gray-100 text-gray-800';
     }
-  };
-
-  const canCancelOrder = (order: Order) => {
-    return ['pending', 'processing'].includes(order.status);
-  };
-
-  if (loading) return (
-    <div className="min-h-screen bg-gradient-to-br from-cream-50 to-green-50 flex items-center justify-center">
-      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-green"></div>
-    </div>
-  );
-
-  if (error) return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="text-center">
-        <p className="text-red-500 text-xl mb-4">⚠️ {error}</p>
-        <button
-          onClick={fetchStats}
-          className="btn-hover bg-primary-green text-white px-6 py-3 rounded-xl hover:bg-leaf-green transition-colors duration-200"
-        >
-          Try Again
-        </button>
-      </div>
-    </div>
-  );
+  }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-cream-50 to-green-50">
-      {/* Header */}
-      <header className="glassmorphism sticky top-0 z-50 border-b border-white/20">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <Link href="/" className="flex items-center space-x-3 hover:opacity-80 transition-opacity duration-300">
-            <Image src="/logo.png" alt="Lawlaw Logo" width={40} height={40} className="rounded-lg" />
-            <span className="text-2xl font-bold text-primary-green hover:text-leaf-green transition-colors duration-300">
-              Admin Dashboard
-            </span>
-          </Link>
+    <div className="min-h-screen bg-gradient-to-br from-cream-50 to-green-50 text-gray-900">
+      <Toaster position="top-right" />
+      <div className="max-w-[1400px] mx-auto px-4 py-6">
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+              className="p-2 rounded-md hover:bg-white/30"
+              aria-label="Toggle sidebar"
+            >
+              <Bars3Icon className="h-6 w-6 text-primary-green" />
+            </button>
 
-          <div className="flex items-center space-x-4">
-            <span className="text-sm text-gray-600 hidden md:block">Welcome, Admin</span>
-            <div className="relative">
-              <button
-                onClick={() => setIsProfileDropdownOpen(!isProfileDropdownOpen)}
-                className="hover:text-primary-green transition text-xl"
-              >👤</button>
-              <AnimatePresence>
-                {isProfileDropdownOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.95, y: -10 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.95, y: -10 }}
-                    transition={{ duration: 0.15 }}
-                    className="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-xl border border-gray-200 py-2 z-50"
-                  >
-                    <div className="px-4 py-2 border-b border-gray-100">
-                      <p className="text-sm font-medium text-gray-900">Admin</p>
-                      <p className="text-xs text-gray-500">Administrator</p>
-                    </div>
-                    <div className="py-1">
-                      <Link href="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-primary-green transition">My Account</Link>
-                      <Link href="/login" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-primary-green transition">Logout</Link>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-            <Link href="/" className="btn-hover text-primary-green hover:text-leaf-green text-sm font-medium transition-colors duration-200 px-3 py-2 rounded-lg hover:bg-white/60">
-              ← Back to Site
+            <Link href="/" className="flex items-center gap-3">
+              <div className="relative w-12 h-12 bg-white rounded-lg shadow flex items-center justify-center overflow-hidden">
+                {/* local logo path; if using next/image choose static import to avoid runtime warnings */}
+                <Image src="/logo.png" alt="Logo" width={40} height={40} />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-primary-green">Admin Dashboard</h1>
+                <p className="text-xs text-gray-600">Manage users, products and orders</p>
+              </div>
             </Link>
           </div>
-        </div>
-      </header>
 
-      {/* Tabs */}
-      <div className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <nav className="flex flex-wrap gap-2 bg-white/80 backdrop-blur-sm p-2 rounded-2xl shadow-lg border border-white/20">
-            {[
-              { id: 'overview', label: 'Overview', icon: '📊' },
-              { id: 'users', label: 'Users', icon: '👥' },
-              { id: 'products', label: 'Products', icon: '📦' },
-              { id: 'orders', label: 'Orders', icon: '📋' },
-              { id: 'analytics', label: 'Analytics', icon: '📈' },
-              { id: 'sellerApplications', label: 'Seller Applications', icon: '📝' },
-            ].map(tab => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center px-6 py-3 rounded-xl text-sm font-medium transition-all duration-300 ${
-                  activeTab === tab.id
-                    ? 'bg-primary-green text-white shadow-md'
-                    : 'text-gray-700 hover:bg-white/60 hover:text-primary-green'
-                }`}
-              >
-                <span className="mr-2 text-lg">{tab.icon}</span>{tab.label}
-              </button>
-            ))}
-          </nav>
-        </div>
-
-        {/* Tab Contents */}
-        {activeTab === 'overview' && stats && (
-          <div className="space-y-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <StatCard icon="👥" label="Total Users" value={stats.totalUsers} />
-              <StatCard icon="📦" label="Total Products" value={stats.totalProducts} />
-              <StatCard icon="📋" label="Total Orders" value={stats.totalOrders} />
-              <StatCard icon="💰" label="Total Revenue" value={`₱${stats.totalRevenue.toLocaleString()}`} />
-            </div>
+          <div className="flex items-center gap-4">
+            <Link href="/" className="text-sm text-primary-green hover:underline flex items-center gap-2">
+              <ArrowLeftIcon className="h-4 w-4" /> Back to site
+            </Link>
+            <div className="rounded-full bg-white p-2 shadow text-lg">👤</div>
           </div>
-        )}
+        </div>
 
-        {activeTab === 'orders' && (
-          <div className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100 fade-in-up">
-            <h3 className="text-2xl font-bold text-primary-green mb-4">Order Management</h3>
-            <p className="text-gray-600 mb-6">View and manage all orders, including cancellations.</p>
-            {orders.length > 0 ? (
-              <div className="space-y-6">
-                {orders.map((order) => (
-                  <div key={order.id} className="bg-gray-50 p-6 rounded-xl">
-                    <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-4">
-                      <div>
-                        <h4 className="text-lg font-semibold text-primary-green">
-                          Order #{order.id.slice(-8)}
-                        </h4>
-                        <p className="text-sm text-gray-600">
-                          By {order.user.name || order.user.email} • Placed on {new Date(order.createdAt).toLocaleDateString()}
-                        </p>
-                      </div>
-                      <div className="flex items-center space-x-4 mt-4 lg:mt-0">
-                        <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(order.status)}`}>
-                          {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
-                        </span>
-                        {order.adminApprovalRequired && (
-                          <div className="flex space-x-2">
-                            <button
-                              onClick={() => handleApproveCancellation(order.id, true)}
-                              className="bg-green-500 text-white px-3 py-1 rounded-lg hover:bg-green-600 transition-colors text-sm"
-                            >
-                              Approve Cancel
-                            </button>
-                            <button
-                              onClick={() => handleApproveCancellation(order.id, false)}
-                              className="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600 transition-colors text-sm"
-                            >
-                              Reject Cancel
-                            </button>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          {/* Sidebar */}
+          <aside className={`col-span-3 lg:col-span-3 transition-all ${sidebarOpen ? 'block' : 'hidden lg:block'}`}>
+            <div className="bg-white/80 backdrop-blur rounded-2xl p-4 shadow border border-white/30">
+              <nav className="space-y-1">
+                {([
+                  { id: 'overview', label: 'Overview' },
+                  { id: 'users', label: 'Users' },
+                  { id: 'products', label: 'Products' },
+                  { id: 'orders', label: 'Orders' },
+                  { id: 'analytics', label: 'Analytics' },
+                  { id: 'sellerApplications', label: 'Seller Applications' },
+                ] as { id: TabId; label: string }[]).map((t) => (
+                  <button
+                    key={t.id}
+                    onClick={() => setActiveTab(t.id)}
+                    className={`w-full text-left px-3 py-2 rounded-lg flex items-center justify-between ${
+                      activeTab === t.id ? 'bg-primary-green text-white' : 'text-gray-700 hover:bg-white/60'
+                    }`}
+                  >
+                    <span className="font-medium">{t.label}</span>
+                    <span className="text-xs text-gray-500">{activeTab === t.id ? '●' : ''}</span>
+                  </button>
+                ))}
+              </nav>
+
+              <div className="mt-6 space-y-3">
+                <button
+                  onClick={() => setActiveTab('orders')}
+                  className="w-full text-left px-3 py-2 rounded-lg bg-red-50 text-red-700 hover:bg-red-100"
+                >
+                  Quick: Manage Orders
+                </button>
+                <Link href="/admin/settings" className="block text-center text-sm text-gray-600 hover:underline py-1">
+                  Admin Settings
+                </Link>
+              </div>
+            </div>
+          </aside>
+
+          {/* Main content */}
+          <section className="col-span-9 lg:col-span-9">
+            {/* OVERVIEW */}
+            {activeTab === 'overview' && stats && (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                  <StatCard label="Total Users" value={stats.totalUsers} icon="👥" />
+                  <StatCard label="Total Products" value={stats.totalProducts} icon="📦" />
+                  <StatCard label="Total Orders" value={stats.totalOrders} icon="📋" />
+                  <StatCard label="Total Revenue" value={`₱${stats.totalRevenue.toLocaleString()}`} icon="💰" />
+                </div>
+
+                <div className="bg-white rounded-2xl p-6 shadow border border-gray-100">
+                  <h3 className="text-lg font-semibold text-primary-green mb-3">Recent Seller Applications</h3>
+                  {stats.pendingSellerApplications.length ? (
+                    <div className="space-y-3">
+                      {stats.pendingSellerApplications.map((app) => (
+                        <div key={app.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                          <div>
+                            <p className="font-semibold">{app.businessName}</p>
+                            <p className="text-sm text-gray-600">{app.businessType} • {app.user.name || app.user.email}</p>
+                            <p className="text-xs text-gray-500">Submitted: {new Date(app.createdAt).toLocaleDateString()}</p>
                           </div>
-                        )}
-                        {canCancelOrder(order) && !order.adminApprovalRequired && (
-                          <button
-                            onClick={() => {
-                              setSelectedOrder(order);
-                              setShowCancelModal(true);
-                            }}
-                            className="bg-red-500 text-white px-3 py-1 rounded-lg hover:bg-red-600 transition-colors text-sm"
-                          >
-                            Cancel Order
-                          </button>
-                        )}
-                      </div>
-                    </div>
-
-                    {order.cancellationReason && (
-                      <div className="mb-4 p-3 bg-red-50 rounded-lg">
-                        <p className="text-sm text-red-800">
-                          <strong>Cancellation Reason:</strong> {order.cancellationReason}
-                        </p>
-                        {order.cancelledAt && (
-                          <p className="text-sm text-red-600 mt-1">
-                            Cancelled on {new Date(order.cancelledAt).toLocaleDateString()}
-                          </p>
-                        )}
-                      </div>
-                    )}
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
-                      {order.orderItems.map((item) => (
-                        <div key={item.id} className="flex items-center space-x-3 p-3 bg-white rounded-lg">
-                          <img
-                            src={item.product.image}
-                            alt={item.product.name}
-                            className="w-12 h-12 object-cover rounded-lg"
-                          />
-                          <div className="flex-1">
-                            <p className="font-medium text-gray-900">{item.product.name}</p>
-                            <p className="text-sm text-gray-600">
-                              {item.quantity} × ₱{item.price.toFixed(2)}
-                            </p>
+                          <div className="flex gap-2">
+                            <button onClick={() => handleApplication(app.id, 'approved')} className="px-3 py-1 rounded-lg bg-primary-green text-white">Approve</button>
+                            <button onClick={() => handleApplication(app.id, 'rejected')} className="px-3 py-1 rounded-lg bg-red-500 text-white">Reject</button>
                           </div>
                         </div>
                       ))}
                     </div>
+                  ) : (
+                    <p className="text-sm text-gray-500">No pending applications</p>
+                  )}
+                </div>
+              </motion.div>
+            )}
 
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pt-4 border-t border-gray-200">
-                      <div className="mb-4 sm:mb-0">
-                        <p className="text-sm text-gray-600">
-                          Payment: {order.paymentMethod}
-                        </p>
-                        <p className="text-sm text-gray-600">
-                          Total: ₱{order.totalAmount.toFixed(2)}
-                        </p>
-                      </div>
+            {/* ORDERS */}
+            {activeTab === 'orders' && (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
+                <div className="bg-white rounded-2xl p-6 shadow border border-gray-100">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-xl font-semibold text-primary-green">Order Management</h3>
+                    <div className="flex items-center gap-2">
+                      <button onClick={() => fetchOrders()} className="px-3 py-2 rounded-lg bg-white border hover:shadow">Refresh</button>
                     </div>
                   </div>
-                ))}
-              </div>
-            ) : (
-              <p className="text-gray-500 text-center py-8">No orders found</p>
-            )}
-          </div>
-        )}
 
-        {activeTab === 'sellerApplications' && stats && (
-          <div className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100 fade-in-up">
-            <h3 className="text-2xl font-bold text-primary-green mb-4">Seller Applications</h3>
-            <p className="text-gray-600 mb-6">Review and approve/reject seller applications.</p>
-            {stats.pendingSellerApplications.length > 0 ? (
-              stats.pendingSellerApplications.map(app => (
-                <div key={app.id} className="flex items-center justify-between py-3 border-b border-gray-100 last:border-b-0">
-                  <div>
-                    <p className="font-semibold text-gray-900">{app.businessName}</p>
-                    <p className="text-sm text-gray-600">{app.businessType} by {app.user.name || app.user.email}</p>
-                    <p className="text-xs text-gray-500">Submitted: {new Date(app.createdAt).toLocaleDateString()}</p>
-                  </div>
-                  <div className="flex space-x-2">
-                    <button
-                      onClick={() => handleApplication(app.id, 'approved')}
-                      className="btn-hover bg-primary-green text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-leaf-green transition-colors duration-200"
-                    >
-                      Approve
-                    </button>
+                  {orders.length === 0 ? (
+                    <p className="text-gray-500 text-center py-8">No orders found</p>
+                  ) : (
+                    <div className="space-y-3">
+                      {orders.map((order) => (
+                        <div key={order.id} className="bg-gray-50 rounded-lg p-4 border border-gray-100">
+                          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+                            <div>
+                              <div className="flex items-center gap-3">
+                                <h4 className="font-semibold text-primary-green">Order #{order.id.slice(-8)}</h4>
+                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusClasses(order.status)}`}>
+                                  {order.status}
+                                </span>
+                              </div>
+                              <p className="text-sm text-gray-600">By {order.user.name || order.user.email} • {new Date(order.createdAt).toLocaleString()}</p>
+                            </div>
 
-                    <button
-                      onClick={() => handleApplication(app.id, 'rejected')}
-                      className="btn-hover bg-red-500 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-red-700 transition-colors duration-200"
-                    >
-                      Reject
-                    </button>
-                  </div>
+                            <div className="flex items-center gap-2">
+                              {order.adminApprovalRequired ? (
+                                <>
+                                  <button onClick={() => handleApproveCancellation(order.id, true)} className="px-3 py-1 rounded-lg bg-green-500 text-white">Approve Cancel</button>
+                                  <button onClick={() => handleApproveCancellation(order.id, false)} className="px-3 py-1 rounded-lg bg-red-500 text-white">Reject Cancel</button>
+                                </>
+                              ) : (
+                                <>
+                                  <button onClick={() => openCancelModal(order)} className="px-3 py-1 rounded-lg bg-red-500 text-white">Cancel Order</button>
+                                  <button onClick={() => openConfirmModal(order)} className="px-3 py-1 rounded-lg bg-white border">Mark as Processed</button>
+                                </>
+                              )}
+
+                              <button
+                                onClick={() => toggleExpand(order.id)}
+                                className="p-2 rounded-md bg-white border hover:shadow"
+                                aria-expanded={!!expandedOrders[order.id]}
+                                title="Expand"
+                              >
+                                {expandedOrders[order.id] ? <ChevronUpIcon className="h-5 w-5" /> : <ChevronDownIcon className="h-5 w-5" />}
+                              </button>
+                            </div>
+                          </div>
+
+                          <AnimatePresence>
+                            {expandedOrders[order.id] && (
+                              <motion.div
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: 'auto' }}
+                                exit={{ opacity: 0, height: 0 }}
+                                className="mt-4 overflow-hidden"
+                              >
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                  <div className="space-y-2">
+                                    <div className="p-3 bg-white rounded-lg border">
+                                      <p className="text-sm text-gray-600"><strong>Shipping:</strong> {order.shippingAddress}</p>
+                                      <p className="text-sm text-gray-600"><strong>Billing:</strong> {order.billingAddress}</p>
+                                      <p className="text-sm text-gray-600"><strong>Payment:</strong> {order.paymentMethod}</p>
+                                      <p className="text-sm text-gray-600"><strong>Total:</strong> ₱{order.totalAmount.toFixed(2)}</p>
+                                      {order.cancellationReason && (
+                                        <p className="text-sm text-red-700 mt-2"><strong>Cancellation Reason:</strong> {order.cancellationReason}</p>
+                                      )}
+                                      {order.cancelledAt && (
+                                        <p className="text-sm text-red-600"><strong>Cancelled At:</strong> {new Date(order.cancelledAt).toLocaleString()}</p>
+                                      )}
+                                    </div>
+                                  </div>
+
+                                  <div>
+                                    <div className="grid grid-cols-1 gap-3">
+                                      {order.orderItems.map(item => (
+                                        <div key={item.id} className="flex items-center gap-3 p-3 bg-white rounded-lg border">
+                                          <div className="w-14 h-14 bg-gray-100 rounded-md overflow-hidden flex items-center justify-center">
+                                            {item.product.image ? (
+                                              // eslint-disable-next-line @next/next/no-img-element
+                                              <img src={item.product.image} alt={item.product.name} className="w-full h-full object-cover" />
+                                            ) : (
+                                              <div className="text-sm text-gray-500">{item.product.name.slice(0,1)}</div>
+                                            )}
+                                          </div>
+
+                                          <div className="flex-1">
+                                            <p className="font-medium">{item.product.name}</p>
+                                            <p className="text-sm text-gray-600">{item.quantity} × ₱{item.price.toFixed(2)}</p>
+                                          </div>
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                </div>
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
-              ))
-            ) : (
-              <p className="text-gray-500 text-center py-8">No pending seller applications</p>
+              </motion.div>
             )}
-          </div>
-        )}
+
+            {/* SELLER APPLICATIONS */}
+            {activeTab === 'sellerApplications' && stats && (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
+                <div className="bg-white rounded-2xl p-6 shadow border border-gray-100">
+                  <h3 className="text-xl font-semibold text-primary-green mb-4">Seller Applications</h3>
+                  {stats.pendingSellerApplications.length === 0 ? (
+                    <p className="text-gray-500">No pending applications</p>
+                  ) : (
+                    <div className="space-y-3">
+                      {stats.pendingSellerApplications.map(app => (
+                        <div key={app.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                          <div>
+                            <p className="font-semibold">{app.businessName}</p>
+                            <p className="text-sm text-gray-600">{app.businessType} • {app.user.name || app.user.email}</p>
+                            <p className="text-xs text-gray-500">Submitted {new Date(app.createdAt).toLocaleDateString()}</p>
+                          </div>
+
+                          <div className="flex gap-2">
+                            <button onClick={() => handleApplication(app.id, 'approved')} className="px-3 py-1 rounded-lg bg-primary-green text-white">
+                              <CheckCircleIcon className="h-4 w-4 inline-block mr-1" /> Approve
+                            </button>
+                            <button onClick={() => handleApplication(app.id, 'rejected')} className="px-3 py-1 rounded-lg bg-red-600 text-white">
+                              <XCircleIcon className="h-4 w-4 inline-block mr-1" /> Reject
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </motion.div>
+            )}
+
+            {activeTab === 'users' && (
+              <UsersTab />
+            )}
+
+            {activeTab === 'products' && (
+              <ProductsManager />
+            )}
+
+            {activeTab === 'analytics' && (
+              <div className="bg-white rounded-2xl p-6 shadow border border-gray-100">
+                <h3 className="text-xl font-semibold text-primary-green mb-3">Analytics</h3>
+                <p className="text-sm text-gray-600">Analytics placeholder — add Recharts / Chart.js components here.</p>
+              </div>
+            )}
+          </section>
+        </div>
       </div>
 
-      {/* Cancellation Modal */}
-      {showCancelModal && selectedOrder && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-2xl p-6 max-w-md w-full">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              Cancel Order #{selectedOrder.id.slice(-8)}
-            </h3>
-            <p className="text-gray-600 mb-4">
-              Please provide a reason for cancellation:
-            </p>
-            <textarea
-              value={cancellationReason}
-              onChange={(e) => setCancellationReason(e.target.value)}
-              placeholder="Enter cancellation reason..."
-              className="w-full p-3 border border-gray-300 rounded-lg bg-white text-gray-900 mb-4"
-              rows={4}
-              required
-            />
-            <div className="flex space-x-3">
-              <button
-                onClick={() => {
-                  setShowCancelModal(false);
-                  setSelectedOrder(null);
-                  setCancellationReason('');
-                }}
-                className="flex-1 bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400 transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleCancelOrder}
-                disabled={!cancellationReason.trim()}
-                className="flex-1 bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Confirm Cancellation
-              </button>
+      {/* Cancel modal */}
+      <AnimatePresence>
+        {showCancelModal && selectedOrder && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+            <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-lg">
+              <h3 className="text-lg font-semibold mb-2">Cancel Order #{selectedOrder.id.slice(-8)}</h3>
+              <p className="text-sm text-gray-600 mb-4">Provide a reason for cancelling this order (this will be recorded).</p>
+              <textarea
+                rows={4}
+                value={cancellationReason}
+                onChange={(e) => setCancellationReason(e.target.value)}
+                className="w-full p-3 border border-gray-200 rounded-lg mb-4"
+                placeholder="Reason..."
+              />
+              <div className="flex gap-3 justify-end">
+                <button onClick={() => { setShowCancelModal(false); setSelectedOrder(null); setCancellationReason(''); }} className="px-4 py-2 rounded-lg border">Close</button>
+                <button onClick={handleCancelOrder} className="px-4 py-2 rounded-lg bg-red-600 text-white">Confirm Cancel</button>
+              </div>
             </div>
-          </div>
-        </div>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Confirm modal (simple example for processing an order) */}
+      <AnimatePresence>
+        {showConfirmModal && selectedOrder && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+            <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-lg">
+              <h3 className="text-lg font-semibold mb-2">Mark order as processed?</h3>
+              <p className="text-sm text-gray-600 mb-4">This will change the order status to processing.</p>
+              <div className="flex gap-3 justify-end">
+                <button onClick={() => { setShowConfirmModal(false); setSelectedOrder(null); }} className="px-4 py-2 rounded-lg border">Cancel</button>
+                <button
+                  onClick={async () => {
+                    if (!selectedOrder) return;
+                    try {
+                      const res = await fetch(`/api/admin/orders/${selectedOrder.id}/mark-processing`, { method: 'PATCH' });
+                      if (!res.ok) throw new Error('Failed');
+                      toast.success('Order marked processing');
+                      setShowConfirmModal(false);
+                      setSelectedOrder(null);
+                      fetchOrders();
+                    } catch (err) {
+                      console.error(err);
+                      toast.error('Failed to update order');
+                    }
+                  }}
+                  className="px-4 py-2 rounded-lg bg-primary-green text-white"
+                >
+                  Confirm
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
-  );
+  )
 }
 
-// --- Helper component ---
-function StatCard({ icon, label, value }: { icon: string; label: string; value: string | number }) {
+
+/* ---------------- Helper components ---------------- */
+
+function ProductsManager() {
+  const [products, setProducts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [editingCategoryId, setEditingCategoryId] = useState<string | null>(null);
+  const [categoryInput, setCategoryInput] = useState<string>('');
+  const [refreshKey, setRefreshKey] = useState(0); // to refetch after actions
+
+  useEffect(() => {
+    async function fetchProducts() {
+      setLoading(true);
+      try {
+        const res = await fetch('/api/admin/products');
+        if (!res.ok) throw new Error('Failed to fetch products');
+        const data = await res.json();
+        setProducts(data);
+      } catch (err) {
+        console.error(err);
+        toast.error('Failed to load products');
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchProducts();
+  }, [refreshKey]);
+
+  async function updateProductStatus(id: string, status: string) {
+    try {
+      const res = await fetch(`/api/admin/products/${id}/${status}`, {
+        method: 'PATCH',
+        credentials: 'include',
+      });
+      if (!res.ok) throw new Error('Failed to update product status');
+      toast.success(`Product ${status}`);
+      setRefreshKey(prev => prev + 1);
+    } catch (err) {
+      console.error(err);
+      toast.error('Failed to update product status');
+    }
+  }
+
+  async function toggleFeatured(id: string) {
+    try {
+      const res = await fetch(`/api/admin/products/${id}/feature`, {
+        method: 'PATCH',
+        credentials: 'include',
+      });
+      if (!res.ok) throw new Error('Failed to toggle featured');
+      toast.success('Toggled featured state');
+      setRefreshKey(prev => prev + 1);
+    } catch (err) {
+      console.error(err);
+      toast.error('Failed to toggle featured');
+    }
+  }
+
+  async function updateCategory(id: string, category: string) {
+    try {
+      const res = await fetch(`/api/admin/products/${id}/category`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ category }),
+        credentials: 'include',
+      });
+      if (!res.ok) throw new Error('Failed to update category');
+      toast.success('Category updated');
+      setEditingCategoryId(null);
+      setRefreshKey(prev => prev + 1);
+    } catch (err) {
+      console.error(err);
+      toast.error('Failed to update category');
+    }
+  }
+
+  async function removeProduct(id: string) {
+    try {
+      const res = await fetch(`/api/admin/products/${id}/remove`, {
+        method: 'PATCH',
+        credentials: 'include',
+      });
+      if (!res.ok) throw new Error('Failed to remove product');
+      toast.success('Product removed');
+      setRefreshKey(prev => prev + 1);
+    } catch (err) {
+      console.error(err);
+      toast.error('Failed to remove product');
+    }
+  }
+
   return (
-    <div className="card-hover bg-white p-6 rounded-2xl shadow-lg border border-gray-100 fade-in-up">
-      <div className="flex items-center">
-        <div className="p-3 bg-primary-green/10 rounded-xl text-3xl">{icon}</div>
-        <div className="ml-4">
-          <p className="text-sm font-medium text-gray-600">{label}</p>
-          <p className="text-3xl font-bold text-primary-green">{value}</p>
+    <div>
+      <h3 className="text-xl font-semibold text-primary-green mb-3">Products</h3>
+      {loading ? (
+        <p>Loading products...</p>
+      ) : products.length === 0 ? (
+        <p>No products found.</p>
+      ) : (
+        <div className="overflow-x-auto">
+          <table className="min-w-full bg-white rounded-lg shadow">
+            <thead>
+              <tr>
+                <th className="py-2 px-4 border-b">Image</th>
+                <th className="py-2 px-4 border-b">Name</th>
+                <th className="py-2 px-4 border-b">Category</th>
+                <th className="py-2 px-4 border-b">Price</th>
+                <th className="py-2 px-4 border-b">Stock</th>
+                <th className="py-2 px-4 border-b">Status</th>
+                <th className="py-2 px-4 border-b">Featured</th>
+                <th className="py-2 px-4 border-b">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {products.map(prod => (
+                <tr key={prod.id} className="hover:bg-gray-100">
+                  <td className="p-2 border-b">
+                    {prod.image ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={prod.image} alt={prod.name} className="h-12 w-12 object-cover rounded" />
+                    ) : (
+                      <div className="h-12 w-12 bg-gray-300 flex items-center justify-center rounded text-gray-500">
+                        N/A
+                      </div>
+                    )}
+                  </td>
+                  <td className="p-2 border-b">{prod.name}</td>
+                  <td className="p-2 border-b">
+                    {editingCategoryId === prod.id ? (
+                      <>
+                        <input
+                          type="text"
+                          value={categoryInput}
+                          onChange={(e) => setCategoryInput(e.target.value)}
+                          className="border rounded px-1 py-0.5 w-24"
+                        />
+                        <button
+                          onClick={() => updateCategory(prod.id, categoryInput)}
+                          className="ml-2 bg-primary-green text-white rounded px-2 py-1 text-xs"
+                        >
+                          Save
+                        </button>
+                        <button
+                          onClick={() => setEditingCategoryId(null)}
+                          className="ml-1 bg-gray-300 rounded px-2 py-1 text-xs"
+                        >
+                          Cancel
+                        </button>
+                      </>
+                    ) : (
+                      <span
+                        onClick={() => {
+                          setEditingCategoryId(prod.id);
+                          setCategoryInput(prod.category || '');
+                        }}
+                        className="cursor-pointer hover:underline"
+                        title="Click to edit category"
+                      >
+                        {prod.category || 'N/A'}
+                      </span>
+                    )}
+                  </td>
+                  <td className="p-2 border-b">₱{prod.price.toFixed(2)}</td>
+                  <td className="p-2 border-b">{prod.stock}</td>
+                  <td className="p-2 border-b">
+                    <span className={`rounded px-2 py-1 text-xs font-semibold ${
+                      prod.status === 'approved' ? 'bg-green-100 text-green-800' :
+                      prod.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                      prod.status === 'rejected' ? 'bg-red-100 text-red-800' :
+                      'bg-gray-100 text-gray-800'
+                    }`}>
+                      {prod.status}
+                    </span>
+                  </td>
+                  <td className="p-2 border-b text-center">
+                    <input
+                      type="checkbox"
+                      checked={prod.featured || false}
+                      onChange={() => toggleFeatured(prod.id)}
+                    />
+                  </td>
+                  <td className="p-2 border-b space-x-2">
+                    {prod.status !== 'approved' && (
+                      <>
+                        <button
+                          onClick={() => updateProductStatus(prod.id, 'approve')}
+                          className="bg-primary-green text-white px-2 py-1 rounded text-xs"
+                        >
+                          Approve
+                        </button>
+                        <button
+                          onClick={() => updateProductStatus(prod.id, 'reject')}
+                          className="bg-red-500 text-white px-2 py-1 rounded text-xs"
+                        >
+                          Reject
+                        </button>
+                      </>
+                    )}
+                    <button
+                      onClick={() => removeProduct(prod.id)}
+                      className="bg-gray-400 text-white px-2 py-1 rounded text-xs"
+                    >
+                      Remove
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
-      </div>
+      )}
     </div>
   );
 }

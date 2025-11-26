@@ -1,15 +1,28 @@
-# TODO: Implement Order Cancellation in Admin Dashboard
+# Settings Page Enhancement TODO
 
-## Tasks
-- [x] Create API route: /api/admin/orders/route.ts to fetch all orders for admin
-- [x] Create API route: /api/admin/orders/[id]/cancel/route.ts to allow admins to cancel orders directly
-- [x] Update admin/page.tsx to implement the 'orders' tab content:
-  - Fetch all orders
-  - Display orders with status, user, items
-  - Add buttons for cancelling orders (for pending/processing)
-  - Add buttons for approving/rejecting pending cancellations (adminApprovalRequired=true)
-  - Handle UI interactions and refresh after actions
+## Completed Tasks
+- [x] Enhanced UI with modern design, sections, and icons
+- [x] Added profile picture upload functionality
+- [x] Improved toggle switches with better styling and accessibility
+- [x] Added language selection dropdown
+- [x] Implemented password change section with validation
+- [x] Organized settings into logical sections (Profile, Preferences, Security)
+- [x] Added dark mode support throughout the interface
+- [x] Integrated with NextAuth session for user data
 
-## Followup
-- [ ] Test the new functionality
-- [ ] Ensure proper error handling and notifications
+## Pending Tasks
+- [ ] Implement backend API for saving settings changes
+- [ ] Add profile picture upload to server-side storage
+- [ ] Implement language switching functionality
+- [ ] Add password change API integration
+- [ ] Add form validation and error handling
+- [ ] Implement settings persistence (localStorage/database)
+- [ ] Add loading states and success/error messages
+- [ ] Test all features across different devices and browsers
+
+## Notes
+- The UI has been significantly improved with a modern, card-based layout
+- Added icons from Heroicons for better visual hierarchy
+- Enhanced accessibility with focus states and proper ARIA labels
+- The page now supports dark mode throughout all sections
+- Profile section displays user information from NextAuth session

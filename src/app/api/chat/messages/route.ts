@@ -2,6 +2,16 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '../../../lib/auth'
 import { prisma } from '../../../lib/prisma'
+import Pusher from 'pusher';
+
+// Initialize Pusher
+const pusher = new Pusher({
+  appId: process.env.PUSHER_APP_ID!,
+  key: process.env.PUSHER_KEY!,
+  secret: process.env.PUSHER_SECRET!,
+  cluster: process.env.PUSHER_CLUSTER!,
+  useTLS: true
+})
 
 // GET /api/chat/messages?conversationId=xxx - Get messages for a conversation
 export async function GET(request: NextRequest) {
@@ -135,6 +145,27 @@ export async function POST(request: NextRequest) {
       where: { id: conversationId },
       data: { updatedAt: new Date() }
     })
+
+    // Trigger Pusher event to notify sender and receiver
+    const senderChannel = `user-${session.user.id}`
+    const receiverId = conversation.sellerId === session.user.id ? conversation.buyerId : conversation.sellerId
+    const receiverChannel = `user-${receiverId}`
+
+    const eventPayload = {
+      message: {
+        id: message.id,
+        content: message.content,
+        createdAt: message.createdAt,
+        sender: message.sender
+      },
+      conversationId
+    }
+
+    // Trigger event for sender
+    await pusher.trigger(senderChannel, 'new-message', eventPayload)
+
+    // Trigger event for receiver
+    await pusher.trigger(receiverChannel, 'new-message', eventPayload)
 
     return NextResponse.json(message, { status: 201 })
   } catch (error) {

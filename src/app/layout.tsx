@@ -9,6 +9,8 @@ import { Providers } from "./providers";
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
+  display: "swap",
+  fallback: ["system-ui", "arial", "sans-serif"],
 });
 
 export const metadata: Metadata = {

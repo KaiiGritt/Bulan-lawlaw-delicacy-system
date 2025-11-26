@@ -5,11 +5,13 @@ const nextConfig = {
         protocol: 'https',
         hostname: '3.bp.blogspot.com',
       },
+      {
+        protocol: 'https',
+        hostname: 'share.google',
+      },
     ],
   },
-  // Removed deprecated turbopack config to fix build warning
-  experimental: {
-  },
+  // Removed experimental key to fix turbopack build issue
 };
 
 module.exports = nextConfig;

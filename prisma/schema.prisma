@@ -47,6 +47,7 @@ model Product {
   stock       Int      @default(0)
   userId      String
   status      String   @default("pending") // pending, approved, rejected
+  featured    Boolean  @default(false)  // new field to feature/highlight product
   rating      Float    @default(0)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

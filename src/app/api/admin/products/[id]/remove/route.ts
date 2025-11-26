@@ -2,7 +2,10 @@ import { NextResponse, NextRequest } from 'next/server';
 import { prisma } from '@/app/lib/prisma';
 import { requireAdmin } from '@/app/lib/authAdmin';
 
-export async function PATCH(request: NextRequest, context: { params: Promise<{ id: string }> }) {
+export async function PATCH(
+  request: NextRequest,
+  context: { params: Promise<{ id: string }> }
+) {
   // Check admin authorization
   const authError = await requireAdmin(request);
   if (authError) return authError;
@@ -10,12 +13,13 @@ export async function PATCH(request: NextRequest, context: { params: Promise<{ i
   const { id } = await context.params;
 
   try {
+    // Soft delete by setting status to 'removed'
     const product = await prisma.product.update({
       where: { id },
-      data: { status: 'approved' },
+      data: { status: 'removed' },
     });
     return NextResponse.json(product);
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to approve product' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to remove product' }, { status: 500 });
   }
 }
