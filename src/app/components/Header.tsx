@@ -29,6 +29,11 @@ export default function Header() {
 
   const showMobileSearch = pathname === '/products' || pathname === '/recipes';
 
+  // Debug logging
+  useEffect(() => {
+    console.log('Header Debug:', { status, hasSession: !!session, sessionData: session });
+  }, [status, session]);
+
   // Typed form event handler
   const handleSearch = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -166,13 +171,13 @@ useEffect(() => {
             </div>
 
             {status === 'loading' ? (
-              <div className="w-6 h-6"></div>
-            ) : status === 'authenticated' && session ? (
-              <Link href="/profile" className="p-1 hover:text-primary-green dark:hover:text-green-400 transition-colors">
+              <div className="w-6 h-6 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+            ) : (status === 'authenticated' && session) ? (
+              <Link href="/profile" className="p-1 hover:text-primary-green dark:hover:text-green-400 transition-colors" title="Profile">
                 <User className="w-6 h-6" />
               </Link>
             ) : (
-              <Link href="/login" className="hover:text-primary-green dark:hover:text-green-400 transition-colors">
+              <Link href="/login" className="hover:text-primary-green dark:hover:text-green-400 transition-colors" title="Login">
                 <LogIn className="w-6 h-6" />
               </Link>
             )}
@@ -249,16 +254,17 @@ useEffect(() => {
 
           {status === 'loading' ? (
             <div className="flex flex-col items-center text-xs">
-              <div className="w-6 h-6"></div>
+              <div className="w-6 h-6 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
               <span className="text-[10px] opacity-0">...</span>
             </div>
           ) : (
             <Link
-              href={status === 'authenticated' && session ? '/profile' : '/login'}
+              href={(status === 'authenticated' && session) ? '/profile' : '/login'}
               className="flex flex-col items-center text-xs hover:text-primary-green dark:hover:text-green-400 transition-colors"
+              title={(status === 'authenticated' && session) ? 'Profile' : 'Login'}
             >
-              {status === 'authenticated' && session ? <User className="w-6 h-6" /> : <LogIn className="w-6 h-6" />}
-              <span className="text-[10px]">{status === 'authenticated' && session ? 'Profile' : 'Login'}</span>
+              {(status === 'authenticated' && session) ? <User className="w-6 h-6" /> : <LogIn className="w-6 h-6" />}
+              <span className="text-[10px]">{(status === 'authenticated' && session) ? 'Profile' : 'Login'}</span>
             </Link>
           )}
         </div>
