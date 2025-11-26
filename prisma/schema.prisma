@@ -15,7 +15,7 @@ model User {
   password  String
   role      String   @default("user") // user, admin, seller
   blocked   Boolean  @default(false)
-  profilePicture String?
+  profilePicture String? @db.LongText // Store base64 images
   emailVerified Boolean @default(false)
   emailVerificationToken String?
   emailVerificationTokenExpiry DateTime?

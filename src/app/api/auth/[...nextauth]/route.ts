@@ -6,6 +6,28 @@ import type { User, Session } from "next-auth";
 import { prisma } from "../../../lib/prisma"; // adjust to your DB setup
 import bcrypt from "bcryptjs"; // if passwords are hashed
 
+// Extend the User type to include role
+declare module "next-auth" {
+  interface User {
+    role?: string;
+  }
+  interface Session {
+    user: {
+      id: string;
+      role?: string;
+      email?: string | null;
+      name?: string | null;
+      image?: string | null;
+    };
+  }
+}
+
+declare module "next-auth/jwt" {
+  interface JWT {
+    role?: string;
+  }
+}
+
 export const authOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   providers: [
@@ -109,7 +131,10 @@ export const authOptions = {
       return token;
     },
     async session({ session, token }: { session: any; token: JWT }) {
-      session.user.role = token.role;
+      if (session.user) {
+        session.user.id = token.sub!;
+        session.user.role = token.role;
+      }
       return session;
     },
   },

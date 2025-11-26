@@ -13,7 +13,12 @@
       "Bash(git reset:*)",
       "Bash(git commit:*)",
       "Bash(git push:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(node:*)",
+      "Bash(npx prisma migrate:*)",
+      "Bash(npx prisma db pull:*)",
+      "Bash(git checkout:*)",
+      "Bash(npx prisma db push:*)"
     ],
     "deny": [],
     "ask": []
