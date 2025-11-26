@@ -15,6 +15,15 @@ export async function middleware(request: NextRequest) {
   const isLoggedIn = !!token;
   const userEmail = token?.email as string | undefined;
 
+  // Debug logging for production
+  console.log('[Middleware]', {
+    pathname,
+    isLoggedIn,
+    hasToken: !!token,
+    userEmail,
+    nextAuthUrl: process.env.NEXTAUTH_URL,
+  });
+
   // Define public routes that anyone can access
   const publicRoutes = ['/products', '/recipes', '/contact'];
 
