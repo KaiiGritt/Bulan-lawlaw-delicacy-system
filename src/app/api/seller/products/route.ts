@@ -51,7 +51,7 @@ export async function POST(req: NextRequest) {
         image,
         stock: stock ? parseInt(stock) : 0,
         userId: session.user.id,
-        status: 'approved', // Seller products are auto-approved
+        status: 'pending', // Products require admin approval
       },
     });
 
