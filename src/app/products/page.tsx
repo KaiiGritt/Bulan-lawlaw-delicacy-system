@@ -190,6 +190,11 @@ export default function ProductsPage() {
               style={{ animationDelay: `${index * 0.1}s` }}
             >
               <div className="relative h-64 image-overlay group">
+                <img
+                  src={product.image || '/placeholder.png'}
+                  alt={product.name}
+                  className="w-full h-full object-cover"
+                />
                 <div className="absolute top-4 left-4">
                   <span className="bg-primary-green/90 backdrop-blur-sm text-white px-3 py-1 rounded-full text-sm font-medium">
                     {product.category.charAt(0).toUpperCase() + product.category.slice(1)}

@@ -302,8 +302,12 @@ export default function ProductPage({ params }: ProductPageProps) {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Product Image */}
           <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100">
-            <div className="relative h-96 bg-gray-200 flex items-center justify-center">
-              <span className="text-gray-500 text-lg">Product Image</span>
+            <div className="relative h-96">
+              <img
+                src={product.image || '/placeholder.png'}
+                alt={product.name}
+                className="w-full h-full object-cover"
+              />
             </div>
           </div>
 
@@ -497,8 +501,12 @@ export default function ProductPage({ params }: ProductPageProps) {
                   href={`/products/${suggestedProduct.id}`}
                   className="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100 hover:shadow-lg transition-shadow duration-300"
                 >
-                  <div className="relative h-48 bg-gray-200 flex items-center justify-center">
-                    <span className="text-gray-500">Product Image</span>
+                  <div className="relative h-48">
+                    <img
+                      src={suggestedProduct.image || '/placeholder.png'}
+                      alt={suggestedProduct.name}
+                      className="w-full h-full object-cover"
+                    />
                   </div>
                   <div className="p-4">
                     <h3 className="font-semibold text-primary-green mb-2">{suggestedProduct.name}</h3>
