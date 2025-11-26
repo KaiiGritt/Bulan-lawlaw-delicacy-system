@@ -160,38 +160,24 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Validate file size (5MB max)
-    const maxSize = 5 * 1024 * 1024 // 5MB
+    // Validate file size (2MB max for base64)
+    const maxSize = 2 * 1024 * 1024 // 2MB (reduced for base64)
     if (file.size > maxSize) {
       return NextResponse.json(
-        { error: 'File too large. Maximum size is 5MB.' },
+        { error: 'File too large. Maximum size is 2MB.' },
         { status: 400 }
       )
     }
 
-    // Create uploads directory if it doesn't exist
-    const uploadsDir = join(process.cwd(), 'public', 'uploads', 'profiles')
-    try {
-      await mkdir(uploadsDir, { recursive: true })
-    } catch (error) {
-      // Directory might already exist, continue
-    }
-
-    // Generate unique filename
-    const fileExtension = file.name.split('.').pop()
-    const fileName = `${session.user.id}_${Date.now()}.${fileExtension}`
-    const filePath = join(uploadsDir, fileName)
-
-    // Convert file to buffer and save
+    // Convert file to base64
     const bytes = await file.arrayBuffer()
     const buffer = Buffer.from(bytes)
-    await writeFile(filePath, buffer)
+    const base64Image = `data:${file.type};base64,${buffer.toString('base64')}`
 
-    // Update user profile with image path
-    const imageUrl = `/uploads/profiles/${fileName}`
+    // Update user profile with base64 image
     const updatedUser = await prisma.user.update({
       where: { id: session.user.id },
-      data: { profilePicture: imageUrl },
+      data: { profilePicture: base64Image },
       select: {
         id: true,
         email: true,

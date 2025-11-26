@@ -50,8 +50,8 @@ export default function Settings() {
   const handleProfilePictureChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      if (file.size > 5 * 1024 * 1024) {
-        toast.error('File size should be less than 5MB');
+      if (file.size > 2 * 1024 * 1024) {
+        toast.error('File size should be less than 2MB');
         return;
       }
 

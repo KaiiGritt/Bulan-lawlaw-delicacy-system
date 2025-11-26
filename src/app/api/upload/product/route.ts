@@ -1,6 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { writeFile, mkdir } from 'fs/promises';
-import { join } from 'path';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '../../../lib/auth';
 
@@ -28,37 +26,22 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate file size (5MB max)
-    const maxSize = 5 * 1024 * 1024; // 5MB
+    // Validate file size (2MB max for base64)
+    const maxSize = 2 * 1024 * 1024; // 2MB (reduced for base64)
     if (file.size > maxSize) {
       return NextResponse.json(
-        { error: 'File too large. Maximum size is 5MB.' },
+        { error: 'File too large. Maximum size is 2MB.' },
         { status: 400 }
       );
     }
 
-    // Create uploads directory if it doesn't exist
-    const uploadsDir = join(process.cwd(), 'public', 'uploads', 'products');
-    try {
-      await mkdir(uploadsDir, { recursive: true });
-    } catch (error) {
-      // Directory might already exist, continue
-    }
-
-    // Generate unique filename
-    const fileExtension = file.name.split('.').pop();
-    const fileName = `product_${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExtension}`;
-    const filePath = join(uploadsDir, fileName);
-
-    // Convert file to buffer and save
+    // Convert file to base64
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
-    await writeFile(filePath, buffer);
+    const base64Image = `data:${file.type};base64,${buffer.toString('base64')}`;
 
-    // Return the image URL
-    const imageUrl = `/uploads/products/${fileName}`;
-
-    return NextResponse.json({ imageUrl });
+    // Return the base64 image URL
+    return NextResponse.json({ imageUrl: base64Image });
   } catch (error) {
     console.error('Error uploading product image:', error);
     return NextResponse.json(
