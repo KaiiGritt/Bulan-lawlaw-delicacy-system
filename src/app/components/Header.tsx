@@ -52,14 +52,18 @@ useEffect(() => {
 
   async function fetchData() {
     try {
-      const notifRes = await fetch('/api/notifications');
-      if (notifRes.ok) {
+      const notifRes = await fetch('/api/notifications').catch(() => null);
+      if (notifRes?.ok) {
         const notifData = await notifRes.json();
-        setUnreadNotifications(notifData.unreadCount);
+        setUnreadNotifications(notifData.unreadCount || 0);
       }
+    } catch (err) {
+      console.error('Error fetching notifications:', err);
+    }
 
-      const msgRes = await fetch('/api/chat/conversations');
-      if (msgRes.ok) {
+    try {
+      const msgRes = await fetch('/api/chat/conversations').catch(() => null);
+      if (msgRes?.ok) {
         const conversations: Conversation[] = await msgRes.json();
         const unread = conversations.filter(conv => {
           const lastMessage = conv.messages[conv.messages.length - 1];
@@ -72,7 +76,7 @@ useEffect(() => {
         setUnreadMessages(unread);
       }
     } catch (err) {
-      console.error(err);
+      console.error('Error fetching conversations:', err);
     }
   }
 

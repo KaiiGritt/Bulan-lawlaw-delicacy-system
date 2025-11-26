@@ -66,8 +66,8 @@ export default function LoginPage() {
             }
           }
 
-          // Regular users go to profile after verification
-          router.push('/profile');
+          // Regular users go to home page after verification
+          router.push('/');
         }
       }
     } catch (error) {

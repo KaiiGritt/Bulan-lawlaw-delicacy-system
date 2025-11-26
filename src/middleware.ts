@@ -15,10 +15,19 @@ export async function middleware(request: NextRequest) {
   const isLoggedIn = !!token;
   const userEmail = token?.email as string | undefined;
 
+  // Debug logging
+  console.log('Middleware - Path:', pathname, 'IsLoggedIn:', isLoggedIn);
+
+  // Define public routes that anyone can access
+  const publicRoutes = ['/products', '/recipes', '/contact'];
+
   // Define protected routes that require authentication
   const protectedRoutes = ['/profile', '/cart', '/checkout', '/orders', '/settings', '/addresses'];
   const authRoutes = ['/login', '/register'];
   const otpRoute = '/verify-otp';
+
+  // Check if current path is public
+  const isPublicRoute = publicRoutes.some((route) => pathname.startsWith(route));
 
   // Check if current path is protected
   const isProtectedRoute = protectedRoutes.some((route) => pathname.startsWith(route));

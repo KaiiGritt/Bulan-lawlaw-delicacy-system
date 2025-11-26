@@ -995,29 +995,34 @@ function ProductsManager() {
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
-      <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-lg border border-gray-100">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 sm:p-6 shadow-lg border border-soft-green/30 dark:border-gray-700">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 sm:mb-6">
-          <h3 className="text-xl sm:text-2xl font-semibold text-primary-green dark:text-green-400 flex items-center gap-2">
-            <CubeIcon className="w-6 h-6" />
-            <span>Products Management</span>
-          </h3>
-          <div className="flex gap-2">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-gradient-to-br from-primary-green/20 to-banana-leaf/20 dark:from-primary-green/30 dark:to-banana-leaf/30 rounded-xl">
+              <CubeIcon className="w-6 h-6 text-primary-green dark:text-green-400" />
+            </div>
+            <div>
+              <h3 className="text-xl font-bold text-primary-green dark:text-green-400">Products Management</h3>
+              <p className="text-sm text-gray-500 dark:text-gray-400">{products.length} products total</p>
+            </div>
+          </div>
+          <div className="hidden lg:flex gap-2">
             <button
               onClick={() => setViewMode('cards')}
-              className={`px-4 py-2 rounded-lg font-medium text-sm transition-all ${
+              className={`px-4 py-2 rounded-lg font-medium text-sm transition-all shadow-sm ${
                 viewMode === 'cards'
-                  ? 'bg-gradient-to-r from-primary-green to-banana-leaf text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  ? 'bg-gradient-to-r from-primary-green to-banana-leaf text-white shadow-md'
+                  : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
               }`}
             >
               Cards
             </button>
             <button
               onClick={() => setViewMode('table')}
-              className={`px-4 py-2 rounded-lg font-medium text-sm transition-all ${
+              className={`px-4 py-2 rounded-lg font-medium text-sm transition-all shadow-sm ${
                 viewMode === 'table'
-                  ? 'bg-gradient-to-r from-primary-green to-banana-leaf text-white'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  ? 'bg-gradient-to-r from-primary-green to-banana-leaf text-white shadow-md'
+                  : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
               }`}
             >
               Table
@@ -1035,172 +1040,74 @@ function ProductsManager() {
             <CubeIcon className="w-20 h-20 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
             <p className="text-gray-500 dark:text-gray-400">No products found</p>
           </div>
-        ) : viewMode === 'cards' ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {products.map(prod => (
-              <div key={prod.id} className="bg-gradient-to-br from-gray-50 to-green-50/30 rounded-xl border border-gray-200 overflow-hidden hover:border-primary-green/50 transition-all">
-                <div className="relative h-48 bg-gray-100">
-                  {prod.image ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={prod.image} alt={prod.name} className="w-full h-full object-cover" />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-gray-400 dark:text-gray-600">
-                      <CubeIcon className="w-16 h-16" />
-                    </div>
-                  )}
-                  <div className="absolute top-2 right-2 flex gap-2">
-                    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                      prod.status === 'approved' ? 'bg-green-500 text-white' :
-                      prod.status === 'pending' ? 'bg-yellow-500 text-white' :
-                      'bg-red-500 text-white'
-                    }`}>
-                      {prod.status.toUpperCase()}
-                    </span>
-                    {prod.featured && (
-                      <span className="px-3 py-1 rounded-full text-xs font-semibold bg-purple-500 text-white flex items-center gap-1">
-                        <StarIcon className="w-3 h-3" />
-                        FEATURED
-                      </span>
-                    )}
-                  </div>
-                </div>
-                <div className="p-4 space-y-3">
-                  <h4 className="font-bold text-gray-900 truncate">{prod.name}</h4>
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-600">Price:</span>
-                    <span className="font-semibold text-primary-green">₱{prod.price.toFixed(2)}</span>
-                  </div>
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-600">Stock:</span>
-                    <span className="font-semibold">{prod.stock}</span>
-                  </div>
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-600">Category:</span>
-                    {editingCategoryId === prod.id ? (
-                      <div className="flex gap-1">
-                        <input
-                          type="text"
-                          value={categoryInput}
-                          onChange={(e) => setCategoryInput(e.target.value)}
-                          className="border rounded px-2 py-1 text-xs w-20"
-                        />
-                        <button
-                          onClick={() => updateCategory(prod.id, categoryInput)}
-                          className="bg-primary-green text-white rounded px-2 text-xs flex items-center justify-center"
-                        >
-                          <CheckCircleIcon className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => setEditingCategoryId(null)}
-                          className="bg-gray-300 rounded px-2 text-xs flex items-center justify-center"
-                        >
-                          <XCircleIcon className="w-4 h-4" />
-                        </button>
-                      </div>
-                    ) : (
-                      <span
-                        onClick={() => {
-                          setEditingCategoryId(prod.id);
-                          setCategoryInput(prod.category || '');
-                        }}
-                        className="cursor-pointer hover:underline font-medium text-primary-green"
-                      >
-                        {prod.category || 'N/A'}
-                      </span>
-                    )}
-                  </div>
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-600">Featured:</span>
-                    <label className="relative inline-flex items-center cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={prod.featured || false}
-                        onChange={() => toggleFeatured(prod.id)}
-                        className="sr-only peer"
-                      />
-                      <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-green"></div>
-                    </label>
-                  </div>
-                  <div className="flex gap-2 pt-2 border-t">
-                    {prod.status !== 'approved' && (
-                      <>
-                        <button
-                          onClick={() => updateProductStatus(prod.id, 'approve')}
-                          className="flex-1 bg-primary-green text-white px-3 py-2 rounded-lg text-sm font-medium hover:shadow-lg transition-all flex items-center justify-center gap-1"
-                        >
-                          <CheckCircleIcon className="w-4 h-4" />
-                          Approve
-                        </button>
-                        <button
-                          onClick={() => updateProductStatus(prod.id, 'reject')}
-                          className="flex-1 bg-red-500 text-white px-3 py-2 rounded-lg text-sm font-medium hover:bg-red-600 transition-colors flex items-center justify-center gap-1"
-                        >
-                          <XCircleIcon className="w-4 h-4" />
-                          Reject
-                        </button>
-                      </>
-                    )}
-                  </div>
-                  <button
-                    onClick={() => removeProduct(prod.id)}
-                    className="w-full bg-gray-400 text-white px-3 py-2 rounded-lg text-sm font-medium hover:bg-gray-500 transition-colors flex items-center justify-center gap-2"
-                  >
-                    <TrashIcon className="w-4 h-4" />
-                    <span>Remove</span>
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
         ) : (
-          <div className="overflow-x-auto -mx-4 sm:mx-0">
-            <table className="min-w-full bg-white rounded-lg">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="py-3 px-4 border-b text-left text-xs font-semibold text-gray-600 uppercase">Image</th>
-                  <th className="py-3 px-4 border-b text-left text-xs font-semibold text-gray-600 uppercase">Name</th>
-                  <th className="py-3 px-4 border-b text-left text-xs font-semibold text-gray-600 uppercase">Category</th>
-                  <th className="py-3 px-4 border-b text-left text-xs font-semibold text-gray-600 uppercase">Price</th>
-                  <th className="py-3 px-4 border-b text-left text-xs font-semibold text-gray-600 uppercase">Stock</th>
-                  <th className="py-3 px-4 border-b text-left text-xs font-semibold text-gray-600 uppercase">Status</th>
-                  <th className="py-3 px-4 border-b text-center text-xs font-semibold text-gray-600 uppercase">Featured</th>
-                  <th className="py-3 px-4 border-b text-left text-xs font-semibold text-gray-600 uppercase">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {products.map(prod => (
-                  <tr key={prod.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="p-3 border-b">
-                      {prod.image ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img src={prod.image} alt={prod.name} className="h-12 w-12 object-cover rounded-lg" />
-                      ) : (
-                        <div className="h-12 w-12 bg-gray-200 dark:bg-gray-700 flex items-center justify-center rounded-lg text-gray-400 dark:text-gray-500">
-                          <CubeIcon className="w-6 h-6" />
-                        </div>
+          <>
+            {/* Mobile/Tablet Card View - Always shown on mobile, optional on desktop */}
+            <div className={`${viewMode === 'table' ? 'hidden lg:hidden' : 'block lg:grid'} grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4`}>
+              {products.map((prod, index) => (
+                <motion.div
+                  key={prod.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.05 }}
+                  className="bg-gradient-to-br from-gray-50 to-green-50/30 dark:from-gray-700/50 dark:to-gray-700/50 rounded-xl border border-gray-200 dark:border-gray-600 overflow-hidden hover:border-primary-green/50 dark:hover:border-primary-green/50 hover:shadow-lg transition-all"
+                >
+                  <div className="relative h-48 bg-gray-100 dark:bg-gray-700">
+                    {prod.image ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={prod.image} alt={prod.name} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-gray-400 dark:text-gray-500">
+                        <CubeIcon className="w-16 h-16" />
+                      </div>
+                    )}
+                    <div className="absolute top-2 right-2 flex flex-col gap-2">
+                      <span className={`px-3 py-1.5 rounded-full text-xs font-semibold shadow-md ${
+                        prod.status === 'approved' ? 'bg-gradient-to-r from-green-500 to-green-600 text-white' :
+                        prod.status === 'pending' ? 'bg-gradient-to-r from-yellow-500 to-yellow-600 text-white' :
+                        'bg-gradient-to-r from-red-500 to-red-600 text-white'
+                      }`}>
+                        {prod.status.toUpperCase()}
+                      </span>
+                      {prod.featured && (
+                        <span className="px-3 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r from-purple-500 to-purple-600 text-white flex items-center gap-1 shadow-md">
+                          <StarIcon className="w-3 h-3" />
+                          FEATURED
+                        </span>
                       )}
-                    </td>
-                    <td className="p-3 border-b font-medium text-gray-900">{prod.name}</td>
-                    <td className="p-3 border-b">
+                    </div>
+                  </div>
+                  <div className="p-4 space-y-3">
+                    <h4 className="font-bold text-gray-900 dark:text-gray-100 text-base truncate">{prod.name}</h4>
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-gray-600 dark:text-gray-400">Price:</span>
+                      <span className="font-bold text-primary-green dark:text-green-400 text-base">₱{prod.price.toFixed(2)}</span>
+                    </div>
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-gray-600 dark:text-gray-400">Stock:</span>
+                      <span className="font-semibold text-gray-900 dark:text-gray-100">{prod.stock}</span>
+                    </div>
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-gray-600 dark:text-gray-400">Category:</span>
                       {editingCategoryId === prod.id ? (
                         <div className="flex gap-1">
                           <input
                             type="text"
                             value={categoryInput}
                             onChange={(e) => setCategoryInput(e.target.value)}
-                            className="border rounded px-2 py-1 text-sm w-24"
+                            className="border dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded px-2 py-1 text-xs w-20"
                           />
                           <button
                             onClick={() => updateCategory(prod.id, categoryInput)}
-                            className="bg-primary-green text-white rounded px-2 text-xs"
+                            className="bg-gradient-to-r from-primary-green to-green-600 text-white rounded px-2 text-xs flex items-center justify-center hover:shadow-md transition-shadow"
                           >
-                            Save
+                            <CheckCircleIcon className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => setEditingCategoryId(null)}
-                            className="bg-gray-300 rounded px-2 text-xs"
+                            className="bg-gray-400 dark:bg-gray-600 text-white rounded px-2 text-xs flex items-center justify-center hover:bg-gray-500 dark:hover:bg-gray-500 transition-colors"
                           >
-                            Cancel
+                            <XCircleIcon className="w-4 h-4" />
                           </button>
                         </div>
                       ) : (
@@ -1209,62 +1116,187 @@ function ProductsManager() {
                             setEditingCategoryId(prod.id);
                             setCategoryInput(prod.category || '');
                           }}
-                          className="cursor-pointer hover:underline text-primary-green"
+                          className="cursor-pointer hover:underline font-medium text-primary-green dark:text-green-400"
                         >
                           {prod.category || 'N/A'}
                         </span>
                       )}
-                    </td>
-                    <td className="p-3 border-b font-semibold text-primary-green">₱{prod.price.toFixed(2)}</td>
-                    <td className="p-3 border-b">{prod.stock}</td>
-                    <td className="p-3 border-b">
-                      <span className={`rounded-full px-3 py-1 text-xs font-semibold ${
-                        prod.status === 'approved' ? 'bg-green-100 text-green-800' :
-                        prod.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                        'bg-red-100 text-red-800'
-                      }`}>
-                        {prod.status}
-                      </span>
-                    </td>
-                    <td className="p-3 border-b text-center">
-                      <input
-                        type="checkbox"
-                        checked={prod.featured || false}
-                        onChange={() => toggleFeatured(prod.id)}
-                        className="w-4 h-4 text-primary-green rounded focus:ring-primary-green"
-                      />
-                    </td>
-                    <td className="p-3 border-b">
-                      <div className="flex gap-2">
-                        {prod.status !== 'approved' && (
-                          <>
-                            <button
-                              onClick={() => updateProductStatus(prod.id, 'approve')}
-                              className="bg-primary-green text-white px-3 py-1 rounded-lg text-xs font-medium hover:shadow transition-all"
-                            >
-                              Approve
-                            </button>
-                            <button
-                              onClick={() => updateProductStatus(prod.id, 'reject')}
-                              className="bg-red-500 text-white px-3 py-1 rounded-lg text-xs font-medium hover:bg-red-600 transition-colors"
-                            >
-                              Reject
-                            </button>
-                          </>
-                        )}
+                    </div>
+                    <div className="flex items-center justify-between text-sm pt-2 border-t border-gray-200 dark:border-gray-600">
+                      <span className="text-gray-600 dark:text-gray-400">Featured:</span>
+                      <label className="relative inline-flex items-center cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={prod.featured || false}
+                          onChange={() => toggleFeatured(prod.id)}
+                          className="sr-only peer"
+                        />
+                        <div className="w-11 h-6 bg-gray-200 dark:bg-gray-700 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary-green/50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r peer-checked:from-primary-green peer-checked:to-green-600"></div>
+                      </label>
+                    </div>
+                    {prod.status !== 'approved' && (
+                      <div className="flex gap-2 pt-2">
                         <button
-                          onClick={() => removeProduct(prod.id)}
-                          className="bg-gray-400 text-white px-3 py-1 rounded-lg text-xs font-medium hover:bg-gray-500 transition-colors"
+                          onClick={() => updateProductStatus(prod.id, 'approve')}
+                          className="flex-1 bg-gradient-to-r from-primary-green to-green-600 hover:from-green-600 hover:to-green-700 text-white px-3 py-2.5 rounded-lg text-sm font-medium shadow-sm hover:shadow-md transition-all flex items-center justify-center gap-1.5"
                         >
-                          Remove
+                          <CheckCircleIcon className="w-5 h-5" />
+                          Approve
+                        </button>
+                        <button
+                          onClick={() => updateProductStatus(prod.id, 'reject')}
+                          className="flex-1 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-3 py-2.5 rounded-lg text-sm font-medium shadow-sm hover:shadow-md transition-all flex items-center justify-center gap-1.5"
+                        >
+                          <XCircleIcon className="w-5 h-5" />
+                          Reject
                         </button>
                       </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                    )}
+                    <button
+                      onClick={() => {
+                        if (confirm('Are you sure you want to remove this product?')) {
+                          removeProduct(prod.id);
+                        }
+                      }}
+                      className="w-full bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white px-3 py-2.5 rounded-lg text-sm font-medium shadow-sm hover:shadow-md transition-all flex items-center justify-center gap-2"
+                    >
+                      <TrashIcon className="w-5 h-5" />
+                      <span>Remove Product</span>
+                    </button>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+
+            {/* Desktop Table View - Only shown when table mode is selected on desktop */}
+            {viewMode === 'table' && (
+              <div className="hidden lg:block overflow-x-auto">
+                <table className="min-w-full bg-white dark:bg-gray-800 rounded-lg">
+                  <thead className="bg-gradient-to-r from-gray-50 to-green-50/30 dark:from-gray-700 dark:to-gray-700">
+                    <tr>
+                      <th className="py-3 px-4 border-b border-gray-200 dark:border-gray-700 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase">Image</th>
+                      <th className="py-3 px-4 border-b border-gray-200 dark:border-gray-700 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase">Name</th>
+                      <th className="py-3 px-4 border-b border-gray-200 dark:border-gray-700 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase">Category</th>
+                      <th className="py-3 px-4 border-b border-gray-200 dark:border-gray-700 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase">Price</th>
+                      <th className="py-3 px-4 border-b border-gray-200 dark:border-gray-700 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase">Stock</th>
+                      <th className="py-3 px-4 border-b border-gray-200 dark:border-gray-700 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase">Status</th>
+                      <th className="py-3 px-4 border-b border-gray-200 dark:border-gray-700 text-center text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase">Featured</th>
+                      <th className="py-3 px-4 border-b border-gray-200 dark:border-gray-700 text-left text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {products.map((prod, index) => (
+                      <motion.tr
+                        key={prod.id}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: index * 0.05 }}
+                        className="hover:bg-gradient-to-r hover:from-soft-green/10 hover:to-banana-leaf/10 dark:hover:from-gray-700 dark:hover:to-gray-700 transition-all"
+                      >
+                        <td className="p-3 border-b border-gray-100 dark:border-gray-700">
+                          {prod.image ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img src={prod.image} alt={prod.name} className="h-12 w-12 object-cover rounded-lg" />
+                          ) : (
+                            <div className="h-12 w-12 bg-gray-200 dark:bg-gray-700 flex items-center justify-center rounded-lg text-gray-400 dark:text-gray-500">
+                              <CubeIcon className="w-6 h-6" />
+                            </div>
+                          )}
+                        </td>
+                        <td className="p-3 border-b border-gray-100 dark:border-gray-700 font-medium text-gray-900 dark:text-gray-100">{prod.name}</td>
+                        <td className="p-3 border-b border-gray-100 dark:border-gray-700">
+                          {editingCategoryId === prod.id ? (
+                            <div className="flex gap-1">
+                              <input
+                                type="text"
+                                value={categoryInput}
+                                onChange={(e) => setCategoryInput(e.target.value)}
+                                className="border dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded px-2 py-1 text-sm w-24"
+                              />
+                              <button
+                                onClick={() => updateCategory(prod.id, categoryInput)}
+                                className="bg-gradient-to-r from-primary-green to-green-600 text-white rounded px-2 text-xs hover:shadow-md transition-shadow"
+                              >
+                                Save
+                              </button>
+                              <button
+                                onClick={() => setEditingCategoryId(null)}
+                                className="bg-gray-400 dark:bg-gray-600 text-white rounded px-2 text-xs hover:bg-gray-500 transition-colors"
+                              >
+                                Cancel
+                              </button>
+                            </div>
+                          ) : (
+                            <span
+                              onClick={() => {
+                                setEditingCategoryId(prod.id);
+                                setCategoryInput(prod.category || '');
+                              }}
+                              className="cursor-pointer hover:underline text-primary-green dark:text-green-400"
+                            >
+                              {prod.category || 'N/A'}
+                            </span>
+                          )}
+                        </td>
+                        <td className="p-3 border-b border-gray-100 dark:border-gray-700 font-semibold text-primary-green dark:text-green-400">₱{prod.price.toFixed(2)}</td>
+                        <td className="p-3 border-b border-gray-100 dark:border-gray-700 text-gray-900 dark:text-gray-100">{prod.stock}</td>
+                        <td className="p-3 border-b border-gray-100 dark:border-gray-700">
+                          <span className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                            prod.status === 'approved' ? 'bg-gradient-to-r from-green-100 to-green-200 dark:from-green-900/30 dark:to-green-800/30 text-green-800 dark:text-green-300' :
+                            prod.status === 'pending' ? 'bg-gradient-to-r from-yellow-100 to-yellow-200 dark:from-yellow-900/30 dark:to-yellow-800/30 text-yellow-800 dark:text-yellow-300' :
+                            'bg-gradient-to-r from-red-100 to-red-200 dark:from-red-900/30 dark:to-red-800/30 text-red-800 dark:text-red-300'
+                          }`}>
+                            {prod.status}
+                          </span>
+                        </td>
+                        <td className="p-3 border-b border-gray-100 dark:border-gray-700 text-center">
+                          <input
+                            type="checkbox"
+                            checked={prod.featured || false}
+                            onChange={() => toggleFeatured(prod.id)}
+                            className="w-4 h-4 text-primary-green rounded focus:ring-primary-green cursor-pointer"
+                          />
+                        </td>
+                        <td className="p-3 border-b border-gray-100 dark:border-gray-700">
+                          <div className="flex gap-2">
+                            {prod.status !== 'approved' && (
+                              <>
+                                <button
+                                  onClick={() => updateProductStatus(prod.id, 'approve')}
+                                  className="bg-gradient-to-r from-primary-green to-green-600 hover:from-green-600 hover:to-green-700 text-white px-3 py-1.5 rounded-lg text-xs font-medium shadow-sm hover:shadow-md transition-all flex items-center gap-1"
+                                >
+                                  <CheckCircleIcon className="w-4 h-4" />
+                                  Approve
+                                </button>
+                                <button
+                                  onClick={() => updateProductStatus(prod.id, 'reject')}
+                                  className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-3 py-1.5 rounded-lg text-xs font-medium shadow-sm hover:shadow-md transition-all flex items-center gap-1"
+                                >
+                                  <XCircleIcon className="w-4 h-4" />
+                                  Reject
+                                </button>
+                              </>
+                            )}
+                            <button
+                              onClick={() => {
+                                if (confirm('Are you sure you want to remove this product?')) {
+                                  removeProduct(prod.id);
+                                }
+                              }}
+                              className="bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white px-3 py-1.5 rounded-lg text-xs font-medium shadow-sm hover:shadow-md transition-all flex items-center gap-1"
+                            >
+                              <TrashIcon className="w-4 h-4" />
+                              Remove
+                            </button>
+                          </div>
+                        </td>
+                      </motion.tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </>
         )}
       </div>
     </motion.div>
