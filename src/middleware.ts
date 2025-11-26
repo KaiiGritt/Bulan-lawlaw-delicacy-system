@@ -15,9 +15,6 @@ export async function middleware(request: NextRequest) {
   const isLoggedIn = !!token;
   const userEmail = token?.email as string | undefined;
 
-  // Debug logging
-  console.log('Middleware - Path:', pathname, 'IsLoggedIn:', isLoggedIn);
-
   // Define public routes that anyone can access
   const publicRoutes = ['/products', '/recipes', '/contact'];
 
