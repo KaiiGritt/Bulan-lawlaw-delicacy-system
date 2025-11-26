@@ -101,10 +101,49 @@ export default function OrdersPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-cream-50 to-green-50 dark:from-gray-900 dark:to-gray-800">
-        <div className="text-center space-y-4">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-primary-green"></div>
-          <p className="text-gray-600 dark:text-gray-300">Loading orders...</p>
+      <div className="min-h-screen bg-gradient-to-br from-cream-50 to-green-50 dark:from-gray-900 dark:to-gray-800 py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-6xl mx-auto">
+          {/* Header Skeleton */}
+          <div className="mb-8 animate-pulse">
+            <div className="h-9 bg-gray-200 dark:bg-gray-700 rounded w-48 mb-2"></div>
+            <div className="h-5 bg-gray-200 dark:bg-gray-700 rounded w-64"></div>
+          </div>
+
+          {/* Order Cards Skeleton */}
+          <div className="space-y-6">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden animate-pulse">
+                <div className="p-6 border-b dark:border-gray-700">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div className="flex-1 space-y-3">
+                      <div className="flex items-center gap-3">
+                        <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-32"></div>
+                        <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded-full w-24"></div>
+                      </div>
+                      <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-48"></div>
+                    </div>
+                    <div className="text-right space-y-2">
+                      <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-28 ml-auto"></div>
+                      <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded-lg w-32 ml-auto"></div>
+                    </div>
+                  </div>
+                </div>
+                <div className="p-6">
+                  <div className="space-y-4">
+                    {[1, 2].map((j) => (
+                      <div key={j} className="flex gap-4">
+                        <div className="w-20 h-20 bg-gray-200 dark:bg-gray-700 rounded-lg flex-shrink-0"></div>
+                        <div className="flex-1 space-y-2">
+                          <div className="h-5 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
+                          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     );

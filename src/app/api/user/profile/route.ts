@@ -11,12 +11,17 @@ export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
 
-    if (!session) {
+    console.log('Profile API - Session:', session ? 'exists' : 'null')
+
+    if (!session || !session.user) {
+      console.log('Profile API - No session or user')
       return NextResponse.json(
-        { error: 'Unauthorized' },
+        { error: 'Unauthorized - Please log in' },
         { status: 401 }
       )
     }
+
+    console.log('Profile API - User ID:', session.user.id)
 
     const user = await prisma.user.findUnique({
       where: { id: session.user.id },
@@ -26,22 +31,25 @@ export async function GET(request: NextRequest) {
         name: true,
         role: true,
         profilePicture: true,
-        createdAt: true
+        createdAt: true,
+        emailVerified: true
       }
     })
 
     if (!user) {
+      console.log('Profile API - User not found in database')
       return NextResponse.json(
         { error: 'User not found' },
         { status: 404 }
       )
     }
 
+    console.log('Profile API - User found:', user.email)
     return NextResponse.json(user)
   } catch (error) {
     console.error('Error fetching user profile:', error)
     return NextResponse.json(
-      { error: 'Failed to fetch profile' },
+      { error: 'Failed to fetch profile', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     )
   }

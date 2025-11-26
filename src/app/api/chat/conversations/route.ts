@@ -33,8 +33,12 @@ export async function GET(request: NextRequest) {
           select: { id: true, name: true, image: true }
         },
         messages: {
-          orderBy: { createdAt: 'desc' },
-          take: 1
+          include: {
+            sender: {
+              select: { id: true, name: true, email: true }
+            }
+          },
+          orderBy: { createdAt: 'asc' }
         }
       },
       orderBy: { updatedAt: 'desc' }
@@ -121,8 +125,12 @@ export async function POST(request: NextRequest) {
           select: { id: true, name: true, image: true }
         },
         messages: {
-          orderBy: { createdAt: 'desc' },
-          take: 1
+          include: {
+            sender: {
+              select: { id: true, name: true, email: true }
+            }
+          },
+          orderBy: { createdAt: 'asc' }
         }
       }
     })

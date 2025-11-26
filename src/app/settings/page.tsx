@@ -9,7 +9,6 @@ export default function Settings() {
   const { data: session } = useSession();
   const router = useRouter();
   const [notifications, setNotifications] = useState(true);
-  const [darkMode, setDarkMode] = useState(false);
   const [emailUpdates, setEmailUpdates] = useState(true);
   const [orderUpdates, setOrderUpdates] = useState(true);
   const [promotionalEmails, setPromotionalEmails] = useState(false);
@@ -28,15 +27,6 @@ export default function Settings() {
     showWishlist: false,
   });
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    // Apply dark mode to document
-    if (darkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [darkMode]);
 
   useEffect(() => {
     // Load user profile picture
@@ -93,7 +83,6 @@ export default function Settings() {
     try {
       const settings = {
         notifications,
-        darkMode,
         emailUpdates,
         orderUpdates,
         promotionalEmails,
@@ -219,7 +208,12 @@ export default function Settings() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-cream-50 to-green-50 dark:from-gray-900 dark:to-gray-800 py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-accent-cream to-soft-green/20 dark:from-gray-900 dark:to-gray-800 py-8 px-4 sm:px-6 lg:px-8 relative">
+      {/* Animated background */}
+      <div className="fixed inset-0 -z-10 hidden dark:block overflow-hidden pointer-events-none">
+        <div className="floating-orb absolute top-20 left-20 w-72 h-72 bg-green-500/10 rounded-full blur-3xl" style={{ animationDelay: '2s' }}></div>
+        <div className="pulsing-orb absolute bottom-20 right-20 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl"></div>
+      </div>
       <Toaster position="top-right" />
       
       <div className="max-w-4xl mx-auto">
@@ -236,10 +230,10 @@ export default function Settings() {
           </button>
           
           <div className="text-center">
-            <h2 className="text-3xl font-bold text-gray-800 dark:text-gray-100 mb-2">
+            <h2 className="text-3xl font-bold text-primary-green dark:text-green-400 mb-2">
               Settings
             </h2>
-            <p className="text-gray-500 dark:text-gray-400">
+            <p className="text-gray-600 dark:text-gray-300">
               Manage your account preferences and profile
             </p>
           </div>
@@ -263,7 +257,7 @@ export default function Settings() {
                 />
                 <button
                   onClick={() => fileInputRef.current?.click()}
-                  className="absolute bottom-0 right-0 bg-blue-600 hover:bg-blue-700 text-white rounded-full p-2 shadow-lg transition-colors"
+                  className="absolute bottom-0 right-0 bg-primary-green hover:bg-leaf-green text-white rounded-full p-2 shadow-lg transition-colors"
                   title="Change profile picture"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -286,7 +280,7 @@ export default function Settings() {
                 <p className="text-gray-500 dark:text-gray-400">
                   {session?.user?.email}
                 </p>
-                <button className="mt-2 text-sm text-blue-600 dark:text-blue-400 hover:underline">
+                <button className="mt-2 text-sm text-warm-orange dark:text-warm-orange hover:text-earth-brown dark:hover:text-earth-brown hover:underline transition-colors">
                   Edit Profile Info
                 </button>
               </div>
@@ -339,22 +333,9 @@ export default function Settings() {
               <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
               </svg>
-              Appearance & Localization
+              Localization
             </h3>
             <div className="space-y-6">
-              <ToggleSetting
-                label="Dark Mode"
-                description="Switch between light and dark theme"
-                value={darkMode}
-                onChange={setDarkMode}
-                color="purple"
-                icon={
-                  <svg className="w-5 h-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
-                  </svg>
-                }
-              />
-
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
                   <svg className="w-5 h-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
@@ -368,7 +349,7 @@ export default function Settings() {
                 <select
                   value={language}
                   onChange={(e) => setLanguage(e.target.value)}
-                  className="bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-800 dark:text-gray-100"
+                  className="bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-green text-gray-800 dark:text-gray-100"
                 >
                   <option value="en">English</option>
                   <option value="es">Español</option>
@@ -393,7 +374,7 @@ export default function Settings() {
                 <select
                   value={currency}
                   onChange={(e) => setCurrency(e.target.value)}
-                  className="bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-800 dark:text-gray-100"
+                  className="bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-green text-gray-800 dark:text-gray-100"
                 >
                   <option value="USD">USD ($)</option>
                   <option value="EUR">EUR (€)</option>
@@ -416,7 +397,7 @@ export default function Settings() {
                 <select
                   value={timezone}
                   onChange={(e) => setTimezone(e.target.value)}
-                  className="bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-800 dark:text-gray-100"
+                  className="bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-green text-gray-800 dark:text-gray-100"
                 >
                   <option value="UTC">UTC</option>
                   <option value="America/New_York">Eastern Time</option>
@@ -490,7 +471,7 @@ export default function Settings() {
                   type="password"
                   value={currentPassword}
                   onChange={(e) => setCurrentPassword(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-green bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100"
                   placeholder="Enter current password"
                 />
               </div>
@@ -502,7 +483,7 @@ export default function Settings() {
                   type="password"
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-green bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100"
                   placeholder="Enter new password"
                 />
               </div>
@@ -514,7 +495,7 @@ export default function Settings() {
                   type="password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-green bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100"
                   placeholder="Confirm new password"
                 />
               </div>
@@ -538,7 +519,7 @@ export default function Settings() {
             <div className="space-y-3">
               <button
                 onClick={exportData}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-md transition-colors flex items-center justify-center"
+                className="w-full bg-primary-green hover:bg-leaf-green text-white font-semibold py-3 px-4 rounded-md transition-colors flex items-center justify-center"
               >
                 <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
@@ -568,7 +549,7 @@ export default function Settings() {
             </button>
             <button
               onClick={handleSave}
-              className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-lg shadow-lg transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+              className="bg-gradient-to-r from-primary-green to-banana-leaf hover:from-leaf-green hover:to-soft-green text-white font-semibold py-3 px-6 rounded-lg shadow-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary-green focus:ring-offset-2"
             >
               Save All Changes
             </button>
@@ -624,10 +605,10 @@ function ToggleSetting({
   icon?: React.ReactNode;
 }) {
   const colorMap: Record<string, string> = {
-    indigo: 'bg-indigo-600',
-    green: 'bg-green-600',
-    blue: 'bg-blue-600',
-    purple: 'bg-purple-600',
+    indigo: 'bg-primary-green',
+    green: 'bg-leaf-green',
+    blue: 'bg-banana-leaf',
+    purple: 'bg-soft-green',
     red: 'bg-red-600',
   };
 

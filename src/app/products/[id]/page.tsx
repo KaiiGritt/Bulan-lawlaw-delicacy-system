@@ -195,11 +195,70 @@ export default function ProductPage({ params }: ProductPageProps) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-cream-50 to-green-50 py-12">
+      <div className="min-h-screen bg-gradient-to-br from-cream-50 to-green-50 dark:bg-gray-950 py-12">
         <div className="container mx-auto px-4">
-          <div className="text-center py-16">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-green mx-auto mb-4"></div>
-            <p className="text-gray-600">Loading product...</p>
+          <div className="max-w-6xl mx-auto">
+            {/* Back Button Skeleton */}
+            <div className="mb-6 animate-pulse">
+              <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded-lg w-32"></div>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {/* Image Gallery Skeleton */}
+              <div className="space-y-4 animate-pulse">
+                <div className="aspect-square bg-gray-200 dark:bg-gray-700 rounded-2xl"></div>
+                <div className="grid grid-cols-4 gap-2">
+                  {[1, 2, 3, 4].map((i) => (
+                    <div key={i} className="aspect-square bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Product Info Skeleton */}
+              <div className="space-y-6 animate-pulse">
+                <div className="space-y-4">
+                  <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
+                  <div className="flex items-center gap-4">
+                    <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-32"></div>
+                    <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-24"></div>
+                  </div>
+                  <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded w-40"></div>
+                </div>
+
+                <div className="space-y-3">
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-full"></div>
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-5/6"></div>
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-4/6"></div>
+                </div>
+
+                <div className="space-y-3">
+                  <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-32"></div>
+                  <div className="flex gap-4">
+                    <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded-lg w-32"></div>
+                  </div>
+                </div>
+
+                <div className="flex gap-3">
+                  <div className="flex-1 h-14 bg-gray-200 dark:bg-gray-700 rounded-xl"></div>
+                  <div className="h-14 w-14 bg-gray-200 dark:bg-gray-700 rounded-xl"></div>
+                </div>
+
+                <div className="border-t dark:border-gray-700 pt-6 space-y-4">
+                  <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-40"></div>
+                  <div className="space-y-3">
+                    {[1, 2, 3].map((i) => (
+                      <div key={i} className="flex gap-3">
+                        <div className="w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-full flex-shrink-0"></div>
+                        <div className="flex-1 space-y-2">
+                          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-32"></div>
+                          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-full"></div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

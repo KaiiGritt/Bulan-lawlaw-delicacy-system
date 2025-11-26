@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '../../../lib/prisma'
 import bcrypt from 'bcryptjs'
-import { sendEmailVerification, sendRegistrationConfirmation } from '../../../lib/email'
+import { sendOtpEmail } from '../../../lib/email'
 import crypto from 'crypto'
 
 export async function POST(request: NextRequest) {
@@ -11,6 +11,7 @@ export async function POST(request: NextRequest) {
     const lastName = (body.lastName || '').toString().trim()
     const email = (body.email || '').toString().trim().toLowerCase()
     const password = (body.password || '').toString()
+    const role = (body.role || 'user').toString() // Optional role parameter
 
     // Validate required fields
     if (!firstName || !lastName || !email || !password) {
@@ -32,9 +33,8 @@ export async function POST(request: NextRequest) {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 12)
 
-    // Generate email verification token
-    const emailVerificationToken = crypto.randomBytes(32).toString('hex')
-    const emailVerificationTokenExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000) // 24 hours
+    // Determine if admin (admin accounts don't need email verification - mockup emails)
+    const isAdmin = role === 'admin'
 
     // Create user (store lowercased email)
     const user = await prisma.user.create({
@@ -42,35 +42,49 @@ export async function POST(request: NextRequest) {
         name: `${firstName} ${lastName}`,
         email,
         password: hashedPassword,
-        role: 'user',
-        emailVerificationToken,
-        emailVerificationTokenExpiry
+        role: role,
+        emailVerified: isAdmin // Admins are auto-verified (mockup emails)
       }
     })
 
-    // Send email verification email (best-effort)
-    try {
-      console.log('Attempting to send verification email to:', user.email)
-      if (user.email && user.name) {
-        await sendEmailVerification(user.email, user.name, emailVerificationToken)
-        console.log('Verification email sent successfully')
-      } else {
-        console.log('Missing email or name for verification email')
-      }
+    // Only send OTP for non-admin users
+    if (!isAdmin) {
+      // Generate and send OTP
+      const otpCode = Math.floor(100000 + Math.random() * 900000).toString(); // 6-digit OTP
+      const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
 
-      // Additionally send registration confirmation email
-      if (user.email && user.name) {
-        await sendRegistrationConfirmation(user.email, user.name)
-        console.log('Registration confirmation email sent successfully')
-      }
-    } catch (emailError) {
-      console.error('Failed to send verification email or registration confirmation:', emailError)
+      // Delete any existing OTPs for this email
+      await prisma.otp.deleteMany({
+        where: { email },
+      });
+
+      // Save OTP to database
+      await prisma.otp.create({
+        data: {
+          email,
+          code: otpCode,
+          expiresAt,
+        },
+      });
+
+      // Send OTP email (with automatic fallback if SendGrid fails)
+      console.log('Sending OTP email to:', user.email)
+      await sendOtpEmail(user.email, user.name || 'User', otpCode)
+      console.log('OTP process completed (check console for OTP if email failed)')
+    } else {
+      console.log('Admin user created - skipping OTP verification')
     }
 
     // Return user without password
     const { password: _, ...userWithoutPassword } = user
 
-    return NextResponse.json({ message: 'User created successfully. Please check your email to verify your account.', user: userWithoutPassword }, { status: 201 })
+    return NextResponse.json({
+      message: isAdmin
+        ? 'Admin account created successfully. You can login directly.'
+        : 'User created successfully. Please check your email for the verification code.',
+      user: userWithoutPassword,
+      redirectTo: isAdmin ? '/login' : `/verify-otp?email=${encodeURIComponent(email)}`
+    }, { status: 201 })
   } catch (error) {
     console.error('Registration error:', error)
     return NextResponse.json(

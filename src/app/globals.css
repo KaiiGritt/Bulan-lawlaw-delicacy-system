@@ -1,77 +1,218 @@
 @import "tailwindcss";
 
 :root {
+  /* Core Background & Foreground */
   --background: #ffffff;
   --foreground: #171717;
+
+  /* Primary Brand Colors - Greens */
   --primary-green: #2d5a3d;
-  --secondary-brown: #8b4513;
-  --accent-cream: #f5f5dc;
-  --warm-orange: #d2691e;
-  --soft-green: #90a955;
   --leaf-green: #4a7c59;
+  --soft-green: #90a955;
   --banana-leaf: #8fbc8f;
+
+  /* Secondary Colors - Browns & Earth Tones */
+  --secondary-brown: #8b4513;
   --earth-brown: #a0522d;
+  --warm-orange: #d2691e;
+
+  /* Neutral & Accent */
+  --accent-cream: #f5f5dc;
+  --cream-50: #fefdf9;
+  --green-50: #f0fdf4;
+
+  /* Status Colors - Light Mode */
+  --success-green: #22c55e;
+  --success-green-light: #86efac;
+  --warning-yellow: #eab308;
+  --warning-orange: #f97316;
+  --error-red: #ef4444;
+  --info-blue: #3b82f6;
+  --info-purple: #a855f7;
+
+  /* Gradient Stops for Consistent Gradients */
+  --gradient-green-start: #2d5a3d;
+  --gradient-green-mid: #4a7c59;
+  --gradient-green-end: #8fbc8f;
+
+  --gradient-blue-start: #3b82f6;
+  --gradient-blue-mid: #2563eb;
+  --gradient-blue-end: #1d4ed8;
+
+  --gradient-purple-start: #a855f7;
+  --gradient-purple-mid: #9333ea;
+  --gradient-purple-end: #7e22ce;
+
+  --gradient-orange-start: #f97316;
+  --gradient-orange-mid: #ea580c;
+  --gradient-orange-end: #c2410c;
 }
 
 @theme inline {
+  /* Core Colors */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --color-primary-green: var(--primary-green);
-  --color-secondary-brown: var(--secondary-brown);
-  --color-accent-cream: var(--accent-cream);
-  --color-warm-orange: var(--warm-orange);
-  --color-soft-green: var(--soft-green);
-  --color-leaf-green: var(--leaf-green);
-  --color-banana-leaf: var(--banana-leaf);
-  --color-earth-brown: var(--earth-brown);
-}
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  /* Brand Greens */
   --color-primary-green: var(--primary-green);
-  --color-secondary-brown: var(--secondary-brown);
-  --color-accent-cream: var(--accent-cream);
-  --color-warm-orange: var(--warm-orange);
-  --color-soft-green: var(--soft-green);
   --color-leaf-green: var(--leaf-green);
-  --color-banana-leaf: var(--banana-leaf);
-  --color-earth-brown: var(--earth-brown);
-
-  --color-mariner-50: var(--mariner-50);
-  --color-mariner-100: var(--mariner-100);
-  --color-mariner-200: var(--mariner-200);
-  --color-mariner-300: var(--mariner-300);
-  --color-mariner-400: var(--mariner-400);
-  --color-mariner-500: var(--mariner-500);
-  --color-mariner-600: var(--mariner-600);
-  --color-mariner-700: var(--mariner-700);
-  --color-mariner-800: var(--mariner-800);
-  --color-mariner-900: var(--mariner-900);
-  --color-mariner-950: var(--mariner-950);
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-primary-green: var(--primary-green);
-  --color-secondary-brown: var(--secondary-brown);
-  --color-accent-cream: var(--accent-cream);
-  --color-warm-orange: var(--warm-orange);
   --color-soft-green: var(--soft-green);
-  --color-leaf-green: var(--leaf-green);
   --color-banana-leaf: var(--banana-leaf);
+
+  /* Brand Browns & Earth */
+  --color-secondary-brown: var(--secondary-brown);
   --color-earth-brown: var(--earth-brown);
-  --color-cream-50: #fefdf9;
-  --color-green-50: #f0fdf4;
+  --color-warm-orange: var(--warm-orange);
+
+  /* Neutrals */
+  --color-accent-cream: var(--accent-cream);
+  --color-cream-50: var(--cream-50);
+  --color-green-50: var(--green-50);
+
+  /* Status Colors */
+  --color-success-green: var(--success-green);
+  --color-success-green-light: var(--success-green-light);
+  --color-warning-yellow: var(--warning-yellow);
+  --color-warning-orange: var(--warning-orange);
+  --color-error-red: var(--error-red);
+  --color-info-blue: var(--info-blue);
+  --color-info-purple: var(--info-purple);
+
+  /* Gradients */
+  --color-gradient-green-start: var(--gradient-green-start);
+  --color-gradient-green-mid: var(--gradient-green-mid);
+  --color-gradient-green-end: var(--gradient-green-end);
+  --color-gradient-blue-start: var(--gradient-blue-start);
+  --color-gradient-blue-mid: var(--gradient-blue-mid);
+  --color-gradient-blue-end: var(--gradient-blue-end);
+  --color-gradient-purple-start: var(--gradient-purple-start);
+  --color-gradient-purple-mid: var(--gradient-purple-mid);
+  --color-gradient-purple-end: var(--gradient-purple-end);
+  --color-gradient-orange-start: var(--gradient-orange-start);
+  --color-gradient-orange-mid: var(--gradient-orange-mid);
+  --color-gradient-orange-end: var(--gradient-orange-end);
+
+  /* Fonts */
   --font-sans: var(--font-inter);
   --font-mono: var(--font-geist-mono);
 }
 
+/* Dark mode variables */
+.dark {
+  /* Core Background & Foreground */
+  --background: #0a0a0a;
+  --foreground: #e8eaed;
+
+  /* Primary Brand Colors - Greens (Brighter for dark mode) */
+  --primary-green: #4ade80;
+  --leaf-green: #22c55e;
+  --soft-green: #86efac;
+  --banana-leaf: #4ade80;
+
+  /* Secondary Colors - Browns & Earth Tones (Adjusted for dark) */
+  --secondary-brown: #d2691e;
+  --earth-brown: #d97706;
+  --warm-orange: #fb923c;
+
+  /* Neutral & Accent */
+  --accent-cream: #1a1a1a;
+  --cream-50: #1a1a1a;
+  --green-50: #0f1f14;
+
+  /* Status Colors - Dark Mode */
+  --success-green: #22c55e;
+  --success-green-light: #4ade80;
+  --warning-yellow: #fbbf24;
+  --warning-orange: #fb923c;
+  --error-red: #f87171;
+  --info-blue: #60a5fa;
+  --info-purple: #c084fc;
+
+  /* Gradient Stops for Dark Mode */
+  --gradient-green-start: #22c55e;
+  --gradient-green-mid: #4ade80;
+  --gradient-green-end: #86efac;
+
+  --gradient-blue-start: #3b82f6;
+  --gradient-blue-mid: #60a5fa;
+  --gradient-blue-end: #93c5fd;
+
+  --gradient-purple-start: #a855f7;
+  --gradient-purple-mid: #c084fc;
+  --gradient-purple-end: #e9d5ff;
+
+  --gradient-orange-start: #f97316;
+  --gradient-orange-mid: #fb923c;
+  --gradient-orange-end: #fdba74;
+}
+
+/* Animated gradient background for dark mode */
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px) translateX(0px);
+  }
+  33% {
+    transform: translateY(-20px) translateX(10px);
+  }
+  66% {
+    transform: translateY(10px) translateX(-10px);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.1);
+  }
+}
+
+@keyframes twinkle {
+  0%, 100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.dark .animated-bg {
+  background: linear-gradient(-45deg, #0a0a0a, #1a1a2e, #16213e, #0f3460);
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
+}
+
+.dark .floating-orb {
+  animation: float 20s ease-in-out infinite;
+}
+
+.dark .pulsing-orb {
+  animation: pulse 4s ease-in-out infinite;
+}
+
+.dark .twinkling-star {
+  animation: twinkle 3s ease-in-out infinite;
+}
+
 @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  :root:not(.light) {
+    --background: #0f1419;
+    --foreground: #e8eaed;
   }
 }
 
@@ -137,6 +278,27 @@ body {
   }
 }
 
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  10%, 30%, 50%, 70%, 90% {
+    transform: translateX(-5px);
+  }
+  20%, 40%, 60%, 80% {
+    transform: translateX(5px);
+  }
+}
+
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 /* Utility classes */
 .fade-in-up {
   animation: fadeInUp 0.6s ease-out forwards;
@@ -156,6 +318,14 @@ body {
 
 .crossfade {
   animation: crossfade 0.3s ease-in-out;
+}
+
+.animate-shake {
+  animation: shake 0.5s ease-in-out;
+}
+
+.animate-spin-slow {
+  animation: spin-slow 3s linear infinite;
 }
 
 /* Glassmorphism effect */

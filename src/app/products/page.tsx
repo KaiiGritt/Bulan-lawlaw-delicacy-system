@@ -103,13 +103,19 @@ export default function ProductsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-cream-50 to-green-50 py-12">
-      <div className="container mx-auto px-4">
+    <div className="min-h-screen bg-gradient-to-br from-cream-50 to-green-50 dark:bg-gray-950 py-12 relative">
+      {/* Animated background for dark mode */}
+      <div className="absolute inset-0 hidden dark:block overflow-hidden pointer-events-none">
+        <div className="floating-orb absolute top-20 left-10 w-80 h-80 bg-green-500/10 rounded-full blur-3xl"></div>
+        <div className="pulsing-orb absolute bottom-20 right-20 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl" style={{ animationDelay: '3s' }}></div>
+        <div className="floating-orb absolute top-1/2 left-1/3 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl" style={{ animationDelay: '6s' }}></div>
+      </div>
+      <div className="container mx-auto px-4 relative z-10">
         {/* Page Header */}
         <div className="text-center mb-16 fade-in-up">
           <div>
-            <h1 className="text-5xl font-bold text-primary-green mb-4">Our Lawlaw Delicacies</h1>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            <h1 className="text-5xl font-bold text-primary-green dark:text-green-400 mb-4">Our Lawlaw Delicacies</h1>
+            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
               Discover the finest selection of fresh and processed Lawlaw products from trusted fishermen in Bulan
             </p>
           </div>
@@ -117,7 +123,7 @@ export default function ProductsPage() {
 
         {/* Category Filter */}
         <div className="flex justify-center mb-12">
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-2 shadow-lg border border-white/20">
+          <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-2 shadow-lg border border-white/20 dark:border-gray-700/20">
             <div className="flex flex-wrap gap-2">
               {categories.map((category) => (
                 <button
@@ -125,8 +131,8 @@ export default function ProductsPage() {
                   onClick={() => setSelectedCategory(category)}
                   className={`px-6 py-3 rounded-xl font-medium transition-all duration-300 ${
                     selectedCategory === category
-                      ? 'bg-primary-green text-white shadow-md'
-                      : 'text-gray-700 hover:bg-white/60 hover:text-primary-green'
+                      ? 'bg-primary-green dark:bg-green-600 text-white shadow-md'
+                      : 'text-gray-700 dark:text-gray-300 hover:bg-white/60 dark:hover:bg-gray-700/60 hover:text-primary-green dark:hover:text-green-400'
                   }`}
                 >
                   {category}
@@ -136,11 +142,35 @@ export default function ProductsPage() {
           </div>
         </div>
 
-        {/* Loading State */}
+        {/* Loading State - Skeleton Cards */}
         {loading && (
-          <div className="text-center py-16">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-green mx-auto mb-4"></div>
-            <p className="text-gray-600">Loading products...</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+              <div
+                key={i}
+                className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden border border-gray-100 dark:border-gray-700 animate-pulse"
+              >
+                <div className="relative h-64 bg-gray-200 dark:bg-gray-700"></div>
+                <div className="p-6 space-y-3">
+                  <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-full"></div>
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-5/6"></div>
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
+                  <div className="flex items-center gap-2 mt-3">
+                    <div className="h-4 w-20 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                    <div className="h-4 w-16 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                  </div>
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="h-8 w-24 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                    <div className="h-4 w-20 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                  </div>
+                  <div className="flex gap-3">
+                    <div className="flex-1 h-12 bg-gray-200 dark:bg-gray-700 rounded-xl"></div>
+                    <div className="h-12 w-12 bg-gray-200 dark:bg-gray-700 rounded-xl"></div>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         )}
 
@@ -149,7 +179,7 @@ export default function ProductsPage() {
           {filteredProducts.map((product, index) => (
             <div
               key={product.id}
-              className="card-hover bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100 fade-in-up"
+              className="card-hover bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden border border-gray-100 dark:border-gray-700 fade-in-up"
               style={{ animationDelay: `${index * 0.1}s` }}
             >
               <div className="relative h-64 image-overlay group">
@@ -173,12 +203,12 @@ export default function ProductsPage() {
               </div>
 
               <div className="p-6">
-                <h3 className="text-xl font-semibold text-primary-green mb-2">{product.name}</h3>
-                <p className="text-gray-600 mb-3 line-clamp-2">{product.description}</p>
+                <h3 className="text-xl font-semibold text-primary-green dark:text-green-400 mb-2">{product.name}</h3>
+                <p className="text-gray-600 dark:text-gray-300 mb-3 line-clamp-2">{product.description}</p>
 
                 {/* Business Name */}
                 {product.user.sellerApplication?.businessName && (
-                  <p className="text-sm text-gray-500 mb-2">
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
                     By {product.user.sellerApplication.businessName}
                   </p>
                 )}
@@ -200,17 +230,17 @@ export default function ProductsPage() {
                       </svg>
                     ))}
                   </div>
-                  <span className="ml-2 text-sm text-gray-600">
+                  <span className="ml-2 text-sm text-gray-600 dark:text-gray-300">
                     ({product.rating?.toFixed(1) || '0.0'})
                   </span>
-                  <span className="ml-2 text-sm text-gray-500">
+                  <span className="ml-2 text-sm text-gray-500 dark:text-gray-400">
                     ({product.comments?.length || 0} reviews)
                   </span>
                 </div>
 
                 <div className="flex items-center justify-between mb-4">
-                  <span className="text-2xl font-bold text-primary-green">₱{product.price}</span>
-                  <span className="text-sm text-gray-500">Stock: {product.stock}</span>
+                  <span className="text-2xl font-bold text-primary-green dark:text-green-400">₱{product.price}</span>
+                  <span className="text-sm text-gray-500 dark:text-gray-400">Stock: {product.stock}</span>
                 </div>
 
                 <div className="flex gap-3">
@@ -243,11 +273,11 @@ export default function ProductsPage() {
         {filteredProducts.length === 0 && (
           <div className="text-center py-16">
             <div className="text-6xl mb-4">🐟</div>
-            <h3 className="text-2xl font-semibold text-gray-700 mb-2">No products found</h3>
-            <p className="text-gray-500 mb-6">Try selecting a different category</p>
+            <h3 className="text-2xl font-semibold text-gray-700 dark:text-gray-300 mb-2">No products found</h3>
+            <p className="text-gray-500 dark:text-gray-400 mb-6">Try selecting a different category</p>
             <button
               onClick={() => setSelectedCategory('All')}
-              className="btn-hover bg-primary-green text-white px-6 py-3 rounded-xl font-medium hover:bg-leaf-green transition-colors duration-300"
+              className="btn-hover bg-primary-green dark:bg-green-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-leaf-green dark:hover:bg-green-500 transition-colors duration-300"
             >
               View All Products
             </button>
@@ -256,14 +286,14 @@ export default function ProductsPage() {
 
         {/* Call to Action */}
         <div className="text-center mt-16">
-          <div className="bg-primary-green rounded-2xl p-8 text-white">
+          <div className="bg-primary-green dark:bg-green-600 rounded-2xl p-8 text-white">
             <h2 className="text-3xl font-bold mb-4">Can't find what you're looking for?</h2>
             <p className="text-lg mb-6 opacity-90">
               Contact our fishermen directly or check back later for fresh arrivals
             </p>
             <Link
               href="/contact"
-              className="btn-hover inline-block bg-white text-primary-green px-8 py-4 rounded-xl font-semibold text-lg hover:bg-accent-cream transition-colors duration-300"
+              className="btn-hover inline-block bg-white text-primary-green dark:text-green-600 px-8 py-4 rounded-xl font-semibold text-lg hover:bg-accent-cream dark:hover:bg-gray-100 transition-colors duration-300"
             >
               Get in Touch
             </Link>

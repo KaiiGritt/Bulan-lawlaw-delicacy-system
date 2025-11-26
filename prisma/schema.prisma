@@ -20,6 +20,7 @@ model User {
   emailVerificationTokenExpiry DateTime?
   resetToken String?
   resetTokenExpiry DateTime?
+  marketingEmails Boolean @default(true) // Opt-in for marketing emails
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -27,6 +28,7 @@ model User {
   cartItems CartItem[]
   orders    Order[]
   products  Product[]
+  addresses Address[]
   sellerApplication SellerApplication?
   sentMessages Message[]
   sellerConversations Conversation[] @relation("SellerConversations")
@@ -208,12 +210,70 @@ model Comment {
   @@map("comments")
 }
 
+model Announcement {
+  id          String   @id @default(cuid())
+  title       String
+  message     String   @db.Text
+  type        String   // info, warning, success, promotion
+  targetAudience String @default("all") // all, users, sellers, specific
+  isActive    Boolean  @default(true)
+  priority    Int      @default(0) // 0=normal, 1=high, 2=urgent
+  expiresAt   DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("announcements")
+}
+
+model Campaign {
+  id          String   @id @default(cuid())
+  name        String
+  subject     String
+  message     String   @db.Text
+  type        String   // email, push, sms
+  targetAudience String // all, users, sellers, inactive
+  status      String   @default("draft") // draft, scheduled, sent, failed
+  scheduledAt DateTime?
+  sentAt      DateTime?
+  recipientCount Int   @default(0)
+  openCount   Int      @default(0)
+  clickCount  Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("campaigns")
+}
+
 model Otp {
   id        String   @id @default(cuid())
   email     String
   code      String
+  verified  Boolean  @default(false)
+  attempts  Int      @default(0)
   expiresAt DateTime
   createdAt DateTime @default(now())
 
+  @@index([email])
   @@map("otps")
+}
+
+model Address {
+  id          String   @id @default(cuid())
+  userId      String
+  fullName    String
+  phoneNumber String
+  region      String
+  province    String
+  city        String
+  barangay    String
+  streetAddress String
+  postalCode  String
+  landmark    String?
+  isDefault   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("addresses")
 }
