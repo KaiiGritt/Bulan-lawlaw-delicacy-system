@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '../../../lib/prisma'
 import bcrypt from 'bcryptjs'
-import { sendEmailVerification } from '../../../lib/email'
+import { sendEmailVerification, sendRegistrationConfirmation } from '../../../lib/email'
 import crypto from 'crypto'
 
 export async function POST(request: NextRequest) {
@@ -57,8 +57,14 @@ export async function POST(request: NextRequest) {
       } else {
         console.log('Missing email or name for verification email')
       }
+
+      // Additionally send registration confirmation email
+      if (user.email && user.name) {
+        await sendRegistrationConfirmation(user.email, user.name)
+        console.log('Registration confirmation email sent successfully')
+      }
     } catch (emailError) {
-      console.error('Failed to send verification email:', emailError)
+      console.error('Failed to send verification email or registration confirmation:', emailError)
     }
 
     // Return user without password

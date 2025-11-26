@@ -5,8 +5,8 @@ const transporter = nodemailer.createTransport({
   port: 587,
   secure: false, // true for 465, false for other ports
   auth: {
-    user: process.env.GMAIL_USER,
-    pass: process.env.GMAIL_APP_PASSWORD
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS
   },
   tls: {
     rejectUnauthorized: false
@@ -39,19 +39,20 @@ export interface OrderItem {
 export async function sendEmail(options: EmailOptions): Promise<void> {
   try {
     const mailOptions = {
-      from: `"Lawlaw Delights" <${process.env.GMAIL_USER}>`,
+      from: `"Lawlaw Delights" <${process.env.EMAIL_USER}>`,
       to: options.to,
       subject: options.subject,
       html: options.html,
       text: options.text
     }
 
+    console.log('Attempting to send email to:', options.to)
     await transporter.sendMail(mailOptions)
     console.log(`Email sent successfully to ${options.to}`)
   } catch (error) {
     console.error('Error sending email:', error)
-    console.error('GMAIL_USER:', process.env.GMAIL_USER ? 'Set' : 'Not set')
-    console.error('GMAIL_APP_PASSWORD:', process.env.GMAIL_APP_PASSWORD ? 'Set' : 'Not set')
+    console.error('EMAIL_USER:', process.env.EMAIL_USER ? 'Set' : 'Not set')
+    console.error('EMAIL_PASS:', process.env.EMAIL_PASS ? 'Set' : 'Not set')
     throw new Error('Failed to send email')
   }
 }
