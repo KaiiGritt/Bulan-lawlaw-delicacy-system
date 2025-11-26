@@ -42,9 +42,9 @@ export async function GET(req: NextRequest) {
     });
 
     // Calculate seller-specific totals for each order
-    const ordersWithSellerTotals = orders.map(order => {
+const ordersWithSellerTotals = orders.map((order: any) => {
       const sellerItems = order.orderItems;
-      const sellerTotal = sellerItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+      const sellerTotal = sellerItems.reduce((sum: number, item: { price: number; quantity: number }) => sum + (item.price * item.quantity), 0);
 
       return {
         ...order,

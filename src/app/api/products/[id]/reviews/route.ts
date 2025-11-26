@@ -64,9 +64,9 @@ export async function POST(
       select: { rating: true },
     });
 
-    const averageRating = allComments.length > 0
-      ? allComments.reduce((sum, comment) => sum + comment.rating, 0) / allComments.length
-      : 0;
+const averageRating = allComments.length > 0
+  ? allComments.reduce((sum: number, comment: { rating: number }) => sum + comment.rating, 0) / allComments.length
+  : 0;
 
     await prisma.product.update({
       where: { id },
