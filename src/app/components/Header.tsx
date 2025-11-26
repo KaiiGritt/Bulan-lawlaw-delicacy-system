@@ -55,7 +55,8 @@ useEffect(() => {
           const lastMessage = conv.messages[conv.messages.length - 1];
           return (
             lastMessage?.sender?.id !== undefined &&
-            session?.user && lastMessage?.sender?.id !== session.user.id
+            session?.user !== null &&
+            lastMessage?.sender?.id !== session.user.id
           );
         }).length;
         setUnreadMessages(unread);

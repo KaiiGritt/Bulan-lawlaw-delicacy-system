@@ -24,6 +24,7 @@
     "lucide-react": "^0.554.0",
     "next": "16.0.3",
     "next-auth": "^4.24.7",
+    "nodemailer": "^7.0.10",
     "pusher": "^5.2.0",
     "pusher-js": "^8.4.0",
     "react": "19.2.0",
