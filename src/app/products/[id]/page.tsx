@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import AddToCartModal from '../../components/AddToCartModal';
 
 interface Product {
   id: string;
@@ -67,6 +68,7 @@ export default function ProductPage({ params }: ProductPageProps) {
   const [userRating, setUserRating] = useState(0);
   const [userComment, setUserComment] = useState('');
   const [submittingReview, setSubmittingReview] = useState(false);
+  const [showCartModal, setShowCartModal] = useState(false);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -123,7 +125,7 @@ export default function ProductPage({ params }: ProductPageProps) {
       });
 
       if (response.ok) {
-        alert('Product added to cart successfully!');
+        setShowCartModal(true);
       } else if (response.status === 401) {
         alert('Please login to add items to cart');
       } else {
@@ -535,6 +537,17 @@ export default function ProductPage({ params }: ProductPageProps) {
           </div>
         )}
       </div>
+
+      {/* Add to Cart Success Modal */}
+      {product && (
+        <AddToCartModal
+          isOpen={showCartModal}
+          onClose={() => setShowCartModal(false)}
+          productName={product.name}
+          productImage={product.image}
+          quantity={quantity}
+        />
+      )}
     </div>
   );
 }

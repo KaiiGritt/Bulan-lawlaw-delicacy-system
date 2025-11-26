@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
+import AddToCartModal from '../components/AddToCartModal';
 
 interface Product {
   id: string;
@@ -37,6 +38,8 @@ export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [addingToCart, setAddingToCart] = useState<string | null>(null);
+  const [showCartModal, setShowCartModal] = useState(false);
+  const [addedProduct, setAddedProduct] = useState<Product | null>(null);
 
   useEffect(() => {
     fetchProducts();
@@ -71,7 +74,11 @@ export default function ProductsPage() {
       });
 
       if (response.ok) {
-        alert('Product added to cart successfully!');
+        const product = products.find(p => p.id === productId);
+        if (product) {
+          setAddedProduct(product);
+          setShowCartModal(true);
+        }
       } else if (response.status === 401) {
         alert('Please login to add items to cart');
       } else {
@@ -300,6 +307,17 @@ export default function ProductsPage() {
           </div>
         </div>
       </div>
+
+      {/* Add to Cart Success Modal */}
+      {addedProduct && (
+        <AddToCartModal
+          isOpen={showCartModal}
+          onClose={() => setShowCartModal(false)}
+          productName={addedProduct.name}
+          productImage={addedProduct.image}
+          quantity={1}
+        />
+      )}
     </div>
   );
 }
