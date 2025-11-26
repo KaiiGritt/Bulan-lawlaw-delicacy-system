@@ -40,6 +40,16 @@ export default function Header() {
 useEffect(() => {
   if (!session?.user) return;
 
+  type Message = {
+    sender?: {
+      id?: string;
+    }
+  };
+  
+  type Conversation = {
+    messages: Message[];
+  };
+
   async function fetchData() {
     try {
       const notifRes = await fetch('/api/notifications');
@@ -50,12 +60,12 @@ useEffect(() => {
 
       const msgRes = await fetch('/api/chat/conversations');
       if (msgRes.ok) {
-        const conversations = await msgRes.json();
-        const unread = conversations.filter((conv: any) => {
+        const conversations: Conversation[] = await msgRes.json();
+        const unread = conversations.filter(conv => {
           const lastMessage = conv.messages[conv.messages.length - 1];
           return (
             lastMessage?.sender?.id !== undefined &&
-            session?.user !== null &&
+            session?.user != null &&
             lastMessage?.sender?.id !== session.user.id
           );
         }).length;
