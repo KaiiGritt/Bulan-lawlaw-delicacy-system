@@ -10,6 +10,7 @@ datasource db {
 model User {
   id        String   @id @default(cuid())
   email     String   @unique
+  phoneNumber String? @unique // For WhatsApp login
   name      String?
   password  String
   role      String   @default("user") // user, admin, seller
@@ -325,4 +326,16 @@ model SavedRecipe {
 
   @@unique([userId, recipeId])
   @@map("saved_recipes")
+}
+
+model WhatsAppOTP {
+  id          String   @id @default(cuid())
+  phoneNumber String   @unique
+  otp         String
+  verified    Boolean  @default(false)
+  expiresAt   DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("whatsapp_otp")
 }
