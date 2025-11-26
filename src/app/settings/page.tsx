@@ -38,19 +38,54 @@ export default function Settings() {
     }
   }, [darkMode]);
 
-  const handleProfilePictureChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  useEffect(() => {
+    // Load user profile picture
+    const loadUserProfile = async () => {
+      try {
+        const response = await fetch('/api/user/profile');
+        if (response.ok) {
+          const data = await response.json();
+          setProfilePicture(data.profilePicture || '');
+        }
+      } catch (error) {
+        console.error('Error loading profile:', error);
+      }
+    };
+
+    if (session) {
+      loadUserProfile();
+    }
+  }, [session]);
+
+  const handleProfilePictureChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       if (file.size > 5 * 1024 * 1024) {
         toast.error('File size should be less than 5MB');
         return;
       }
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setProfilePicture(e.target?.result as string);
-        toast.success('Profile picture updated');
-      };
-      reader.readAsDataURL(file);
+
+      try {
+        const formData = new FormData();
+        formData.append('profilePicture', file);
+
+        const response = await fetch('/api/user/profile', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.error || 'Failed to upload');
+        }
+
+        const data = await response.json();
+        setProfilePicture(data.profilePicture || '');
+        toast.success('Profile picture updated successfully!');
+      } catch (error: any) {
+        console.error('Error uploading profile picture:', error);
+        toast.error(error.message || 'Failed to upload profile picture');
+      }
     }
   };
 
@@ -65,16 +100,24 @@ export default function Settings() {
         language,
         currency,
         timezone,
-        profilePicture,
         privacySettings,
       };
-      
-      // Simulated API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      console.log('Saving settings...', settings);
+
+      const response = await fetch('/api/user/settings', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(settings),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to save');
+      }
+
       toast.success('Settings saved successfully!');
-    } catch (error) {
-      toast.error('Failed to save settings');
+    } catch (error: any) {
+      console.error('Error saving settings:', error);
+      toast.error(error.message || 'Failed to save settings');
     }
   };
 
@@ -91,39 +134,87 @@ export default function Settings() {
       toast.error('Password must be at least 8 characters');
       return;
     }
-    
+
     try {
-      // Simulated API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      console.log('Changing password...');
+      const response = await fetch('/api/user/password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          currentPassword,
+          newPassword,
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to change password');
+      }
+
       toast.success('Password changed successfully!');
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
-    } catch (error) {
-      toast.error('Failed to change password');
+    } catch (error: any) {
+      console.error('Error changing password:', error);
+      toast.error(error.message || 'Failed to change password');
     }
   };
 
   const handleAccountDeletion = async () => {
     try {
-      // Simulated API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      toast.success('Account deletion request submitted');
+      const response = await fetch('/api/user/delete', {
+        method: 'POST',
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to delete account');
+      }
+
+      const data = await response.json();
+      toast.success('Account deleted successfully. Redirecting...');
       setShowDeleteConfirm(false);
-    } catch (error) {
-      toast.error('Failed to delete account');
+
+      // Redirect after a delay
+      setTimeout(() => {
+        router.push(data.redirect || '/register');
+      }, 2000);
+    } catch (error: any) {
+      console.error('Error deleting account:', error);
+      toast.error(error.message || 'Failed to delete account');
     }
   };
 
   const exportData = async () => {
     try {
-      toast.loading('Preparing your data...');
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      toast.loading('Preparing your data export...');
+
+      const response = await fetch('/api/user/export', {
+        method: 'GET',
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to export data');
+      }
+
+      // Download the JSON file
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `lawlaw-data-export-${Date.now()}.json`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+
       toast.dismiss();
-      toast.success('Data export ready! Check your email.');
-    } catch (error) {
-      toast.error('Failed to export data');
+      toast.success('Data exported successfully!');
+    } catch (error: any) {
+      toast.dismiss();
+      console.error('Error exporting data:', error);
+      toast.error(error.message || 'Failed to export data');
     }
   };
 

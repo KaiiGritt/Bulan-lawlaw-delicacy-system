@@ -248,3 +248,29 @@ export async function sendSellerOrderNotification(email: string, orderDetails: {
     text: `New order ${orderId} from ${buyerName} for ${productName} (Qty: ${quantity}, Total: ₱${totalAmount.toFixed(2)})`
   })
 }
+
+// OTP verification email
+export async function sendOtpEmail(email: string, name: string, otpCode: string) {
+  const html = `
+  <div style="font-family: Arial,sans-serif; max-width:600px; margin:auto; padding:20px; background-color:#f9f9f9;">
+    <div style="background:white; padding:30px; border-radius:10px; box-shadow:0 2px 4px rgba(0,0,0,0.1);">
+      <h1 style="color:#D2691E; margin-bottom:20px;">Email Verification</h1>
+      <p style="font-size:16px; color:#333; margin-bottom:20px;">Hello ${name},</p>
+      <p style="font-size:16px; color:#333; margin-bottom:30px;">Your verification code is:</p>
+      <div style="background:#f0f0f0; padding:20px; border-radius:8px; text-align:center; margin-bottom:30px;">
+        <span style="font-size:32px; font-weight:bold; letter-spacing:8px; color:#D2691E;">${otpCode}</span>
+      </div>
+      <p style="font-size:14px; color:#666; margin-bottom:20px;">This code will expire in 10 minutes.</p>
+      <p style="font-size:14px; color:#666;">If you didn't request this code, please ignore this email.</p>
+      <hr style="border:none; border-top:1px solid #ddd; margin:30px 0;">
+      <p style="font-size:12px; color:#999; text-align:center;">&copy; 2024 Lawlaw Delights</p>
+    </div>
+  </div>
+  `
+  await sendEmail({
+    to: email,
+    subject: 'Your Verification Code - Lawlaw Delights',
+    html,
+    text: `Hello ${name}, your verification code is: ${otpCode}. This code will expire in 10 minutes.`
+  })
+}

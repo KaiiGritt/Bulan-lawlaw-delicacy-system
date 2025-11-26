@@ -37,6 +37,15 @@ export async function POST(request: NextRequest) {
     const resetToken = crypto.randomBytes(32).toString('hex')
     const resetTokenExpiry = new Date(Date.now() + 3600000) // 1 hour
 
+    // Save token and expiry in user record
+    await prisma.user.update({
+      where: { email },
+      data: {
+        resetToken: resetToken,
+        resetTokenExpiry: resetTokenExpiry,
+      },
+    })
+
     // In a real app, you'd create a password reset token table
     // For now, we'll just simulate the process
     console.log(`Password reset requested for: ${email}`)

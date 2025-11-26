@@ -118,6 +118,8 @@ export default function ProfilePage() {
     image: '',
     stock: '',
   });
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string>('');
 
   useEffect(() => {
     if (status === 'loading') return;
@@ -215,7 +217,29 @@ export default function ProfilePage() {
 
   const handleAddProduct = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!imageFile) {
+      toast.error('Please select an image');
+      return;
+    }
+
     try {
+      // First, upload the image
+      const formData = new FormData();
+      formData.append('image', imageFile);
+
+      const uploadRes = await fetch('/api/upload/product', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!uploadRes.ok) {
+        throw new Error('Image upload failed');
+      }
+
+      const { imageUrl } = await uploadRes.json();
+
+      // Then create the product with the image URL
       const res = await fetch('/api/seller/products', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -224,35 +248,82 @@ export default function ProfilePage() {
           description: newProduct.description,
           price: parseFloat(newProduct.price),
           category: newProduct.category,
-          image: newProduct.image,
+          image: imageUrl,
           stock: parseInt(newProduct.stock) || 0,
         }),
         credentials: 'include',
       });
+
       if (!res.ok) throw new Error('Add failed');
+
       setNewProduct({ name: '', description: '', price: '', category: '', image: '', stock: '' });
+      setImageFile(null);
+      setImagePreview('');
       setShowAddProductForm(false);
       fetchProducts();
       toast.success('Product added successfully!');
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      toast.error('Failed to add product');
+      toast.error(err.message || 'Failed to add product');
+    }
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error('Image size should be less than 5MB');
+        return;
+      }
+
+      if (!file.type.startsWith('image/')) {
+        toast.error('Please select an image file');
+        return;
+      }
+
+      setImageFile(file);
+
+      // Create preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
     }
   };
 
   const handleDeleteProduct = async (productId: string) => {
     try {
+      console.log('Deleting product:', productId);
       const res = await fetch(`/api/seller/products/${productId}`, {
         method: 'DELETE',
         credentials: 'include',
       });
-      if (!res.ok) throw new Error('Delete failed');
+
+      console.log('Delete response status:', res.status);
+      console.log('Delete response ok:', res.ok);
+
+      if (!res.ok) {
+        const text = await res.text();
+        console.error('Delete error response text:', text);
+
+        let errorData;
+        try {
+          errorData = JSON.parse(text);
+        } catch {
+          errorData = { error: text || 'Unknown error' };
+        }
+
+        console.error('Delete error response:', errorData);
+        throw new Error(errorData.error || `Delete failed with status ${res.status}`);
+      }
+
       fetchProducts();
       toast.success('Product deleted successfully!');
       setShowDeleteConfirm(null);
-    } catch (err) {
-      console.error(err);
-      toast.error('Failed to delete product');
+    } catch (err: any) {
+      console.error('Delete product error:', err);
+      toast.error(err.message || 'Failed to delete product');
     }
   };
 
@@ -590,7 +661,15 @@ export default function ProfilePage() {
                     <div className="flex justify-between items-center mb-4">
                       <h3 className="font-semibold text-lg">Product Inventory</h3>
                       <button
-                        onClick={() => setShowAddProductForm(!showAddProductForm)}
+                        onClick={() => {
+                          setShowAddProductForm(!showAddProductForm);
+                          if (showAddProductForm) {
+                            // Reset form when canceling
+                            setNewProduct({ name: '', description: '', price: '', category: '', image: '', stock: '' });
+                            setImageFile(null);
+                            setImagePreview('');
+                          }
+                        }}
                         className="bg-primary-green text-white px-4 py-2 rounded-lg hover:bg-leaf-green transition-colors flex items-center gap-2"
                       >
                         {showAddProductForm ? '❌ Cancel' : '➕ Add Product'}
@@ -621,14 +700,17 @@ export default function ProfilePage() {
                           className="p-3 rounded-lg border dark:border-gray-600 bg-white dark:bg-gray-800"
                           required
                         />
-                        <input
-                          type="text"
-                          placeholder="Category"
+                        <select
                           value={newProduct.category}
                           onChange={(e) => setNewProduct({ ...newProduct, category: e.target.value })}
                           className="p-3 rounded-lg border dark:border-gray-600 bg-white dark:bg-gray-800"
                           required
-                        />
+                        >
+                          <option value="">Select Category</option>
+                          <option value="fresh">Fresh</option>
+                          <option value="dried">Dried</option>
+                          <option value="processed">Processed</option>
+                        </select>
                         <input
                           type="number"
                           placeholder="Stock Quantity"
@@ -636,13 +718,34 @@ export default function ProfilePage() {
                           onChange={(e) => setNewProduct({ ...newProduct, stock: e.target.value })}
                           className="p-3 rounded-lg border dark:border-gray-600 bg-white dark:bg-gray-800"
                         />
-                        <input
-                          type="text"
-                          placeholder="Image URL"
-                          value={newProduct.image}
-                          onChange={(e) => setNewProduct({ ...newProduct, image: e.target.value })}
-                          className="p-3 rounded-lg border dark:border-gray-600 bg-white dark:bg-gray-800 md:col-span-2"
-                        />
+                        <div className="md:col-span-2">
+                          <label className="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">
+                            Product Image
+                          </label>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleImageChange}
+                            className="block w-full text-sm text-gray-500 dark:text-gray-400
+                              file:mr-4 file:py-2 file:px-4
+                              file:rounded-lg file:border-0
+                              file:text-sm file:font-semibold
+                              file:bg-primary-green file:text-white
+                              hover:file:bg-leaf-green
+                              file:cursor-pointer cursor-pointer"
+                            required
+                          />
+                          {imagePreview && (
+                            <div className="mt-4">
+                              <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Preview:</p>
+                              <img
+                                src={imagePreview}
+                                alt="Preview"
+                                className="w-32 h-32 object-cover rounded-lg border-2 border-gray-200 dark:border-gray-600"
+                              />
+                            </div>
+                          )}
+                        </div>
                         <textarea
                           placeholder="Product Description"
                           value={newProduct.description}

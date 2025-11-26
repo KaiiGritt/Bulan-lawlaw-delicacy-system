@@ -55,6 +55,8 @@ export default function RegisterPage() {
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [passwordStrength, setPasswordStrength] = useState(getPasswordStrength(''));
+  const [otpSent, setOtpSent] = useState(false);
+  const [otpCode, setOtpCode] = useState('');
   const router = useRouter();
 
   useEffect(() => {
@@ -98,8 +100,7 @@ export default function RegisterPage() {
       const data = await response.json();
 
       if (response.ok) {
-        setToast({ message: 'Registration successful! Redirecting to login...', type: 'success' });
-        setTimeout(() => router.push('/login'), 2000);
+        await handleSendOtp();
       } else {
         setToast({ message: data.error || 'Registration failed', type: 'error' });
       }
@@ -110,10 +111,51 @@ export default function RegisterPage() {
     }
   };
 
+  const handleSendOtp = async () => {
+    try {
+      const res = await fetch('/api/auth/send-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: formData.email, firstName: formData.firstName }),
+      });
+      if (res.ok) {
+        setToast({ message: 'OTP sent to your email!', type: 'success' });
+        setOtpSent(true);
+      } else {
+        const data = await res.json();
+        setToast({ message: data.error || 'Failed to send OTP', type: 'error' });
+      }
+    } catch {
+      setToast({ message: 'Error sending OTP', type: 'error' });
+    }
+  };
+
+  const handleVerifyOtp = async () => {
+    if (!otpCode) {
+      setToast({ message: 'Please enter the OTP', type: 'error' });
+      return;
+    }
+    try {
+      const res = await fetch('/api/auth/verify-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: formData.email, otp: otpCode }),
+      });
+      if (res.ok) {
+        setToast({ message: 'Email verified! Redirecting to login...', type: 'success' });
+        setTimeout(() => router.push('/login'), 2000);
+      } else {
+        const data = await res.json();
+        setToast({ message: data.error || 'Invalid OTP', type: 'error' });
+      }
+    } catch {
+      setToast({ message: 'Error verifying OTP', type: 'error' });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-cream-50 to-green-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
-        {/* Top user icon box */}
         <div className="text-center fade-in-up">
           <div className="mx-auto h-20 w-20 bg-gradient-to-r from-primary-green to-banana-leaf rounded-2xl flex items-center justify-center mb-6 shadow-lg">
             <svg className="h-10 w-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -125,130 +167,65 @@ export default function RegisterPage() {
         </div>
 
         <form className="space-y-6" onSubmit={handleSubmit}>
-          <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <input
-                name="firstName"
-                type="text"
-                placeholder="First Name"
-                required
-                value={formData.firstName}
-                onChange={handleChange}
-                className="appearance-none w-full px-4 py-4 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-green"
-              />
-              <input
-                name="lastName"
-                type="text"
-                placeholder="Last Name"
-                required
-                value={formData.lastName}
-                onChange={handleChange}
-                className="appearance-none w-full px-4 py-4 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-green"
-              />
-            </div>
-
-            <input
-              name="email"
-              type="email"
-              placeholder="Email Address"
-              required
-              value={formData.email}
-              onChange={handleChange}
-              className="appearance-none w-full px-4 py-4 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-green"
-            />
-
-            {/* Password field with eye toggle */}
-            <div className="relative">
-              <input
-                name="password"
-                type={showPassword ? 'text' : 'password'}
-                placeholder="Password"
-                required
-                value={formData.password}
-                onChange={handleChange}
-                className="appearance-none w-full px-4 py-4 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-green"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-3 text-gray-400 hover:text-gray-700"
-              >
-                {showPassword ? <EyeSlashIcon className="h-5 w-5" /> : <EyeIcon className="h-5 w-5" />}
-              </button>
-              {formData.password && (
-                <div className="mt-2">
-                  <div className="w-full h-2 bg-gray-200 rounded-full">
-                    <div
-                      className={`${passwordStrength.color} h-2 rounded-full`}
-                      style={{ width: `${passwordStrength.percent}%` }}
-                    ></div>
-                  </div>
-                  <p className="text-sm text-gray-600 mt-1">{passwordStrength.label}</p>
+          {!otpSent && (
+            <>
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <input name="firstName" type="text" placeholder="First Name" required value={formData.firstName} onChange={handleChange} className="appearance-none w-full px-4 py-4 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-green" />
+                  <input name="lastName" type="text" placeholder="Last Name" required value={formData.lastName} onChange={handleChange} className="appearance-none w-full px-4 py-4 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-green" />
                 </div>
-              )}
-            </div>
+                <input name="email" type="email" placeholder="Email Address" required value={formData.email} onChange={handleChange} className="appearance-none w-full px-4 py-4 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-green" />
 
-            {/* Confirm password */}
-            <div className="relative">
-              <input
-                name="confirmPassword"
-                type={showPassword ? 'text' : 'password'}
-                placeholder="Confirm Password"
-                required
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                className="appearance-none w-full px-4 py-4 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-green"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-3 text-gray-400 hover:text-gray-700"
-              >
-                {showPassword ? <EyeSlashIcon className="h-5 w-5" /> : <EyeIcon className="h-5 w-5" />}
+                <div className="relative">
+                  <input name="password" type={showPassword ? 'text' : 'password'} placeholder="Password" required value={formData.password} onChange={handleChange} className="appearance-none w-full px-4 py-4 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-green" />
+                  <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-3 text-gray-400 hover:text-gray-700">
+                    {showPassword ? <EyeSlashIcon className="h-5 w-5" /> : <EyeIcon className="h-5 w-5" />}
+                  </button>
+                  {formData.password && (
+                    <div className="mt-2">
+                      <div className="w-full h-2 bg-gray-200 rounded-full">
+                        <div className={`${passwordStrength.color} h-2 rounded-full`} style={{ width: `${passwordStrength.percent}%` }}></div>
+                      </div>
+                      <p className="text-sm text-gray-600 mt-1">{passwordStrength.label}</p>
+                    </div>
+                  )}
+                </div>
+
+                <div className="relative">
+                  <input name="confirmPassword" type={showPassword ? 'text' : 'password'} placeholder="Confirm Password" required value={formData.confirmPassword} onChange={handleChange} className="appearance-none w-full px-4 py-4 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-green" />
+                  <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-3 text-gray-400 hover:text-gray-700">
+                    {showPassword ? <EyeSlashIcon className="h-5 w-5" /> : <EyeIcon className="h-5 w-5" />}
+                  </button>
+                </div>
+              </div>
+
+              <div className="flex items-start">
+                <input name="agreeToTerms" type="checkbox" checked={formData.agreeToTerms} onChange={handleChange} className="h-4 w-4 text-primary-green border-gray-300 rounded mt-1" />
+                <label className="ml-3 block text-sm text-gray-700">
+                  I agree to the{' '}
+                  <a href="#" className="text-primary-green hover:text-leaf-green font-medium">Terms and Conditions</a> and{' '}
+                  <a href="#" className="text-primary-green hover:text-leaf-green font-medium">Privacy Policy</a>
+                </label>
+              </div>
+
+              <button type="submit" disabled={isLoading} className="group relative w-full flex justify-center py-4 px-4 border border-transparent text-sm font-semibold rounded-xl text-white bg-gradient-to-r from-primary-green to-banana-leaf hover:from-leaf-green hover:to-primary-green disabled:opacity-50 transition-all duration-300 shadow-lg">
+                {isLoading ? 'Creating Account...' : 'Create Account'}
               </button>
-            </div>
-          </div>
+            </>
+          )}
 
-          <div className="flex items-start">
-            <input
-              name="agreeToTerms"
-              type="checkbox"
-              checked={formData.agreeToTerms}
-              onChange={handleChange}
-              className="h-4 w-4 text-primary-green border-gray-300 rounded mt-1"
-            />
-            <label className="ml-3 block text-sm text-gray-700">
-              I agree to the{' '}
-              <a href="#" className="text-primary-green hover:text-leaf-green font-medium">
-                Terms and Conditions
-              </a>{' '}
-              and{' '}
-              <a href="#" className="text-primary-green hover:text-leaf-green font-medium">
-                Privacy Policy
-              </a>
-            </label>
-          </div>
+          {otpSent && (
+            <>
+              <input type="text" placeholder="Enter OTP" value={otpCode} onChange={(e) => setOtpCode(e.target.value)} className="w-full px-4 py-4 border rounded-xl mt-2" />
+              <button type="button" onClick={handleVerifyOtp} className="w-full py-4 mt-2 bg-gradient-to-r from-primary-green to-banana-leaf text-white rounded-xl shadow-lg">Verify OTP</button>
+            </>
+          )}
 
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="group relative w-full flex justify-center py-4 px-4 border border-transparent text-sm font-semibold rounded-xl text-white bg-gradient-to-r from-primary-green to-banana-leaf hover:from-leaf-green hover:to-primary-green disabled:opacity-50 transition-all duration-300 shadow-lg"
-          >
-            {isLoading ? (
-              <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-            ) : null}
-            {isLoading ? 'Creating Account...' : 'Create Account'}
-          </button>
-
-          <p className="text-center text-sm text-gray-600">
-            Already have an account?{' '}
-            <Link href="/login" className="font-semibold text-primary-green hover:text-leaf-green">
-              Sign in here
-            </Link>
-          </p>
+          {!otpSent && (
+            <p className="text-center text-sm text-gray-600">
+              Already have an account? <Link href="/login" className="font-semibold text-primary-green hover:text-leaf-green">Sign in here</Link>
+            </p>
+          )}
         </form>
 
         {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
