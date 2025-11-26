@@ -18,7 +18,11 @@
       "Bash(npx prisma migrate:*)",
       "Bash(npx prisma db pull:*)",
       "Bash(git checkout:*)",
-      "Bash(npx prisma db push:*)"
+      "Bash(npx prisma db push:*)",
+      "Bash(if [ -f \"C:\\Users\\ASUS\\OneDrive\\Documents\\Bulan-lawlaw-delicacy-system\\src\\app\\business\\[slug]\\page.tsx\" ])",
+      "Bash(then echo \"exists\")",
+      "Bash(else echo \"not exists\")",
+      "Bash(fi:*)"
     ],
     "deny": [],
     "ask": []

@@ -148,6 +148,7 @@ model SellerApplication {
   description   String
   contactNumber String
   address       String
+  businessLogo  String?  @db.LongText // Store business logo as base64
   status        String   @default("pending")
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt

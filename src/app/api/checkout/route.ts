@@ -154,11 +154,12 @@ export async function POST(request: NextRequest) {
         }
       }
 
-      // Send seller notifications for each product
+      // Send seller notifications and create conversations for each product
       for (const item of cartItems) {
         try {
           const seller = await prisma.user.findUnique({
-            where: { id: item.product.userId }
+            where: { id: item.product.userId },
+            include: { sellerApplication: true }
           })
 
           if (seller && seller.email) {
@@ -169,6 +170,54 @@ export async function POST(request: NextRequest) {
               quantity: item.quantity,
               totalAmount: item.product.price * item.quantity
             })
+          }
+
+          // Create conversation between buyer and seller for this product
+          try {
+            // Check if conversation already exists
+            const existingConversation = await prisma.conversation.findUnique({
+              where: {
+                sellerId_buyerId_productId: {
+                  sellerId: item.product.userId,
+                  buyerId: session.user.id,
+                  productId: item.productId
+                }
+              }
+            })
+
+            if (!existingConversation) {
+              // Create new conversation
+              const conversation = await prisma.conversation.create({
+                data: {
+                  sellerId: item.product.userId,
+                  buyerId: session.user.id,
+                  productId: item.productId,
+                  status: 'active'
+                }
+              })
+
+              // Seller sends initial message
+              const businessName = seller?.sellerApplication?.businessName || seller?.name || 'Seller'
+              await prisma.message.create({
+                data: {
+                  conversationId: conversation.id,
+                  senderId: item.product.userId,
+                  content: `Hello! Thank you for ordering ${item.quantity}x ${item.product.name} from ${businessName}. Your order #${result.id.slice(-8)} is now being processed. If you have any questions, feel free to ask!`
+                }
+              })
+            } else {
+              // Add message to existing conversation
+              const businessName = seller?.sellerApplication?.businessName || seller?.name || 'Seller'
+              await prisma.message.create({
+                data: {
+                  conversationId: existingConversation.id,
+                  senderId: item.product.userId,
+                  content: `Thank you for your new order! You've ordered ${item.quantity}x ${item.product.name} (Order #${result.id.slice(-8)}). We'll process this right away!`
+                }
+              })
+            }
+          } catch (conversationError) {
+            console.error(`Failed to create conversation for product ${item.product.name}:`, conversationError)
           }
         } catch (sellerEmailError) {
           console.error(`Failed to send seller notification for product ${item.product.name}:`, sellerEmailError)

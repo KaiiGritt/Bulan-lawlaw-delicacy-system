@@ -279,8 +279,12 @@ export default function BusinessPage({ params }: BusinessPageProps) {
                 href={`/products/${product.id}`}
                 className="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100 hover:shadow-lg transition-shadow duration-300"
               >
-                <div className="relative h-48 bg-gray-200 flex items-center justify-center">
-                  <span className="text-gray-500">Product Image</span>
+                <div className="relative h-48">
+                  <img
+                    src={product.image || '/placeholder.png'}
+                    alt={product.name}
+                    className="w-full h-full object-cover"
+                  />
                 </div>
                 <div className="p-4">
                   <h3 className="font-semibold text-primary-green mb-2">{product.name}</h3>
