@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 
 export default function Header() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [unreadNotifications, setUnreadNotifications] = useState(0);
@@ -165,7 +165,9 @@ useEffect(() => {
               )}
             </div>
 
-            {session ? (
+            {status === 'loading' ? (
+              <div className="w-6 h-6"></div>
+            ) : status === 'authenticated' && session ? (
               <Link href="/profile" className="p-1 hover:text-primary-green dark:hover:text-green-400 transition-colors">
                 <User className="w-6 h-6" />
               </Link>
@@ -245,13 +247,20 @@ useEffect(() => {
             </Link>
           )}
 
-          <Link
-            href={session ? '/profile' : '/login'}
-            className="flex flex-col items-center text-xs hover:text-primary-green dark:hover:text-green-400 transition-colors"
-          >
-            {session ? <User className="w-6 h-6" /> : <LogIn className="w-6 h-6" />}
-            <span className="text-[10px]">{session ? 'Profile' : 'Login'}</span>
-          </Link>
+          {status === 'loading' ? (
+            <div className="flex flex-col items-center text-xs">
+              <div className="w-6 h-6"></div>
+              <span className="text-[10px] opacity-0">...</span>
+            </div>
+          ) : (
+            <Link
+              href={status === 'authenticated' && session ? '/profile' : '/login'}
+              className="flex flex-col items-center text-xs hover:text-primary-green dark:hover:text-green-400 transition-colors"
+            >
+              {status === 'authenticated' && session ? <User className="w-6 h-6" /> : <LogIn className="w-6 h-6" />}
+              <span className="text-[10px]">{status === 'authenticated' && session ? 'Profile' : 'Login'}</span>
+            </Link>
+          )}
         </div>
       </nav>
     </>

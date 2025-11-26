@@ -2,33 +2,38 @@
 
 import { useEffect } from 'react';
 import { signOut } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
 
 export default function LogoutPage() {
-  const router = useRouter();
-
   useEffect(() => {
     const handleLogout = async () => {
-      await signOut({ redirect: false });
-
-      // Clear all localStorage
+      // Clear all storage first
       if (typeof window !== 'undefined') {
         localStorage.clear();
         sessionStorage.clear();
+
+        // Clear all cookies
+        document.cookie.split(";").forEach((c) => {
+          document.cookie = c
+            .replace(/^ +/, "")
+            .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+        });
       }
 
-      // Redirect to login after logout
-      router.push('/login');
+      // Sign out with NextAuth
+      await signOut({
+        redirect: true,
+        callbackUrl: '/login'
+      });
     };
 
     handleLogout();
-  }, [router]);
+  }, []);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-accent-cream to-soft-green/20">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-accent-cream to-soft-green/20 dark:from-gray-900 dark:to-gray-800">
       <div className="text-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-green mx-auto mb-4"></div>
-        <p className="text-gray-600">Logging out...</p>
+        <p className="text-gray-600 dark:text-gray-300">Logging out...</p>
       </div>
     </div>
   );
