@@ -46,10 +46,10 @@ model User {
 model Product {
   id          String   @id @default(cuid())
   name        String
-  description String
+  description String   @db.Text
   price       Float
   category    String   // fresh, dried, processed
-  image       String
+  image       String   @db.LongText // Store base64 images
   stock       Int      @default(0)
   userId      String
   status      String   @default("pending") // pending, approved, rejected
@@ -72,10 +72,10 @@ model Product {
 model Recipe {
   id           String   @id @default(cuid())
   title        String
-  description  String
+  description  String   @db.Text
   ingredients  String   @db.Text  // JSON string array
   instructions String   @db.Text  // JSON string array
-  image        String
+  image        String   @db.LongText // Store base64 images
   prepTime     Int
   cookTime     Int
   servings     Int
