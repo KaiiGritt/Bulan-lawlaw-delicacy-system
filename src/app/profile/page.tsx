@@ -93,13 +93,54 @@ interface Order {
   }>;
 }
 
+interface WishlistItem {
+  id: string;
+  productId: string;
+  createdAt: string;
+  product: Product;
+}
+
+interface RecipeFavorite {
+  id: string;
+  recipeId: string;
+  createdAt: string;
+  recipe: {
+    id: string;
+    title: string;
+    description: string;
+    image: string;
+    prepTime: number;
+    cookTime: number;
+    servings: number;
+    difficulty: string;
+  };
+}
+
+interface SavedRecipe {
+  id: string;
+  recipeId: string;
+  notes: string | null;
+  createdAt: string;
+  updatedAt: string;
+  recipe: {
+    id: string;
+    title: string;
+    description: string;
+    image: string;
+    prepTime: number;
+    cookTime: number;
+    servings: number;
+    difficulty: string;
+  };
+}
+
 export default function ProfilePage() {
   const { data: session, status } = useSession();
   const router = useRouter();
 
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'overview' | 'products' | 'orders' | 'analytics' | 'profile'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'products' | 'orders' | 'analytics' | 'profile' | 'wishlist' | 'favorites' | 'saved'>('overview');
   const [stats, setStats] = useState<SellerStats | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
   const [orders, setOrders] = useState<SellerOrder[]>([]);
@@ -109,6 +150,9 @@ export default function ProfilePage() {
   const [editingProduct, setEditingProduct] = useState<string | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
   const [orderFilter, setOrderFilter] = useState<string>('all');
+  const [wishlistItems, setWishlistItems] = useState<WishlistItem[]>([]);
+  const [recipeFavorites, setRecipeFavorites] = useState<RecipeFavorite[]>([]);
+  const [savedRecipes, setSavedRecipes] = useState<SavedRecipe[]>([]);
   
   const [newProduct, setNewProduct] = useState({
     name: '',
@@ -137,7 +181,12 @@ export default function ProfilePage() {
   }, [profile]);
 
   useEffect(() => {
-    if (profile && profile.role !== 'seller') fetchUserOrders();
+    if (profile && profile.role !== 'seller') {
+      fetchUserOrders();
+      fetchWishlist();
+      fetchRecipeFavorites();
+      fetchSavedRecipes();
+    }
   }, [profile]);
 
   useEffect(() => {
@@ -228,6 +277,36 @@ export default function ProfilePage() {
       const res = await fetch('/api/orders', { credentials: 'include' });
       const data = await res.json();
       setUserOrders(data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const fetchWishlist = async () => {
+    try {
+      const res = await fetch('/api/wishlist', { credentials: 'include' });
+      const data = await res.json();
+      setWishlistItems(data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const fetchRecipeFavorites = async () => {
+    try {
+      const res = await fetch('/api/recipe-favorites', { credentials: 'include' });
+      const data = await res.json();
+      setRecipeFavorites(data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const fetchSavedRecipes = async () => {
+    try {
+      const res = await fetch('/api/saved-recipes', { credentials: 'include' });
+      const data = await res.json();
+      setSavedRecipes(data);
     } catch (err) {
       console.error(err);
     }
@@ -788,6 +867,166 @@ export default function ProfilePage() {
                   ))}
                 </div>
               </div>
+            </motion.div>
+          )}
+
+          {/* Wishlist, Favorites & Saved Recipes for Non-Sellers */}
+          {profile.role !== 'seller' && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border border-soft-green/20 dark:border-gray-700"
+            >
+              <h3 className="font-bold text-2xl bg-gradient-to-r from-primary-green to-leaf-green bg-clip-text text-transparent mb-6 flex items-center gap-2">
+                <svg className="w-6 h-6 text-primary-green dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                </svg>
+                My Collections
+              </h3>
+
+              {/* Tabs for Wishlist, Favorites, and Saved Recipes */}
+              <div className="flex gap-2 mb-6 overflow-x-auto">
+                {[
+                  { key: 'wishlist', label: 'Wishlist', count: wishlistItems.length },
+                  { key: 'favorites', label: 'Recipe Favorites', count: recipeFavorites.length },
+                  { key: 'saved', label: 'Saved Recipes', count: savedRecipes.length }
+                ].map(tab => (
+                  <button
+                    key={tab.key}
+                    onClick={() => setActiveTab(tab.key as typeof activeTab)}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all ${
+                      activeTab === tab.key
+                        ? 'bg-gradient-to-r from-primary-green to-banana-leaf text-white shadow-md'
+                        : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                    }`}
+                  >
+                    {tab.label} ({tab.count})
+                  </button>
+                ))}
+              </div>
+
+              {/* Wishlist Content */}
+              {activeTab === 'wishlist' && (
+                <div>
+                  <h4 className="font-semibold text-gray-700 dark:text-gray-200 mb-3">My Wishlist</h4>
+                  {wishlistItems.length === 0 ? (
+                    <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                      <svg className="w-16 h-16 mx-auto mb-3 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                      </svg>
+                      <p>Your wishlist is empty</p>
+                      <Link href="/products" className="text-primary-green hover:underline mt-2 inline-block">
+                        Browse Products
+                      </Link>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {wishlistItems.map((item) => (
+                        <div key={item.id} className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg flex gap-4">
+                          <img
+                            src={item.product.image || '/placeholder.png'}
+                            alt={item.product.name}
+                            className="w-20 h-20 object-cover rounded-lg"
+                          />
+                          <div className="flex-1">
+                            <Link href={`/products/${item.product.id}`} className="font-medium text-gray-900 dark:text-white hover:text-primary-green">
+                              {item.product.name}
+                            </Link>
+                            <p className="text-sm text-gray-600 dark:text-gray-300 line-clamp-2">{item.product.description}</p>
+                            <p className="font-semibold text-primary-green mt-1">${item.product.price}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Recipe Favorites Content */}
+              {activeTab === 'favorites' && (
+                <div>
+                  <h4 className="font-semibold text-gray-700 dark:text-gray-200 mb-3">Favorite Recipes</h4>
+                  {recipeFavorites.length === 0 ? (
+                    <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                      <svg className="w-16 h-16 mx-auto mb-3 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                      </svg>
+                      <p>You haven't favorited any recipes yet</p>
+                      <Link href="/recipes" className="text-primary-green hover:underline mt-2 inline-block">
+                        Explore Recipes
+                      </Link>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {recipeFavorites.map((fav) => (
+                        <div key={fav.id} className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg flex gap-4">
+                          <img
+                            src={fav.recipe.image || '/placeholder.png'}
+                            alt={fav.recipe.title}
+                            className="w-20 h-20 object-cover rounded-lg"
+                          />
+                          <div className="flex-1">
+                            <Link href={`/recipes/${fav.recipe.id}`} className="font-medium text-gray-900 dark:text-white hover:text-primary-green">
+                              {fav.recipe.title}
+                            </Link>
+                            <p className="text-sm text-gray-600 dark:text-gray-300 line-clamp-2">{fav.recipe.description}</p>
+                            <div className="flex gap-2 text-xs text-gray-500 dark:text-gray-400 mt-1">
+                              <span>⏱️ {fav.recipe.prepTime + fav.recipe.cookTime} min</span>
+                              <span>🍽️ {fav.recipe.servings} servings</span>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Saved Recipes Content */}
+              {activeTab === 'saved' && (
+                <div>
+                  <h4 className="font-semibold text-gray-700 dark:text-gray-200 mb-3">Saved Recipes</h4>
+                  {savedRecipes.length === 0 ? (
+                    <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                      <svg className="w-16 h-16 mx-auto mb-3 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                      </svg>
+                      <p>You haven't saved any recipes yet</p>
+                      <Link href="/recipes" className="text-primary-green hover:underline mt-2 inline-block">
+                        Explore Recipes
+                      </Link>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {savedRecipes.map((saved) => (
+                        <div key={saved.id} className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg flex gap-4">
+                          <img
+                            src={saved.recipe.image || '/placeholder.png'}
+                            alt={saved.recipe.title}
+                            className="w-20 h-20 object-cover rounded-lg"
+                          />
+                          <div className="flex-1">
+                            <Link href={`/recipes/${saved.recipe.id}`} className="font-medium text-gray-900 dark:text-white hover:text-primary-green">
+                              {saved.recipe.title}
+                            </Link>
+                            <p className="text-sm text-gray-600 dark:text-gray-300 line-clamp-2">{saved.recipe.description}</p>
+                            {saved.notes && (
+                              <p className="text-xs text-gray-500 dark:text-gray-400 italic mt-1">
+                                Note: {saved.notes}
+                              </p>
+                            )}
+                            <div className="flex gap-2 text-xs text-gray-500 dark:text-gray-400 mt-1">
+                              <span>⏱️ {saved.recipe.prepTime + saved.recipe.cookTime} min</span>
+                              <span>🍽️ {saved.recipe.servings} servings</span>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
             </motion.div>
           )}
 
