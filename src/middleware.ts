@@ -25,6 +25,11 @@ export async function middleware(request: NextRequest) {
   const isAuthRoute = authRoutes.some((route) => pathname.startsWith(route));
   const isOTPRoute = pathname.startsWith(otpRoute);
 
+  // If user is not logged in and trying to access the home page, redirect to login
+  if (!isLoggedIn && pathname === '/') {
+    return NextResponse.redirect(new URL('/login', request.url));
+  }
+
   // If user is logged in and trying to access auth routes, redirect to home
   if (isLoggedIn && isAuthRoute) {
     return NextResponse.redirect(new URL('/', request.url));

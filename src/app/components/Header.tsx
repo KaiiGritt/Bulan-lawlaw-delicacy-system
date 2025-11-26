@@ -245,7 +245,7 @@ useEffect(() => {
             href={session ? '/profile' : '/login'}
             className="flex flex-col items-center text-xs hover:text-primary-green dark:hover:text-green-400 transition-colors"
           >
-            <User className="w-6 h-6" />
+            {session ? <User className="w-6 h-6" /> : <LogIn className="w-6 h-6" />}
             <span className="text-[10px]">{session ? 'Profile' : 'Login'}</span>
           </Link>
         </div>
