@@ -110,7 +110,7 @@ export default function VerifyOTPPage() {
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 border border-gray-100 dark:border-gray-700">
           {/* Icon */}
           <div className="flex justify-center mb-6">
-            <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg">
+            <div className="w-20 h-20 bg-gradient-to-br from-leaf-green-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg">
               <svg
                 className="w-10 h-10 text-white"
                 fill="none"

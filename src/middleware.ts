@@ -25,17 +25,8 @@ export async function middleware(request: NextRequest) {
   const isAuthRoute = authRoutes.some((route) => pathname.startsWith(route));
   const isOTPRoute = pathname.startsWith(otpRoute);
 
-  // If user is logged in and trying to access auth routes
+  // If user is logged in and trying to access auth routes, redirect to home
   if (isLoggedIn && isAuthRoute) {
-    // Check if OTP is verified
-    const otpVerified = request.cookies.get('otp_verified')?.value === 'true';
-
-    if (!otpVerified && userEmail) {
-      // Redirect to OTP verification
-      return NextResponse.redirect(new URL(`/verify-otp?email=${encodeURIComponent(userEmail)}`, request.url));
-    }
-
-    // Already logged in and verified, redirect to home
     return NextResponse.redirect(new URL('/', request.url));
   }
 
@@ -44,16 +35,6 @@ export async function middleware(request: NextRequest) {
     const loginUrl = new URL('/login', request.url);
     loginUrl.searchParams.set('callbackUrl', pathname);
     return NextResponse.redirect(loginUrl);
-  }
-
-  // If user is logged in but trying to access OTP page without needing verification
-  if (isOTPRoute && isLoggedIn) {
-    const otpVerified = request.cookies.get('otp_verified')?.value === 'true';
-
-    // If already verified, redirect to home
-    if (otpVerified) {
-      return NextResponse.redirect(new URL('/', request.url));
-    }
   }
 
   // If user is trying to access OTP page without email parameter
