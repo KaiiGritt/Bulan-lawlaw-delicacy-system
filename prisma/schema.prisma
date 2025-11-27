@@ -117,11 +117,20 @@ model Order {
   adminApprovalRequired Boolean @default(false)
   cancellationReason String?
   cancelledAt DateTime?
+
+  // Tracking fields
+  trackingNumber String?
+  courier String? // J&T, LBC, Lalamove, etc.
+  estimatedDeliveryDate DateTime?
+  shippedAt DateTime?
+  deliveredAt DateTime?
+
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
 
   user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   orderItems OrderItem[]
+  trackingHistory OrderTrackingHistory[]
 
   @@map("orders")
 }
@@ -138,6 +147,19 @@ model OrderItem {
   product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
   @@map("order_items")
+}
+
+model OrderTrackingHistory {
+  id          String   @id @default(cuid())
+  orderId     String
+  status      String   // Order status at this point
+  location    String?  // Current location of package
+  description String   // Status description
+  createdAt   DateTime @default(now())
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@map("order_tracking_history")
 }
 
 model SellerApplication {
