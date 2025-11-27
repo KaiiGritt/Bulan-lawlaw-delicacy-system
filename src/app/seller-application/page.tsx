@@ -17,10 +17,16 @@ export default function SellerApplicationPage() {
     businessType: '',
     description: '',
     contactNumber: '',
-    address: ''
+    address: '',
+    businessLogo: '',
+    primaryId: '',
+    secondaryId: ''
   });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [logoPreview, setLogoPreview] = useState('');
+  const [primaryIdPreview, setPrimaryIdPreview] = useState('');
+  const [secondaryIdPreview, setSecondaryIdPreview] = useState('');
 
   useEffect(() => {
     if (status === 'loading') return;
@@ -48,6 +54,40 @@ export default function SellerApplicationPage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>, type: 'logo' | 'primaryId' | 'secondaryId') => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file size (max 2MB)
+    if (file.size > 2 * 1024 * 1024) {
+      setError('File size should be less than 2MB');
+      return;
+    }
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      setError('Please upload an image file');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const base64String = reader.result as string;
+
+      if (type === 'logo') {
+        setFormData(prev => ({ ...prev, businessLogo: base64String }));
+        setLogoPreview(base64String);
+      } else if (type === 'primaryId') {
+        setFormData(prev => ({ ...prev, primaryId: base64String }));
+        setPrimaryIdPreview(base64String);
+      } else if (type === 'secondaryId') {
+        setFormData(prev => ({ ...prev, secondaryId: base64String }));
+        setSecondaryIdPreview(base64String);
+      }
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -259,9 +299,68 @@ export default function SellerApplicationPage() {
               />
             </div>
 
+            <div>
+              <label htmlFor="businessLogo" className="block text-sm font-semibold text-gray-700 mb-2">
+                Business Logo (Optional)
+              </label>
+              <input
+                id="businessLogo"
+                type="file"
+                accept="image/*"
+                onChange={(e) => handleFileUpload(e, 'logo')}
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-green focus:border-transparent transition-all duration-200"
+              />
+              {logoPreview && (
+                <div className="mt-3">
+                  <img src={logoPreview} alt="Logo Preview" className="h-24 w-24 object-cover rounded-lg border-2 border-primary-green" />
+                </div>
+              )}
+              <p className="text-xs text-gray-500 mt-1">Upload your business logo (Max 2MB, JPG/PNG)</p>
+            </div>
+
+            <div>
+              <label htmlFor="primaryId" className="block text-sm font-semibold text-gray-700 mb-2">
+                Primary ID Verification *
+              </label>
+              <input
+                id="primaryId"
+                type="file"
+                accept="image/*"
+                required
+                onChange={(e) => handleFileUpload(e, 'primaryId')}
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-green focus:border-transparent transition-all duration-200"
+              />
+              {primaryIdPreview && (
+                <div className="mt-3">
+                  <img src={primaryIdPreview} alt="Primary ID Preview" className="h-32 w-full object-contain rounded-lg border-2 border-primary-green" />
+                </div>
+              )}
+              <p className="text-xs text-gray-500 mt-1">Upload a valid government-issued ID (Driver's License, Passport, National ID, etc.)</p>
+            </div>
+
+            <div>
+              <label htmlFor="secondaryId" className="block text-sm font-semibold text-gray-700 mb-2">
+                Secondary ID Verification (Optional)
+              </label>
+              <input
+                id="secondaryId"
+                type="file"
+                accept="image/*"
+                onChange={(e) => handleFileUpload(e, 'secondaryId')}
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-green focus:border-transparent transition-all duration-200"
+              />
+              {secondaryIdPreview && (
+                <div className="mt-3">
+                  <img src={secondaryIdPreview} alt="Secondary ID Preview" className="h-32 w-full object-contain rounded-lg border-2 border-primary-green" />
+                </div>
+              )}
+              <p className="text-xs text-gray-500 mt-1">Upload an additional ID for verification (optional but recommended)</p>
+            </div>
+
             <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
               <h3 className="text-sm font-semibold text-blue-900 mb-2">Application Requirements:</h3>
               <ul className="text-sm text-blue-800 space-y-1">
+                <li>• Valid government-issued ID (required)</li>
                 <li>• Valid business registration or permit</li>
                 <li>• Fresh, quality Lawlaw products</li>
                 <li>• Reliable delivery or pickup arrangements</li>

@@ -15,11 +15,11 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { businessName, businessType, description, contactNumber, address } = body
+    const { businessName, businessType, description, contactNumber, address, businessLogo, primaryId, secondaryId } = body
 
-    if (!businessName || !businessType || !description || !contactNumber || !address) {
+    if (!businessName || !businessType || !description || !contactNumber || !address || !primaryId) {
       return NextResponse.json(
-        { error: 'All fields are required' },
+        { error: 'All required fields must be provided (including primary ID)' },
         { status: 400 }
       )
     }
@@ -44,6 +44,9 @@ export async function POST(request: NextRequest) {
         description,
         contactNumber,
         address,
+        businessLogo: businessLogo || null,
+        primaryId: primaryId || null,
+        secondaryId: secondaryId || null,
       }
     })
 
@@ -123,7 +126,7 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { businessName, businessType, description, contactNumber, address, businessLogo } = body
+    const { businessName, businessType, description, contactNumber, address, businessLogo, primaryId, secondaryId } = body
 
     // Validate required fields
     if (!businessName || !businessType || !description || !contactNumber || !address) {
@@ -142,7 +145,9 @@ export async function PUT(request: NextRequest) {
         description,
         contactNumber,
         address,
-        businessLogo: businessLogo || user.sellerApplication.businessLogo,
+        businessLogo: businessLogo !== undefined ? businessLogo : user.sellerApplication.businessLogo,
+        primaryId: primaryId !== undefined ? primaryId : user.sellerApplication.primaryId,
+        secondaryId: secondaryId !== undefined ? secondaryId : user.sellerApplication.secondaryId,
       }
     })
 

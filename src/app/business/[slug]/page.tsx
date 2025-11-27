@@ -47,8 +47,6 @@ interface SellerApplication {
   businessLogo: string | null;
   description: string;
   businessType: string;
-  yearsOfExperience: number;
-  certifications: string[];
   contactNumber: string;
   address: string;
 }
@@ -285,11 +283,6 @@ export default function BusinessPage({ params }: BusinessPageProps) {
                   {businessData.user.sellerApplication?.businessType && (
                     <div>
                       <strong className="text-gray-900 dark:text-white">Type:</strong> {businessData.user.sellerApplication.businessType}
-                    </div>
-                  )}
-                  {businessData.user.sellerApplication?.yearsOfExperience && (
-                    <div>
-                      <strong className="text-gray-900 dark:text-white">Experience:</strong> {businessData.user.sellerApplication.yearsOfExperience} years
                     </div>
                   )}
                   {businessData.user.sellerApplication?.address && (

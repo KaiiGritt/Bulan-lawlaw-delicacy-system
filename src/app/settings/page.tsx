@@ -27,6 +27,7 @@ export default function Settings() {
     showWishlist: false,
   });
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const logoInputRef = useRef<HTMLInputElement>(null);
 
   // Business Info state
   const [businessInfo, setBusinessInfo] = useState({
@@ -112,6 +113,28 @@ export default function Settings() {
         console.error('Error uploading profile picture:', error);
         toast.error(error.message || 'Failed to upload profile picture');
       }
+    }
+  };
+
+  const handleLogoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) {
+        toast.error('File size should be less than 2MB');
+        return;
+      }
+
+      if (!file.type.startsWith('image/')) {
+        toast.error('Please upload an image file');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64String = reader.result as string;
+        setBusinessInfo(prev => ({ ...prev, businessLogo: base64String }));
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -359,6 +382,36 @@ export default function Settings() {
               </h3>
 
               <div className="space-y-3 sm:space-y-4">
+                <div>
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 sm:mb-2">
+                    Business Logo
+                  </label>
+                  <div className="flex items-center gap-4">
+                    {businessInfo.businessLogo && (
+                      <img
+                        src={businessInfo.businessLogo}
+                        alt="Business Logo"
+                        className="w-16 h-16 sm:w-20 sm:h-20 rounded-lg object-cover border-2 border-primary-green"
+                      />
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => logoInputRef.current?.click()}
+                      className="bg-primary-green hover:bg-leaf-green text-white px-3 py-2 sm:px-4 sm:py-2.5 rounded-md text-xs sm:text-sm font-medium transition-colors"
+                    >
+                      {businessInfo.businessLogo ? 'Change Logo' : 'Upload Logo'}
+                    </button>
+                    <input
+                      ref={logoInputRef}
+                      type="file"
+                      accept="image/*"
+                      onChange={handleLogoChange}
+                      className="hidden"
+                    />
+                  </div>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Upload your business logo (Max 2MB)</p>
+                </div>
+
                 <div>
                   <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 sm:mb-2">
                     Business Name *
