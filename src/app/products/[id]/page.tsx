@@ -269,7 +269,7 @@ export default function ProductPage({ params }: ProductPageProps) {
     );
   }
 
-  const shopSlug = product.user.sellerApplication?.businessName?.toLowerCase().replace(/\s+/g, '-') || '';
+  const businessSlug = product.user.sellerApplication?.businessName?.toLowerCase().replace(/\s+/g, '-') || '';
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-cream-50 to-green-50 dark:from-gray-900 dark:to-gray-800 py-4 sm:py-8 lg:py-12">
@@ -295,15 +295,15 @@ export default function ProductPage({ params }: ProductPageProps) {
               </span>
             </div>
 
-            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-primary-green dark:text-green-400 mb-3 sm:mb-4">{product.name}</h1>
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4">{product.name}</h1>
 
-            {/* Rating Display */}
-            <div className="flex items-center mb-3 sm:mb-4">
-              <div className="flex items-center">
+            {/* Rating Display - Shopee Style */}
+            <div className="flex items-center gap-2 mb-3 sm:mb-4 pb-3 sm:pb-4 border-b border-gray-200 dark:border-gray-700">
+              <div className="flex items-center gap-1">
                 {[1, 2, 3, 4, 5].map((star) => (
                   <svg
                     key={star}
-                    className={`w-4 h-4 sm:w-5 sm:h-5 ${
+                    className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${
                       star <= Math.floor(product.rating || 0)
                         ? 'text-yellow-400 fill-current'
                         : 'text-gray-300'
@@ -314,18 +314,33 @@ export default function ProductPage({ params }: ProductPageProps) {
                   </svg>
                 ))}
               </div>
-              <span className="ml-2 text-base sm:text-lg font-semibold text-gray-700 dark:text-gray-200">
+              <span className="text-sm sm:text-base font-medium text-gray-900 dark:text-gray-100 underline decoration-dotted">
                 {product.rating?.toFixed(1) || '0.0'}
               </span>
-              <span className="ml-2 text-xs sm:text-sm text-gray-500 dark:text-gray-400">
-                ({product.comments?.length || 0} reviews)
+              <div className="h-4 w-px bg-gray-300 dark:bg-gray-600"></div>
+              <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
+                {product.comments?.length || 0} Reviews
+              </span>
+              <div className="h-4 w-px bg-gray-300 dark:bg-gray-600"></div>
+              <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
+                {product.stock > 0 ? `${product.stock} Sold` : 'Out of Stock'}
               </span>
             </div>
 
-            <p className="text-2xl sm:text-3xl font-bold text-primary-green dark:text-green-400 mb-2 sm:mb-4">₱{product.price}</p>
-            <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mb-4 sm:mb-6">
-              Stock: <span className="font-semibold">{product.stock}</span> available
-            </p>
+            {/* Price Section - Shopee Style */}
+            <div className="bg-soft-green/10 dark:bg-gray-700/50 rounded-lg p-3 sm:p-4 mb-4 sm:mb-6">
+              <div className="flex items-baseline gap-2">
+                <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 line-through">
+                  ₱{(product.price * 1.2).toFixed(2)}
+                </span>
+                <span className="text-2xl sm:text-3xl lg:text-4xl font-bold text-warm-orange">
+                  ₱{product.price}
+                </span>
+                <span className="px-2 py-1 bg-warm-orange text-white text-xs sm:text-sm font-bold rounded">
+                  -20%
+                </span>
+              </div>
+            </div>
 
             <div className="space-y-3 sm:space-y-4">
               <div>
@@ -364,22 +379,40 @@ export default function ProductPage({ params }: ProductPageProps) {
               </div>
             </div>
 
+            {/* Product Specifications - Shopee Style */}
             <div className="mt-6 sm:mt-8">
-              <h2 className="text-base sm:text-lg lg:text-xl font-semibold mb-3 sm:mb-4 text-gray-900 dark:text-white">Product Information</h2>
-              <div className="bg-cream-50 dark:bg-gray-700/50 p-4 sm:p-6 rounded-lg sm:rounded-xl border border-cream-100 dark:border-gray-600 space-y-3 sm:space-y-4">
-                <div>
-                  <h3 className="text-xs sm:text-sm font-semibold text-gray-800 dark:text-gray-200 mb-1.5 sm:mb-2">Description</h3>
-                  <p className="text-xs sm:text-sm lg:text-base text-gray-700 dark:text-gray-300">
-                    {product.description}
-                  </p>
+              <h2 className="text-base sm:text-lg font-semibold mb-3 text-gray-900 dark:text-white">Product Details</h2>
+              <div className="bg-soft-green/5 dark:bg-gray-700/30 rounded-lg border border-soft-green/20 dark:border-gray-600 overflow-hidden">
+                <div className="divide-y divide-soft-green/20 dark:divide-gray-600">
+                  <div className="flex py-2.5 sm:py-3 px-3 sm:px-4">
+                    <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 w-24 sm:w-32 flex-shrink-0">Category</span>
+                    <span className="text-xs sm:text-sm text-gray-900 dark:text-white font-medium">
+                      {product.category.charAt(0).toUpperCase() + product.category.slice(1)}
+                    </span>
+                  </div>
+                  <div className="flex py-2.5 sm:py-3 px-3 sm:px-4">
+                    <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 w-24 sm:w-32 flex-shrink-0">Stock</span>
+                    <span className="text-xs sm:text-sm text-gray-900 dark:text-white font-medium">
+                      {product.stock} pieces available
+                    </span>
+                  </div>
+                  <div className="flex py-2.5 sm:py-3 px-3 sm:px-4">
+                    <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 w-24 sm:w-32 flex-shrink-0">Origin</span>
+                    <span className="text-xs sm:text-sm text-gray-900 dark:text-white font-medium">
+                      Bulan, Sorsogon, Philippines
+                    </span>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="text-xs sm:text-sm font-semibold text-gray-800 dark:text-gray-200 mb-1.5 sm:mb-2">About This Product</h3>
-                  <p className="text-xs sm:text-sm lg:text-base text-gray-700 dark:text-gray-300">
-                    This {product.category} Lawlaw product is sourced directly from local fishermen in Bulan, Philippines.
-                    We ensure the highest quality and freshness for all our products.
-                  </p>
-                </div>
+              </div>
+            </div>
+
+            {/* Product Description - Shopee Style */}
+            <div className="mt-4 sm:mt-6">
+              <h2 className="text-base sm:text-lg font-semibold mb-3 text-gray-900 dark:text-white">Description</h2>
+              <div className="bg-white dark:bg-gray-700/30 rounded-lg p-3 sm:p-4 border border-gray-200 dark:border-gray-600">
+                <p className="text-xs sm:text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+                  {product.description}
+                </p>
               </div>
             </div>
           </div>

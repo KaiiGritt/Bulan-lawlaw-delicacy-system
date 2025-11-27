@@ -27,6 +27,12 @@ export async function GET() {
               }
             }
           }
+        },
+        comments: {
+          select: {
+            id: true,
+            rating: true
+          }
         }
       },
       orderBy: { createdAt: 'desc' }
