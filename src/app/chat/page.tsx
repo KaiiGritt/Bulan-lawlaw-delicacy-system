@@ -9,7 +9,15 @@ import EmojiPicker, { EmojiClickData } from 'emoji-picker-react'
 
 interface Conversation {
   id: string
-  seller: { id: string; name: string; email: string }
+  seller: {
+    id: string
+    name: string
+    email: string
+    sellerApplication?: {
+      businessName: string
+      businessLogo: string | null
+    } | null
+  }
   buyer: { id: string; name: string; email: string }
   product: { id: string; name: string; image: string }
   messages: Array<{
@@ -574,7 +582,17 @@ export default function ChatPage() {
                   {filteredConversations.map((conversation) => {
                     const lastMessage = conversation.messages[conversation.messages.length - 1]
                     const isSelected = selectedConversation?.id === conversation.id
-                    
+
+                    // Get the business logo and name for display
+                    const businessLogo = conversation.seller.sellerApplication?.businessLogo
+                    const businessName = conversation.seller.sellerApplication?.businessName
+                    const displayImage = session?.user.role === 'seller'
+                      ? conversation.product.image  // Sellers see product image
+                      : (businessLogo || conversation.product.image)  // Buyers see business logo or fallback to product
+                    const displayName = session?.user.role === 'seller'
+                      ? conversation.buyer.name  // Sellers see buyer name
+                      : (businessName || conversation.seller.name)  // Buyers see business name or fallback to seller name
+
                     return (
                       <div
                         key={conversation.id}
@@ -586,8 +604,8 @@ export default function ChatPage() {
                         <div className="flex items-center gap-3 w-full">
                           <div className="relative flex-shrink-0">
                             <img
-                              src={conversation.product.image}
-                              alt={conversation.product.name}
+                              src={displayImage}
+                              alt={displayName}
                               className="w-12 h-12 rounded-full object-cover border-2 border-gray-200 dark:border-gray-600"
                             />
                             <div className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-green-500 border-2 border-white dark:border-gray-900 rounded-full"></div>
@@ -595,7 +613,7 @@ export default function ChatPage() {
                           <div className="flex-1 min-w-0">
                             <div className="flex items-baseline justify-between gap-2 mb-1">
                               <h4 className="text-sm font-bold text-gray-900 dark:text-gray-100 truncate text-left">
-                                {session?.user.role === 'seller' ? conversation.buyer.name : conversation.seller.name}
+                                {displayName}
                               </h4>
                               <span className="text-xs text-gray-400 flex-shrink-0">
                                 {new Date(conversation.updatedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
@@ -637,20 +655,31 @@ export default function ChatPage() {
                       </button>
                       <div className="flex items-center space-x-3">
                         <img
-                          src={selectedConversation.product.image}
-                          alt={selectedConversation.product.name}
+                          src={
+                            session?.user.role === 'seller'
+                              ? selectedConversation.product.image
+                              : (selectedConversation.seller.sellerApplication?.businessLogo || selectedConversation.product.image)
+                          }
+                          alt={
+                            session?.user.role === 'seller'
+                              ? selectedConversation.product.name
+                              : (selectedConversation.seller.sellerApplication?.businessName || selectedConversation.seller.name)
+                          }
                           className="w-12 h-12 rounded-lg object-cover"
                         />
                         <div>
                           <h3 className="font-semibold text-gray-900 dark:text-gray-100">
-                            {selectedConversation.product.name}
+                            {session?.user.role === 'seller'
+                              ? selectedConversation.buyer.name
+                              : (selectedConversation.seller.sellerApplication?.businessName || selectedConversation.seller.name)
+                            }
                           </h3>
                           <p className="text-sm text-gray-600 dark:text-gray-400">
-                            {session?.user.role === 'seller' ? selectedConversation.buyer.name : selectedConversation.seller.name}
+                            {selectedConversation.product.name}
                           </p>
                         </div>
                       </div>
-                      
+
                       <div className="flex items-center space-x-2">
                         <button
                           className="p-2 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors"

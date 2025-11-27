@@ -3,10 +3,13 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '../../lib/auth'
 import { prisma } from '../../lib/prisma'
 
-// GET /api/products - Get all products
+// GET /api/products - Get all approved products
 export async function GET() {
   try {
     const products = await prisma.product.findMany({
+      where: {
+        status: 'approved' // Only show approved products
+      },
       include: {
         user: {
           select: {

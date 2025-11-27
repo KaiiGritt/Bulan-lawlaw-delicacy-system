@@ -24,7 +24,17 @@ export async function GET(request: NextRequest) {
       },
       include: {
         seller: {
-          select: { id: true, name: true, email: true }
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            sellerApplication: {
+              select: {
+                businessName: true,
+                businessLogo: true
+              }
+            }
+          }
         },
         buyer: {
           select: { id: true, name: true, email: true }
@@ -116,7 +126,17 @@ export async function POST(request: NextRequest) {
       },
       include: {
         seller: {
-          select: { id: true, name: true, email: true }
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            sellerApplication: {
+              select: {
+                businessName: true,
+                businessLogo: true
+              }
+            }
+          }
         },
         buyer: {
           select: { id: true, name: true, email: true }
