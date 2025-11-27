@@ -10,6 +10,7 @@ interface ReviewsSectionProps {
   itemId: string;
   itemType: 'product' | 'recipe';
   itemName: string;
+  productOwnerId?: string; // For seller reply functionality
 }
 
 interface Review {
@@ -24,7 +25,7 @@ interface Review {
   };
 }
 
-export default function ReviewsSection({ itemId, itemType, itemName }: ReviewsSectionProps) {
+export default function ReviewsSection({ itemId, itemType, itemName, productOwnerId }: ReviewsSectionProps) {
   const { data: session } = useSession();
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [userReview, setUserReview] = useState<Review | null>(null);
@@ -118,6 +119,7 @@ export default function ReviewsSection({ itemId, itemType, itemName }: ReviewsSe
           itemId={itemId}
           itemType={itemType}
           currentUserId={session?.user?.id}
+          productOwnerId={productOwnerId}
           onEditReview={handleEditReview}
         />
       </motion.div>

@@ -540,6 +540,7 @@ export default function ProductPage({ params }: ProductPageProps) {
             itemId={product.id}
             itemType="product"
             itemName={product.name}
+            productOwnerId={product.user.id}
           />
         </div>
 
