@@ -431,11 +431,11 @@ export default function AdminPage() {
           `}>
             <div className="p-4 h-full overflow-y-auto">
               {/* Mobile close button */}
-              <div className="lg:hidden flex justify-between items-center mb-4 pb-3 border-b">
-                <h2 className="font-semibold text-primary-green">Navigation</h2>
+              <div className="lg:hidden flex justify-between items-center mb-4 pb-3 border-b border-gray-200 dark:border-gray-700">
+                <h2 className="font-semibold text-primary-green dark:text-green-400">Navigation</h2>
                 <button
                   onClick={() => setSidebarOpen(false)}
-                  className="p-2 rounded-lg hover:bg-gray-100"
+                  className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300"
                   aria-label="Close menu"
                 >
                   <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -474,7 +474,7 @@ export default function AdminPage() {
                 ))}
               </nav>
 
-              <div className="mt-6 pt-6 border-t border-soft-green/30 dark:border-gray-700 space-y-3">
+              <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700 space-y-3">
                 <button
                   onClick={() => {
                     setActiveTab('orders');
