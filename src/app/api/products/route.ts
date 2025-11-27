@@ -18,7 +18,12 @@ export async function GET() {
             email: true,
             sellerApplication: {
               select: {
-                businessName: true
+                businessName: true,
+                businessLogo: true,
+                description: true,
+                businessType: true,
+                contactNumber: true,
+                address: true
               }
             }
           }
