@@ -2,8 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import toast, { Toaster } from 'react-hot-toast';
 
 interface BusinessPageProps {
   params: Promise<{
@@ -68,6 +70,7 @@ interface BusinessData {
 
 export default function BusinessPage({ params }: BusinessPageProps) {
   const { data: session } = useSession();
+  const router = useRouter();
   const [businessData, setBusinessData] = useState<BusinessData | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState('All');
@@ -123,6 +126,15 @@ export default function BusinessPage({ params }: BusinessPageProps) {
   };
 
   const handleAddToCart = async (productId: string) => {
+    if (!session) {
+      toast.error('Please login to add items to cart', {
+        duration: 3000,
+        position: 'top-center',
+      });
+      setTimeout(() => router.push('/login'), 1500);
+      return;
+    }
+
     setAddingToCart(productId);
     try {
       const response = await fetch('/api/cart', {
@@ -132,16 +144,20 @@ export default function BusinessPage({ params }: BusinessPageProps) {
       });
 
       if (response.ok) {
-        alert('Product added to cart!');
+        toast.success('Product added to cart!', {
+          duration: 2000,
+          position: 'top-center',
+        });
       } else if (response.status === 401) {
-        alert('Please login to add items to cart');
+        toast.error('Please login to add items to cart');
+        setTimeout(() => router.push('/login'), 1500);
       } else {
         const error = await response.json();
-        alert(error.error || 'Failed to add product to cart');
+        toast.error(error.error || 'Failed to add product to cart');
       }
     } catch (error) {
       console.error('Error adding to cart:', error);
-      alert('Failed to add product to cart');
+      toast.error('Failed to add product to cart. Please try again.');
     } finally {
       setAddingToCart(null);
     }
@@ -208,6 +224,7 @@ export default function BusinessPage({ params }: BusinessPageProps) {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-cream-50 to-green-50 dark:from-gray-900 dark:to-gray-800 py-6 sm:py-8 lg:py-12">
+      <Toaster position="top-center" />
       <div className="container mx-auto px-3 sm:px-4 lg:px-6">
         <div className="max-w-7xl mx-auto">
           {/* Business Header - Mobile Optimized with Animation */}

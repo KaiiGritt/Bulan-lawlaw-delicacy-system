@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import AddToCartModal from '../../components/AddToCartModal';
 import ReviewsSection from '../../components/ReviewsSection';
+import toast, { Toaster } from 'react-hot-toast';
 
 interface Product {
   id: string;
@@ -113,7 +114,25 @@ export default function ProductPage({ params }: ProductPageProps) {
   };
 
   const handleAddToCart = async () => {
-    if (!product) return;
+    if (!session) {
+      toast.error('Please login to add items to cart', {
+        duration: 3000,
+        position: 'top-center',
+      });
+      setTimeout(() => router.push('/login'), 1500);
+      return;
+    }
+
+    if (!product) {
+      toast.error('Product not found');
+      return;
+    }
+
+    if (quantity > product.stock) {
+      toast.error(`Only ${product.stock} items available in stock`);
+      return;
+    }
+
     setAddingToCart(true);
     try {
       const response = await fetch('/api/cart', {
@@ -128,16 +147,21 @@ export default function ProductPage({ params }: ProductPageProps) {
       });
 
       if (response.ok) {
+        toast.success('Product added to cart!', {
+          duration: 2000,
+          position: 'top-center',
+        });
         setShowCartModal(true);
       } else if (response.status === 401) {
-        alert('Please login to add items to cart');
+        toast.error('Please login to add items to cart');
+        setTimeout(() => router.push('/login'), 1500);
       } else {
         const error = await response.json();
-        alert(error.error || 'Failed to add product to cart');
+        toast.error(error.error || 'Failed to add product to cart');
       }
     } catch (error) {
       console.error('Error adding to cart:', error);
-      alert('Failed to add product to cart');
+      toast.error('Failed to add product to cart. Please try again.');
     } finally {
       setAddingToCart(false);
     }
@@ -249,6 +273,7 @@ export default function ProductPage({ params }: ProductPageProps) {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-cream-50 to-green-50 dark:from-gray-900 dark:to-gray-800 py-4 sm:py-8 lg:py-12">
+      <Toaster position="top-center" />
       <div className="container mx-auto px-3 sm:px-4 lg:px-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
           {/* Product Image */}
@@ -271,7 +296,6 @@ export default function ProductPage({ params }: ProductPageProps) {
             </div>
 
             <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-primary-green dark:text-green-400 mb-3 sm:mb-4">{product.name}</h1>
-            <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 mb-4 sm:mb-6">{product.description}</p>
 
             {/* Rating Display */}
             <div className="flex items-center mb-3 sm:mb-4">
@@ -342,11 +366,20 @@ export default function ProductPage({ params }: ProductPageProps) {
 
             <div className="mt-6 sm:mt-8">
               <h2 className="text-base sm:text-lg lg:text-xl font-semibold mb-3 sm:mb-4 text-gray-900 dark:text-white">Product Information</h2>
-              <div className="bg-cream-50 dark:bg-gray-700/50 p-4 sm:p-6 rounded-lg sm:rounded-xl border border-cream-100 dark:border-gray-600">
-                <p className="text-xs sm:text-sm lg:text-base text-gray-700 dark:text-gray-300">
-                  This {product.category} Lawlaw product is sourced directly from local fishermen in Bulan, Philippines.
-                  We ensure the highest quality and freshness for all our products.
-                </p>
+              <div className="bg-cream-50 dark:bg-gray-700/50 p-4 sm:p-6 rounded-lg sm:rounded-xl border border-cream-100 dark:border-gray-600 space-y-3 sm:space-y-4">
+                <div>
+                  <h3 className="text-xs sm:text-sm font-semibold text-gray-800 dark:text-gray-200 mb-1.5 sm:mb-2">Description</h3>
+                  <p className="text-xs sm:text-sm lg:text-base text-gray-700 dark:text-gray-300">
+                    {product.description}
+                  </p>
+                </div>
+                <div>
+                  <h3 className="text-xs sm:text-sm font-semibold text-gray-800 dark:text-gray-200 mb-1.5 sm:mb-2">About This Product</h3>
+                  <p className="text-xs sm:text-sm lg:text-base text-gray-700 dark:text-gray-300">
+                    This {product.category} Lawlaw product is sourced directly from local fishermen in Bulan, Philippines.
+                    We ensure the highest quality and freshness for all our products.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
