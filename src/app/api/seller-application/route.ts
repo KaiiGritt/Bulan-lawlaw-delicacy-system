@@ -89,3 +89,69 @@ export async function GET(request: NextRequest) {
     )
   }
 }
+
+// PUT /api/seller-application - Update seller business information
+export async function PUT(request: NextRequest) {
+  try {
+    const session = await getServerSession(authOptions)
+
+    if (!session) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      )
+    }
+
+    // Check if user is a seller
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      include: { sellerApplication: true }
+    })
+
+    if (!user || user.role !== 'seller') {
+      return NextResponse.json(
+        { error: 'Only sellers can update business information' },
+        { status: 403 }
+      )
+    }
+
+    if (!user.sellerApplication) {
+      return NextResponse.json(
+        { error: 'No seller application found' },
+        { status: 404 }
+      )
+    }
+
+    const body = await request.json()
+    const { businessName, businessType, description, contactNumber, address, businessLogo } = body
+
+    // Validate required fields
+    if (!businessName || !businessType || !description || !contactNumber || !address) {
+      return NextResponse.json(
+        { error: 'All required fields must be provided' },
+        { status: 400 }
+      )
+    }
+
+    // Update seller application
+    const updatedApplication = await prisma.sellerApplication.update({
+      where: { userId: session.user.id },
+      data: {
+        businessName,
+        businessType,
+        description,
+        contactNumber,
+        address,
+        businessLogo: businessLogo || user.sellerApplication.businessLogo,
+      }
+    })
+
+    return NextResponse.json(updatedApplication)
+  } catch (error) {
+    console.error('Error updating seller application:', error)
+    return NextResponse.json(
+      { error: 'Failed to update business information' },
+      { status: 500 }
+    )
+  }
+}

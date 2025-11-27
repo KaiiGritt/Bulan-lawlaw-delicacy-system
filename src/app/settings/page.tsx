@@ -28,8 +28,19 @@ export default function Settings() {
   });
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Business Info state
+  const [businessInfo, setBusinessInfo] = useState({
+    businessName: '',
+    businessType: '',
+    description: '',
+    contactNumber: '',
+    address: '',
+    businessLogo: '',
+  });
+  const [hasBusinessInfo, setHasBusinessInfo] = useState(false);
+
   useEffect(() => {
-    // Load user profile picture
+    // Load user profile picture and business info
     const loadUserProfile = async () => {
       try {
         const response = await fetch('/api/user/profile');
@@ -42,8 +53,33 @@ export default function Settings() {
       }
     };
 
+    const loadBusinessInfo = async () => {
+      try {
+        const response = await fetch('/api/seller-application');
+        if (response.ok) {
+          const data = await response.json();
+          if (data.hasApplication && data.application) {
+            setHasBusinessInfo(true);
+            setBusinessInfo({
+              businessName: data.application.businessName || '',
+              businessType: data.application.businessType || '',
+              description: data.application.description || '',
+              contactNumber: data.application.contactNumber || '',
+              address: data.application.address || '',
+              businessLogo: data.application.businessLogo || '',
+            });
+          }
+        }
+      } catch (error) {
+        console.error('Error loading business info:', error);
+      }
+    };
+
     if (session) {
       loadUserProfile();
+      if (session.user.role === 'seller') {
+        loadBusinessInfo();
+      }
     }
   }, [session]);
 
@@ -207,6 +243,31 @@ export default function Settings() {
     }
   };
 
+  const handleBusinessInfoUpdate = async () => {
+    if (!businessInfo.businessName || !businessInfo.businessType || !businessInfo.description || !businessInfo.contactNumber || !businessInfo.address) {
+      toast.error('Please fill in all required business information fields');
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/seller-application', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(businessInfo),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to update business information');
+      }
+
+      toast.success('Business information updated successfully!');
+    } catch (error: any) {
+      console.error('Error updating business info:', error);
+      toast.error(error.message || 'Failed to update business information');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-accent-cream to-soft-green/20 dark:from-gray-900 dark:to-gray-800 py-6 sm:py-8 px-3 sm:px-4 lg:px-8 relative">
       {/* Animated background */}
@@ -286,6 +347,98 @@ export default function Settings() {
               </div>
             </div>
           </div>
+
+          {/* Business Information - Only for Sellers */}
+          {session?.user?.role === 'seller' && hasBusinessInfo && (
+            <div className="bg-gray-50 dark:bg-gray-800 rounded-lg sm:rounded-xl p-4 sm:p-6">
+              <h3 className="text-lg sm:text-xl font-semibold text-gray-800 dark:text-gray-100 mb-3 sm:mb-4 flex items-center">
+                <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 110 2h-3a1 1 0 01-1-1v-2a1 1 0 00-1-1H9a1 1 0 00-1 1v2a1 1 0 01-1 1H4a1 1 0 110-2V4zm3 1h2v2H7V5zm2 4H7v2h2V9zm2-4h2v2h-2V5zm2 4h-2v2h2V9z" clipRule="evenodd" />
+                </svg>
+                Business Information
+              </h3>
+
+              <div className="space-y-3 sm:space-y-4">
+                <div>
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 sm:mb-2">
+                    Business Name *
+                  </label>
+                  <input
+                    type="text"
+                    value={businessInfo.businessName}
+                    onChange={(e) => setBusinessInfo({...businessInfo, businessName: e.target.value})}
+                    className="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-green bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100"
+                    placeholder="Your business name"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 sm:mb-2">
+                    Business Type *
+                  </label>
+                  <select
+                    value={businessInfo.businessType}
+                    onChange={(e) => setBusinessInfo({...businessInfo, businessType: e.target.value})}
+                    className="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-green bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100"
+                  >
+                    <option value="">Select business type</option>
+                    <option value="Fisherman">Fisherman</option>
+                    <option value="Farmer">Farmer</option>
+                    <option value="Processor">Processor</option>
+                    <option value="Distributor">Distributor</option>
+                    <option value="Retailer">Retailer</option>
+                    <option value="General">General</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 sm:mb-2">
+                    Description *
+                  </label>
+                  <textarea
+                    value={businessInfo.description}
+                    onChange={(e) => setBusinessInfo({...businessInfo, description: e.target.value})}
+                    rows={3}
+                    className="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-green bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100"
+                    placeholder="Describe your business"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 sm:mb-2">
+                    Contact Number *
+                  </label>
+                  <input
+                    type="tel"
+                    value={businessInfo.contactNumber}
+                    onChange={(e) => setBusinessInfo({...businessInfo, contactNumber: e.target.value})}
+                    className="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-green bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100"
+                    placeholder="+63 912 345 6789"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 sm:mb-2">
+                    Address *
+                  </label>
+                  <textarea
+                    value={businessInfo.address}
+                    onChange={(e) => setBusinessInfo({...businessInfo, address: e.target.value})}
+                    rows={2}
+                    className="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-green bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-100"
+                    placeholder="Your business address"
+                  />
+                </div>
+
+                <button
+                  onClick={handleBusinessInfoUpdate}
+                  className="w-full bg-gradient-to-r from-primary-green to-banana-leaf hover:from-leaf-green hover:to-soft-green text-white font-semibold py-2.5 sm:py-3 px-4 rounded-lg shadow-md hover:shadow-lg transition-all text-sm sm:text-base"
+                >
+                  Update Business Information
+                </button>
+              </div>
+            </div>
+          )}
 
           {/* Notification Preferences */}
           <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-6">
