@@ -7,7 +7,7 @@ import { sendOrderTrackingEmail } from '../../../../lib/notifications'
 // GET /api/orders/[id]/tracking - Get order tracking information
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions)
@@ -19,8 +19,9 @@ export async function GET(
       )
     }
 
+    const { id } = await params
     const order = await prisma.order.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         trackingHistory: {
           orderBy: { createdAt: 'desc' }
@@ -72,7 +73,7 @@ export async function GET(
 // POST /api/orders/[id]/tracking - Add tracking update (Seller/Admin only)
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions)
@@ -94,10 +95,11 @@ export async function POST(
       )
     }
 
+    const { id } = await params
     // Add tracking history entry
     const trackingEntry = await prisma.orderTrackingHistory.create({
       data: {
-        orderId: params.id,
+        orderId: id,
         status,
         location,
         description
@@ -106,7 +108,7 @@ export async function POST(
 
     // Update order status and get user info
     const order = await prisma.order.update({
-      where: { id: params.id },
+      where: { id },
       data: { status },
       include: {
         user: {
@@ -148,7 +150,7 @@ export async function POST(
 // PUT /api/orders/[id]/tracking - Update tracking info (Seller/Admin only)
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions)
@@ -179,8 +181,9 @@ export async function PUT(
       }
     }
 
+    const { id } = await params
     const order = await prisma.order.update({
-      where: { id: params.id },
+      where: { id },
       data: updateData,
       include: {
         trackingHistory: {
@@ -199,7 +202,7 @@ export async function PUT(
     if (status) {
       await prisma.orderTrackingHistory.create({
         data: {
-          orderId: params.id,
+          orderId: id,
           status,
           description: `Order status updated to ${status}`,
           location: null
