@@ -16,7 +16,6 @@ export async function GET(request: NextRequest) {
     // In the future, you can store these in a separate UserSettings table
     const settings = {
       notifications: true,
-      darkMode: false,
       emailUpdates: true,
       orderUpdates: true,
       promotionalEmails: false,

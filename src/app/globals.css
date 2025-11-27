@@ -97,56 +97,7 @@
   --font-mono: var(--font-geist-mono);
 }
 
-/* Dark mode variables */
-.dark {
-  /* Core Background & Foreground */
-  --background: #0a0a0a;
-  --foreground: #e8eaed;
-
-  /* Primary Brand Colors - Greens (Brighter for dark mode) */
-  --primary-green: #4ade80;
-  --leaf-green: #22c55e;
-  --soft-green: #86efac;
-  --banana-leaf: #4ade80;
-
-  /* Secondary Colors - Browns & Earth Tones (Adjusted for dark) */
-  --secondary-brown: #d2691e;
-  --earth-brown: #d97706;
-  --warm-orange: #fb923c;
-
-  /* Neutral & Accent */
-  --accent-cream: #1a1a1a;
-  --cream-50: #1a1a1a;
-  --green-50: #0f1f14;
-
-  /* Status Colors - Dark Mode */
-  --success-green: #22c55e;
-  --success-green-light: #4ade80;
-  --warning-yellow: #fbbf24;
-  --warning-orange: #fb923c;
-  --error-red: #f87171;
-  --info-blue: #60a5fa;
-  --info-purple: #c084fc;
-
-  /* Gradient Stops for Dark Mode */
-  --gradient-green-start: #22c55e;
-  --gradient-green-mid: #4ade80;
-  --gradient-green-end: #86efac;
-
-  --gradient-blue-start: #3b82f6;
-  --gradient-blue-mid: #60a5fa;
-  --gradient-blue-end: #93c5fd;
-
-  --gradient-purple-start: #a855f7;
-  --gradient-purple-mid: #c084fc;
-  --gradient-purple-end: #e9d5ff;
-
-  --gradient-orange-start: #f97316;
-  --gradient-orange-mid: #fb923c;
-  --gradient-orange-end: #fdba74;
-}
-
-/* Animated gradient background for dark mode */
+/* Animated gradient background */
 @keyframes gradientShift {
   0% {
     background-position: 0% 50%;
@@ -191,29 +142,12 @@
   }
 }
 
-.dark .animated-bg {
-  background: linear-gradient(-45deg, #0a0a0a, #1a1a2e, #16213e, #0f3460);
-  background-size: 400% 400%;
-  animation: gradientShift 15s ease infinite;
-}
-
-.dark .floating-orb {
+.floating-orb {
   animation: float 20s ease-in-out infinite;
 }
 
-.dark .pulsing-orb {
+.pulsing-orb {
   animation: pulse 4s ease-in-out infinite;
-}
-
-.dark .twinkling-star {
-  animation: twinkle 3s ease-in-out infinite;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not(.light) {
-    --background: #0f1419;
-    --foreground: #e8eaed;
-  }
 }
 
 body {

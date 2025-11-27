@@ -68,41 +68,35 @@ export default function Home() {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="relative h-screen flex items-center justify-center overflow-hidden bg-transparent dark:bg-gray-950">
-        <div className="absolute inset-0 bg-gradient-to-r from-primary-green/20 to-banana-leaf/20 dark:from-green-900/40 dark:to-blue-900/40"></div>
-        <div className="absolute inset-0 leaf-texture dark:hidden"></div>
+      <section className="relative h-screen flex items-center justify-center overflow-hidden bg-transparent">
+        <div className="absolute inset-0 bg-gradient-to-r from-primary-green/20 to-banana-leaf/20"></div>
+        <div className="absolute inset-0 leaf-texture"></div>
 
-        {/* Parallax background - enhanced for dark mode */}
+        {/* Parallax background */}
         <div className="absolute inset-0 parallax">
-          <div className="floating-orb absolute top-20 left-10 w-32 h-32 bg-banana-leaf/10 dark:bg-green-500/30 rounded-full blur-xl"></div>
-          <div className="floating-orb absolute bottom-20 right-10 w-48 h-48 bg-warm-orange/10 dark:bg-orange-500/30 rounded-full blur-xl" style={{ animationDelay: '3s' }}></div>
-          <div className="pulsing-orb absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-leaf-green/5 dark:bg-purple-600/20 rounded-full blur-2xl"></div>
-
-          {/* Extra orbs for dark mode */}
-          <div className="hidden dark:block">
-            <div className="floating-orb absolute top-40 right-20 w-40 h-40 bg-blue-500/20 rounded-full blur-2xl" style={{ animationDelay: '7s' }}></div>
-            <div className="pulsing-orb absolute bottom-40 left-20 w-56 h-56 bg-cyan-500/15 rounded-full blur-3xl" style={{ animationDelay: '2s' }}></div>
-          </div>
+          <div className="floating-orb absolute top-20 left-10 w-32 h-32 bg-banana-leaf/10 rounded-full blur-xl"></div>
+          <div className="floating-orb absolute bottom-20 right-10 w-48 h-48 bg-warm-orange/10 rounded-full blur-xl" style={{ animationDelay: '3s' }}></div>
+          <div className="pulsing-orb absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-leaf-green/5 rounded-full blur-2xl"></div>
         </div>
 
         <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
           <div className="fade-in-up">
-            <h1 className="text-5xl md:text-7xl font-bold text-primary-green dark:text-green-400 mb-6 leading-tight">
-              Authentic <span className="text-warm-orange dark:text-orange-400">Lawlaw</span> Delicacies
+            <h1 className="text-5xl md:text-7xl font-bold text-primary-green mb-6 leading-tight">
+              Authentic <span className="text-warm-orange">Lawlaw</span> Delicacies
             </h1>
-            <p className="text-xl md:text-2xl text-gray-700 dark:text-gray-300 mb-8 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-xl md:text-2xl text-gray-700 mb-8 max-w-2xl mx-auto leading-relaxed">
               Discover the finest seafood treasures from Bulan, Sorsogon. Fresh, sustainable, and bursting with Filipino flavor.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
                 href="/products"
-                className="btn-hover bg-primary-green dark:bg-green-600 text-white px-8 py-4 rounded-2xl font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-300"
+                className="btn-hover bg-primary-green text-white px-8 py-4 rounded-2xl font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-300"
               >
                 Shop Fresh Lawlaw
               </Link>
               <Link
                 href="/recipes"
-                className="btn-hover bg-white dark:bg-gray-800 text-primary-green dark:text-green-400 px-8 py-4 rounded-2xl font-semibold text-lg shadow-lg hover:shadow-xl border-2 border-primary-green dark:border-green-500 transition-all duration-300"
+                className="btn-hover bg-white text-primary-green px-8 py-4 rounded-2xl font-semibold text-lg shadow-lg hover:shadow-xl border-2 border-primary-green transition-all duration-300"
               >
                 Learn to Cook
               </Link>
@@ -123,14 +117,9 @@ export default function Home() {
       </section>
 
       {/* Featured Products Section */}
-      <section className="py-20 bg-white dark:bg-gray-950 relative">
-        {/* Animated background for dark mode */}
-        <div className="absolute inset-0 hidden dark:block overflow-hidden pointer-events-none">
-          <div className="floating-orb absolute -top-20 -left-20 w-96 h-96 bg-green-500/10 rounded-full blur-3xl" style={{ animationDelay: '1s' }}></div>
-          <div className="pulsing-orb absolute -bottom-20 -right-20 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl"></div>
-        </div>
+      <section className="py-20 bg-white relative">
         <div className="container mx-auto px-4 relative z-10">
-          <div className="text-center mb-16 dark:text-gray-100">
+          <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-primary-green mb-4">Bestselling Delicacies</h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
               Handpicked selections from our trusted fishermen partners
@@ -189,14 +178,9 @@ export default function Home() {
       </section>
 
       {/* Featured Recipes Section */}
-      <section className="py-20 bg-gradient-to-r from-accent-cream to-banana-leaf/10 dark:from-gray-900 dark:to-gray-950 relative">
-        {/* Animated background for dark mode */}
-        <div className="absolute inset-0 hidden dark:block overflow-hidden pointer-events-none">
-          <div className="pulsing-orb absolute top-20 right-20 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl" style={{ animationDelay: '3s' }}></div>
-          <div className="floating-orb absolute bottom-10 left-10 w-64 h-64 bg-cyan-500/10 rounded-full blur-3xl" style={{ animationDelay: '6s' }}></div>
-        </div>
+      <section className="py-20 bg-gradient-to-r from-accent-cream to-banana-leaf/10 relative">
         <div className="container mx-auto px-4 relative z-10">
-          <div className="text-center mb-16 dark:text-gray-100">
+          <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-primary-green mb-4">Culinary Adventures</h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
               Master the art of Filipino cooking with our step-by-step guides

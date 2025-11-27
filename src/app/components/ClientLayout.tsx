@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 import Header from "./Header";
 import Footer from "./Footer";
+import IdleTimeoutHandler from "./IdleTimeoutHandler";
 import { Session } from "next-auth";
 
 interface ClientLayoutProps {
@@ -21,6 +22,9 @@ export default function ClientLayout({ children, session }: ClientLayoutProps) {
 
   return (
     <>
+      {/* Idle Timeout Handler - Shows warning before auto-logout */}
+      <IdleTimeoutHandler timeoutMinutes={30} warningMinutes={2} />
+
       {!isAdminPage && <Header />}
       <main className={`min-h-screen ${!isAdminPage ? 'pt-16 sm:pt-20 pb-16 md:pb-0' : ''}`}>
         {children}
