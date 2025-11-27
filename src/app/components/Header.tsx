@@ -220,7 +220,7 @@ useEffect(() => {
       </header>
 
       {/* MOBILE BOTTOM NAVIGATION */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-gradient-to-r from-white via-accent-cream/50 to-white dark:bg-gradient-to-r dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 border-t border-soft-green/30 dark:border-gray-700 shadow-lg z-50 md:hidden">
+      <nav className="fixed bottom-0 left-0 right-0 bg-gradient-to-r from-white via-accent-cream/50 to-white dark:bg-gradient-to-r dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 border-t border-soft-green/30 dark:border-gray-700 shadow-lg z-[100] md:hidden">
         <div className="flex justify-around items-center h-16 text-gray-600 dark:text-gray-300">
           {!session && (
             <Link href="/" className="flex flex-col items-center text-xs hover:text-primary-green dark:hover:text-green-400 transition-colors">

@@ -26,11 +26,11 @@ export default function ReviewForm({ itemId, itemType, existingReview, onSubmitS
 
   if (!session) {
     return (
-      <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-xl p-6 text-center">
-        <p className="text-gray-700 dark:text-gray-300 mb-4">Please login to leave a review</p>
+      <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg sm:rounded-xl p-4 sm:p-6 text-center">
+        <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300 mb-3 sm:mb-4">Please login to leave a review</p>
         <button
           onClick={() => router.push('/login')}
-          className="bg-primary-green text-white px-6 py-2 rounded-lg hover:bg-leaf-green transition-colors"
+          className="bg-primary-green text-white px-4 sm:px-6 py-2 rounded-lg text-sm sm:text-base hover:bg-leaf-green transition-colors"
         >
           Login to Review
         </button>
@@ -115,19 +115,19 @@ export default function ReviewForm({ itemId, itemType, existingReview, onSubmitS
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-700"
+      className="bg-white dark:bg-gray-800 rounded-lg sm:rounded-xl p-4 sm:p-6 shadow-lg border border-gray-200 dark:border-gray-700"
     >
-      <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
+      <h3 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white mb-3 sm:mb-4">
         {existingReview ? 'Update Your Review' : 'Write a Review'}
       </h3>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
         {/* Star Rating */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Your Rating *
           </label>
-          <div className="flex gap-2">
+          <div className="flex gap-1 sm:gap-2">
             {[1, 2, 3, 4, 5].map((star) => (
               <button
                 key={star}
@@ -138,7 +138,7 @@ export default function ReviewForm({ itemId, itemType, existingReview, onSubmitS
                 className="transition-transform hover:scale-110 focus:outline-none"
               >
                 <svg
-                  className={`w-10 h-10 ${
+                  className={`w-8 h-8 sm:w-10 sm:h-10 ${
                     star <= (hoveredRating || rating)
                       ? 'text-yellow-400 fill-yellow-400'
                       : 'text-gray-300 dark:text-gray-600'
@@ -158,7 +158,7 @@ export default function ReviewForm({ itemId, itemType, existingReview, onSubmitS
             ))}
           </div>
           {rating > 0 && (
-            <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
+            <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-1 sm:mt-2">
               {rating === 1 && 'Poor'}
               {rating === 2 && 'Fair'}
               {rating === 3 && 'Good'}
@@ -170,7 +170,7 @@ export default function ReviewForm({ itemId, itemType, existingReview, onSubmitS
 
         {/* Review Text */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Your Review *
           </label>
           <textarea
@@ -178,7 +178,7 @@ export default function ReviewForm({ itemId, itemType, existingReview, onSubmitS
             onChange={(e) => setContent(e.target.value)}
             rows={4}
             placeholder="Share your experience with this product..."
-            className="w-full p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-green focus:border-transparent"
+            className="w-full p-2.5 sm:p-3 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-sm sm:text-base text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-green focus:border-transparent"
             required
           />
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
@@ -187,15 +187,15 @@ export default function ReviewForm({ itemId, itemType, existingReview, onSubmitS
         </div>
 
         {/* Submit Buttons */}
-        <div className="flex gap-3">
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
           <button
             type="submit"
             disabled={loading || rating === 0 || !content.trim()}
-            className="flex-1 bg-gradient-to-r from-primary-green to-banana-leaf hover:from-leaf-green hover:to-soft-green text-white px-6 py-3 rounded-lg font-medium shadow-md hover:shadow-lg transition-all transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2"
+            className="flex-1 bg-gradient-to-r from-primary-green to-banana-leaf hover:from-leaf-green hover:to-soft-green text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base font-medium shadow-md hover:shadow-lg transition-all transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2"
           >
             {loading ? (
               <>
-                <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                <svg className="animate-spin h-4 w-4 sm:h-5 sm:w-5" viewBox="0 0 24 24">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                 </svg>
@@ -203,7 +203,7 @@ export default function ReviewForm({ itemId, itemType, existingReview, onSubmitS
               </>
             ) : (
               <>
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
                 {existingReview ? 'Update Review' : 'Submit Review'}
@@ -216,9 +216,9 @@ export default function ReviewForm({ itemId, itemType, existingReview, onSubmitS
               type="button"
               onClick={handleDelete}
               disabled={loading}
-              className="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-lg font-medium shadow-md hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              className="bg-red-500 hover:bg-red-600 text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg text-sm sm:text-base font-medium shadow-md hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
               </svg>
               Delete

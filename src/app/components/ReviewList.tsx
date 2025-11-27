@@ -106,15 +106,15 @@ export default function ReviewList({ itemId, itemType, currentUserId, onEditRevi
 
   if (loading) {
     return (
-      <div className="space-y-4">
+      <div className="space-y-3 sm:space-y-4">
         {[1, 2, 3].map((i) => (
-          <div key={i} className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 animate-pulse">
-            <div className="flex gap-4">
-              <div className="w-12 h-12 bg-gray-200 dark:bg-gray-600 rounded-full"></div>
+          <div key={i} className="bg-gray-50 dark:bg-gray-700 rounded-lg p-3 sm:p-4 animate-pulse">
+            <div className="flex gap-3 sm:gap-4">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-200 dark:bg-gray-600 rounded-full"></div>
               <div className="flex-1 space-y-2">
-                <div className="h-4 bg-gray-200 dark:bg-gray-600 rounded w-1/4"></div>
-                <div className="h-4 bg-gray-200 dark:bg-gray-600 rounded w-3/4"></div>
-                <div className="h-4 bg-gray-200 dark:bg-gray-600 rounded w-1/2"></div>
+                <div className="h-3 sm:h-4 bg-gray-200 dark:bg-gray-600 rounded w-1/4"></div>
+                <div className="h-3 sm:h-4 bg-gray-200 dark:bg-gray-600 rounded w-3/4"></div>
+                <div className="h-3 sm:h-4 bg-gray-200 dark:bg-gray-600 rounded w-1/2"></div>
               </div>
             </div>
           </div>
@@ -124,41 +124,41 @@ export default function ReviewList({ itemId, itemType, currentUserId, onEditRevi
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Rating Summary */}
       {stats.total > 0 && (
-        <div className="bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 rounded-xl p-6 border border-yellow-200 dark:border-yellow-800">
-          <div className="grid md:grid-cols-2 gap-6">
+        <div className="bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 rounded-lg sm:rounded-xl p-4 sm:p-6 border border-yellow-200 dark:border-yellow-800">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
             {/* Overall Rating */}
             <div className="text-center">
-              <div className="text-5xl font-bold text-gray-900 dark:text-white mb-2">
+              <div className="text-4xl sm:text-5xl font-bold text-gray-900 dark:text-white mb-1 sm:mb-2">
                 {stats.average.toFixed(1)}
               </div>
-              <div className="flex justify-center mb-2">
+              <div className="flex justify-center mb-1 sm:mb-2">
                 {renderStars(Math.round(stats.average), 'lg')}
               </div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
+              <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
                 Based on {stats.total} {stats.total === 1 ? 'review' : 'reviews'}
               </p>
             </div>
 
             {/* Rating Distribution */}
-            <div className="space-y-2">
+            <div className="space-y-1.5 sm:space-y-2">
               {[5, 4, 3, 2, 1].map((star) => {
                 const count = stats.distribution[star - 1];
                 const percentage = stats.total > 0 ? (count / stats.total) * 100 : 0;
                 return (
                   <div key={star} className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300 w-8">
+                    <span className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 w-6 sm:w-8">
                       {star}★
                     </span>
-                    <div className="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                    <div className="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-1.5 sm:h-2">
                       <div
-                        className="bg-yellow-400 h-2 rounded-full transition-all"
+                        className="bg-yellow-400 h-1.5 sm:h-2 rounded-full transition-all"
                         style={{ width: `${percentage}%` }}
                       ></div>
                     </div>
-                    <span className="text-sm text-gray-600 dark:text-gray-400 w-12">
+                    <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 w-8 sm:w-12">
                       {count}
                     </span>
                   </div>
@@ -170,18 +170,18 @@ export default function ReviewList({ itemId, itemType, currentUserId, onEditRevi
       )}
 
       {/* Reviews List */}
-      <div className="space-y-4">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+      <div className="space-y-3 sm:space-y-4">
+        <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">
           Customer Reviews ({stats.total})
         </h3>
 
         {reviews.length === 0 ? (
-          <div className="text-center py-12 bg-gray-50 dark:bg-gray-800 rounded-lg">
-            <svg className="w-16 h-16 mx-auto mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="text-center py-8 sm:py-12 bg-gray-50 dark:bg-gray-800 rounded-lg">
+            <svg className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-2 sm:mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
             </svg>
-            <p className="text-gray-500 dark:text-gray-400">No reviews yet</p>
-            <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">Be the first to review!</p>
+            <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400">No reviews yet</p>
+            <p className="text-xs sm:text-sm text-gray-400 dark:text-gray-500 mt-1">Be the first to review!</p>
           </div>
         ) : (
           reviews.map((review, index) => (
@@ -190,34 +190,34 @@ export default function ReviewList({ itemId, itemType, currentUserId, onEditRevi
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.05 }}
-              className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700"
+              className="bg-gray-50 dark:bg-gray-800 rounded-lg p-3 sm:p-4 lg:p-6 border border-gray-200 dark:border-gray-700"
             >
-              <div className="flex gap-4">
+              <div className="flex gap-3 sm:gap-4">
                 {/* User Avatar */}
                 <div className="flex-shrink-0">
                   {review.user.profilePicture ? (
                     <img
                       src={review.user.profilePicture}
                       alt={review.user.name || 'User'}
-                      className="w-12 h-12 rounded-full object-cover"
+                      className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover"
                     />
                   ) : (
-                    <div className="w-12 h-12 bg-gradient-to-br from-primary-green to-leaf-green rounded-full flex items-center justify-center text-white font-bold">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-primary-green to-leaf-green rounded-full flex items-center justify-center text-white text-sm sm:text-base font-bold">
                       {review.user.name?.charAt(0).toUpperCase() || 'U'}
                     </div>
                   )}
                 </div>
 
                 {/* Review Content */}
-                <div className="flex-1">
-                  <div className="flex items-start justify-between mb-2">
-                    <div>
-                      <h4 className="font-semibold text-gray-900 dark:text-white">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-start justify-between gap-2 mb-1 sm:mb-2">
+                    <div className="flex-1 min-w-0">
+                      <h4 className="text-sm sm:text-base font-semibold text-gray-900 dark:text-white truncate">
                         {review.user.name || 'Anonymous User'}
                       </h4>
-                      <div className="flex items-center gap-2 mt-1">
+                      <div className="flex items-center gap-1.5 sm:gap-2 mt-0.5 sm:mt-1">
                         {renderStars(review.rating, 'sm')}
-                        <span className="text-xs text-gray-500 dark:text-gray-400">
+                        <span className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400">
                           {new Date(review.createdAt).toLocaleDateString()}
                         </span>
                       </div>
@@ -226,17 +226,17 @@ export default function ReviewList({ itemId, itemType, currentUserId, onEditRevi
                     {currentUserId === review.user.id && (
                       <button
                         onClick={() => onEditReview?.(review)}
-                        className="text-sm text-primary-green hover:text-leaf-green font-medium flex items-center gap-1"
+                        className="text-xs sm:text-sm text-primary-green hover:text-leaf-green font-medium flex items-center gap-1 flex-shrink-0"
                       >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                         </svg>
-                        Edit
+                        <span className="hidden sm:inline">Edit</span>
                       </button>
                     )}
                   </div>
 
-                  <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
+                  <p className="text-xs sm:text-sm lg:text-base text-gray-700 dark:text-gray-300 whitespace-pre-wrap break-words">
                     {review.content}
                   </p>
                 </div>
