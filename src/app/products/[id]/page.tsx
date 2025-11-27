@@ -421,7 +421,7 @@ export default function ProductPage({ params }: ProductPageProps) {
         {/* Business/Seller Section - Shopee Style - Mobile Optimized */}
         {product.user.sellerApplication && (
           <Link
-            href={`/shop/${shopSlug}`}
+            href={`/seller-shop/${shopSlug}`}
             className="block mt-4 sm:mt-6 lg:mt-8 bg-gradient-to-r from-white to-soft-green/5 dark:from-gray-800 dark:to-gray-700 rounded-xl sm:rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 border border-soft-green/30 dark:border-gray-600 overflow-hidden"
           >
             <div className="p-3 sm:p-4">
