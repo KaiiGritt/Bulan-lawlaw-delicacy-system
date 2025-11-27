@@ -22,7 +22,7 @@ export default function ClientLayout({ children, session }: ClientLayoutProps) {
   return (
     <>
       {!isAdminPage && <Header />}
-      <main className="min-h-screen">
+      <main className={`min-h-screen ${!isAdminPage ? 'pt-16 sm:pt-20' : ''}`}>
         {children}
       </main>
       {showFooter && <Footer />}
