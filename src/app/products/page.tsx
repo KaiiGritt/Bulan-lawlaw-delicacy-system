@@ -250,27 +250,38 @@ export default function ProductsPage() {
                   </span>
                 </div>
 
-                {/* Add to Cart Button - Mobile Optimized */}
-                <button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleAddToCart(product.id);
-                  }}
-                  disabled={addingToCart === product.id}
-                  className="w-full mt-2 sm:mt-3 bg-primary-green hover:bg-leaf-green text-white py-1.5 sm:py-2 rounded-md sm:rounded-lg text-xs sm:text-sm font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1 sm:gap-2"
-                >
-                  {addingToCart === product.id ? (
-                    <div className="animate-spin rounded-full h-3 w-3 sm:h-4 sm:w-4 border-2 border-white border-t-transparent"></div>
-                  ) : (
-                    <>
-                      <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.1 5H19M7 13l-1.1 5M7 13h10m0 0v8a2 2 0 01-2 2H9a2 2 0 01-2-2v-8" />
-                      </svg>
-                      <span className="hidden sm:inline">Add to Cart</span>
-                      <span className="sm:hidden">Add</span>
-                    </>
-                  )}
-                </button>
+                {/* Action Buttons - Buy Now and Add to Cart */}
+                <div className="flex gap-1.5 sm:gap-2 mt-2 sm:mt-3">
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      window.location.href = `/products/${product.id}`;
+                    }}
+                    className="flex-1 bg-warm-orange hover:bg-orange-600 text-white py-1.5 sm:py-2 rounded-md sm:rounded-lg text-xs sm:text-sm font-medium transition-all"
+                  >
+                    <span className="hidden sm:inline">Buy Now</span>
+                    <span className="sm:hidden">Buy</span>
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleAddToCart(product.id);
+                    }}
+                    disabled={addingToCart === product.id}
+                    className="flex-1 bg-primary-green hover:bg-leaf-green text-white py-1.5 sm:py-2 rounded-md sm:rounded-lg text-xs sm:text-sm font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1"
+                  >
+                    {addingToCart === product.id ? (
+                      <div className="animate-spin rounded-full h-3 w-3 sm:h-4 sm:w-4 border-2 border-white border-t-transparent"></div>
+                    ) : (
+                      <>
+                        <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.1 5H19M7 13l-1.1 5M7 13h10m0 0v8a2 2 0 01-2 2H9a2 2 0 01-2-2v-8" />
+                        </svg>
+                        <span className="hidden sm:inline">Add</span>
+                      </>
+                    )}
+                  </button>
+                </div>
               </div>
             </Link>
           ))}

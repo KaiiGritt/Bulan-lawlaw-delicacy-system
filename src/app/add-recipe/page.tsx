@@ -46,8 +46,8 @@ export default function AddRecipePage() {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.size > 5 * 1024 * 1024) {
-        toast.error('Image size should be less than 5MB');
+      if (file.size > 2 * 1024 * 1024) {
+        toast.error('Image size should be less than 2MB');
         return;
       }
 
@@ -129,7 +129,8 @@ export default function AddRecipePage() {
       });
 
       if (!uploadRes.ok) {
-        throw new Error('Image upload failed');
+        const errorData = await uploadRes.json();
+        throw new Error(errorData.error || 'Image upload failed');
       }
 
       const { imageUrl } = await uploadRes.json();

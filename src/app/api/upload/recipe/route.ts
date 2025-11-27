@@ -29,8 +29,9 @@ export async function POST(request: NextRequest) {
     // Validate file size (2MB max for base64)
     const maxSize = 2 * 1024 * 1024; // 2MB (reduced for base64)
     if (file.size > maxSize) {
+      const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
       return NextResponse.json(
-        { error: 'File too large. Maximum size is 2MB.' },
+        { error: `File too large (${sizeMB}MB). Maximum size is 2MB. Please compress your image or choose a smaller file.` },
         { status: 400 }
       );
     }

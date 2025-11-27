@@ -1,7 +1,6 @@
 'use client';
 
 import { notFound, useRouter } from 'next/navigation';
-import { mockRecipes } from '../../data/mockData';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
@@ -19,6 +18,21 @@ import {
   HeartIcon as HeartSolidIcon,
 } from '@heroicons/react/24/solid';
 
+interface Recipe {
+  id: string;
+  title: string;
+  description: string;
+  ingredients: string[];
+  instructions: string[];
+  image: string;
+  prepTime: number;
+  cookTime: number;
+  servings: number;
+  difficulty: string;
+  rating: number;
+  createdAt: string;
+}
+
 interface RecipePageProps {
   params: Promise<{
     id: string;
@@ -26,28 +40,74 @@ interface RecipePageProps {
 }
 
 export default function RecipePage({ params }: RecipePageProps) {
-  const [recipeId, setRecipeId] = useState<string | null>(null);
+  const [recipe, setRecipe] = useState<Recipe | null>(null);
+  const [loading, setLoading] = useState(true);
   const [isFavorite, setIsFavorite] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const { data: session } = useSession();
   const router = useRouter();
 
   useEffect(() => {
-    params.then(({ id }) => {
-      setRecipeId(id);
-      // Check if recipe is favorited or saved
-      const favorites = JSON.parse(localStorage.getItem('favoriteRecipes') || '[]');
-      const saved = JSON.parse(localStorage.getItem('savedRecipes') || '[]');
-      setIsFavorite(favorites.includes(id));
-      setIsSaved(saved.includes(id));
-    });
-  }, [params]);
+    const fetchRecipe = async () => {
+      try {
+        const { id } = await params;
+        const response = await fetch(`/api/recipes/${id}`);
 
-  if (!recipeId) {
-    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+        if (!response.ok) {
+          if (response.status === 404) {
+            notFound();
+          }
+          throw new Error('Failed to fetch recipe');
+        }
+
+        const data = await response.json();
+        setRecipe(data);
+
+        // Check if recipe is favorited or saved
+        if (session) {
+          checkFavoriteStatus(id);
+          checkSavedStatus(id);
+        }
+      } catch (error) {
+        console.error('Error fetching recipe:', error);
+        toast.error('Failed to load recipe');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRecipe();
+  }, [params, session]);
+
+  const checkFavoriteStatus = async (recipeId: string) => {
+    try {
+      const res = await fetch('/api/recipe-favorites');
+      if (res.ok) {
+        const data = await res.json();
+        setIsFavorite(data.some((f: any) => f.recipeId === recipeId));
+      }
+    } catch (error) {
+      console.error('Error checking favorite status:', error);
+    }
+  };
+
+  const checkSavedStatus = async (recipeId: string) => {
+    try {
+      const res = await fetch('/api/saved-recipes');
+      if (res.ok) {
+        const data = await res.json();
+        setIsSaved(data.some((s: any) => s.recipeId === recipeId));
+      }
+    } catch (error) {
+      console.error('Error checking saved status:', error);
+    }
+  };
+
+  if (loading) {
+    return <div className="min-h-screen flex items-center justify-center">
+      <div className="animate-spin w-12 h-12 border-4 border-primary-green border-t-transparent rounded-full"></div>
+    </div>;
   }
-
-  const recipe = mockRecipes.find(r => r.id === recipeId);
 
   if (!recipe) {
     notFound();
@@ -249,48 +309,74 @@ export default function RecipePage({ params }: RecipePageProps) {
     toast.success('Recipe link copied to clipboard!');
   };
 
-  const handleToggleFavorite = () => {
+  const handleToggleFavorite = async () => {
     if (!session) {
       toast.error('Please login to favorite recipes');
       router.push('/login');
       return;
     }
 
-    const favorites = JSON.parse(localStorage.getItem('favoriteRecipes') || '[]');
-    let newFavorites;
+    if (!recipe) return;
 
-    if (isFavorite) {
-      newFavorites = favorites.filter((id: string) => id !== recipeId);
-      toast.success('Removed from favorites');
-    } else {
-      newFavorites = [...favorites, recipeId];
-      toast.success('Added to favorites!');
+    try {
+      if (isFavorite) {
+        const res = await fetch(`/api/recipe-favorites?recipeId=${recipe.id}`, {
+          method: 'DELETE'
+        });
+        if (res.ok) {
+          setIsFavorite(false);
+          toast.success('Removed from favorites');
+        }
+      } else {
+        const res = await fetch('/api/recipe-favorites', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ recipeId: recipe.id })
+        });
+        if (res.ok) {
+          setIsFavorite(true);
+          toast.success('Added to favorites!');
+        }
+      }
+    } catch (error) {
+      console.error('Error toggling favorite:', error);
+      toast.error('Failed to update favorites');
     }
-
-    localStorage.setItem('favoriteRecipes', JSON.stringify(newFavorites));
-    setIsFavorite(!isFavorite);
   };
 
-  const handleToggleSave = () => {
+  const handleToggleSave = async () => {
     if (!session) {
       toast.error('Please login to save recipes');
       router.push('/login');
       return;
     }
 
-    const saved = JSON.parse(localStorage.getItem('savedRecipes') || '[]');
-    let newSaved;
+    if (!recipe) return;
 
-    if (isSaved) {
-      newSaved = saved.filter((id: string) => id !== recipeId);
-      toast.success('Removed from saved recipes');
-    } else {
-      newSaved = [...saved, recipeId];
-      toast.success('Recipe saved!');
+    try {
+      if (isSaved) {
+        const res = await fetch(`/api/saved-recipes?recipeId=${recipe.id}`, {
+          method: 'DELETE'
+        });
+        if (res.ok) {
+          setIsSaved(false);
+          toast.success('Removed from saved recipes');
+        }
+      } else {
+        const res = await fetch('/api/saved-recipes', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ recipeId: recipe.id })
+        });
+        if (res.ok) {
+          setIsSaved(true);
+          toast.success('Recipe saved!');
+        }
+      }
+    } catch (error) {
+      console.error('Error toggling saved:', error);
+      toast.error('Failed to update saved recipes');
     }
-
-    localStorage.setItem('savedRecipes', JSON.stringify(newSaved));
-    setIsSaved(!isSaved);
   };
 
   return (
@@ -444,41 +530,12 @@ export default function RecipePage({ params }: RecipePageProps) {
           {/* Reviews Section */}
           <div className="mt-12 fade-in-up" style={{ animationDelay: '0.3s' }}>
             <ReviewsSection
-              itemId={recipeId}
+              itemId={recipe.id}
               itemType="recipe"
               itemName={recipe.title}
             />
           </div>
 
-          {/* Related Recipes Section */}
-          <div className="mt-12 bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-soft-green/20 dark:border-gray-700 p-8 fade-in-up" style={{ animationDelay: '0.4s' }}>
-            <h2 className="text-2xl font-bold text-primary-green dark:text-green-400 mb-6">More Lawlaw Recipes</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {mockRecipes
-                .filter(r => r.id !== recipe.id)
-                .slice(0, 3)
-                .map((relatedRecipe) => (
-                  <Link
-                    key={relatedRecipe.id}
-                    href={`/recipes/${relatedRecipe.id}`}
-                    className="card-hover group"
-                  >
-                    <div className="bg-gray-100 dark:bg-gray-700 h-48 rounded-xl overflow-hidden mb-4 relative">
-                      <Image
-                        src={relatedRecipe.image || "/api/placeholder/300/200"}
-                        alt={relatedRecipe.title}
-                        fill
-                        className="object-cover group-hover:scale-105 transition-transform duration-300"
-                      />
-                    </div>
-                    <h3 className="font-semibold text-primary-green dark:text-green-400 mb-2 group-hover:text-leaf-green transition-colors duration-200">
-                      {relatedRecipe.title}
-                    </h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">{relatedRecipe.description}</p>
-                  </Link>
-                ))}
-            </div>
-          </div>
 
           {/* Call to Action */}
           <div className="mt-12 text-center bg-gradient-to-r from-primary-green to-banana-leaf rounded-2xl p-8 text-white fade-in-up" style={{ animationDelay: '0.5s' }}>
