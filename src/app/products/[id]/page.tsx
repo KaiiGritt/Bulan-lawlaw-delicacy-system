@@ -20,6 +20,8 @@ interface Product {
     email: string;
     sellerApplication: {
       businessName: string;
+      businessLogo: string | null;
+      businessDescription: string | null;
     } | null;
   };
   rating: number;
@@ -47,6 +49,8 @@ interface SuggestedProduct {
     email: string;
     sellerApplication: {
       businessName: string;
+      businessLogo: string | null;
+      businessDescription: string | null;
     } | null;
   };
 }
@@ -69,6 +73,7 @@ export default function ProductPage({ params }: ProductPageProps) {
   const [userComment, setUserComment] = useState('');
   const [submittingReview, setSubmittingReview] = useState(false);
   const [showCartModal, setShowCartModal] = useState(false);
+  const [isFollowing, setIsFollowing] = useState(false);
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -147,6 +152,15 @@ export default function ProductPage({ params }: ProductPageProps) {
     }
     // Start a conversation with the seller
     router.push(`/chat?productId=${product.id}&sellerId=${product.user.id}`);
+  };
+
+  const handleFollowToggle = () => {
+    if (!session) {
+      alert('Please login to follow this seller');
+      return;
+    }
+    // Toggle follow state (you can implement actual API call here)
+    setIsFollowing(!isFollowing);
   };
 
   const handleSubmitReview = async () => {
@@ -284,21 +298,6 @@ export default function ProductPage({ params }: ProductPageProps) {
   return (
     <div className="min-h-screen bg-gradient-to-br from-cream-50 to-green-50 py-12">
       <div className="container mx-auto px-4">
-        {/* Business Name Header */}
-        {product.user.sellerApplication?.businessName && (
-          <div className="mb-8 text-center">
-            <Link
-              href={`/business/${businessSlug}`}
-              className="inline-flex items-center text-lg text-primary-green hover:text-leaf-green transition-colors duration-300"
-            >
-              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-              </svg>
-              {product.user.sellerApplication.businessName}
-            </Link>
-          </div>
-        )}
-
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Product Image */}
           <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100">
@@ -400,6 +399,91 @@ export default function ProductPage({ params }: ProductPageProps) {
             </div>
           </div>
         </div>
+
+        {/* Business/Seller Section - Shopee Style */}
+        {product.user.sellerApplication && (
+          <div className="mt-8 bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+            <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
+              {/* Business Logo */}
+              <div className="flex-shrink-0">
+                <img
+                  src={product.user.sellerApplication.businessLogo || '/placeholder-business.png'}
+                  alt={product.user.sellerApplication.businessName}
+                  className="w-20 h-20 rounded-full object-cover border-2 border-primary-green"
+                />
+              </div>
+
+              {/* Business Info */}
+              <div className="flex-1">
+                <Link
+                  href={`/business/${businessSlug}`}
+                  className="text-xl font-bold text-primary-green hover:text-leaf-green transition-colors duration-300 inline-flex items-center gap-2"
+                >
+                  {product.user.sellerApplication.businessName}
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </Link>
+                {product.user.sellerApplication.businessDescription && (
+                  <p className="text-gray-600 text-sm mt-2 line-clamp-2">
+                    {product.user.sellerApplication.businessDescription}
+                  </p>
+                )}
+                <div className="flex items-center gap-4 mt-3">
+                  <div className="flex items-center text-sm text-gray-600">
+                    <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                    Products: {suggestedProducts.length + 1}
+                  </div>
+                  <div className="flex items-center text-sm text-gray-600">
+                    <svg className="w-4 h-4 mr-1 text-yellow-400 fill-current" viewBox="0 0 24 24">
+                      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                    </svg>
+                    {product.rating?.toFixed(1) || '0.0'} Rating
+                  </div>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+                <button
+                  onClick={handleContactSeller}
+                  className="btn-hover bg-primary-green text-white px-6 py-2.5 rounded-lg font-medium hover:bg-leaf-green transition-colors duration-300 flex items-center justify-center gap-2"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                  </svg>
+                  Contact Seller
+                </button>
+                <button
+                  onClick={handleFollowToggle}
+                  className={`btn-hover px-6 py-2.5 rounded-lg font-medium transition-colors duration-300 flex items-center justify-center gap-2 ${
+                    isFollowing
+                      ? 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                      : 'bg-white text-primary-green border-2 border-primary-green hover:bg-primary-green hover:text-white'
+                  }`}
+                >
+                  {isFollowing ? (
+                    <>
+                      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      Following
+                    </>
+                  ) : (
+                    <>
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                      </svg>
+                      Follow
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Reviews Section */}
         <div className="mt-12 bg-white rounded-2xl shadow-lg p-8 border border-gray-100">

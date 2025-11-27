@@ -16,7 +16,14 @@ export async function GET(
           select: {
             id: true,
             name: true,
-            email: true
+            email: true,
+            sellerApplication: {
+              select: {
+                businessName: true,
+                businessLogo: true,
+                businessDescription: true
+              }
+            }
           }
         }
       }
