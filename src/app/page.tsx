@@ -3,6 +3,8 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 
 interface Product {
   id: string;
@@ -23,9 +25,18 @@ interface Recipe {
 }
 
 export default function Home() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
   const [featuredRecipes, setFeaturedRecipes] = useState<Recipe[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Redirect logged-in users to profile
+  useEffect(() => {
+    if (status === 'authenticated' && session) {
+      router.push('/profile');
+    }
+  }, [status, session, router]);
 
   useEffect(() => {
     const fetchData = async () => {

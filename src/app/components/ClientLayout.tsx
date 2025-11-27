@@ -16,13 +16,16 @@ export default function ClientLayout({ children, session }: ClientLayoutProps) {
   // Hide header for admin pages
   const isAdminPage = pathname?.startsWith('/admin');
 
+  // Hide footer for logged-in users and admin pages
+  const showFooter = !session && !isAdminPage;
+
   return (
     <>
       {!isAdminPage && <Header />}
       <main className="min-h-screen">
         {children}
       </main>
-      <Footer />
+      {showFooter && <Footer />}
     </>
   );
 }

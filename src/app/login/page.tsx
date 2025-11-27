@@ -206,7 +206,7 @@ export default function LoginPage() {
                 <div className="grid grid-cols-2 gap-3">
                   <button
                     type="button"
-                    onClick={() => signIn('google', { callbackUrl: '/' })}
+                    onClick={() => signIn('google', { callbackUrl: '/profile' })}
                     className="flex items-center justify-center gap-2 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors shadow-sm hover:shadow-md"
                   >
                     <svg className="w-5 h-5" viewBox="0 0 24 24">

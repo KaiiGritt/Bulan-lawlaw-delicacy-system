@@ -29,10 +29,20 @@ export async function GET(request: NextRequest) {
         id: true,
         email: true,
         name: true,
+        phoneNumber: true,
         role: true,
         profilePicture: true,
         createdAt: true,
-        emailVerified: true
+        emailVerified: true,
+        sellerApplication: {
+          select: {
+            id: true,
+            businessName: true,
+            businessType: true,
+            status: true,
+            createdAt: true
+          }
+        }
       }
     })
 
@@ -45,7 +55,18 @@ export async function GET(request: NextRequest) {
     }
 
     console.log('Profile API - User found:', user.email)
-    return NextResponse.json(user)
+
+    // Transform the response to match frontend expectations
+    const response = {
+      ...user,
+      phone: user.phoneNumber,
+      sellerApplication: user.sellerApplication ? {
+        ...user.sellerApplication,
+        submittedAt: user.sellerApplication.createdAt
+      } : undefined
+    }
+
+    return NextResponse.json(response)
   } catch (error) {
     console.error('Error fetching user profile:', error)
     return NextResponse.json(

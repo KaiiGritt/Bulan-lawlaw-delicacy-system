@@ -45,9 +45,9 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/login', request.url));
   }
 
-  // If user is logged in and trying to access auth routes, redirect to home
+  // If user is logged in and trying to access auth routes, redirect to profile
   if (isLoggedIn && isAuthRoute) {
-    return NextResponse.redirect(new URL('/', request.url));
+    return NextResponse.redirect(new URL('/profile', request.url));
   }
 
   // If user is not logged in and trying to access protected routes

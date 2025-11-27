@@ -27,12 +27,12 @@ export async function GET() {
   }
 }
 
-// POST /api/recipes - Create a new recipe (admin only)
+// POST /api/recipes - Create a new recipe (admin, user, and seller)
 export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
 
-    if (!session || session.user.role !== 'admin') {
+    if (!session || !['admin', 'user', 'seller'].includes(session.user.role)) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
