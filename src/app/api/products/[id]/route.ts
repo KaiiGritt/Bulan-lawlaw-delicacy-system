@@ -21,7 +21,8 @@ export async function GET(
               select: {
                 businessName: true,
                 businessLogo: true,
-                description: true
+                description: true,
+                address: true
               }
             }
           }
