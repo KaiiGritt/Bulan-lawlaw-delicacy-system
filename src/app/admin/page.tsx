@@ -423,8 +423,8 @@ export default function AdminPage() {
           {/* Sidebar - Mobile Overlay / Desktop Fixed */}
           <aside className={`
             fixed lg:sticky top-[73px] left-0 h-[calc(100vh-73px)] lg:h-auto
-            w-64 lg:w-72 bg-gradient-to-b from-white via-accent-cream/20 to-white dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 lg:backdrop-blur
-            rounded-none lg:rounded-2xl shadow-xl lg:shadow-lg border-r lg:border border-soft-green/30 dark:border-gray-700
+            w-64 lg:w-72 bg-white dark:bg-gray-800
+            rounded-none lg:rounded-2xl shadow-xl lg:shadow-lg border-r lg:border border-gray-200 dark:border-gray-700
             transition-transform duration-300 ease-in-out z-30
             ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
             lg:flex-shrink-0
