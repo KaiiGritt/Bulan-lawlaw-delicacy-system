@@ -7,6 +7,7 @@ import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import toast, { Toaster } from 'react-hot-toast';
+import ReviewsSection from '../../components/ReviewsSection';
 import {
   PrinterIcon,
   BookmarkIcon,
@@ -440,8 +441,17 @@ export default function RecipePage({ params }: RecipePageProps) {
             </div>
           </div>
 
+          {/* Reviews Section */}
+          <div className="mt-12 fade-in-up" style={{ animationDelay: '0.3s' }}>
+            <ReviewsSection
+              itemId={recipeId}
+              itemType="recipe"
+              itemName={recipe.title}
+            />
+          </div>
+
           {/* Related Recipes Section */}
-          <div className="mt-12 bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-soft-green/20 dark:border-gray-700 p-8 fade-in-up" style={{ animationDelay: '0.3s' }}>
+          <div className="mt-12 bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-soft-green/20 dark:border-gray-700 p-8 fade-in-up" style={{ animationDelay: '0.4s' }}>
             <h2 className="text-2xl font-bold text-primary-green dark:text-green-400 mb-6">More Lawlaw Recipes</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {mockRecipes
@@ -471,7 +481,7 @@ export default function RecipePage({ params }: RecipePageProps) {
           </div>
 
           {/* Call to Action */}
-          <div className="mt-12 text-center bg-gradient-to-r from-primary-green to-banana-leaf rounded-2xl p-8 text-white fade-in-up" style={{ animationDelay: '0.4s' }}>
+          <div className="mt-12 text-center bg-gradient-to-r from-primary-green to-banana-leaf rounded-2xl p-8 text-white fade-in-up" style={{ animationDelay: '0.5s' }}>
             <h2 className="text-3xl font-bold mb-4">Ready to Cook?</h2>
             <p className="text-xl mb-6 opacity-90">Get fresh Lawlaw ingredients delivered to your door</p>
             <Link

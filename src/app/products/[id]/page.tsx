@@ -5,6 +5,7 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import AddToCartModal from '../../components/AddToCartModal';
+import ReviewsSection from '../../components/ReviewsSection';
 
 interface Product {
   id: string;
@@ -69,9 +70,6 @@ export default function ProductPage({ params }: ProductPageProps) {
   const [loading, setLoading] = useState(true);
   const [addingToCart, setAddingToCart] = useState(false);
   const [quantity, setQuantity] = useState(1);
-  const [userRating, setUserRating] = useState(0);
-  const [userComment, setUserComment] = useState('');
-  const [submittingReview, setSubmittingReview] = useState(false);
   const [showCartModal, setShowCartModal] = useState(false);
   const [isFollowing, setIsFollowing] = useState(false);
 
@@ -161,52 +159,6 @@ export default function ProductPage({ params }: ProductPageProps) {
     }
     // Toggle follow state (you can implement actual API call here)
     setIsFollowing(!isFollowing);
-  };
-
-  const handleSubmitReview = async () => {
-    if (!session) {
-      alert('Please login to submit a review');
-      return;
-    }
-    if (userRating === 0) {
-      alert('Please select a rating');
-      return;
-    }
-
-    setSubmittingReview(true);
-    try {
-      const response = await fetch(`/api/products/${product?.id}/reviews`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          rating: userRating,
-          content: userComment
-        }),
-      });
-
-      if (response.ok) {
-        alert('Review submitted successfully!');
-        setUserRating(0);
-        setUserComment('');
-        // Refresh product data to show new review
-        const { id } = await params;
-        const productResponse = await fetch(`/api/products/${id}`);
-        if (productResponse.ok) {
-          const data = await productResponse.json();
-          setProduct(data);
-        }
-      } else {
-        const error = await response.json();
-        alert(error.error || 'Failed to submit review');
-      }
-    } catch (error) {
-      console.error('Error submitting review:', error);
-      alert('Failed to submit review');
-    } finally {
-      setSubmittingReview(false);
-    }
   };
 
   if (loading) {
@@ -486,92 +438,12 @@ export default function ProductPage({ params }: ProductPageProps) {
         )}
 
         {/* Reviews Section */}
-        <div className="mt-12 bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
-          <h2 className="text-2xl font-bold text-primary-green mb-6">Customer Reviews</h2>
-
-          {/* Add Review Form */}
-          {session && (
-            <div className="mb-8 p-6 bg-cream-50 rounded-xl border border-cream-100">
-              <h3 className="text-lg font-semibold mb-4">Write a Review</h3>
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Rating</label>
-                  <div className="flex items-center">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <button
-                        key={star}
-                        onClick={() => setUserRating(star)}
-                        className={`w-8 h-8 ${
-                          star <= userRating
-                            ? 'text-yellow-400 fill-current'
-                            : 'text-gray-300'
-                        }`}
-                      >
-                        <svg viewBox="0 0 24 24">
-                          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                        </svg>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Comment (Optional)</label>
-                  <textarea
-                    value={userComment}
-                    onChange={(e) => setUserComment(e.target.value)}
-                    rows={3}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-green"
-                    placeholder="Share your experience with this product..."
-                  />
-                </div>
-                <button
-                  onClick={handleSubmitReview}
-                  disabled={submittingReview || userRating === 0}
-                  className="btn-hover bg-primary-green text-white px-6 py-2 rounded-lg font-medium hover:bg-leaf-green transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {submittingReview ? 'Submitting...' : 'Submit Review'}
-                </button>
-              </div>
-            </div>
-          )}
-
-          {/* Reviews List */}
-          <div className="space-y-6">
-            {product.comments && product.comments.length > 0 ? (
-              product.comments.map((comment) => (
-                <div key={comment.id} className="border-b border-gray-100 pb-6 last:border-b-0">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center mb-2">
-                        <span className="font-semibold text-gray-900 mr-3">{comment.user.name}</span>
-                        <div className="flex items-center">
-                          {[1, 2, 3, 4, 5].map((star) => (
-                            <svg
-                              key={star}
-                              className={`w-4 h-4 ${
-                                star <= comment.rating
-                                  ? 'text-yellow-400 fill-current'
-                                  : 'text-gray-300'
-                              }`}
-                              viewBox="0 0 24 24"
-                            >
-                              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                            </svg>
-                          ))}
-                        </div>
-                      </div>
-                      <p className="text-gray-700 mb-2">{comment.content}</p>
-                      <p className="text-sm text-gray-500">
-                        {new Date(comment.createdAt).toLocaleDateString()}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <p className="text-gray-500 text-center py-8">No reviews yet. Be the first to review this product!</p>
-            )}
-          </div>
+        <div className="mt-12">
+          <ReviewsSection
+            itemId={product.id}
+            itemType="product"
+            itemName={product.name}
+          />
         </div>
 
         {/* Suggested Products */}

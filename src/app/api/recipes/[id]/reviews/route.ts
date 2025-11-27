@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '../../../auth/[...nextauth]/route';
 import { prisma } from '../../../../lib/prisma';
 
-// GET /api/products/[id]/reviews - Get all reviews for a product
+// GET /api/recipes/[id]/reviews - Get all reviews for a recipe
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -11,8 +11,8 @@ export async function GET(
   try {
     const { id } = await params;
 
-    const reviews = await prisma.comment.findMany({
-      where: { productId: id },
+    const reviews = await prisma.recipeReview.findMany({
+      where: { recipeId: id },
       include: {
         user: {
           select: {
@@ -32,6 +32,7 @@ export async function GET(
   }
 }
 
+// POST /api/recipes/[id]/reviews - Submit or update a review
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -49,26 +50,28 @@ export async function POST(
       return NextResponse.json({ error: 'Rating must be between 1 and 5' }, { status: 400 });
     }
 
-    // Check if product exists
-    const product = await prisma.product.findUnique({
+    // Check if recipe exists
+    const recipe = await prisma.recipe.findUnique({
       where: { id },
     });
 
-    if (!product) {
-      return NextResponse.json({ error: 'Product not found' }, { status: 404 });
+    if (!recipe) {
+      return NextResponse.json({ error: 'Recipe not found' }, { status: 404 });
     }
 
-    // Check if user already reviewed this product
-    const existingReview = await prisma.comment.findFirst({
+    // Check if user already reviewed this recipe
+    const existingReview = await prisma.recipeReview.findUnique({
       where: {
-        productId: id,
-        userId: session.user.id,
+        recipeId_userId: {
+          recipeId: id,
+          userId: session.user.id,
+        }
       },
     });
 
     if (existingReview) {
       // Update existing review
-      await prisma.comment.update({
+      await prisma.recipeReview.update({
         where: { id: existingReview.id },
         data: {
           rating,
@@ -77,9 +80,9 @@ export async function POST(
       });
     } else {
       // Create new review
-      await prisma.comment.create({
+      await prisma.recipeReview.create({
         data: {
-          productId: id,
+          recipeId: id,
           userId: session.user.id,
           rating,
           content: content || '',
@@ -87,17 +90,17 @@ export async function POST(
       });
     }
 
-    // Update product rating
-    const allComments = await prisma.comment.findMany({
-      where: { productId: id },
+    // Update recipe average rating
+    const allReviews = await prisma.recipeReview.findMany({
+      where: { recipeId: id },
       select: { rating: true },
     });
 
-const averageRating = allComments.length > 0
-  ? allComments.reduce((sum: number, comment: { rating: number }) => sum + comment.rating, 0) / allComments.length
-  : 0;
+    const averageRating = allReviews.length > 0
+      ? allReviews.reduce((sum, review) => sum + review.rating, 0) / allReviews.length
+      : 0;
 
-    await prisma.product.update({
+    await prisma.recipe.update({
       where: { id },
       data: { rating: averageRating },
     });
@@ -109,7 +112,7 @@ const averageRating = allComments.length > 0
   }
 }
 
-// DELETE /api/products/[id]/reviews - Delete a review
+// DELETE /api/recipes/[id]/reviews - Delete a review
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -123,10 +126,12 @@ export async function DELETE(
     const { id } = await params;
 
     // Find and delete the review
-    const review = await prisma.comment.findFirst({
+    const review = await prisma.recipeReview.findUnique({
       where: {
-        productId: id,
-        userId: session.user.id,
+        recipeId_userId: {
+          recipeId: id,
+          userId: session.user.id,
+        }
       },
     });
 
@@ -134,21 +139,21 @@ export async function DELETE(
       return NextResponse.json({ error: 'Review not found' }, { status: 404 });
     }
 
-    await prisma.comment.delete({
+    await prisma.recipeReview.delete({
       where: { id: review.id },
     });
 
-    // Update product average rating
-    const allComments = await prisma.comment.findMany({
-      where: { productId: id },
+    // Update recipe average rating
+    const allReviews = await prisma.recipeReview.findMany({
+      where: { recipeId: id },
       select: { rating: true },
     });
 
-    const averageRating = allComments.length > 0
-      ? allComments.reduce((sum: number, comment: { rating: number }) => sum + comment.rating, 0) / allComments.length
+    const averageRating = allReviews.length > 0
+      ? allReviews.reduce((sum, review) => sum + review.rating, 0) / allReviews.length
       : 0;
 
-    await prisma.product.update({
+    await prisma.recipe.update({
       where: { id },
       data: { rating: averageRating },
     });

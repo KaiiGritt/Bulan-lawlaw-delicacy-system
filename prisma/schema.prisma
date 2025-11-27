@@ -39,6 +39,7 @@ model User {
   wishlistItems WishlistItem[]
   recipeFavorites RecipeFavorite[]
   savedRecipes SavedRecipe[]
+  recipeReviews RecipeReview[]
 
   @@map("users")
 }
@@ -80,12 +81,14 @@ model Recipe {
   cookTime     Int
   servings     Int
   difficulty   String   // Beginner, Intermediate, Advanced
+  rating       Float    @default(0)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
   // Relations
   recipeFavorites RecipeFavorite[]
   savedRecipes SavedRecipe[]
+  reviews RecipeReview[]
 
   @@map("recipes")
 }
@@ -240,6 +243,22 @@ model Comment {
 
   @@unique([productId, userId])
   @@map("comments")
+}
+
+model RecipeReview {
+  id        String   @id @default(cuid())
+  recipeId  String
+  userId    String
+  rating    Int
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  recipe Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([recipeId, userId])
+  @@map("recipe_reviews")
 }
 
 model Announcement {
