@@ -43,14 +43,20 @@ export async function POST(
       if (!existingApp) {
         sellerApplicationData = {
           create: {
-            businessName: '',
-            businessType: '',
-            description: '',
+            businessName: 'Admin Approved',
+            businessType: 'General',
+            description: 'Converted by admin',
             contactNumber: '',
             address: '',
-            status: 'pending',
+            status: 'approved',
           },
         }
+      } else {
+        // If exists, update status to approved
+        await prisma.sellerApplication.update({
+          where: { userId: id },
+          data: { status: 'approved' }
+        })
       }
     } else if (user.role === 'seller') {
       newRole = 'user'

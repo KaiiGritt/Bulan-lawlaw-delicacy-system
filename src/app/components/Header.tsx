@@ -152,18 +152,24 @@ useEffect(() => {
                   <Link href="/notifications" className="hover:text-primary-green dark:hover:text-green-400 transition-colors relative">
                     <Bell className="w-6 h-6" />
                     {unreadNotifications > 0 && (
-                      <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                        {unreadNotifications > 9 ? '9+' : unreadNotifications}
-                      </span>
+                      <>
+                        <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-semibold shadow-lg">
+                          {unreadNotifications > 9 ? '9+' : unreadNotifications}
+                        </span>
+                        <span className="absolute -top-0.5 -right-0.5 bg-red-500 rounded-full h-2.5 w-2.5 animate-ping"></span>
+                      </>
                     )}
                   </Link>
 
                   <Link href="/chat" className="hover:text-primary-green dark:hover:text-green-400 transition-colors relative">
                     <MessageCircle className="w-6 h-6" />
                     {unreadMessages > 0 && (
-                      <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                        {unreadMessages > 9 ? '9+' : unreadMessages}
-                      </span>
+                      <>
+                        <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-semibold shadow-lg">
+                          {unreadMessages > 9 ? '9+' : unreadMessages}
+                        </span>
+                        <span className="absolute -top-0.5 -right-0.5 bg-red-500 rounded-full h-2.5 w-2.5 animate-ping"></span>
+                      </>
                     )}
                   </Link>
                 </>
@@ -238,9 +244,12 @@ useEffect(() => {
               <MessageCircle className="w-6 h-6" />
               <span className="text-[10px]">Chat</span>
               {unreadMessages > 0 && (
-                <span className="absolute -top-1 -right-2 bg-red-500 text-white text-[10px] rounded-full h-4 w-4 flex items-center justify-center">
-                  {unreadMessages > 9 ? '9+' : unreadMessages}
-                </span>
+                <>
+                  <span className="absolute -top-1 -right-2 bg-red-500 text-white text-[10px] rounded-full h-4 w-4 flex items-center justify-center font-semibold shadow-lg z-10">
+                    {unreadMessages > 9 ? '9+' : unreadMessages}
+                  </span>
+                  <span className="absolute -top-0.5 -right-1.5 bg-red-500 rounded-full h-2 w-2 animate-ping"></span>
+                </>
               )}
             </Link>
           )}
@@ -249,6 +258,14 @@ useEffect(() => {
             <Link href="/notifications" className="relative flex flex-col items-center text-xs hover:text-primary-green dark:hover:text-green-400 transition-colors">
               <Bell className="w-6 h-6" />
               <span className="text-[10px]">Notification</span>
+              {unreadNotifications > 0 && (
+                <>
+                  <span className="absolute -top-1 -right-2 bg-red-500 text-white text-[10px] rounded-full h-4 w-4 flex items-center justify-center font-semibold shadow-lg z-10">
+                    {unreadNotifications > 9 ? '9+' : unreadNotifications}
+                  </span>
+                  <span className="absolute -top-0.5 -right-1.5 bg-red-500 rounded-full h-2 w-2 animate-ping"></span>
+                </>
+              )}
             </Link>
           )}
 

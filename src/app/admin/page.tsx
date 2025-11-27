@@ -1334,7 +1334,18 @@ function AnalyticsTab() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-green"></div>
+        <motion.div
+          animate={{
+            rotate: 360,
+            scale: [1, 1.2, 1]
+          }}
+          transition={{
+            duration: 1.5,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+          className="rounded-full h-12 w-12 border-b-4 border-primary-green"
+        ></motion.div>
       </div>
     );
   }
@@ -1342,294 +1353,527 @@ function AnalyticsTab() {
   if (!analytics) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-600">No analytics data available</p>
+        <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">No analytics data available</p>
       </div>
     );
   }
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
-      {/* Period Selector */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 sm:p-6 shadow-lg border border-gray-100 dark:border-gray-700">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <h3 className="text-xl sm:text-2xl font-semibold text-primary-green dark:text-green-400 flex items-center gap-2">
-            <ChartBarIcon className="w-6 h-6" />
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+      className="space-y-4 sm:space-y-6"
+    >
+      {/* Period Selector - Mobile Optimized */}
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl p-3 sm:p-4 lg:p-6 shadow-lg border border-gray-100 dark:border-gray-700"
+      >
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+          <h3 className="text-lg sm:text-xl lg:text-2xl font-semibold text-primary-green dark:text-green-400 flex items-center gap-2">
+            <ChartBarIcon className="w-5 h-5 sm:w-6 sm:h-6" />
             <span>Analytics Dashboard</span>
           </h3>
-          <div className="flex gap-2">
+          <div className="flex gap-1.5 sm:gap-2">
             {(['daily', 'weekly', 'monthly'] as const).map((p) => (
-              <button
+              <motion.button
                 key={p}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
                 onClick={() => setPeriod(p)}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg font-medium transition-all text-xs sm:text-sm ${
                   period === p
-                    ? 'bg-primary-green dark:bg-green-600 text-white'
+                    ? 'bg-primary-green dark:bg-green-600 text-white shadow-md'
                     : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
                 }`}
               >
                 {p.charAt(0).toUpperCase() + p.slice(1)}
-              </button>
+              </motion.button>
             ))}
           </div>
         </div>
-      </div>
+      </motion.div>
 
-      {/* Key Metrics Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* Key Metrics Cards - Mobile Responsive with Animations */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="bg-gradient-to-br from-primary-green via-leaf-green to-banana-leaf dark:from-green-600 dark:to-green-700 rounded-2xl p-6 text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]"
+          initial={{ opacity: 0, y: 20, scale: 0.9 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ delay: 0.1, type: "spring", stiffness: 100 }}
+          whileHover={{ scale: 1.03, y: -5 }}
+          className="bg-gradient-to-br from-primary-green via-leaf-green to-banana-leaf dark:from-green-600 dark:to-green-700 rounded-xl sm:rounded-2xl p-4 sm:p-5 lg:p-6 text-white shadow-lg hover:shadow-2xl transition-shadow duration-300"
         >
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium opacity-90">Total Sales</span>
-            <div className="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
-              <CurrencyDollarIcon className="w-6 h-6" />
-            </div>
+            <span className="text-xs sm:text-sm font-medium opacity-90">Total Sales</span>
+            <motion.div
+              animate={{ rotate: [0, 10, -10, 0] }}
+              transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
+              className="p-1.5 sm:p-2 bg-white/20 rounded-lg backdrop-blur-sm"
+            >
+              <CurrencyDollarIcon className="w-5 h-5 sm:w-6 sm:h-6" />
+            </motion.div>
           </div>
-          <div className="text-3xl font-bold">₱{analytics.sales.total.toFixed(2)}</div>
-          <div className="text-sm opacity-75 mt-2 flex items-center gap-1">
-            <ClipboardDocumentListIcon className="w-4 h-4" />
+          <motion.div
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.3 }}
+            className="text-2xl sm:text-3xl font-bold"
+          >
+            ₱{analytics.sales.total.toFixed(2)}
+          </motion.div>
+          <div className="text-xs sm:text-sm opacity-75 mt-2 flex items-center gap-1">
+            <ClipboardDocumentListIcon className="w-3 h-3 sm:w-4 sm:h-4" />
             {analytics.sales.orders} orders
           </div>
         </motion.div>
 
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="bg-gradient-to-br from-blue-500 via-blue-600 to-blue-700 dark:from-blue-600 dark:to-blue-800 rounded-2xl p-6 text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]"
+          initial={{ opacity: 0, y: 20, scale: 0.9 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ delay: 0.2, type: "spring", stiffness: 100 }}
+          whileHover={{ scale: 1.03, y: -5 }}
+          className="bg-gradient-to-br from-blue-500 via-blue-600 to-blue-700 dark:from-blue-600 dark:to-blue-800 rounded-xl sm:rounded-2xl p-4 sm:p-5 lg:p-6 text-white shadow-lg hover:shadow-2xl transition-shadow duration-300"
         >
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium opacity-90">Avg Order Value</span>
-            <div className="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
-              <ChartBarIcon className="w-6 h-6" />
-            </div>
+            <span className="text-xs sm:text-sm font-medium opacity-90">Avg Order Value</span>
+            <motion.div
+              animate={{ y: [0, -5, 0] }}
+              transition={{ duration: 2, repeat: Infinity, repeatDelay: 2 }}
+              className="p-1.5 sm:p-2 bg-white/20 rounded-lg backdrop-blur-sm"
+            >
+              <ChartBarIcon className="w-5 h-5 sm:w-6 sm:h-6" />
+            </motion.div>
           </div>
-          <div className="text-3xl font-bold">₱{analytics.sales.averageOrderValue.toFixed(2)}</div>
-          <div className="text-sm opacity-75 mt-2">Per transaction</div>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.4 }}
+            className="text-2xl sm:text-3xl font-bold"
+          >
+            ₱{analytics.sales.averageOrderValue.toFixed(2)}
+          </motion.div>
+          <div className="text-xs sm:text-sm opacity-75 mt-2">Per transaction</div>
         </motion.div>
 
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="bg-gradient-to-br from-purple-500 via-purple-600 to-purple-700 dark:from-purple-600 dark:to-purple-800 rounded-2xl p-6 text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]"
+          initial={{ opacity: 0, y: 20, scale: 0.9 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ delay: 0.3, type: "spring", stiffness: 100 }}
+          whileHover={{ scale: 1.03, y: -5 }}
+          className="bg-gradient-to-br from-purple-500 via-purple-600 to-purple-700 dark:from-purple-600 dark:to-purple-800 rounded-xl sm:rounded-2xl p-4 sm:p-5 lg:p-6 text-white shadow-lg hover:shadow-2xl transition-shadow duration-300"
         >
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium opacity-90">New Users</span>
-            <div className="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
-              <UserGroupIcon className="w-6 h-6" />
-            </div>
+            <span className="text-xs sm:text-sm font-medium opacity-90">New Users</span>
+            <motion.div
+              animate={{ scale: [1, 1.2, 1] }}
+              transition={{ duration: 2, repeat: Infinity, repeatDelay: 2 }}
+              className="p-1.5 sm:p-2 bg-white/20 rounded-lg backdrop-blur-sm"
+            >
+              <UserGroupIcon className="w-5 h-5 sm:w-6 sm:h-6" />
+            </motion.div>
           </div>
-          <div className="text-3xl font-bold">{analytics.users.new}</div>
-          <div className="text-sm opacity-75 mt-2 flex items-center gap-1">
-            <UsersIcon className="w-4 h-4" />
+          <motion.div
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.5 }}
+            className="text-2xl sm:text-3xl font-bold"
+          >
+            {analytics.users.new}
+          </motion.div>
+          <div className="text-xs sm:text-sm opacity-75 mt-2 flex items-center gap-1">
+            <UsersIcon className="w-3 h-3 sm:w-4 sm:h-4" />
             Total: {analytics.users.total}
           </div>
         </motion.div>
 
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="bg-gradient-to-br from-orange-500 via-orange-600 to-orange-700 dark:from-orange-600 dark:to-orange-800 rounded-2xl p-6 text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02]"
+          initial={{ opacity: 0, y: 20, scale: 0.9 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ delay: 0.4, type: "spring", stiffness: 100 }}
+          whileHover={{ scale: 1.03, y: -5 }}
+          className="bg-gradient-to-br from-orange-500 via-orange-600 to-orange-700 dark:from-orange-600 dark:to-orange-800 rounded-xl sm:rounded-2xl p-4 sm:p-5 lg:p-6 text-white shadow-lg hover:shadow-2xl transition-shadow duration-300"
         >
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium opacity-90">Conversion Rate</span>
-            <div className="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
-              <ReceiptPercentIcon className="w-6 h-6" />
-            </div>
+            <span className="text-xs sm:text-sm font-medium opacity-90">Conversion Rate</span>
+            <motion.div
+              animate={{ rotate: [0, 360] }}
+              transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
+              className="p-1.5 sm:p-2 bg-white/20 rounded-lg backdrop-blur-sm"
+            >
+              <ReceiptPercentIcon className="w-5 h-5 sm:w-6 sm:h-6" />
+            </motion.div>
           </div>
-          <div className="text-3xl font-bold">{analytics.conversion.cartConversionRate.toFixed(1)}%</div>
-          <div className="text-sm opacity-75 mt-2">Cart to order</div>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.6 }}
+            className="text-2xl sm:text-3xl font-bold"
+          >
+            {analytics.conversion.cartConversionRate.toFixed(1)}%
+          </motion.div>
+          <div className="text-xs sm:text-sm opacity-75 mt-2">Cart to order</div>
         </motion.div>
       </div>
 
-      {/* Sales Performance Chart */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 sm:p-6 shadow-lg border border-gray-100 dark:border-gray-700">
-        <h4 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4 flex items-center gap-2">
-          <ChartBarIcon className="w-6 h-6 text-primary-green dark:text-green-400" />
+      {/* Sales Performance Chart - Mobile Optimized with Animations */}
+      <motion.div
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: 0.5 }}
+        className="bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl p-3 sm:p-4 lg:p-6 shadow-lg border border-gray-100 dark:border-gray-700"
+      >
+        <h4 className="text-base sm:text-lg font-semibold text-gray-800 dark:text-gray-100 mb-3 sm:mb-4 flex items-center gap-2">
+          <ChartBarIcon className="w-5 h-5 sm:w-6 sm:h-6 text-primary-green dark:text-green-400" />
           Sales Performance
         </h4>
-        <div className="space-y-3">
+        <div className="space-y-2 sm:space-y-3">
           {analytics.sales.byDate.map((item: any, index: number) => (
-            <div key={index} className="flex items-center gap-3">
-              <div className="text-sm text-gray-600 dark:text-gray-400 w-24">{new Date(item.date).toLocaleDateString()}</div>
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.6 + index * 0.1 }}
+              className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3"
+            >
+              <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 sm:w-24">{new Date(item.date).toLocaleDateString()}</div>
               <div className="flex-1">
-                <div className="bg-gray-200 dark:bg-gray-700 rounded-full h-8 overflow-hidden">
-                  <div
-                    className="bg-gradient-to-r from-green-500 to-green-600 h-full flex items-center justify-end px-3 text-white text-sm font-medium"
-                    style={{
+                <div className="bg-gray-200 dark:bg-gray-700 rounded-full h-6 sm:h-8 overflow-hidden">
+                  <motion.div
+                    initial={{ width: 0 }}
+                    animate={{
                       width: `${Math.min(100, (item.amount / Math.max(...analytics.sales.byDate.map((d: any) => d.amount))) * 100)}%`
                     }}
+                    transition={{ duration: 1, delay: 0.7 + index * 0.1, ease: "easeOut" }}
+                    className="bg-gradient-to-r from-green-500 to-green-600 h-full flex items-center justify-end px-2 sm:px-3 text-white text-xs sm:text-sm font-medium"
                   >
                     ₱{item.amount.toFixed(2)}
-                  </div>
+                  </motion.div>
                 </div>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
-      </div>
+      </motion.div>
 
-      {/* Top Products and Sellers */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* Top Products and Sellers - Mobile Responsive with Animations */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         {/* Top Selling Products */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 sm:p-6 shadow-lg border border-gray-100 dark:border-gray-700">
-          <h4 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4 flex items-center gap-2">
-            <CubeIcon className="w-6 h-6 text-primary-green dark:text-green-400" />
+        <motion.div
+          initial={{ opacity: 0, x: -30 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.6 }}
+          className="bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl p-3 sm:p-4 lg:p-6 shadow-lg border border-gray-100 dark:border-gray-700"
+        >
+          <h4 className="text-base sm:text-lg font-semibold text-gray-800 dark:text-gray-100 mb-3 sm:mb-4 flex items-center gap-2">
+            <CubeIcon className="w-5 h-5 sm:w-6 sm:h-6 text-primary-green dark:text-green-400" />
             Top Selling Products
           </h4>
-          <div className="space-y-3">
+          <div className="space-y-2 sm:space-y-3">
             {analytics.products.topSelling.slice(0, 5).map((product: any, index: number) => (
-              <div key={product.productId} className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                <div className="flex-shrink-0 w-8 h-8 bg-primary-green dark:bg-green-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
+              <motion.div
+                key={product.productId}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.7 + index * 0.1 }}
+                whileHover={{ scale: 1.02, x: 5 }}
+                className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-gradient-to-r from-gray-50 to-green-50/30 dark:from-gray-700 dark:to-green-900/10 rounded-lg hover:shadow-md transition-shadow"
+              >
+                <motion.div
+                  whileHover={{ rotate: 360 }}
+                  transition={{ duration: 0.5 }}
+                  className="flex-shrink-0 w-7 h-7 sm:w-8 sm:h-8 bg-primary-green dark:bg-green-600 rounded-full flex items-center justify-center text-white font-bold text-xs sm:text-sm shadow-md"
+                >
                   {index + 1}
-                </div>
+                </motion.div>
                 <div className="flex-1 min-w-0">
-                  <div className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{product.name}</div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400">
+                  <div className="text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{product.name}</div>
+                  <div className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400">
                     {product.quantity} sold · ₱{product.revenue.toFixed(2)}
                   </div>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
-        </div>
+        </motion.div>
 
         {/* Top Sellers */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 sm:p-6 shadow-lg border border-gray-100 dark:border-gray-700">
-          <h4 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4 flex items-center gap-2">
-            <StarIcon className="w-6 h-6 text-primary-green dark:text-green-400" />
+        <motion.div
+          initial={{ opacity: 0, x: 30 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.6 }}
+          className="bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl p-3 sm:p-4 lg:p-6 shadow-lg border border-gray-100 dark:border-gray-700"
+        >
+          <h4 className="text-base sm:text-lg font-semibold text-gray-800 dark:text-gray-100 mb-3 sm:mb-4 flex items-center gap-2">
+            <StarIcon className="w-5 h-5 sm:w-6 sm:h-6 text-primary-green dark:text-green-400" />
             Top Performing Sellers
           </h4>
-          <div className="space-y-3">
+          <div className="space-y-2 sm:space-y-3">
             {analytics.sellers.topPerformers.slice(0, 5).map((seller: any, index: number) => (
-              <div key={seller.sellerId} className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                <div className="flex-shrink-0 w-8 h-8 bg-blue-500 dark:bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
+              <motion.div
+                key={seller.sellerId}
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.7 + index * 0.1 }}
+                whileHover={{ scale: 1.02, x: -5 }}
+                className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 bg-gradient-to-r from-gray-50 to-blue-50/30 dark:from-gray-700 dark:to-blue-900/10 rounded-lg hover:shadow-md transition-shadow"
+              >
+                <motion.div
+                  whileHover={{ rotate: 360 }}
+                  transition={{ duration: 0.5 }}
+                  className="flex-shrink-0 w-7 h-7 sm:w-8 sm:h-8 bg-blue-500 dark:bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-xs sm:text-sm shadow-md"
+                >
                   {index + 1}
-                </div>
+                </motion.div>
                 <div className="flex-1 min-w-0">
-                  <div className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{seller.name}</div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400">
+                  <div className="text-xs sm:text-sm font-medium text-gray-900 dark:text-gray-100 truncate">{seller.name}</div>
+                  <div className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400">
                     {seller.orders} orders · ₱{seller.revenue.toFixed(2)}
                   </div>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
-        </div>
+        </motion.div>
       </div>
 
-      {/* Abandoned Cart & Category Performance */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      {/* Abandoned Cart & Category Performance - Mobile Responsive with Animations */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         {/* Abandoned Cart Statistics */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 sm:p-6 shadow-lg border border-gray-100 dark:border-gray-700">
-          <h4 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4 flex items-center gap-2">
-            <ShoppingCartIcon className="w-6 h-6 text-primary-green dark:text-green-400" />
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.8 }}
+          className="bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl p-3 sm:p-4 lg:p-6 shadow-lg border border-gray-100 dark:border-gray-700"
+        >
+          <h4 className="text-base sm:text-lg font-semibold text-gray-800 dark:text-gray-100 mb-3 sm:mb-4 flex items-center gap-2">
+            <ShoppingCartIcon className="w-5 h-5 sm:w-6 sm:h-6 text-primary-green dark:text-green-400" />
             Abandoned Cart Insights
           </h4>
-          <div className="space-y-4">
-            <div className="flex justify-between items-center p-3 bg-red-50 dark:bg-red-900/20 rounded-lg">
-              <span className="text-sm text-gray-700 dark:text-gray-300">Abandoned Carts</span>
-              <span className="text-lg font-bold text-red-600 dark:text-red-400">{analytics.carts.abandoned}</span>
-            </div>
-            <div className="flex justify-between items-center p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
-              <span className="text-sm text-gray-700 dark:text-gray-300">Abandonment Rate</span>
-              <span className="text-lg font-bold text-orange-600 dark:text-orange-400">{analytics.carts.abandonedRate.toFixed(1)}%</span>
-            </div>
-            <div className="flex justify-between items-center p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
-              <span className="text-sm text-gray-700 dark:text-gray-300">Potential Revenue Lost</span>
-              <span className="text-lg font-bold text-purple-600 dark:text-purple-400">₱{analytics.carts.abandonedValue.toFixed(2)}</span>
-            </div>
+          <div className="space-y-3 sm:space-y-4">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.9 }}
+              whileHover={{ scale: 1.02 }}
+              className="flex justify-between items-center p-2.5 sm:p-3 bg-red-50 dark:bg-red-900/20 rounded-lg"
+            >
+              <span className="text-xs sm:text-sm text-gray-700 dark:text-gray-300">Abandoned Carts</span>
+              <motion.span
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: 1, type: "spring" }}
+                className="text-base sm:text-lg font-bold text-red-600 dark:text-red-400"
+              >
+                {analytics.carts.abandoned}
+              </motion.span>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 1 }}
+              whileHover={{ scale: 1.02 }}
+              className="flex justify-between items-center p-2.5 sm:p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg"
+            >
+              <span className="text-xs sm:text-sm text-gray-700 dark:text-gray-300">Abandonment Rate</span>
+              <motion.span
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: 1.1, type: "spring" }}
+                className="text-base sm:text-lg font-bold text-orange-600 dark:text-orange-400"
+              >
+                {analytics.carts.abandonedRate.toFixed(1)}%
+              </motion.span>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 1.1 }}
+              whileHover={{ scale: 1.02 }}
+              className="flex justify-between items-center p-2.5 sm:p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg"
+            >
+              <span className="text-xs sm:text-sm text-gray-700 dark:text-gray-300">Potential Revenue Lost</span>
+              <motion.span
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: 1.2, type: "spring" }}
+                className="text-base sm:text-lg font-bold text-purple-600 dark:text-purple-400"
+              >
+                ₱{analytics.carts.abandonedValue.toFixed(2)}
+              </motion.span>
+            </motion.div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Category Performance */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 sm:p-6 shadow-lg border border-gray-100 dark:border-gray-700">
-          <h4 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4 flex items-center gap-2">
-            <CubeIcon className="w-6 h-6 text-primary-green dark:text-green-400" />
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.8 }}
+          className="bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl p-3 sm:p-4 lg:p-6 shadow-lg border border-gray-100 dark:border-gray-700"
+        >
+          <h4 className="text-base sm:text-lg font-semibold text-gray-800 dark:text-gray-100 mb-3 sm:mb-4 flex items-center gap-2">
+            <CubeIcon className="w-5 h-5 sm:w-6 sm:h-6 text-primary-green dark:text-green-400" />
             Category Performance
           </h4>
-          <div className="space-y-3">
+          <div className="space-y-2 sm:space-y-3">
             {analytics.categories.map((category: any, index: number) => (
-              <div key={index} className="space-y-1">
-                <div className="flex justify-between text-sm">
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.9 + index * 0.1 }}
+                className="space-y-1"
+              >
+                <div className="flex justify-between text-xs sm:text-sm">
                   <span className="text-gray-700 dark:text-gray-300 capitalize">{category.category}</span>
                   <span className="text-gray-900 dark:text-gray-100 font-medium">₱{category.revenue.toFixed(2)}</span>
                 </div>
                 <div className="bg-gray-200 dark:bg-gray-700 rounded-full h-2 overflow-hidden">
-                  <div
-                    className="bg-gradient-to-r from-primary-green to-leaf-green h-full"
-                    style={{
+                  <motion.div
+                    initial={{ width: 0 }}
+                    animate={{
                       width: `${Math.min(100, (category.revenue / Math.max(...analytics.categories.map((c: any) => c.revenue))) * 100)}%`
                     }}
+                    transition={{ duration: 1, delay: 1 + index * 0.1, ease: "easeOut" }}
+                    className="bg-gradient-to-r from-primary-green to-leaf-green h-full"
                   />
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
-        </div>
+        </motion.div>
       </div>
 
-      {/* Order Status Distribution */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 sm:p-6 shadow-lg border border-gray-100 dark:border-gray-700">
-        <h4 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4 flex items-center gap-2">
-          <ClipboardDocumentListIcon className="w-6 h-6 text-primary-green dark:text-green-400" />
+      {/* Order Status Distribution - Mobile Responsive with Animations */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 1 }}
+        className="bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl p-3 sm:p-4 lg:p-6 shadow-lg border border-gray-100 dark:border-gray-700"
+      >
+        <h4 className="text-base sm:text-lg font-semibold text-gray-800 dark:text-gray-100 mb-3 sm:mb-4 flex items-center gap-2">
+          <ClipboardDocumentListIcon className="w-5 h-5 sm:w-6 sm:h-6 text-primary-green dark:text-green-400" />
           Order Status Distribution
         </h4>
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
-          {Object.entries(analytics.orderStatus).map(([status, count]: [string, any]) => (
-            <div key={status} className="text-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
-              <div className="text-2xl font-bold text-primary-green dark:text-green-400">{count}</div>
-              <div className="text-xs text-gray-600 dark:text-gray-400 mt-1 capitalize">{status}</div>
-            </div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3 lg:gap-4">
+          {Object.entries(analytics.orderStatus).map(([status, count]: [string, any], index: number) => (
+            <motion.div
+              key={status}
+              initial={{ opacity: 0, scale: 0.5 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 1.1 + index * 0.1, type: "spring", stiffness: 150 }}
+              whileHover={{ scale: 1.1, y: -5 }}
+              className="text-center p-3 sm:p-4 bg-gradient-to-br from-gray-50 to-green-50/30 dark:from-gray-700 dark:to-green-900/10 rounded-lg hover:shadow-md transition-shadow"
+            >
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: 1.2 + index * 0.1, type: "spring" }}
+                className="text-xl sm:text-2xl font-bold text-primary-green dark:text-green-400"
+              >
+                {count}
+              </motion.div>
+              <div className="text-[10px] sm:text-xs text-gray-600 dark:text-gray-400 mt-1 capitalize">{status}</div>
+            </motion.div>
           ))}
         </div>
-      </div>
+      </motion.div>
 
-      {/* User Growth Trend */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 sm:p-6 shadow-lg border border-gray-100 dark:border-gray-700">
-        <h4 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4 flex items-center gap-2">
-          <UserGroupIcon className="w-6 h-6 text-primary-green dark:text-green-400" />
+      {/* User Growth Trend - Mobile Responsive with Animations */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 1.2 }}
+        className="bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl p-3 sm:p-4 lg:p-6 shadow-lg border border-gray-100 dark:border-gray-700"
+      >
+        <h4 className="text-base sm:text-lg font-semibold text-gray-800 dark:text-gray-100 mb-3 sm:mb-4 flex items-center gap-2">
+          <UserGroupIcon className="w-5 h-5 sm:w-6 sm:h-6 text-primary-green dark:text-green-400" />
           User Growth Trends
         </h4>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-          <div className="text-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-            <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{analytics.users.buyers}</div>
-            <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">New Buyers</div>
-          </div>
-          <div className="text-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
-            <div className="text-2xl font-bold text-green-600 dark:text-green-400">{analytics.users.sellers}</div>
-            <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">New Sellers</div>
-          </div>
-          <div className="text-center p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
-            <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">{analytics.users.total}</div>
-            <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">Total Users</div>
-          </div>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-4 sm:mb-6">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 1.3, type: "spring" }}
+            whileHover={{ scale: 1.05 }}
+            className="text-center p-3 sm:p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg hover:shadow-md transition-shadow"
+          >
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 1.4, type: "spring" }}
+              className="text-xl sm:text-2xl font-bold text-blue-600 dark:text-blue-400"
+            >
+              {analytics.users.buyers}
+            </motion.div>
+            <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-1">New Buyers</div>
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 1.4, type: "spring" }}
+            whileHover={{ scale: 1.05 }}
+            className="text-center p-3 sm:p-4 bg-green-50 dark:bg-green-900/20 rounded-lg hover:shadow-md transition-shadow"
+          >
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 1.5, type: "spring" }}
+              className="text-xl sm:text-2xl font-bold text-green-600 dark:text-green-400"
+            >
+              {analytics.users.sellers}
+            </motion.div>
+            <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-1">New Sellers</div>
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 1.5, type: "spring" }}
+            whileHover={{ scale: 1.05 }}
+            className="text-center p-3 sm:p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg hover:shadow-md transition-shadow"
+          >
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 1.6, type: "spring" }}
+              className="text-xl sm:text-2xl font-bold text-purple-600 dark:text-purple-400"
+            >
+              {analytics.users.total}
+            </motion.div>
+            <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 mt-1">Total Users</div>
+          </motion.div>
         </div>
         <div className="space-y-2">
           {analytics.users.growthByDate.map((item: any, index: number) => (
-            <div key={index} className="flex items-center gap-3">
-              <div className="text-sm text-gray-600 dark:text-gray-400 w-24">{new Date(item.date).toLocaleDateString()}</div>
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 1.6 + index * 0.1 }}
+              className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3"
+            >
+              <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 sm:w-24">{new Date(item.date).toLocaleDateString()}</div>
               <div className="flex-1">
                 <div className="bg-gray-200 dark:bg-gray-700 rounded-full h-6 overflow-hidden">
-                  <div
-                    className="bg-gradient-to-r from-blue-500 to-blue-600 h-full flex items-center justify-end px-2 text-white text-xs font-medium"
-                    style={{
+                  <motion.div
+                    initial={{ width: 0 }}
+                    animate={{
                       width: `${Math.min(100, (item.count / Math.max(...analytics.users.growthByDate.map((d: any) => d.count))) * 100)}%`
                     }}
+                    transition={{ duration: 1, delay: 1.7 + index * 0.1, ease: "easeOut" }}
+                    className="bg-gradient-to-r from-blue-500 to-blue-600 h-full flex items-center justify-end px-2 text-white text-xs font-medium"
                   >
                     +{item.count}
-                  </div>
+                  </motion.div>
                 </div>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
-      </div>
+      </motion.div>
     </motion.div>
   );
 }
