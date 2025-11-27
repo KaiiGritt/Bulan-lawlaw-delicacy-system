@@ -387,66 +387,97 @@ export default function ProductPage({ params }: ProductPageProps) {
 
         {/* Business/Seller Section - Shopee Style - Mobile Optimized */}
         {product.user.sellerApplication && (
-          <div className="mt-4 sm:mt-6 lg:mt-8 bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 border border-gray-100 dark:border-gray-700">
-            <div className="flex flex-col md:flex-row items-start md:items-center gap-4 sm:gap-6">
-              {/* Business Logo */}
-              <div className="flex-shrink-0">
-                <img
-                  src={product.user.sellerApplication.businessLogo || '/placeholder-business.png'}
-                  alt={product.user.sellerApplication.businessName}
-                  className="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover border-2 border-primary-green dark:border-green-400"
-                />
-              </div>
+          <Link
+            href={`/business/${businessSlug}`}
+            className="block mt-4 sm:mt-6 lg:mt-8 bg-gradient-to-r from-white to-soft-green/5 dark:from-gray-800 dark:to-gray-700 rounded-xl sm:rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 border border-soft-green/30 dark:border-gray-600 overflow-hidden"
+          >
+            <div className="p-3 sm:p-4">
+              <div className="flex items-center justify-between gap-3">
+                {/* Left Side: Logo + Business Info */}
+                <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
+                  {/* Business Logo */}
+                  {product.user.sellerApplication.businessLogo ? (
+                    <img
+                      src={product.user.sellerApplication.businessLogo}
+                      alt={product.user.sellerApplication.businessName}
+                      className="w-12 h-12 sm:w-16 sm:h-16 rounded-lg object-cover border-2 border-primary-green/50 flex-shrink-0"
+                    />
+                  ) : (
+                    <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-lg bg-gradient-to-br from-primary-green to-leaf-green flex items-center justify-center text-white text-lg sm:text-xl font-bold flex-shrink-0">
+                      {product.user.sellerApplication.businessName.charAt(0).toUpperCase()}
+                    </div>
+                  )}
 
-              {/* Business Info */}
-              <div className="flex-1 min-w-0">
-                <Link
-                  href={`/business/${businessSlug}`}
-                  className="text-base sm:text-lg lg:text-xl font-bold text-primary-green dark:text-green-400 hover:text-leaf-green dark:hover:text-green-300 transition-colors duration-300 inline-flex items-center gap-2"
-                >
-                  <span className="truncate">{product.user.sellerApplication.businessName}</span>
-                  <svg className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  {/* Business Details */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <h3 className="text-sm sm:text-base font-bold text-gray-900 dark:text-white truncate">
+                        {product.user.sellerApplication.businessName}
+                      </h3>
+                      <span className="hidden sm:inline-flex px-2 py-0.5 bg-primary-green/10 text-primary-green dark:bg-green-900/30 dark:text-green-400 rounded text-[10px] font-medium flex-shrink-0">
+                        Official
+                      </span>
+                    </div>
+
+                    {/* Stats Row */}
+                    <div className="flex items-center gap-3 sm:gap-4 text-[10px] sm:text-xs text-gray-600 dark:text-gray-400">
+                      <div className="flex items-center gap-1">
+                        <svg className="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                        </svg>
+                        <span>{suggestedProducts.length + 1} Products</span>
+                      </div>
+                      <div className="h-3 w-px bg-gray-300 dark:bg-gray-600"></div>
+                      <div className="flex items-center gap-1">
+                        <svg className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-yellow-400 fill-current" viewBox="0 0 24 24">
+                          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                        </svg>
+                        <span>{product.rating?.toFixed(1) || '0.0'}</span>
+                      </div>
+                      <div className="h-3 w-px bg-gray-300 dark:bg-gray-600"></div>
+                      <div className="flex items-center gap-1">
+                        <svg className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-primary-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        <span className="truncate">Bulan, Sorsogon</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Right Side: Arrow Button */}
+                <div className="flex-shrink-0 bg-soft-green/10 dark:bg-gray-700 rounded-lg p-2 sm:p-2.5 hover:bg-primary-green/20 dark:hover:bg-green-900/30 transition-colors">
+                  <svg className="w-4 h-4 sm:w-5 sm:h-5 text-primary-green dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 5l7 7-7 7" />
                   </svg>
-                </Link>
-                {product.user.sellerApplication.businessDescription && (
-                  <p className="text-gray-600 dark:text-gray-300 text-xs sm:text-sm mt-1.5 sm:mt-2 line-clamp-2">
-                    {product.user.sellerApplication.businessDescription}
-                  </p>
-                )}
-                <div className="flex items-center gap-3 sm:gap-4 mt-2 sm:mt-3">
-                  <div className="flex items-center text-xs sm:text-sm text-gray-600 dark:text-gray-400">
-                    <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                    </svg>
-                    <span className="truncate">Products: {suggestedProducts.length + 1}</span>
-                  </div>
-                  <div className="flex items-center text-xs sm:text-sm text-gray-600 dark:text-gray-400">
-                    <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1 text-yellow-400 fill-current" viewBox="0 0 24 24">
-                      <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                    </svg>
-                    {product.rating?.toFixed(1) || '0.0'} Rating
-                  </div>
                 </div>
               </div>
 
-              {/* Action Buttons */}
-              <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full md:w-auto">
+              {/* Bottom Action Buttons - Mobile Optimized */}
+              <div className="flex gap-2 mt-3 pt-3 border-t border-soft-green/20 dark:border-gray-600">
                 <button
-                  onClick={handleContactSeller}
-                  className="btn-hover bg-primary-green dark:bg-green-600 text-white px-4 sm:px-6 py-2 sm:py-2.5 rounded-lg text-sm sm:text-base font-medium hover:bg-leaf-green transition-colors duration-300 flex items-center justify-center gap-2"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleContactSeller();
+                  }}
+                  className="flex-1 bg-white dark:bg-gray-700 text-primary-green dark:text-green-400 border border-primary-green/30 dark:border-green-600 px-3 py-2 rounded-lg text-xs sm:text-sm font-medium hover:bg-primary-green/5 dark:hover:bg-green-900/20 transition-colors flex items-center justify-center gap-1.5"
                 >
-                  <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                   </svg>
-                  <span>Contact</span>
+                  <span className="hidden sm:inline">Chat Now</span>
+                  <span className="sm:hidden">Chat</span>
                 </button>
                 <button
-                  onClick={handleFollowToggle}
-                  className={`btn-hover px-4 sm:px-6 py-2 sm:py-2.5 rounded-lg text-sm sm:text-base font-medium transition-colors duration-300 flex items-center justify-center gap-2 ${
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleFollowToggle();
+                  }}
+                  className={`flex-1 px-3 py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors flex items-center justify-center gap-1.5 ${
                     isFollowing
-                      ? 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
-                      : 'bg-white dark:bg-gray-800 text-primary-green dark:text-green-400 border-2 border-primary-green dark:border-green-400 hover:bg-primary-green hover:text-white dark:hover:bg-green-600'
+                      ? 'bg-gray-100 dark:bg-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-500'
+                      : 'bg-primary-green/10 dark:bg-green-900/30 text-primary-green dark:text-green-400 border border-primary-green/30 dark:border-green-600 hover:bg-primary-green/20 dark:hover:bg-green-900/40'
                   }`}
                 >
                   {isFollowing ? (
@@ -467,7 +498,7 @@ export default function ProductPage({ params }: ProductPageProps) {
                 </button>
               </div>
             </div>
-          </div>
+          </Link>
         )}
 
         {/* Reviews Section - Mobile Optimized */}
