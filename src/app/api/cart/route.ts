@@ -66,6 +66,14 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Prevent sellers from buying their own products
+    if (product.userId === session.user.id) {
+      return NextResponse.json(
+        { error: 'You cannot purchase your own product' },
+        { status: 400 }
+      )
+    }
+
     if (product.stock < quantity) {
       return NextResponse.json(
         { error: 'Insufficient stock' },

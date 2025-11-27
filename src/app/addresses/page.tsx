@@ -136,9 +136,41 @@ export default function AddressesPage() {
 
   if (status === 'loading' || loading) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-        <div className="flex justify-center items-center h-screen">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500"></div>
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 px-4">
+        <div className="max-w-4xl mx-auto">
+          {/* Header Skeleton */}
+          <div className="mb-8 animate-pulse">
+            <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded w-48 mb-4"></div>
+            <div className="flex justify-between items-center">
+              <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-64"></div>
+              <div className="h-11 bg-gray-200 dark:bg-gray-700 rounded-lg w-40"></div>
+            </div>
+          </div>
+
+          {/* Address Cards Skeleton */}
+          <div className="grid gap-4 md:grid-cols-2">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 animate-pulse">
+                <div className="flex justify-between items-start mb-4">
+                  <div className="flex-1">
+                    <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-32 mb-2"></div>
+                    <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-24"></div>
+                  </div>
+                  <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded-full w-16"></div>
+                </div>
+                <div className="space-y-2 mb-4">
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-full"></div>
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-5/6"></div>
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-4/6"></div>
+                </div>
+                <div className="flex gap-2 pt-4 border-t border-gray-200 dark:border-gray-700">
+                  <div className="h-9 bg-gray-200 dark:bg-gray-700 rounded-lg flex-1"></div>
+                  <div className="h-9 bg-gray-200 dark:bg-gray-700 rounded-lg flex-1"></div>
+                  <div className="h-9 bg-gray-200 dark:bg-gray-700 rounded-lg w-9"></div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     );

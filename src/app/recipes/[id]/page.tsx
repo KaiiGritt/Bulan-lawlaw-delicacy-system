@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import toast, { Toaster } from 'react-hot-toast';
 import ReviewsSection from '../../components/ReviewsSection';
+import Modal from '../../components/Modal';
 import {
   PrinterIcon,
   BookmarkIcon,
@@ -44,6 +45,7 @@ export default function RecipePage({ params }: RecipePageProps) {
   const [loading, setLoading] = useState(true);
   const [isFavorite, setIsFavorite] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
   const { data: session } = useSession();
   const router = useRouter();
 
@@ -104,9 +106,68 @@ export default function RecipePage({ params }: RecipePageProps) {
   };
 
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center">
-      <div className="animate-spin w-12 h-12 border-4 border-primary-green border-t-transparent rounded-full"></div>
-    </div>;
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-cream-50 to-green-50 dark:from-gray-900 dark:to-gray-800 py-12 px-4">
+        <div className="max-w-4xl mx-auto">
+          {/* Back Button Skeleton */}
+          <div className="mb-6 animate-pulse">
+            <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded-lg w-32"></div>
+          </div>
+
+          {/* Recipe Header Skeleton */}
+          <div className="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-lg animate-pulse">
+            {/* Image Skeleton */}
+            <div className="h-64 sm:h-96 bg-gray-200 dark:bg-gray-700"></div>
+
+            <div className="p-6 sm:p-8">
+              {/* Title & Meta Skeleton */}
+              <div className="mb-6">
+                <div className="h-8 sm:h-10 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-4"></div>
+                <div className="h-5 bg-gray-200 dark:bg-gray-700 rounded w-1/2 mb-4"></div>
+                <div className="flex flex-wrap gap-4 mb-4">
+                  {[1, 2, 3, 4].map((i) => (
+                    <div key={i} className="flex items-center gap-2">
+                      <div className="w-5 h-5 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                      <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-20"></div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Action Buttons Skeleton */}
+              <div className="flex flex-wrap gap-3 mb-6">
+                {[1, 2, 3, 4].map((i) => (
+                  <div key={i} className="h-10 bg-gray-200 dark:bg-gray-700 rounded-lg w-28"></div>
+                ))}
+              </div>
+
+              {/* Ingredients Skeleton */}
+              <div className="mb-6">
+                <div className="h-7 bg-gray-200 dark:bg-gray-700 rounded w-40 mb-4"></div>
+                <div className="space-y-2">
+                  {[1, 2, 3, 4, 5].map((i) => (
+                    <div key={i} className="h-5 bg-gray-200 dark:bg-gray-700 rounded w-full"></div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Instructions Skeleton */}
+              <div>
+                <div className="h-7 bg-gray-200 dark:bg-gray-700 rounded w-40 mb-4"></div>
+                <div className="space-y-4">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="space-y-2">
+                      <div className="h-5 bg-gray-200 dark:bg-gray-700 rounded w-full"></div>
+                      <div className="h-5 bg-gray-200 dark:bg-gray-700 rounded w-5/6"></div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   if (!recipe) {
@@ -281,27 +342,7 @@ export default function RecipePage({ params }: RecipePageProps) {
   };
 
   const handleShare = async () => {
-    const shareData = {
-      title: recipe.title,
-      text: `Check out this delicious recipe: ${recipe.title}`,
-      url: window.location.href,
-    };
-
-    // Check if Web Share API is supported
-    if (navigator.share) {
-      try {
-        await navigator.share(shareData);
-        toast.success('Recipe shared successfully!');
-      } catch (err) {
-        if ((err as Error).name !== 'AbortError') {
-          // Fallback to copy link
-          handleCopyLink();
-        }
-      }
-    } else {
-      // Fallback to copy link
-      handleCopyLink();
-    }
+    setShowShareModal(true);
   };
 
   const handleCopyLink = () => {
@@ -550,6 +591,67 @@ export default function RecipePage({ params }: RecipePageProps) {
           </div>
         </div>
       </div>
+
+      {/* Share Modal */}
+      <Modal
+        isOpen={showShareModal}
+        onClose={() => setShowShareModal(false)}
+        title="Share Recipe"
+        size="md"
+      >
+        <div className="space-y-4">
+          <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 mb-4">
+            Share this delicious {recipe.title} recipe with your friends!
+          </p>
+
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              onClick={async () => {
+                if (navigator.share) {
+                  try {
+                    await navigator.share({
+                      title: recipe.title,
+                      text: `Check out this recipe: ${recipe.title}`,
+                      url: window.location.href,
+                    });
+                    toast.success('Shared successfully!');
+                    setShowShareModal(false);
+                  } catch (err) {
+                    if ((err as Error).name !== 'AbortError') {
+                      handleCopyLink();
+                    }
+                  }
+                } else {
+                  handleCopyLink();
+                }
+              }}
+              className="flex items-center justify-center gap-2 px-4 py-3 bg-primary-green text-white rounded-lg hover:bg-leaf-green transition-colors text-sm sm:text-base font-medium"
+            >
+              <ShareIcon className="w-5 h-5" />
+              Share
+            </button>
+
+            <button
+              onClick={() => {
+                handleCopyLink();
+                setShowShareModal(false);
+              }}
+              className="flex items-center justify-center gap-2 px-4 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm sm:text-base font-medium"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+              </svg>
+              Copy Link
+            </button>
+          </div>
+
+          <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
+            <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 text-center">
+              {window.location.href}
+            </p>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }

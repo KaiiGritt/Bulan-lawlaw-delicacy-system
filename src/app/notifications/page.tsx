@@ -116,10 +116,42 @@ export default function NotificationsPage() {
 
   if (loading || status === 'loading') {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-cream-50 to-green-50 dark:bg-gray-950">
-        <div className="text-center space-y-4">
-          <div className="animate-spin rounded-full h-12 w-12 sm:h-16 sm:w-16 border-b-4 border-primary-green mx-auto"></div>
-          <p className="text-gray-600 dark:text-gray-300 text-sm sm:text-base">Loading notifications...</p>
+      <div className="min-h-screen bg-gradient-to-br from-cream-50 to-green-50 dark:bg-gray-950 py-6 sm:py-12 px-3 sm:px-4 lg:px-8">
+        <div className="max-w-4xl mx-auto">
+          {/* Header Skeleton */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 sm:mb-8 gap-3 sm:gap-0 animate-pulse">
+            <div>
+              <div className="h-8 sm:h-10 bg-gray-200 dark:bg-gray-700 rounded w-48 mb-2"></div>
+              <div className="h-4 sm:h-5 bg-gray-200 dark:bg-gray-700 rounded w-32"></div>
+            </div>
+            <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded-lg w-full sm:w-40"></div>
+          </div>
+
+          {/* Notification Cards Skeleton */}
+          <div className="space-y-3 sm:space-y-4">
+            {[1, 2, 3, 4, 5].map((i) => (
+              <div key={i} className="bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 animate-pulse">
+                <div className="p-3 sm:p-6 flex items-start gap-3 sm:gap-4">
+                  {/* Icon Skeleton */}
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gray-200 dark:bg-gray-700 flex-shrink-0"></div>
+
+                  {/* Content Skeleton */}
+                  <div className="flex-1 min-w-0 space-y-2 sm:space-y-3">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="h-5 sm:h-6 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
+                      <div className="w-2 h-2 sm:w-2.5 sm:h-2.5 bg-gray-200 dark:bg-gray-700 rounded-full flex-shrink-0"></div>
+                    </div>
+                    <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-full"></div>
+                    <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-5/6"></div>
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-0 pt-1">
+                      <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-32"></div>
+                      <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded-lg w-28"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     );

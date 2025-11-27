@@ -157,8 +157,59 @@ export default function ShopPage({ params }: ShopPageProps) {
       <div className="min-h-screen bg-gradient-to-br from-cream-50 to-green-50 dark:from-gray-900 dark:to-gray-800 py-8 sm:py-12">
         <Toaster position="top-center" />
         <div className="container mx-auto px-3 sm:px-4">
-          <div className="flex items-center justify-center py-16">
-            <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary-green"></div>
+          {/* Shop Header Skeleton */}
+          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 sm:p-8 shadow-lg mb-8 animate-pulse">
+            <div className="flex flex-col md:flex-row gap-6">
+              {/* Shop Logo Skeleton */}
+              <div className="w-24 h-24 sm:w-32 sm:h-32 bg-gray-200 dark:bg-gray-700 rounded-full flex-shrink-0"></div>
+
+              {/* Shop Info Skeleton */}
+              <div className="flex-1 space-y-4">
+                <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-64"></div>
+                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-full"></div>
+                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
+
+                {/* Shop Stats Skeleton */}
+                <div className="flex flex-wrap gap-6 mt-4">
+                  {[1, 2, 3, 4].map((i) => (
+                    <div key={i} className="space-y-1">
+                      <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-16"></div>
+                      <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-20"></div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Action Buttons Skeleton */}
+                <div className="flex gap-3 mt-4">
+                  <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded-lg w-32"></div>
+                  <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded-lg w-32"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Filter Bar Skeleton */}
+          <div className="mb-6 flex flex-col sm:flex-row gap-4 justify-between animate-pulse">
+            <div className="flex gap-2 overflow-x-auto">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="h-10 bg-gray-200 dark:bg-gray-700 rounded-lg w-24 flex-shrink-0"></div>
+              ))}
+            </div>
+            <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded-lg w-40"></div>
+          </div>
+
+          {/* Products Grid Skeleton */}
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+            {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+              <div key={i} className="bg-white dark:bg-gray-800 rounded-lg shadow-sm overflow-hidden border border-gray-100 dark:border-gray-700 animate-pulse">
+                <div className="aspect-square bg-gray-200 dark:bg-gray-700"></div>
+                <div className="p-3 space-y-2">
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
+                  <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
+                  <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded-lg w-full"></div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>
