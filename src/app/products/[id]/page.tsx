@@ -248,12 +248,12 @@ export default function ProductPage({ params }: ProductPageProps) {
   const businessSlug = product.user.sellerApplication?.businessName?.toLowerCase().replace(/\s+/g, '-') || '';
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-cream-50 to-green-50 py-12">
-      <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+    <div className="min-h-screen bg-gradient-to-br from-cream-50 to-green-50 dark:from-gray-900 dark:to-gray-800 py-4 sm:py-8 lg:py-12">
+      <div className="container mx-auto px-3 sm:px-4 lg:px-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
           {/* Product Image */}
-          <div className="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100">
-            <div className="relative h-96">
+          <div className="bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl shadow-lg overflow-hidden border border-gray-100 dark:border-gray-700">
+            <div className="relative h-64 sm:h-80 lg:h-96">
               <img
                 src={product.image || '/placeholder.png'}
                 alt={product.name}
@@ -263,23 +263,23 @@ export default function ProductPage({ params }: ProductPageProps) {
           </div>
 
           {/* Product Details */}
-          <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
-            <div className="mb-6">
-              <span className="bg-primary-green/90 backdrop-blur-sm text-white px-3 py-1 rounded-full text-sm font-medium mb-4 inline-block">
+          <div className="bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
+            <div className="mb-3 sm:mb-6">
+              <span className="bg-primary-green/90 backdrop-blur-sm text-white px-2.5 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium mb-3 sm:mb-4 inline-block">
                 {product.category.charAt(0).toUpperCase() + product.category.slice(1)}
               </span>
             </div>
 
-            <h1 className="text-3xl font-bold text-primary-green mb-4">{product.name}</h1>
-            <p className="text-gray-600 mb-6">{product.description}</p>
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-primary-green dark:text-green-400 mb-3 sm:mb-4">{product.name}</h1>
+            <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 mb-4 sm:mb-6">{product.description}</p>
 
             {/* Rating Display */}
-            <div className="flex items-center mb-4">
+            <div className="flex items-center mb-3 sm:mb-4">
               <div className="flex items-center">
                 {[1, 2, 3, 4, 5].map((star) => (
                   <svg
                     key={star}
-                    className={`w-5 h-5 ${
+                    className={`w-4 h-4 sm:w-5 sm:h-5 ${
                       star <= Math.floor(product.rating || 0)
                         ? 'text-yellow-400 fill-current'
                         : 'text-gray-300'
@@ -290,22 +290,22 @@ export default function ProductPage({ params }: ProductPageProps) {
                   </svg>
                 ))}
               </div>
-              <span className="ml-2 text-lg font-semibold text-gray-700">
+              <span className="ml-2 text-base sm:text-lg font-semibold text-gray-700 dark:text-gray-200">
                 {product.rating?.toFixed(1) || '0.0'}
               </span>
-              <span className="ml-2 text-gray-500">
+              <span className="ml-2 text-xs sm:text-sm text-gray-500 dark:text-gray-400">
                 ({product.comments?.length || 0} reviews)
               </span>
             </div>
 
-            <p className="text-3xl font-bold text-primary-green mb-4">₱{product.price}</p>
-            <p className="text-sm text-gray-500 mb-6">
-              Stock: {product.stock} available
+            <p className="text-2xl sm:text-3xl font-bold text-primary-green dark:text-green-400 mb-2 sm:mb-4">₱{product.price}</p>
+            <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mb-4 sm:mb-6">
+              Stock: <span className="font-semibold">{product.stock}</span> available
             </p>
 
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               <div>
-                <label htmlFor="quantity" className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="quantity" className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Quantity
                 </label>
                 <input
@@ -315,35 +315,35 @@ export default function ProductPage({ params }: ProductPageProps) {
                   max={product.stock}
                   value={quantity}
                   onChange={(e) => setQuantity(parseInt(e.target.value) || 1)}
-                  className="w-20 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-green"
+                  className="w-20 sm:w-24 px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-md focus:outline-none focus:ring-2 focus:ring-primary-green text-sm sm:text-base"
                 />
               </div>
 
-              <div className="flex space-x-4">
+              <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
                 <button
                   onClick={handleAddToCart}
                   disabled={addingToCart}
-                  className="flex-1 btn-hover bg-primary-green text-white px-6 py-3 rounded-xl font-medium hover:bg-leaf-green transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 btn-hover bg-primary-green text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg sm:rounded-xl text-sm sm:text-base font-medium hover:bg-leaf-green transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {addingToCart ? (
-                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mx-auto"></div>
+                    <div className="animate-spin rounded-full h-4 w-4 sm:h-5 sm:w-5 border-b-2 border-white mx-auto"></div>
                   ) : (
                     'Add to Cart'
                   )}
                 </button>
                 <button
                   onClick={handleContactSeller}
-                  className="flex-1 btn-hover bg-banana-leaf text-white px-6 py-3 rounded-xl font-medium hover:bg-leaf-green transition-colors duration-300"
+                  className="flex-1 btn-hover bg-banana-leaf text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg sm:rounded-xl text-sm sm:text-base font-medium hover:bg-leaf-green transition-colors duration-300"
                 >
                   Contact Seller
                 </button>
               </div>
             </div>
 
-            <div className="mt-8">
-              <h2 className="text-xl font-semibold mb-4">Product Information</h2>
-              <div className="bg-cream-50 p-6 rounded-xl border border-cream-100">
-                <p className="text-gray-700">
+            <div className="mt-6 sm:mt-8">
+              <h2 className="text-base sm:text-lg lg:text-xl font-semibold mb-3 sm:mb-4 text-gray-900 dark:text-white">Product Information</h2>
+              <div className="bg-cream-50 dark:bg-gray-700/50 p-4 sm:p-6 rounded-lg sm:rounded-xl border border-cream-100 dark:border-gray-600">
+                <p className="text-xs sm:text-sm lg:text-base text-gray-700 dark:text-gray-300">
                   This {product.category} Lawlaw product is sourced directly from local fishermen in Bulan, Philippines.
                   We ensure the highest quality and freshness for all our products.
                 </p>
@@ -352,44 +352,44 @@ export default function ProductPage({ params }: ProductPageProps) {
           </div>
         </div>
 
-        {/* Business/Seller Section - Shopee Style */}
+        {/* Business/Seller Section - Shopee Style - Mobile Optimized */}
         {product.user.sellerApplication && (
-          <div className="mt-8 bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-            <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
+          <div className="mt-4 sm:mt-6 lg:mt-8 bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 border border-gray-100 dark:border-gray-700">
+            <div className="flex flex-col md:flex-row items-start md:items-center gap-4 sm:gap-6">
               {/* Business Logo */}
               <div className="flex-shrink-0">
                 <img
                   src={product.user.sellerApplication.businessLogo || '/placeholder-business.png'}
                   alt={product.user.sellerApplication.businessName}
-                  className="w-20 h-20 rounded-full object-cover border-2 border-primary-green"
+                  className="w-16 h-16 sm:w-20 sm:h-20 rounded-full object-cover border-2 border-primary-green dark:border-green-400"
                 />
               </div>
 
               {/* Business Info */}
-              <div className="flex-1">
+              <div className="flex-1 min-w-0">
                 <Link
                   href={`/business/${businessSlug}`}
-                  className="text-xl font-bold text-primary-green hover:text-leaf-green transition-colors duration-300 inline-flex items-center gap-2"
+                  className="text-base sm:text-lg lg:text-xl font-bold text-primary-green dark:text-green-400 hover:text-leaf-green dark:hover:text-green-300 transition-colors duration-300 inline-flex items-center gap-2"
                 >
-                  {product.user.sellerApplication.businessName}
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <span className="truncate">{product.user.sellerApplication.businessName}</span>
+                  <svg className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </svg>
                 </Link>
                 {product.user.sellerApplication.businessDescription && (
-                  <p className="text-gray-600 text-sm mt-2 line-clamp-2">
+                  <p className="text-gray-600 dark:text-gray-300 text-xs sm:text-sm mt-1.5 sm:mt-2 line-clamp-2">
                     {product.user.sellerApplication.businessDescription}
                   </p>
                 )}
-                <div className="flex items-center gap-4 mt-3">
-                  <div className="flex items-center text-sm text-gray-600">
-                    <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="flex items-center gap-3 sm:gap-4 mt-2 sm:mt-3">
+                  <div className="flex items-center text-xs sm:text-sm text-gray-600 dark:text-gray-400">
+                    <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                     </svg>
-                    Products: {suggestedProducts.length + 1}
+                    <span className="truncate">Products: {suggestedProducts.length + 1}</span>
                   </div>
-                  <div className="flex items-center text-sm text-gray-600">
-                    <svg className="w-4 h-4 mr-1 text-yellow-400 fill-current" viewBox="0 0 24 24">
+                  <div className="flex items-center text-xs sm:text-sm text-gray-600 dark:text-gray-400">
+                    <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1 text-yellow-400 fill-current" viewBox="0 0 24 24">
                       <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
                     </svg>
                     {product.rating?.toFixed(1) || '0.0'} Rating
@@ -398,37 +398,37 @@ export default function ProductPage({ params }: ProductPageProps) {
               </div>
 
               {/* Action Buttons */}
-              <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+              <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full md:w-auto">
                 <button
                   onClick={handleContactSeller}
-                  className="btn-hover bg-primary-green text-white px-6 py-2.5 rounded-lg font-medium hover:bg-leaf-green transition-colors duration-300 flex items-center justify-center gap-2"
+                  className="btn-hover bg-primary-green dark:bg-green-600 text-white px-4 sm:px-6 py-2 sm:py-2.5 rounded-lg text-sm sm:text-base font-medium hover:bg-leaf-green transition-colors duration-300 flex items-center justify-center gap-2"
                 >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                   </svg>
-                  Contact Seller
+                  <span>Contact</span>
                 </button>
                 <button
                   onClick={handleFollowToggle}
-                  className={`btn-hover px-6 py-2.5 rounded-lg font-medium transition-colors duration-300 flex items-center justify-center gap-2 ${
+                  className={`btn-hover px-4 sm:px-6 py-2 sm:py-2.5 rounded-lg text-sm sm:text-base font-medium transition-colors duration-300 flex items-center justify-center gap-2 ${
                     isFollowing
-                      ? 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                      : 'bg-white text-primary-green border-2 border-primary-green hover:bg-primary-green hover:text-white'
+                      ? 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600'
+                      : 'bg-white dark:bg-gray-800 text-primary-green dark:text-green-400 border-2 border-primary-green dark:border-green-400 hover:bg-primary-green hover:text-white dark:hover:bg-green-600'
                   }`}
                 >
                   {isFollowing ? (
                     <>
-                      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
-                      Following
+                      <span>Following</span>
                     </>
                   ) : (
                     <>
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                       </svg>
-                      Follow
+                      <span>Follow</span>
                     </>
                   )}
                 </button>
@@ -437,8 +437,8 @@ export default function ProductPage({ params }: ProductPageProps) {
           </div>
         )}
 
-        {/* Reviews Section */}
-        <div className="mt-12">
+        {/* Reviews Section - Mobile Optimized */}
+        <div className="mt-6 sm:mt-8 lg:mt-12">
           <ReviewsSection
             itemId={product.id}
             itemType="product"
@@ -446,11 +446,11 @@ export default function ProductPage({ params }: ProductPageProps) {
           />
         </div>
 
-        {/* Suggested Products */}
+        {/* Suggested Products - Mobile Optimized */}
         {suggestedProducts.length > 0 && (
-          <div className="mt-12 bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
-            <h2 className="text-2xl font-bold text-primary-green mb-6">You Might Also Like</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="mt-6 sm:mt-8 lg:mt-12 bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 lg:p-8 border border-gray-100 dark:border-gray-700">
+            <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-primary-green dark:text-green-400 mb-4 sm:mb-6">You Might Also Like</h2>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
               {suggestedProducts.map((suggestedProduct) => (
                 <Link
                   key={suggestedProduct.id}
