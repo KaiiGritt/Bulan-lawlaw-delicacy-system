@@ -832,12 +832,42 @@ export default function ProfilePage() {
               <div className="border-b border-gray-200 dark:border-gray-700 overflow-hidden">
                 <div className="flex overflow-x-auto overflow-y-hidden scrollbar-hide -mb-px" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                   {[
-                    { key: 'all', label: 'All', icon: '📦', count: userOrders.length },
-                    { key: 'pending', label: 'To Pay', icon: '💳', count: userOrders.filter(o => o.status === 'pending').length },
-                    { key: 'processing', label: 'To Ship', icon: '📋', count: userOrders.filter(o => o.status === 'processing').length },
-                    { key: 'shipped', label: 'To Receive', icon: '🚚', count: userOrders.filter(o => o.status === 'shipped').length },
-                    { key: 'delivered', label: 'Completed', icon: '✅', count: userOrders.filter(o => o.status === 'delivered').length },
-                    { key: 'cancelled', label: 'Cancelled', icon: '❌', count: userOrders.filter(o => o.status === 'cancelled').length }
+                    {
+                      key: 'all',
+                      label: 'All',
+                      icon: <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>,
+                      count: userOrders.length
+                    },
+                    {
+                      key: 'pending',
+                      label: 'To Pay',
+                      icon: <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" /></svg>,
+                      count: userOrders.filter(o => o.status === 'pending').length
+                    },
+                    {
+                      key: 'processing',
+                      label: 'To Ship',
+                      icon: <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" /></svg>,
+                      count: userOrders.filter(o => o.status === 'processing').length
+                    },
+                    {
+                      key: 'shipped',
+                      label: 'To Receive',
+                      icon: <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" /></svg>,
+                      count: userOrders.filter(o => o.status === 'shipped').length
+                    },
+                    {
+                      key: 'delivered',
+                      label: 'Completed',
+                      icon: <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>,
+                      count: userOrders.filter(o => o.status === 'delivered').length
+                    },
+                    {
+                      key: 'cancelled',
+                      label: 'Cancelled',
+                      icon: <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>,
+                      count: userOrders.filter(o => o.status === 'cancelled').length
+                    }
                   ].map(tab => (
                     <button
                       key={tab.key}
@@ -849,7 +879,7 @@ export default function ProfilePage() {
                       }`}
                     >
                       <div className="flex flex-col items-center gap-0.5 sm:gap-1">
-                        <span className="text-xl sm:text-2xl">{tab.icon}</span>
+                        {tab.icon}
                         <span className="text-[10px] sm:text-xs leading-tight">{tab.label}</span>
                         {tab.count > 0 && (
                           <span className={`text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 rounded-full ${
