@@ -557,7 +557,7 @@ export default function ProfilePage() {
   if (!profile) return null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-accent-cream to-soft-green/20 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 py-12 px-4 sm:px-6 lg:px-8 relative">
+    <div className="min-h-screen bg-gradient-to-br from-accent-cream to-soft-green/20 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 py-4 sm:py-8 lg:py-12 px-4 sm:px-6 lg:px-8 relative">
       {/* Animated background for dark mode */}
       <div className="fixed inset-0 -z-10 hidden dark:block overflow-hidden pointer-events-none">
         <div className="floating-orb absolute top-20 right-20 w-96 h-96 bg-green-500/10 rounded-full blur-3xl" style={{ animationDelay: '2s' }}></div>
@@ -565,23 +565,23 @@ export default function ProfilePage() {
         <div className="floating-orb absolute top-1/2 right-1/3 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl" style={{ animationDelay: '8s' }}></div>
       </div>
       <Toaster position="top-right" />
-      <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
 
         {/* Sidebar */}
-        <aside className="space-y-6 lg:sticky lg:top-28 lg:self-start">
+        <aside className="space-y-4 sm:space-y-6 lg:sticky lg:top-28 lg:self-start">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border border-soft-green/20 dark:border-gray-700"
+            className="bg-white dark:bg-gray-800 rounded-2xl p-4 sm:p-6 shadow-lg border border-soft-green/20 dark:border-gray-700"
           >
             <div className="flex flex-col items-center">
-              <div className="relative w-32 h-32">
+              <div className="relative w-24 h-24 sm:w-32 sm:h-32">
                 {profile.profilePicture ? (
-                  <img src={profile.profilePicture} alt="profile" className="w-32 h-32 rounded-full object-cover border-4 border-primary-green/20 shadow-lg" />
+                  <img src={profile.profilePicture} alt="profile" className="w-full h-full rounded-full object-cover border-4 border-primary-green/20 shadow-lg" />
                 ) : (
-                  <div className="w-32 h-32 bg-gradient-to-br from-primary-green via-leaf-green to-banana-leaf rounded-full flex items-center justify-center text-white font-bold shadow-lg">
+                  <div className="w-full h-full bg-gradient-to-br from-primary-green via-leaf-green to-banana-leaf rounded-full flex items-center justify-center text-white font-bold shadow-lg">
                     {profile.name?.charAt(0).toUpperCase() || (
-                      <svg className="w-16 h-16" fill="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-12 h-12 sm:w-16 sm:h-16" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
                       </svg>
                     )}
@@ -589,8 +589,8 @@ export default function ProfilePage() {
                 )}
               </div>
 
-              <h3 className="mt-4 font-bold text-xl bg-gradient-to-r from-primary-green to-leaf-green bg-clip-text text-transparent">{profile.name || 'No Name'}</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400">{profile.email}</p>
+              <h3 className="mt-3 sm:mt-4 font-bold text-lg sm:text-xl bg-gradient-to-r from-primary-green to-leaf-green bg-clip-text text-transparent text-center">{profile.name || 'No Name'}</h3>
+              <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 text-center break-all px-2">{profile.email}</p>
               <span className="mt-2 px-3 py-1 text-xs font-semibold rounded-full bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 flex items-center gap-1.5">
                 {profile.role === 'seller' ? (
                   <>
@@ -609,8 +609,8 @@ export default function ProfilePage() {
                 )}
               </span>
 
-              <div className="w-full mt-6 space-y-3">
-                <Link href="/settings" className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-gradient-to-r from-primary-green to-banana-leaf hover:from-leaf-green hover:to-soft-green text-white text-sm font-medium shadow-md hover:shadow-lg transition-all transform hover:scale-[1.02]">
+              <div className="w-full mt-4 sm:mt-6 space-y-2 sm:space-y-3">
+                <Link href="/settings" className="flex items-center justify-center gap-2 px-4 py-2.5 sm:py-3 rounded-xl bg-gradient-to-r from-primary-green to-banana-leaf hover:from-leaf-green hover:to-soft-green text-white text-sm font-medium shadow-md hover:shadow-lg transition-all transform hover:scale-[1.02]">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -619,7 +619,7 @@ export default function ProfilePage() {
                 </Link>
                 <button
                   onClick={handleLogout}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white text-sm font-medium shadow-md hover:shadow-lg transition-all transform hover:scale-[1.02]"
+                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 sm:py-3 rounded-xl bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white text-sm font-medium shadow-md hover:shadow-lg transition-all transform hover:scale-[1.02]"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
@@ -634,7 +634,7 @@ export default function ProfilePage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-lg border border-soft-green/20 dark:border-gray-700 space-y-3"
+            className="bg-white dark:bg-gray-800 rounded-2xl p-3 sm:p-4 shadow-lg border border-soft-green/20 dark:border-gray-700 space-y-2 sm:space-y-3"
           >
             <p className="text-xs text-gray-600 dark:text-gray-400 font-bold uppercase tracking-wide flex items-center gap-2">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -642,69 +642,71 @@ export default function ProfilePage() {
               </svg>
               Quick Actions
             </p>
-            <div className="grid grid-cols-1 gap-2">
+            <div className="grid grid-cols-2 sm:grid-cols-1 gap-2">
               {profile.role !== 'seller' && (
                 <>
-                  <Link href="/orders" className="text-sm p-3 rounded-lg bg-emerald-50 dark:bg-emerald-900 hover:bg-emerald-100 dark:hover:bg-emerald-800 transition-colors flex items-center gap-2">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <Link href="/orders" className="text-xs sm:text-sm p-2.5 sm:p-3 rounded-lg bg-emerald-50 dark:bg-emerald-900 hover:bg-emerald-100 dark:hover:bg-emerald-800 transition-colors flex flex-col sm:flex-row items-center justify-center sm:justify-start gap-1 sm:gap-2">
+                    <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                     </svg>
-                    View Orders
+                    <span className="text-center sm:text-left">Orders</span>
                   </Link>
                   <button
                     onClick={() => setActiveTab('wishlist')}
-                    className="text-sm p-3 rounded-lg bg-yellow-50 dark:bg-yellow-900 hover:bg-yellow-100 dark:hover:bg-yellow-800 transition-colors flex items-center justify-between gap-2"
+                    className="text-xs sm:text-sm p-2.5 sm:p-3 rounded-lg bg-yellow-50 dark:bg-yellow-900 hover:bg-yellow-100 dark:hover:bg-yellow-800 transition-colors flex flex-col sm:flex-row items-center justify-center sm:justify-between gap-1 sm:gap-2 relative"
                   >
-                    <div className="flex items-center gap-2">
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2">
+                      <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                       </svg>
-                      Wishlist
+                      <span className="text-center">Wishlist</span>
                     </div>
-                    <span className="px-2 py-0.5 bg-yellow-200 dark:bg-yellow-700 text-yellow-800 dark:text-yellow-200 rounded-full text-xs font-semibold">
+                    <span className="absolute top-1 right-1 sm:static sm:top-auto sm:right-auto px-1.5 sm:px-2 py-0.5 bg-yellow-200 dark:bg-yellow-700 text-yellow-800 dark:text-yellow-200 rounded-full text-[10px] sm:text-xs font-semibold min-w-[18px] sm:min-w-0 text-center">
                       {wishlistItems.length}
                     </span>
                   </button>
                   <button
                     onClick={() => setActiveTab('favorites')}
-                    className="text-sm p-3 rounded-lg bg-rose-50 dark:bg-rose-900 hover:bg-rose-100 dark:hover:bg-rose-800 transition-colors flex items-center justify-between gap-2"
+                    className="text-xs sm:text-sm p-2.5 sm:p-3 rounded-lg bg-rose-50 dark:bg-rose-900 hover:bg-rose-100 dark:hover:bg-rose-800 transition-colors flex flex-col sm:flex-row items-center justify-center sm:justify-between gap-1 sm:gap-2 relative"
                   >
-                    <div className="flex items-center gap-2">
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2">
+                      <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
                       </svg>
-                      Recipe Favorites
+                      <span className="text-center hidden sm:inline">Recipe Favorites</span>
+                      <span className="text-center sm:hidden">Favorites</span>
                     </div>
-                    <span className="px-2 py-0.5 bg-rose-200 dark:bg-rose-700 text-rose-800 dark:text-rose-200 rounded-full text-xs font-semibold">
+                    <span className="absolute top-1 right-1 sm:static sm:top-auto sm:right-auto px-1.5 sm:px-2 py-0.5 bg-rose-200 dark:bg-rose-700 text-rose-800 dark:text-rose-200 rounded-full text-[10px] sm:text-xs font-semibold min-w-[18px] sm:min-w-0 text-center">
                       {recipeFavorites.length}
                     </span>
                   </button>
                   <button
                     onClick={() => setActiveTab('saved')}
-                    className="text-sm p-3 rounded-lg bg-purple-50 dark:bg-purple-900 hover:bg-purple-100 dark:hover:bg-purple-800 transition-colors flex items-center justify-between gap-2"
+                    className="text-xs sm:text-sm p-2.5 sm:p-3 rounded-lg bg-purple-50 dark:bg-purple-900 hover:bg-purple-100 dark:hover:bg-purple-800 transition-colors flex flex-col sm:flex-row items-center justify-center sm:justify-between gap-1 sm:gap-2 relative"
                   >
-                    <div className="flex items-center gap-2">
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2">
+                      <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
                       </svg>
-                      Saved Recipes
+                      <span className="text-center hidden sm:inline">Saved Recipes</span>
+                      <span className="text-center sm:hidden">Saved</span>
                     </div>
-                    <span className="px-2 py-0.5 bg-purple-200 dark:bg-purple-700 text-purple-800 dark:text-purple-200 rounded-full text-xs font-semibold">
+                    <span className="absolute top-1 right-1 sm:static sm:top-auto sm:right-auto px-1.5 sm:px-2 py-0.5 bg-purple-200 dark:bg-purple-700 text-purple-800 dark:text-purple-200 rounded-full text-[10px] sm:text-xs font-semibold min-w-[18px] sm:min-w-0 text-center">
                       {savedRecipes.length}
                     </span>
                   </button>
-                  <Link href="/add-recipe" className="text-sm p-3 rounded-lg bg-orange-50 dark:bg-orange-900 hover:bg-orange-100 dark:hover:bg-orange-800 transition-colors flex items-center gap-2">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <Link href="/add-recipe" className="col-span-2 sm:col-span-1 text-xs sm:text-sm p-2.5 sm:p-3 rounded-lg bg-gradient-to-r from-orange-50 to-orange-100 dark:from-orange-900 dark:to-orange-800 hover:from-orange-100 hover:to-orange-200 dark:hover:from-orange-800 dark:hover:to-orange-700 transition-colors flex flex-row items-center justify-center gap-2 border border-orange-200 dark:border-orange-700">
+                    <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                     </svg>
-                    Add Recipe
+                    <span className="font-semibold">Add Recipe</span>
                   </Link>
-                  <Link href="/addresses" className="text-sm p-3 rounded-lg bg-blue-50 dark:bg-blue-900 hover:bg-blue-100 dark:hover:bg-blue-800 transition-colors flex items-center gap-2">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <Link href="/addresses" className="col-span-2 sm:col-span-1 text-xs sm:text-sm p-2.5 sm:p-3 rounded-lg bg-blue-50 dark:bg-blue-900 hover:bg-blue-100 dark:hover:bg-blue-800 transition-colors flex flex-row items-center justify-center gap-2">
+                    <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
-                    Address Book
+                    <span>Address Book</span>
                   </Link>
                 </>
               )}
@@ -810,104 +812,178 @@ export default function ProfilePage() {
         {/* Main Content */}
         <main className="lg:col-span-2 space-y-6">
 
-          {/* Order Management for Non-Sellers */}
+          {/* Order Management for Non-Sellers - Shopee Style */}
           {profile.role !== 'seller' && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border border-soft-green/20 dark:border-gray-700"
+              className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-soft-green/20 dark:border-gray-700 overflow-hidden"
             >
-              <h3 className="font-bold text-2xl bg-gradient-to-r from-primary-green to-leaf-green bg-clip-text text-transparent mb-6 flex items-center gap-2">
-                <svg className="w-6 h-6 text-primary-green dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                </svg>
-                Order Management
-              </h3>
-
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900 dark:to-blue-800 p-4 rounded-lg text-center">
-                  <div className="flex justify-center mb-2">
-                    <svg className="w-8 h-8 text-blue-600 dark:text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                    </svg>
-                  </div>
-                  <p className="text-sm font-medium text-gray-700 dark:text-gray-200">To Pay</p>
-                  <p className="text-2xl font-bold text-primary-green">{userOrders.filter(o => o.status === 'pending').length}</p>
-                </div>
-
-                <div className="bg-gradient-to-br from-yellow-50 to-yellow-100 dark:from-yellow-900 dark:to-yellow-800 p-4 rounded-lg text-center">
-                  <div className="flex justify-center mb-2">
-                    <svg className="w-8 h-8 text-yellow-600 dark:text-yellow-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                    </svg>
-                  </div>
-                  <p className="text-sm font-medium text-gray-700 dark:text-gray-200">Processing</p>
-                  <p className="text-2xl font-bold text-primary-green">{userOrders.filter(o => o.status === 'processing').length}</p>
-                </div>
-
-                <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900 dark:to-purple-800 p-4 rounded-lg text-center">
-                  <div className="flex justify-center mb-2">
-                    <svg className="w-8 h-8 text-purple-600 dark:text-purple-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-                    </svg>
-                  </div>
-                  <p className="text-sm font-medium text-gray-700 dark:text-gray-200">To Receive</p>
-                  <p className="text-2xl font-bold text-primary-green">{userOrders.filter(o => o.status === 'shipped').length}</p>
-                </div>
-
-                <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900 dark:to-green-800 p-4 rounded-lg text-center">
-                  <div className="flex justify-center mb-2">
-                    <svg className="w-8 h-8 text-green-600 dark:text-green-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                  </div>
-                  <p className="text-sm font-medium text-gray-700 dark:text-gray-200">Delivered</p>
-                  <p className="text-2xl font-bold text-primary-green">{userOrders.filter(o => o.status === 'delivered').length}</p>
-                </div>
-              </div>
-
-              <div className="mt-6 flex flex-col sm:flex-row gap-3">
-                <Link
-                  href="/orders"
-                  className="flex-1 bg-gradient-to-r from-primary-green to-banana-leaf hover:from-leaf-green hover:to-soft-green text-white px-6 py-3 rounded-xl font-medium shadow-md hover:shadow-lg transition-all transform hover:scale-[1.02] text-center"
-                >
-                  View All Orders
-                </Link>
-                <Link
-                  href={`/chat?orderId=${userOrders[0]?.id || ''}`}
-                  className="flex-1 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-6 py-3 rounded-xl font-medium shadow-md hover:shadow-lg transition-all transform hover:scale-[1.02] flex items-center justify-center gap-2"
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+              <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+                <h3 className="font-bold text-2xl bg-gradient-to-r from-primary-green to-leaf-green bg-clip-text text-transparent flex items-center gap-2">
+                  <svg className="w-6 h-6 text-primary-green dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                   </svg>
-                  Contact Seller
-                </Link>
+                  My Orders
+                </h3>
               </div>
 
-              {/* Recent Orders */}
-              <div className="mt-6">
-                <h4 className="font-semibold text-gray-700 dark:text-gray-200 mb-3">Recent Orders</h4>
-                <div className="space-y-3">
-                  {userOrders.slice(0, 3).map((order) => (
-                    <div key={order.id} className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg flex justify-between items-center">
-                      <div>
-                        <p className="font-medium text-gray-900 dark:text-white">Order #{order.id.slice(0, 8)}</p>
-                        <p className="text-sm text-gray-600 dark:text-gray-300">{new Date(order.createdAt).toLocaleDateString()}</p>
+              {/* Order Status Tabs - Shopee Style */}
+              <div className="border-b border-gray-200 dark:border-gray-700">
+                <div className="flex overflow-x-auto scrollbar-hide">
+                  {[
+                    { key: 'all', label: 'All', icon: '📦', count: userOrders.length },
+                    { key: 'pending', label: 'To Pay', icon: '💳', count: userOrders.filter(o => o.status === 'pending').length },
+                    { key: 'processing', label: 'To Ship', icon: '📋', count: userOrders.filter(o => o.status === 'processing').length },
+                    { key: 'shipped', label: 'To Receive', icon: '🚚', count: userOrders.filter(o => o.status === 'shipped').length },
+                    { key: 'delivered', label: 'Completed', icon: '✅', count: userOrders.filter(o => o.status === 'delivered').length },
+                    { key: 'cancelled', label: 'Cancelled', icon: '❌', count: userOrders.filter(o => o.status === 'cancelled').length }
+                  ].map(tab => (
+                    <button
+                      key={tab.key}
+                      onClick={() => setOrderFilter(tab.key)}
+                      className={`flex-1 min-w-[100px] px-4 py-4 text-center transition-all duration-200 relative ${
+                        orderFilter === tab.key
+                          ? 'text-primary-green dark:text-green-400 font-semibold'
+                          : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
+                      }`}
+                    >
+                      <div className="flex flex-col items-center gap-1">
+                        <span className="text-2xl">{tab.icon}</span>
+                        <span className="text-sm">{tab.label}</span>
+                        {tab.count > 0 && (
+                          <span className={`text-xs px-2 py-0.5 rounded-full ${
+                            orderFilter === tab.key
+                              ? 'bg-primary-green text-white'
+                              : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
+                          }`}>
+                            {tab.count}
+                          </span>
+                        )}
                       </div>
-                      <div className="text-right">
-                        <p className="font-semibold text-primary-green">${order.totalAmount}</p>
-                        <span className={`text-xs px-2 py-1 rounded-full ${
-                          order.status === 'delivered' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' :
-                          order.status === 'shipped' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' :
-                          order.status === 'processing' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200' :
-                          'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200'
+                      {orderFilter === tab.key && (
+                        <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-primary-green to-leaf-green"></div>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Orders List */}
+              <div className="p-6 space-y-4">
+                {userOrders
+                  .filter(order => orderFilter === 'all' || order.status === orderFilter)
+                  .slice(0, 5)
+                  .map((order) => (
+                    <div
+                      key={order.id}
+                      className="border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden hover:shadow-md transition-shadow"
+                    >
+                      {/* Order Header */}
+                      <div className="bg-gray-50 dark:bg-gray-700/50 px-4 py-3 flex items-center justify-between border-b border-gray-200 dark:border-gray-700">
+                        <div className="flex items-center gap-3">
+                          <svg className="w-5 h-5 text-primary-green dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                          </svg>
+                          <div>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">Order ID</p>
+                            <p className="font-medium text-gray-900 dark:text-white">#{order.id.slice(0, 12)}</p>
+                          </div>
+                        </div>
+                        <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                          order.status === 'delivered' ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300' :
+                          order.status === 'shipped' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300' :
+                          order.status === 'processing' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300' :
+                          order.status === 'cancelled' ? 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300' :
+                          'bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-300'
                         }`}>
-                          {order.status}
+                          {order.status.toUpperCase()}
                         </span>
+                      </div>
+
+                      {/* Order Items */}
+                      <div className="p-4 space-y-3">
+                        {order.orderItems.map((item) => (
+                          <div key={item.id} className="flex gap-4">
+                            <img
+                              src={item.product.image || '/placeholder.png'}
+                              alt={item.product.name}
+                              className="w-20 h-20 object-cover rounded-lg border border-gray-200 dark:border-gray-600"
+                            />
+                            <div className="flex-1 min-w-0">
+                              <Link
+                                href={`/products/${item.product.id}`}
+                                className="font-medium text-gray-900 dark:text-white hover:text-primary-green dark:hover:text-green-400 line-clamp-2"
+                              >
+                                {item.product.name}
+                              </Link>
+                              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">x{item.quantity}</p>
+                            </div>
+                            <div className="text-right">
+                              <p className="font-semibold text-primary-green">${item.price}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Order Footer */}
+                      <div className="bg-gray-50 dark:bg-gray-700/50 px-4 py-3 flex items-center justify-between border-t border-gray-200 dark:border-gray-700">
+                        <div className="text-sm text-gray-600 dark:text-gray-400">
+                          <span>Order Date: </span>
+                          <span className="font-medium">{new Date(order.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</span>
+                        </div>
+                        <div className="flex items-center gap-4">
+                          <div className="text-right">
+                            <p className="text-xs text-gray-500 dark:text-gray-400">Order Total</p>
+                            <p className="text-lg font-bold text-primary-green">${order.totalAmount.toFixed(2)}</p>
+                          </div>
+                          <Link
+                            href={`/orders/${order.id}`}
+                            className="px-4 py-2 rounded-lg bg-gradient-to-r from-primary-green to-leaf-green text-white text-sm font-medium hover:from-leaf-green hover:to-soft-green transition-all shadow-sm hover:shadow-md"
+                          >
+                            View Details
+                          </Link>
+                        </div>
                       </div>
                     </div>
                   ))}
-                </div>
+
+                {/* Empty State */}
+                {userOrders.filter(order => orderFilter === 'all' || order.status === orderFilter).length === 0 && (
+                  <div className="text-center py-12">
+                    <svg className="w-24 h-24 mx-auto text-gray-300 dark:text-gray-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                    </svg>
+                    <h4 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-2">No orders found</h4>
+                    <p className="text-gray-500 dark:text-gray-400 mb-6">
+                      {orderFilter === 'all' ? "You haven't placed any orders yet" : `You have no ${orderFilter} orders`}
+                    </p>
+                    <Link
+                      href="/products"
+                      className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-primary-green to-banana-leaf text-white font-medium hover:from-leaf-green hover:to-soft-green transition-all shadow-md hover:shadow-lg"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                      </svg>
+                      Start Shopping
+                    </Link>
+                  </div>
+                )}
+
+                {/* View All Orders Button */}
+                {userOrders.filter(order => orderFilter === 'all' || order.status === orderFilter).length > 5 && (
+                  <div className="text-center pt-4">
+                    <Link
+                      href="/orders"
+                      className="inline-flex items-center gap-2 text-primary-green hover:text-leaf-green dark:text-green-400 dark:hover:text-green-300 font-medium"
+                    >
+                      View All Orders
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </Link>
+                  </div>
+                )}
               </div>
             </motion.div>
           )}
