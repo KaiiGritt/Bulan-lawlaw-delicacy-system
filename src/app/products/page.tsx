@@ -96,7 +96,7 @@ export default function ProductsPage() {
   const categories = ['All', 'Fresh', 'Dried', 'Processed'];
   let filteredProducts = selectedCategory === 'All'
     ? products
-    : products.filter(product => product.category === selectedCategory);
+    : products.filter(product => product.category === selectedCategory.toLowerCase());
 
   // Apply search filter if search query exists
   if (searchQuery.trim()) {
@@ -110,33 +110,35 @@ export default function ProductsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-cream-50 to-green-50 dark:bg-gray-950 py-12 relative">
+    <div className="min-h-screen bg-gradient-to-br from-cream-50 to-green-50 dark:bg-gray-950 py-8 sm:py-12 relative">
       {/* Animated background for dark mode */}
       <div className="absolute inset-0 hidden dark:block overflow-hidden pointer-events-none">
         <div className="floating-orb absolute top-20 left-10 w-80 h-80 bg-green-500/10 rounded-full blur-3xl"></div>
         <div className="pulsing-orb absolute bottom-20 right-20 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl" style={{ animationDelay: '3s' }}></div>
         <div className="floating-orb absolute top-1/2 left-1/3 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl" style={{ animationDelay: '6s' }}></div>
       </div>
-      <div className="container mx-auto px-4 relative z-10">
+      <div className="container mx-auto px-3 sm:px-4 relative z-10">
         {/* Page Header */}
-        <div className="text-center mb-16 fade-in-up">
+        <div className="text-center mb-8 sm:mb-16 fade-in-up">
           <div>
-            <h1 className="text-5xl font-bold text-primary-green dark:text-green-400 mb-4">Our Lawlaw Delicacies</h1>
-            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-primary-green dark:text-green-400 mb-3 sm:mb-4 px-2">
+              Our Lawlaw Delicacies
+            </h1>
+            <p className="text-base sm:text-lg lg:text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto px-4">
               Discover the finest selection of fresh and processed Lawlaw products from trusted fishermen in Bulan
             </p>
           </div>
         </div>
 
-        {/* Category Filter */}
-        <div className="flex justify-center mb-12">
-          <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-2 shadow-lg border border-white/20 dark:border-gray-700/20">
-            <div className="flex flex-wrap gap-2">
+        {/* Category Filter - Mobile Responsive */}
+        <div className="flex justify-center mb-6 sm:mb-12">
+          <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl sm:rounded-2xl p-1.5 sm:p-2 shadow-lg border border-white/20 dark:border-gray-700/20 w-full sm:w-auto">
+            <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-1.5 sm:gap-2">
               {categories.map((category) => (
                 <button
                   key={category}
                   onClick={() => setSelectedCategory(category)}
-                  className={`px-6 py-3 rounded-xl font-medium transition-all duration-300 ${
+                  className={`px-3 py-2 sm:px-6 sm:py-3 rounded-lg sm:rounded-xl font-medium text-sm sm:text-base transition-all duration-300 ${
                     selectedCategory === category
                       ? 'bg-primary-green dark:bg-green-600 text-white shadow-md'
                       : 'text-gray-700 dark:text-gray-300 hover:bg-white/60 dark:hover:bg-gray-700/60 hover:text-primary-green dark:hover:text-green-400'
@@ -151,87 +153,76 @@ export default function ProductsPage() {
 
         {/* Loading State - Skeleton Cards */}
         {loading && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2 sm:gap-4 lg:gap-6">
             {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
               <div
                 key={i}
-                className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden border border-gray-100 dark:border-gray-700 animate-pulse"
+                className="bg-white dark:bg-gray-800 rounded-lg sm:rounded-2xl shadow-md overflow-hidden border border-gray-100 dark:border-gray-700 animate-pulse"
               >
-                <div className="relative h-64 bg-gray-200 dark:bg-gray-700"></div>
-                <div className="p-6 space-y-3">
-                  <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
-                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-full"></div>
-                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-5/6"></div>
-                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
-                  <div className="flex items-center gap-2 mt-3">
-                    <div className="h-4 w-20 bg-gray-200 dark:bg-gray-700 rounded"></div>
-                    <div className="h-4 w-16 bg-gray-200 dark:bg-gray-700 rounded"></div>
-                  </div>
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="h-8 w-24 bg-gray-200 dark:bg-gray-700 rounded"></div>
-                    <div className="h-4 w-20 bg-gray-200 dark:bg-gray-700 rounded"></div>
-                  </div>
-                  <div className="flex gap-3">
-                    <div className="flex-1 h-12 bg-gray-200 dark:bg-gray-700 rounded-xl"></div>
-                    <div className="h-12 w-12 bg-gray-200 dark:bg-gray-700 rounded-xl"></div>
-                  </div>
+                <div className="relative aspect-square bg-gray-200 dark:bg-gray-700"></div>
+                <div className="p-2 sm:p-4 space-y-2 sm:space-y-3">
+                  <div className="h-4 sm:h-6 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
+                  <div className="h-3 sm:h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
+                  <div className="h-8 sm:h-10 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
                 </div>
               </div>
             ))}
           </div>
         )}
 
-        {/* Products Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+        {/* Products Grid - Shopee Style */}
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2 sm:gap-4 lg:gap-6">
           {filteredProducts.map((product, index) => (
-            <div
+            <Link
               key={product.id}
-              className="card-hover bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden border border-gray-100 dark:border-gray-700 fade-in-up"
-              style={{ animationDelay: `${index * 0.1}s` }}
+              href={`/products/${product.id}`}
+              className="block bg-white dark:bg-gray-800 rounded-lg sm:rounded-2xl shadow-sm hover:shadow-xl overflow-hidden border border-gray-100 dark:border-gray-700 transition-all duration-300 hover:-translate-y-1 fade-in-up"
+              style={{ animationDelay: `${index * 0.05}s` }}
             >
-              <div className="relative h-64 image-overlay group">
+              {/* Product Image */}
+              <div className="relative aspect-square image-overlay group overflow-hidden">
                 <img
                   src={product.image || '/placeholder.png'}
                   alt={product.name}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                 />
-                <div className="absolute top-4 left-4">
-                  <span className="bg-primary-green/90 backdrop-blur-sm text-white px-3 py-1 rounded-full text-sm font-medium">
+                {/* Badge */}
+                <div className="absolute top-1 sm:top-2 left-1 sm:left-2">
+                  <span className="bg-primary-green/90 backdrop-blur-sm text-white px-1.5 py-0.5 sm:px-2 sm:py-1 rounded text-[10px] sm:text-xs font-medium">
                     {product.category.charAt(0).toUpperCase() + product.category.slice(1)}
                   </span>
                 </div>
-                <div className="absolute top-4 right-4">
-                  <span className="bg-warm-orange text-white px-3 py-1 rounded-full text-sm font-medium">
-                    ₱{product.price}
-                  </span>
-                </div>
+                {/* Low Stock Badge */}
                 {product.stock < 10 && (
-                  <div className="absolute bottom-4 left-4">
-                    <span className="bg-red-500 text-white px-3 py-1 rounded-full text-sm font-medium">
+                  <div className="absolute bottom-1 sm:bottom-2 left-1 sm:left-2">
+                    <span className="bg-red-500 text-white px-1.5 py-0.5 sm:px-2 sm:py-1 rounded text-[10px] sm:text-xs font-medium">
                       Low Stock
                     </span>
                   </div>
                 )}
               </div>
 
-              <div className="p-6">
-                <h3 className="text-xl font-semibold text-primary-green dark:text-green-400 mb-2">{product.name}</h3>
-                <p className="text-gray-600 dark:text-gray-300 mb-3 line-clamp-2">{product.description}</p>
+              {/* Product Info - Shopee Style */}
+              <div className="p-2 sm:p-4">
+                {/* Product Name */}
+                <h3 className="text-xs sm:text-sm lg:text-base font-medium text-gray-800 dark:text-gray-200 mb-1 sm:mb-2 line-clamp-2 min-h-[32px] sm:min-h-[40px]">
+                  {product.name}
+                </h3>
 
                 {/* Business Name */}
                 {product.user.sellerApplication?.businessName && (
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
-                    By {product.user.sellerApplication.businessName}
+                  <p className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400 mb-1 sm:mb-2 truncate">
+                    {product.user.sellerApplication.businessName}
                   </p>
                 )}
 
-                {/* Rating */}
-                <div className="flex items-center mb-3">
-                  <div className="flex items-center">
+                {/* Rating - Compact */}
+                <div className="flex items-center gap-1 mb-1.5 sm:mb-2">
+                  <div className="flex items-center gap-0.5">
                     {[1, 2, 3, 4, 5].map((star) => (
                       <svg
                         key={star}
-                        className={`w-4 h-4 ${
+                        className={`w-2.5 h-2.5 sm:w-3 sm:h-3 ${
                           star <= Math.floor(product.rating || 0)
                             ? 'text-yellow-400 fill-current'
                             : 'text-gray-300'
@@ -242,70 +233,76 @@ export default function ProductsPage() {
                       </svg>
                     ))}
                   </div>
-                  <span className="ml-2 text-sm text-gray-600 dark:text-gray-300">
-                    ({product.rating?.toFixed(1) || '0.0'})
-                  </span>
-                  <span className="ml-2 text-sm text-gray-500 dark:text-gray-400">
-                    ({product.comments?.length || 0} reviews)
+                  <span className="text-[10px] sm:text-xs text-gray-600 dark:text-gray-400">
+                    ({product.comments?.length || 0})
                   </span>
                 </div>
 
-                <div className="flex items-center justify-between mb-4">
-                  <span className="text-2xl font-bold text-primary-green dark:text-green-400">₱{product.price}</span>
-                  <span className="text-sm text-gray-500 dark:text-gray-400">Stock: {product.stock}</span>
+                {/* Price - Prominent Shopee Style */}
+                <div className="flex items-center justify-between">
+                  <div>
+                    <span className="text-warm-orange font-bold text-sm sm:text-lg lg:text-xl">
+                      ₱{product.price}
+                    </span>
+                  </div>
+                  <span className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400">
+                    {product.stock} left
+                  </span>
                 </div>
 
-                <div className="flex gap-3">
-                  <Link
-                    href={`/products/${product.id}`}
-                    className="flex-1 btn-hover bg-primary-green text-white px-4 py-3 rounded-xl font-medium text-center hover:bg-leaf-green transition-colors duration-300"
-                  >
-                    View Details
-                  </Link>
-                  <button
-                    onClick={() => handleAddToCart(product.id)}
-                    disabled={addingToCart === product.id}
-                    className="btn-hover bg-banana-leaf text-white px-4 py-3 rounded-xl font-medium hover:bg-leaf-green transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {addingToCart === product.id ? (
-                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                    ) : (
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                {/* Add to Cart Button - Mobile Optimized */}
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleAddToCart(product.id);
+                  }}
+                  disabled={addingToCart === product.id}
+                  className="w-full mt-2 sm:mt-3 bg-primary-green hover:bg-leaf-green text-white py-1.5 sm:py-2 rounded-md sm:rounded-lg text-xs sm:text-sm font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1 sm:gap-2"
+                >
+                  {addingToCart === product.id ? (
+                    <div className="animate-spin rounded-full h-3 w-3 sm:h-4 sm:w-4 border-2 border-white border-t-transparent"></div>
+                  ) : (
+                    <>
+                      <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-1.1 5H19M7 13l-1.1 5M7 13h10m0 0v8a2 2 0 01-2 2H9a2 2 0 01-2-2v-8" />
                       </svg>
-                    )}
-                  </button>
-                </div>
+                      <span className="hidden sm:inline">Add to Cart</span>
+                      <span className="sm:hidden">Add</span>
+                    </>
+                  )}
+                </button>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
 
         {/* Empty State */}
-        {filteredProducts.length === 0 && (
-          <div className="text-center py-16">
-            <div className="text-6xl mb-4">🐟</div>
-            <h3 className="text-2xl font-semibold text-gray-700 dark:text-gray-300 mb-2">No products found</h3>
-            <p className="text-gray-500 dark:text-gray-400 mb-6">Try selecting a different category</p>
+        {!loading && filteredProducts.length === 0 && (
+          <div className="text-center py-12 sm:py-16 px-4">
+            <div className="text-4xl sm:text-6xl mb-3 sm:mb-4">🐟</div>
+            <h3 className="text-xl sm:text-2xl font-semibold text-gray-700 dark:text-gray-300 mb-2">No products found</h3>
+            <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400 mb-4 sm:mb-6">Try selecting a different category</p>
             <button
               onClick={() => setSelectedCategory('All')}
-              className="btn-hover bg-primary-green dark:bg-green-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-leaf-green dark:hover:bg-green-500 transition-colors duration-300"
+              className="bg-primary-green dark:bg-green-600 text-white px-6 py-3 rounded-xl font-medium hover:bg-leaf-green dark:hover:bg-green-500 transition-colors duration-300 text-sm sm:text-base"
             >
               View All Products
             </button>
           </div>
         )}
 
-        {/* Call to Action */}
-        <div className="text-center mt-16">
-          <div className="bg-primary-green dark:bg-green-600 rounded-2xl p-8 text-white">
-            <h2 className="text-3xl font-bold mb-4">Can't find what you're looking for?</h2>
-            <p className="text-lg mb-6 opacity-90">
+        {/* Call to Action - Mobile Optimized */}
+        <div className="text-center mt-8 sm:mt-16 px-3 sm:px-0">
+          <div className="bg-primary-green dark:bg-green-600 rounded-xl sm:rounded-2xl p-6 sm:p-8 text-white">
+            <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold mb-3 sm:mb-4">
+              Can't find what you're looking for?
+            </h2>
+            <p className="text-sm sm:text-base lg:text-lg mb-4 sm:mb-6 opacity-90">
               Contact our fishermen directly or check back later for fresh arrivals
             </p>
             <Link
               href="/contact"
-              className="btn-hover inline-block bg-white text-primary-green dark:text-green-600 px-8 py-4 rounded-xl font-semibold text-lg hover:bg-accent-cream dark:hover:bg-gray-100 transition-colors duration-300"
+              className="inline-block bg-white text-primary-green dark:text-green-600 px-6 sm:px-8 py-3 sm:py-4 rounded-lg sm:rounded-xl font-semibold text-sm sm:text-base lg:text-lg hover:bg-accent-cream dark:hover:bg-gray-100 transition-colors duration-300"
             >
               Get in Touch
             </Link>
