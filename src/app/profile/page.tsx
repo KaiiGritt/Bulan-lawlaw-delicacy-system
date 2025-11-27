@@ -714,21 +714,21 @@ export default function ProfilePage() {
                 <>
                   <button
                     onClick={() => setActiveTab('products')}
-                    className="text-sm p-3 rounded-lg bg-purple-50 dark:bg-purple-900 hover:bg-purple-100 dark:hover:bg-purple-800 transition-colors flex items-center gap-2"
+                    className="text-xs sm:text-sm p-2.5 sm:p-3 rounded-lg bg-purple-50 dark:bg-purple-900 hover:bg-purple-100 dark:hover:bg-purple-800 transition-colors flex flex-col sm:flex-row items-center justify-center sm:justify-start gap-1 sm:gap-2"
                   >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                     </svg>
-                    Manage Products
+                    <span className="text-center">Products</span>
                   </button>
                   <button
                     onClick={() => setActiveTab('orders')}
-                    className="text-sm p-3 rounded-lg bg-orange-50 dark:bg-orange-900 hover:bg-orange-100 dark:hover:bg-orange-800 transition-colors flex items-center gap-2"
+                    className="text-xs sm:text-sm p-2.5 sm:p-3 rounded-lg bg-orange-50 dark:bg-orange-900 hover:bg-orange-100 dark:hover:bg-orange-800 transition-colors flex flex-col sm:flex-row items-center justify-center sm:justify-start gap-1 sm:gap-2"
                   >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
                     </svg>
-                    View Orders
+                    <span className="text-center">Orders</span>
                   </button>
                 </>
               )}
@@ -780,7 +780,7 @@ export default function ProfilePage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-lg border border-soft-green/20 dark:border-gray-700 space-y-3"
+            className="bg-white dark:bg-gray-800 rounded-2xl p-3 sm:p-4 shadow-lg border border-soft-green/20 dark:border-gray-700 space-y-2 sm:space-y-3"
           >
             <p className="text-xs text-gray-600 dark:text-gray-400 font-bold uppercase tracking-wide flex items-center gap-2">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -788,7 +788,7 @@ export default function ProfilePage() {
               </svg>
               Account Info
             </p>
-            <div className="text-sm space-y-2">
+            <div className="text-xs sm:text-sm space-y-2">
               <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
                 <svg className="w-4 h-4 text-primary-green dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -829,8 +829,8 @@ export default function ProfilePage() {
               </div>
 
               {/* Order Status Tabs - Shopee Style */}
-              <div className="border-b border-gray-200 dark:border-gray-700">
-                <div className="flex overflow-x-auto scrollbar-hide">
+              <div className="border-b border-gray-200 dark:border-gray-700 overflow-hidden">
+                <div className="flex overflow-x-auto overflow-y-hidden scrollbar-hide -mb-px" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
                   {[
                     { key: 'all', label: 'All', icon: '📦', count: userOrders.length },
                     { key: 'pending', label: 'To Pay', icon: '💳', count: userOrders.filter(o => o.status === 'pending').length },
@@ -842,17 +842,17 @@ export default function ProfilePage() {
                     <button
                       key={tab.key}
                       onClick={() => setOrderFilter(tab.key)}
-                      className={`flex-1 min-w-[100px] px-4 py-4 text-center transition-all duration-200 relative ${
+                      className={`flex-shrink-0 min-w-[90px] sm:min-w-[100px] px-3 sm:px-4 py-3 sm:py-4 text-center transition-all duration-200 relative ${
                         orderFilter === tab.key
                           ? 'text-primary-green dark:text-green-400 font-semibold'
                           : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
                       }`}
                     >
-                      <div className="flex flex-col items-center gap-1">
-                        <span className="text-2xl">{tab.icon}</span>
-                        <span className="text-sm">{tab.label}</span>
+                      <div className="flex flex-col items-center gap-0.5 sm:gap-1">
+                        <span className="text-xl sm:text-2xl">{tab.icon}</span>
+                        <span className="text-[10px] sm:text-xs leading-tight">{tab.label}</span>
                         {tab.count > 0 && (
-                          <span className={`text-xs px-2 py-0.5 rounded-full ${
+                          <span className={`text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 rounded-full ${
                             orderFilter === tab.key
                               ? 'bg-primary-green text-white'
                               : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
@@ -862,7 +862,7 @@ export default function ProfilePage() {
                         )}
                       </div>
                       {orderFilter === tab.key && (
-                        <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-primary-green to-leaf-green"></div>
+                        <div className="absolute bottom-0 left-0 right-0 h-0.5 sm:h-1 bg-gradient-to-r from-primary-green to-leaf-green"></div>
                       )}
                     </button>
                   ))}
@@ -870,7 +870,7 @@ export default function ProfilePage() {
               </div>
 
               {/* Orders List */}
-              <div className="p-6 space-y-4">
+              <div className="p-3 sm:p-4 lg:p-6 space-y-3 sm:space-y-4">
                 {userOrders
                   .filter(order => orderFilter === 'all' || order.status === orderFilter)
                   .slice(0, 5)
@@ -880,17 +880,17 @@ export default function ProfilePage() {
                       className="border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden hover:shadow-md transition-shadow"
                     >
                       {/* Order Header */}
-                      <div className="bg-gray-50 dark:bg-gray-700/50 px-4 py-3 flex items-center justify-between border-b border-gray-200 dark:border-gray-700">
-                        <div className="flex items-center gap-3">
-                          <svg className="w-5 h-5 text-primary-green dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <div className="bg-gray-50 dark:bg-gray-700/50 px-3 sm:px-4 py-2.5 sm:py-3 flex items-center justify-between border-b border-gray-200 dark:border-gray-700">
+                        <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+                          <svg className="w-4 h-4 sm:w-5 sm:h-5 text-primary-green dark:text-green-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                           </svg>
-                          <div>
-                            <p className="text-xs text-gray-500 dark:text-gray-400">Order ID</p>
-                            <p className="font-medium text-gray-900 dark:text-white">#{order.id.slice(0, 12)}</p>
+                          <div className="min-w-0 flex-1">
+                            <p className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400">Order ID</p>
+                            <p className="font-medium text-xs sm:text-sm text-gray-900 dark:text-white truncate">#{order.id.slice(0, 8)}<span className="hidden sm:inline">{order.id.slice(8, 12)}</span></p>
                           </div>
                         </div>
-                        <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                        <span className={`px-2 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs font-semibold whitespace-nowrap flex-shrink-0 ${
                           order.status === 'delivered' ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300' :
                           order.status === 'shipped' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300' :
                           order.status === 'processing' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300' :
@@ -902,46 +902,47 @@ export default function ProfilePage() {
                       </div>
 
                       {/* Order Items */}
-                      <div className="p-4 space-y-3">
+                      <div className="p-3 sm:p-4 space-y-2 sm:space-y-3">
                         {order.orderItems.map((item) => (
-                          <div key={item.id} className="flex gap-4">
+                          <div key={item.id} className="flex gap-2 sm:gap-4">
                             <img
                               src={item.product.image || '/placeholder.png'}
                               alt={item.product.name}
-                              className="w-20 h-20 object-cover rounded-lg border border-gray-200 dark:border-gray-600"
+                              className="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-lg border border-gray-200 dark:border-gray-600 flex-shrink-0"
                             />
                             <div className="flex-1 min-w-0">
                               <Link
                                 href={`/products/${item.product.id}`}
-                                className="font-medium text-gray-900 dark:text-white hover:text-primary-green dark:hover:text-green-400 line-clamp-2"
+                                className="font-medium text-xs sm:text-sm text-gray-900 dark:text-white hover:text-primary-green dark:hover:text-green-400 line-clamp-2 block"
                               >
                                 {item.product.name}
                               </Link>
-                              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">x{item.quantity}</p>
+                              <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-1">x{item.quantity}</p>
                             </div>
-                            <div className="text-right">
-                              <p className="font-semibold text-primary-green">${item.price}</p>
+                            <div className="text-right flex-shrink-0">
+                              <p className="font-semibold text-xs sm:text-sm text-primary-green">${item.price}</p>
                             </div>
                           </div>
                         ))}
                       </div>
 
                       {/* Order Footer */}
-                      <div className="bg-gray-50 dark:bg-gray-700/50 px-4 py-3 flex items-center justify-between border-t border-gray-200 dark:border-gray-700">
-                        <div className="text-sm text-gray-600 dark:text-gray-400">
-                          <span>Order Date: </span>
+                      <div className="bg-gray-50 dark:bg-gray-700/50 px-3 sm:px-4 py-2.5 sm:py-3 flex flex-col sm:flex-row items-start sm:items-center justify-between border-t border-gray-200 dark:border-gray-700 gap-3 sm:gap-4">
+                        <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
+                          <span className="hidden sm:inline">Order Date: </span>
                           <span className="font-medium">{new Date(order.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</span>
                         </div>
-                        <div className="flex items-center gap-4">
-                          <div className="text-right">
-                            <p className="text-xs text-gray-500 dark:text-gray-400">Order Total</p>
-                            <p className="text-lg font-bold text-primary-green">${order.totalAmount.toFixed(2)}</p>
+                        <div className="flex items-center justify-between sm:justify-end gap-3 sm:gap-4 w-full sm:w-auto">
+                          <div className="text-left sm:text-right">
+                            <p className="text-[10px] sm:text-xs text-gray-500 dark:text-gray-400">Order Total</p>
+                            <p className="text-base sm:text-lg font-bold text-primary-green">${order.totalAmount.toFixed(2)}</p>
                           </div>
                           <Link
                             href={`/orders/${order.id}`}
-                            className="px-4 py-2 rounded-lg bg-gradient-to-r from-primary-green to-leaf-green text-white text-sm font-medium hover:from-leaf-green hover:to-soft-green transition-all shadow-sm hover:shadow-md"
+                            className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg bg-gradient-to-r from-primary-green to-leaf-green text-white text-xs sm:text-sm font-medium hover:from-leaf-green hover:to-soft-green transition-all shadow-sm hover:shadow-md whitespace-nowrap"
                           >
-                            View Details
+                            <span className="hidden sm:inline">View Details</span>
+                            <span className="sm:hidden">Details</span>
                           </Link>
                         </div>
                       </div>
