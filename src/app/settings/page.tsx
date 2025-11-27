@@ -208,59 +208,59 @@ export default function Settings() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-accent-cream to-soft-green/20 dark:from-gray-900 dark:to-gray-800 py-8 px-4 sm:px-6 lg:px-8 relative">
+    <div className="min-h-screen bg-gradient-to-br from-accent-cream to-soft-green/20 dark:from-gray-900 dark:to-gray-800 py-6 sm:py-8 px-3 sm:px-4 lg:px-8 relative">
       {/* Animated background */}
       <div className="fixed inset-0 -z-10 hidden dark:block overflow-hidden pointer-events-none">
         <div className="floating-orb absolute top-20 left-20 w-72 h-72 bg-green-500/10 rounded-full blur-3xl" style={{ animationDelay: '2s' }}></div>
         <div className="pulsing-orb absolute bottom-20 right-20 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl"></div>
       </div>
       <Toaster position="top-right" />
-      
+
       <div className="max-w-4xl mx-auto">
-        {/* Header with Back Button */}
-        <div className="mb-6">
+        {/* Header with Back Button - Mobile Optimized */}
+        <div className="mb-4 sm:mb-6">
           <button
             onClick={() => router.push('/profile')}
-            className="flex items-center text-gray-600 dark:text-gray-300 hover:text-primary-green dark:hover:text-green-400 transition-colors mb-4"
+            className="flex items-center text-gray-600 dark:text-gray-300 hover:text-primary-green dark:hover:text-green-400 transition-colors mb-3 sm:mb-4 text-sm sm:text-base"
           >
-            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
             Back to Profile
           </button>
-          
+
           <div className="text-center">
-            <h2 className="text-3xl font-bold text-primary-green dark:text-green-400 mb-2">
+            <h2 className="text-2xl sm:text-3xl font-bold text-primary-green dark:text-green-400 mb-2">
               Settings
             </h2>
-            <p className="text-gray-600 dark:text-gray-300">
+            <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300">
               Manage your account preferences and profile
             </p>
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-lg p-8 space-y-10">
-          {/* Profile Section */}
-          <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-6">
-            <h3 className="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-4 flex items-center">
-              <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+        <div className="bg-white dark:bg-gray-900 rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 lg:p-8 space-y-6 sm:space-y-8 lg:space-y-10">
+          {/* Profile Section - Mobile Optimized */}
+          <div className="bg-gray-50 dark:bg-gray-800 rounded-lg sm:rounded-xl p-4 sm:p-6">
+            <h3 className="text-lg sm:text-xl font-semibold text-gray-800 dark:text-gray-100 mb-3 sm:mb-4 flex items-center">
+              <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
               </svg>
               Profile
             </h3>
-            <div className="flex items-center space-x-6">
+            <div className="flex flex-col sm:flex-row items-center sm:items-start space-y-4 sm:space-y-0 sm:space-x-6">
               <div className="relative">
                 <img
                   src={profilePicture || '/default-avatar.png'}
                   alt="Profile"
-                  className="w-20 h-20 rounded-full object-cover border-4 border-white dark:border-gray-700 shadow-lg"
+                  className="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover border-4 border-white dark:border-gray-700 shadow-lg"
                 />
                 <button
                   onClick={() => fileInputRef.current?.click()}
                   className="absolute bottom-0 right-0 bg-primary-green hover:bg-leaf-green text-white rounded-full p-2 shadow-lg transition-colors"
                   title="Change profile picture"
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
                   </svg>
@@ -273,14 +273,14 @@ export default function Settings() {
                   className="hidden"
                 />
               </div>
-              <div>
-                <h4 className="text-lg font-medium text-gray-800 dark:text-gray-100">
+              <div className="text-center sm:text-left">
+                <h4 className="text-base sm:text-lg font-medium text-gray-800 dark:text-gray-100">
                   {session?.user?.name || 'User'}
                 </h4>
-                <p className="text-gray-500 dark:text-gray-400">
+                <p className="text-sm sm:text-base text-gray-500 dark:text-gray-400 break-all">
                   {session?.user?.email}
                 </p>
-                <button className="mt-2 text-sm text-warm-orange dark:text-warm-orange hover:text-earth-brown dark:hover:text-earth-brown hover:underline transition-colors">
+                <button className="mt-2 text-xs sm:text-sm text-warm-orange dark:text-warm-orange hover:text-earth-brown dark:hover:text-earth-brown hover:underline transition-colors">
                   Edit Profile Info
                 </button>
               </div>
@@ -539,17 +539,17 @@ export default function Settings() {
             </div>
           </div>
 
-          {/* Save Button */}
-          <div className="flex justify-end space-x-4">
+          {/* Save Button - Mobile Optimized */}
+          <div className="flex flex-col sm:flex-row justify-end gap-3 sm:space-x-4">
             <button
               onClick={() => router.push('/profile')}
-              className="bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-100 font-semibold py-3 px-6 rounded-lg transition-colors"
+              className="w-full sm:w-auto bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-100 font-semibold py-3 px-6 rounded-lg transition-colors text-sm sm:text-base"
             >
               Cancel
             </button>
             <button
               onClick={handleSave}
-              className="bg-gradient-to-r from-primary-green to-banana-leaf hover:from-leaf-green hover:to-soft-green text-white font-semibold py-3 px-6 rounded-lg shadow-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary-green focus:ring-offset-2"
+              className="w-full sm:w-auto bg-gradient-to-r from-primary-green to-banana-leaf hover:from-leaf-green hover:to-soft-green text-white font-semibold py-3 px-6 rounded-lg shadow-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary-green focus:ring-offset-2 text-sm sm:text-base"
             >
               Save All Changes
             </button>
