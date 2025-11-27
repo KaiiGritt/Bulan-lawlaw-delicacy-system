@@ -351,7 +351,10 @@ export default function ProfilePage() {
         credentials: 'include',
       });
 
-      if (!res.ok) throw new Error('Add failed');
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.error || 'Failed to add product');
+      }
 
       setNewProduct({ name: '', description: '', price: '', category: '', image: '', stock: '' });
       setImageFile(null);
