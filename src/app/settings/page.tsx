@@ -3,844 +3,1150 @@
 import { useState, useRef, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import toast, { Toaster } from 'react-hot-toast';
 
 export default function Settings() {
- const { data: session } = useSession();
- const router = useRouter();
- const [notifications, setNotifications] = useState(true);
- const [emailUpdates, setEmailUpdates] = useState(true);
- const [orderUpdates, setOrderUpdates] = useState(true);
- const [promotionalEmails, setPromotionalEmails] = useState(false);
- const [language, setLanguage] = useState('en');
- const [currency, setCurrency] = useState('USD');
- const [timezone, setTimezone] = useState('UTC');
- const [profilePicture, setProfilePicture] = useState(session?.user?.image || '');
- const [currentPassword, setCurrentPassword] = useState('');
- const [newPassword, setNewPassword] = useState('');
- const [confirmPassword, setConfirmPassword] = useState('');
- const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
- const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
- const [privacySettings, setPrivacySettings] = useState({
- showProfile: true,
- showOrders: false,
- showWishlist: false,
- });
- const fileInputRef = useRef<HTMLInputElement>(null);
- const logoInputRef = useRef<HTMLInputElement>(null);
+  const { data: session } = useSession();
+  const router = useRouter();
 
- // Business Info state
- const [businessInfo, setBusinessInfo] = useState({
- businessName: '',
- businessType: '',
- description: '',
- contactNumber: '',
- address: '',
- businessLogo: '',
- });
- const [hasBusinessInfo, setHasBusinessInfo] = useState(false);
+  // Profile settings
+  const [profilePicture, setProfilePicture] = useState(session?.user?.image || '');
+  const [themeColor, setThemeColor] = useState('green');
+  const [displayName, setDisplayName] = useState('');
+  const [bio, setBio] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const logoInputRef = useRef<HTMLInputElement>(null);
 
- useEffect(() => {
- // Load user profile picture and business info
- const loadUserProfile = async () => {
- try {
- const response = await fetch('/api/user/profile');
- if (response.ok) {
- const data = await response.json();
- setProfilePicture(data.profilePicture || '');
- }
- } catch (error) {
- console.error('Error loading profile:', error);
- }
- };
+  // Notification settings
+  const [notifications, setNotifications] = useState(true);
+  const [emailUpdates, setEmailUpdates] = useState(true);
+  const [orderUpdates, setOrderUpdates] = useState(true);
+  const [promotionalEmails, setPromotionalEmails] = useState(false);
+  const [smsNotifications, setSmsNotifications] = useState(false);
+  const [inAppNotifications, setInAppNotifications] = useState(true);
 
- const loadBusinessInfo = async () => {
- try {
- const response = await fetch('/api/seller-application');
- if (response.ok) {
- const data = await response.json();
- if (data.hasApplication && data.application) {
- setHasBusinessInfo(true);
- setBusinessInfo({
- businessName: data.application.businessName || '',
- businessType: data.application.businessType || '',
- description: data.application.description || '',
- contactNumber: data.application.contactNumber || '',
- address: data.application.address || '',
- businessLogo: data.application.businessLogo || '',
- });
- }
- }
- } catch (error) {
- console.error('Error loading business info:', error);
- }
- };
+  // Localization
+  const [language, setLanguage] = useState('en');
+  const [currency, setCurrency] = useState('USD');
+  const [timezone, setTimezone] = useState('UTC');
 
- if (session) {
- loadUserProfile();
- if (session.user.role === 'seller') {
- loadBusinessInfo();
- }
- }
- }, [session]);
+  // Privacy settings
+  const [privacySettings, setPrivacySettings] = useState({
+    showProfile: true,
+    showOrders: false,
+    showWishlist: false,
+  });
 
- const handleProfilePictureChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
- const file = event.target.files?.[0];
- if (file) {
- if (file.size > 2 * 1024 * 1024) {
- toast.error('File size should be less than 2MB');
- return;
- }
+  // Security
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
- try {
- const formData = new FormData();
- formData.append('profilePicture', file);
+  // Business Info (Sellers)
+  const [businessInfo, setBusinessInfo] = useState({
+    businessName: '',
+    businessType: '',
+    description: '',
+    contactNumber: '',
+    address: '',
+    businessLogo: '',
+  });
+  const [hasBusinessInfo, setHasBusinessInfo] = useState(false);
 
- const response = await fetch('/api/user/profile', {
- method: 'POST',
- body: formData,
- });
+  // Store Settings (Sellers)
+  const [storeSettings, setStoreSettings] = useState({
+    storeHours: '9:00 AM - 6:00 PM',
+    shippingTime: '1-3 business days',
+    returnPolicy: '7 days return policy',
+    minimumOrder: '',
+    freeShippingThreshold: '',
+  });
 
- if (!response.ok) {
- const error = await response.json();
- throw new Error(error.error || 'Failed to upload');
- }
+  // Payment Methods
+  const [paymentMethods, setPaymentMethods] = useState<any[]>([]);
+  const [showAddPayment, setShowAddPayment] = useState(false);
 
- const data = await response.json();
- setProfilePicture(data.profilePicture || '');
- toast.success('Profile picture updated successfully!');
- } catch (error: any) {
- console.error('Error uploading profile picture:', error);
- toast.error(error.message || 'Failed to upload profile picture');
- }
- }
- };
+  // Shipping Preferences (Buyers)
+  const [shippingPreferences, setShippingPreferences] = useState({
+    defaultAddress: '',
+    preferredTimeSlot: 'anytime',
+    specialInstructions: '',
+  });
 
- const handleLogoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
- const file = event.target.files?.[0];
- if (file) {
- if (file.size > 2 * 1024 * 1024) {
- toast.error('File size should be less than 2MB');
- return;
- }
+  // Accessibility
+  const [accessibility, setAccessibility] = useState({
+    fontSize: 'medium',
+    highContrast: false,
+    reducedMotion: false,
+  });
 
- if (!file.type.startsWith('image/')) {
- toast.error('Please upload an image file');
- return;
- }
+  // Active sessions
+  const [activeSessions, setActiveSessions] = useState<any[]>([]);
 
- const reader = new FileReader();
- reader.onloadend = () => {
- const base64String = reader.result as string;
- setBusinessInfo(prev => ({ ...prev, businessLogo: base64String }));
- };
- reader.readAsDataURL(file);
- }
- };
+  useEffect(() => {
+    if (session) {
+      loadUserProfile();
+      loadActiveSessions();
+      if (session.user.role === 'seller') {
+        loadBusinessInfo();
+      }
+    }
+  }, [session]);
 
- const handleSave = async () => {
- try {
- const settings = {
- notifications,
- emailUpdates,
- orderUpdates,
- promotionalEmails,
- language,
- currency,
- timezone,
- privacySettings,
- };
+  const loadUserProfile = async () => {
+    try {
+      const response = await fetch('/api/user/profile');
+      if (response.ok) {
+        const data = await response.json();
+        setProfilePicture(data.profilePicture || '');
+        setDisplayName(data.name || '');
+      }
+    } catch (error) {
+      console.error('Error loading profile:', error);
+    }
+  };
 
- const response = await fetch('/api/user/settings', {
- method: 'PUT',
- headers: { 'Content-Type': 'application/json' },
- body: JSON.stringify(settings),
- });
+  const loadBusinessInfo = async () => {
+    try {
+      const response = await fetch('/api/seller-application');
+      if (response.ok) {
+        const data = await response.json();
+        if (data.hasApplication && data.application) {
+          setHasBusinessInfo(true);
+          setBusinessInfo({
+            businessName: data.application.businessName || '',
+            businessType: data.application.businessType || '',
+            description: data.application.description || '',
+            contactNumber: data.application.contactNumber || '',
+            address: data.application.address || '',
+            businessLogo: data.application.businessLogo || '',
+          });
+        }
+      }
+    } catch (error) {
+      console.error('Error loading business info:', error);
+    }
+  };
 
- if (!response.ok) {
- const error = await response.json();
- throw new Error(error.error || 'Failed to save');
- }
+  const loadActiveSessions = async () => {
+    // Mock data - you'd implement the actual API
+    setActiveSessions([
+      {
+        id: '1',
+        device: 'Windows PC - Chrome',
+        location: 'Manila, Philippines',
+        lastActive: 'Active now',
+        current: true,
+      },
+    ]);
+  };
 
- toast.success('Settings saved successfully!');
- } catch (error: any) {
- console.error('Error saving settings:', error);
- toast.error(error.message || 'Failed to save settings');
- }
- };
+  const handleProfilePictureChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) {
+        toast.error('File size should be less than 2MB');
+        return;
+      }
 
- const handlePasswordChange = async () => {
- if (!currentPassword || !newPassword || !confirmPassword) {
- toast.error('Please fill in all password fields');
- return;
- }
- if (newPassword !== confirmPassword) {
- toast.error('New passwords do not match');
- return;
- }
- if (newPassword.length < 8) {
- toast.error('Password must be at least 8 characters');
- return;
- }
+      try {
+        const formData = new FormData();
+        formData.append('profilePicture', file);
 
- try {
- const response = await fetch('/api/user/password', {
- method: 'POST',
- headers: { 'Content-Type': 'application/json' },
- body: JSON.stringify({
- currentPassword,
- newPassword,
- }),
- });
+        const response = await fetch('/api/user/profile', {
+          method: 'POST',
+          body: formData,
+        });
 
- if (!response.ok) {
- const error = await response.json();
- throw new Error(error.error || 'Failed to change password');
- }
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.error || 'Failed to upload');
+        }
 
- toast.success('Password changed successfully!');
- setCurrentPassword('');
- setNewPassword('');
- setConfirmPassword('');
- } catch (error: any) {
- console.error('Error changing password:', error);
- toast.error(error.message || 'Failed to change password');
- }
- };
+        const data = await response.json();
+        setProfilePicture(data.profilePicture || '');
+        toast.success('Profile picture updated successfully!');
+      } catch (error: any) {
+        console.error('Error uploading profile picture:', error);
+        toast.error(error.message || 'Failed to upload profile picture');
+      }
+    }
+  };
 
- const handleAccountDeletion = async () => {
- try {
- const response = await fetch('/api/user/delete', {
- method: 'POST',
- });
+  const handleLogoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) {
+        toast.error('File size should be less than 2MB');
+        return;
+      }
 
- if (!response.ok) {
- const error = await response.json();
- throw new Error(error.error || 'Failed to delete account');
- }
+      if (!file.type.startsWith('image/')) {
+        toast.error('Please upload an image file');
+        return;
+      }
 
- const data = await response.json();
- toast.success('Account deleted successfully. Redirecting...');
- setShowDeleteConfirm(false);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64String = reader.result as string;
+        setBusinessInfo(prev => ({ ...prev, businessLogo: base64String }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
- // Redirect after a delay
- setTimeout(() => {
- router.push(data.redirect || '/register');
- }, 2000);
- } catch (error: any) {
- console.error('Error deleting account:', error);
- toast.error(error.message || 'Failed to delete account');
- }
- };
+  const handleSave = async () => {
+    try {
+      const settings = {
+        notifications,
+        emailUpdates,
+        orderUpdates,
+        promotionalEmails,
+        smsNotifications,
+        inAppNotifications,
+        language,
+        currency,
+        timezone,
+        privacySettings,
+        accessibility,
+        displayName,
+        bio,
+        themeColor,
+      };
 
- const exportData = async () => {
- try {
- toast.loading('Preparing your data export...');
+      const response = await fetch('/api/user/settings', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(settings),
+      });
 
- const response = await fetch('/api/user/export', {
- method: 'GET',
- });
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to save');
+      }
 
- if (!response.ok) {
- const error = await response.json();
- throw new Error(error.error || 'Failed to export data');
- }
+      toast.success('Settings saved successfully!');
+    } catch (error: any) {
+      console.error('Error saving settings:', error);
+      toast.error(error.message || 'Failed to save settings');
+    }
+  };
 
- // Download the JSON file
- const blob = await response.blob();
- const url = window.URL.createObjectURL(blob);
- const a = document.createElement('a');
- a.href = url;
- a.download = `lawlaw-data-export-${Date.now()}.json`;
- document.body.appendChild(a);
- a.click();
- window.URL.revokeObjectURL(url);
- document.body.removeChild(a);
+  const handlePasswordChange = async () => {
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      toast.error('Please fill in all password fields');
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      toast.error('New passwords do not match');
+      return;
+    }
+    if (newPassword.length < 8) {
+      toast.error('Password must be at least 8 characters');
+      return;
+    }
 
- toast.dismiss();
- toast.success('Data exported successfully!');
- } catch (error: any) {
- toast.dismiss();
- console.error('Error exporting data:', error);
- toast.error(error.message || 'Failed to export data');
- }
- };
+    try {
+      const response = await fetch('/api/user/password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          currentPassword,
+          newPassword,
+        }),
+      });
 
- const handleBusinessInfoUpdate = async () => {
- if (!businessInfo.businessName || !businessInfo.businessType || !businessInfo.description || !businessInfo.contactNumber || !businessInfo.address) {
- toast.error('Please fill in all required business information fields');
- return;
- }
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to change password');
+      }
 
- try {
- const response = await fetch('/api/seller-application', {
- method: 'PUT',
- headers: { 'Content-Type': 'application/json' },
- body: JSON.stringify(businessInfo),
- });
+      toast.success('Password changed successfully!');
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+    } catch (error: any) {
+      console.error('Error changing password:', error);
+      toast.error(error.message || 'Failed to change password');
+    }
+  };
 
- if (!response.ok) {
- const error = await response.json();
- throw new Error(error.error || 'Failed to update business information');
- }
+  const handleAccountDeletion = async () => {
+    try {
+      const response = await fetch('/api/user/delete', {
+        method: 'POST',
+      });
 
- toast.success('Business information updated successfully!');
- } catch (error: any) {
- console.error('Error updating business info:', error);
- toast.error(error.message || 'Failed to update business information');
- }
- };
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to delete account');
+      }
 
- return (
- <div className="min-h-screen bg-gradient-to-br from-accent-cream to-soft-green/20 py-6 sm:py-8 px-3 sm:px-4 lg:px-8 relative">
- {/* Animated background */}
- <div className="fixed inset-0 -z-10 hidden overflow-hidden pointer-events-none">
- <div className="floating-orb absolute top-20 left-20 w-72 h-72 bg-green-500/10 rounded-full blur-3xl" style={{ animationDelay: '2s' }}></div>
- <div className="pulsing-orb absolute bottom-20 right-20 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl"></div>
- </div>
- <Toaster position="top-right" />
+      const data = await response.json();
+      toast.success('Account deleted successfully. Redirecting...');
+      setShowDeleteConfirm(false);
 
- <div className="max-w-4xl mx-auto">
- {/* Header with Back Button - Mobile Optimized */}
- <div className="mb-4 sm:mb-6">
- <button
- onClick={() => router.push('/profile')}
- className="flex items-center text-gray-600 hover:text-primary-green transition-colors mb-3 sm:mb-4 text-sm sm:text-base"
- >
- <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
- <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
- </svg>
- Back to Profile
- </button>
+      setTimeout(() => {
+        router.push(data.redirect || '/register');
+      }, 2000);
+    } catch (error: any) {
+      console.error('Error deleting account:', error);
+      toast.error(error.message || 'Failed to delete account');
+    }
+  };
 
- <div className="text-center">
- <h2 className="text-2xl sm:text-3xl font-bold text-primary-green mb-2">
- Settings
- </h2>
- <p className="text-sm sm:text-base text-gray-600">
- Manage your account preferences and profile
- </p>
- </div>
- </div>
+  const exportData = async () => {
+    try {
+      toast.loading('Preparing your data export...');
 
- <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 lg:p-8 space-y-6 sm:space-y-8 lg:space-y-10">
- {/* Profile Section - Mobile Optimized */}
- <div className="bg-gray-50 rounded-lg sm:rounded-xl p-4 sm:p-6">
- <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-3 sm:mb-4 flex items-center">
- <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
- <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
- </svg>
- Profile
- </h3>
- <div className="flex flex-col sm:flex-row items-center sm:items-start space-y-4 sm:space-y-0 sm:space-x-6">
- <div className="relative">
- <img
- src={profilePicture || '/default-avatar.png'}
- alt="Profile"
- className="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover border-4 border-white shadow-lg"
- />
- <button
- onClick={() => fileInputRef.current?.click()}
- className="absolute bottom-0 right-0 bg-primary-green hover:bg-leaf-green text-white rounded-full p-2 shadow-lg transition-colors"
- title="Change profile picture"
- >
- <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
- <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
- <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
- </svg>
- </button>
- <input
- ref={fileInputRef}
- type="file"
- accept="image/*"
- onChange={handleProfilePictureChange}
- className="hidden"
- />
- </div>
- <div className="text-center sm:text-left">
- <h4 className="text-base sm:text-lg font-medium text-gray-800">
- {session?.user?.name || 'User'}
- </h4>
- <p className="text-sm sm:text-base text-gray-500 break-all">
- {session?.user?.email}
- </p>
- <button className="mt-2 text-xs sm:text-sm text-warm-orange hover:text-earth-brown hover:underline transition-colors">
- Edit Profile Info
- </button>
- </div>
- </div>
- </div>
+      const response = await fetch('/api/user/export', {
+        method: 'GET',
+      });
 
- {/* Business Information - Only for Sellers */}
- {session?.user?.role === 'seller' && hasBusinessInfo && (
- <div className="bg-gray-50 rounded-lg sm:rounded-xl p-4 sm:p-6">
- <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-3 sm:mb-4 flex items-center">
- <svg className="w-4 h-4 sm:w-5 sm:h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
- <path fillRule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 110 2h-3a1 1 0 01-1-1v-2a1 1 0 00-1-1H9a1 1 0 00-1 1v2a1 1 0 01-1 1H4a1 1 0 110-2V4zm3 1h2v2H7V5zm2 4H7v2h2V9zm2-4h2v2h-2V5zm2 4h-2v2h2V9z" clipRule="evenodd" />
- </svg>
- Business Information
- </h3>
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to export data');
+      }
 
- <div className="space-y-3 sm:space-y-4">
- <div>
- <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">
- Business Logo
- </label>
- <div className="flex items-center gap-4">
- {businessInfo.businessLogo && (
- <img
- src={businessInfo.businessLogo}
- alt="Business Logo"
- className="w-16 h-16 sm:w-20 sm:h-20 rounded-lg object-cover border-2 border-primary-green"
- />
- )}
- <button
- type="button"
- onClick={() => logoInputRef.current?.click()}
- className="bg-primary-green hover:bg-leaf-green text-white px-3 py-2 sm:px-4 sm:py-2.5 rounded-md text-xs sm:text-sm font-medium transition-colors"
- >
- {businessInfo.businessLogo ? 'Change Logo' : 'Upload Logo'}
- </button>
- <input
- ref={logoInputRef}
- type="file"
- accept="image/*"
- onChange={handleLogoChange}
- className="hidden"
- />
- </div>
- <p className="text-xs text-gray-500 mt-1">Upload your business logo (Max 2MB)</p>
- </div>
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `lawlaw-data-export-${Date.now()}.json`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
 
- <div>
- <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">
- Business Name *
- </label>
- <input
- type="text"
- value={businessInfo.businessName}
- onChange={(e) => setBusinessInfo({...businessInfo, businessName: e.target.value})}
- className="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-green bg-white text-gray-800"
- placeholder="Your business name"
- />
- </div>
+      toast.dismiss();
+      toast.success('Data exported successfully!');
+    } catch (error: any) {
+      toast.dismiss();
+      console.error('Error exporting data:', error);
+      toast.error(error.message || 'Failed to export data');
+    }
+  };
 
- <div>
- <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">
- Business Type *
- </label>
- <select
- value={businessInfo.businessType}
- onChange={(e) => setBusinessInfo({...businessInfo, businessType: e.target.value})}
- className="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-green bg-white text-gray-800"
- >
- <option value="">Select business type</option>
- <option value="Fisherman">Fisherman</option>
- <option value="Farmer">Farmer</option>
- <option value="Processor">Processor</option>
- <option value="Distributor">Distributor</option>
- <option value="Retailer">Retailer</option>
- <option value="General">General</option>
- </select>
- </div>
+  const handleBusinessInfoUpdate = async () => {
+    if (!businessInfo.businessName || !businessInfo.businessType || !businessInfo.description || !businessInfo.contactNumber || !businessInfo.address) {
+      toast.error('Please fill in all required business information fields');
+      return;
+    }
 
- <div>
- <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">
- Description *
- </label>
- <textarea
- value={businessInfo.description}
- onChange={(e) => setBusinessInfo({...businessInfo, description: e.target.value})}
- rows={3}
- className="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-green bg-white text-gray-800"
- placeholder="Describe your business"
- />
- </div>
+    try {
+      const response = await fetch('/api/seller-application', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(businessInfo),
+      });
 
- <div>
- <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">
- Contact Number *
- </label>
- <input
- type="tel"
- value={businessInfo.contactNumber}
- onChange={(e) => setBusinessInfo({...businessInfo, contactNumber: e.target.value})}
- className="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-green bg-white text-gray-800"
- placeholder="+63 912 345 6789"
- />
- </div>
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to update business information');
+      }
 
- <div>
- <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">
- Address *
- </label>
- <textarea
- value={businessInfo.address}
- onChange={(e) => setBusinessInfo({...businessInfo, address: e.target.value})}
- rows={2}
- className="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-green bg-white text-gray-800"
- placeholder="Your business address"
- />
- </div>
+      toast.success('Business information updated successfully!');
+    } catch (error: any) {
+      console.error('Error updating business info:', error);
+      toast.error(error.message || 'Failed to update business information');
+    }
+  };
 
- <button
- onClick={handleBusinessInfoUpdate}
- className="w-full bg-gradient-to-r from-primary-green to-banana-leaf hover:from-leaf-green hover:to-soft-green text-white font-semibold py-2.5 sm:py-3 px-4 rounded-lg shadow-md hover:shadow-lg transition-all text-sm sm:text-base"
- >
- Update Business Information
- </button>
- </div>
- </div>
- )}
+  const handleLogoutAllSessions = async () => {
+    toast.success('Logged out from all other devices');
+  };
 
- {/* Notification Preferences */}
- <div className="bg-gray-50 rounded-xl p-6">
- <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
- <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
- <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" />
- </svg>
- Notification Preferences
- </h3>
- <div className="space-y-4">
- <ToggleSetting
- label="Push Notifications"
- description="Receive push notifications on your device"
- value={notifications}
- onChange={setNotifications}
- color="indigo"
- />
- <ToggleSetting
- label="Email Updates"
- description="Get email updates about your account activity"
- value={emailUpdates}
- onChange={setEmailUpdates}
- color="green"
- />
- <ToggleSetting
- label="Order Updates"
- description="Get notified about order status changes"
- value={orderUpdates}
- onChange={setOrderUpdates}
- color="blue"
- />
- <ToggleSetting
- label="Promotional Emails"
- description="Receive promotional offers and deals"
- value={promotionalEmails}
- onChange={setPromotionalEmails}
- color="purple"
- />
- </div>
- </div>
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-accent-cream to-soft-green/20 py-6 sm:py-8 px-3 sm:px-4 lg:px-8">
+      <Toaster position="top-right" />
 
- {/* Appearance & Localization */}
- <div className="bg-gray-50 rounded-xl p-6">
- <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
- <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
- <path fillRule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
- </svg>
- Localization
- </h3>
- <div className="space-y-6">
- <div className="flex items-center justify-between">
- <div className="flex items-center space-x-3">
- <svg className="w-5 h-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
- <path fillRule="evenodd" d="M7 2a1 1 0 011 1v1h3a1 1 0 110 2H9.578a18.87 18.87 0 01-1.724 4.78c.29.354.596.696.914 1.026a1 1 0 11-1.44 1.389c-.188-.196-.373-.396-.554-.6a19.098 19.098 0 01-3.107 3.567 1 1 0 01-1.334-1.49 17.087 17.087 0 003.13-3.733 18.992 18.992 0 01-1.487-2.494 1 1 0 111.79-.89c.234.47.489.928.764 1.372.417-.934.752-1.913.997-2.927H3a1 1 0 110-2h3V3a1 1 0 011-1zm6 6a1 1 0 01.894.553l2.991 5.982a.869.869 0 01.02.037l.99 1.98a1 1 0 11-1.79.895L15.383 16h-4.764l-.724 1.447a1 1 0 11-1.788-.894l.99-1.98.019-.038 2.99-5.982A1 1 0 0113 8zm-1.382 6h2.764L13 11.236 11.618 14z" clipRule="evenodd" />
- </svg>
- <div>
- <span className="text-gray-700 block">Language</span>
- <span className="text-xs text-gray-500">Choose your preferred language</span>
- </div>
- </div>
- <select
- value={language}
- onChange={(e) => setLanguage(e.target.value)}
- className="bg-white border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-green text-gray-800"
- >
- <option value="en">English</option>
- <option value="es">Español</option>
- <option value="fr">Français</option>
- <option value="de">Deutsch</option>
- <option value="zh">中文</option>
- <option value="ja">日本語</option>
- </select>
- </div>
+      <div className="max-w-5xl mx-auto">
+        {/* Header */}
+        <div className="mb-6">
+          <button
+            onClick={() => router.push('/profile')}
+            className="flex items-center text-gray-600 hover:text-primary-green transition-colors mb-4 text-sm sm:text-base"
+          >
+            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Back to Profile
+          </button>
 
- <div className="flex items-center justify-between">
- <div className="flex items-center space-x-3">
- <svg className="w-5 h-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
- <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z" />
- <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clipRule="evenodd" />
- </svg>
- <div>
- <span className="text-gray-700 block">Currency</span>
- <span className="text-xs text-gray-500">Set your preferred currency</span>
- </div>
- </div>
- <select
- value={currency}
- onChange={(e) => setCurrency(e.target.value)}
- className="bg-white border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-green text-gray-800"
- >
- <option value="USD">USD ($)</option>
- <option value="EUR">EUR (€)</option>
- <option value="GBP">GBP (£)</option>
- <option value="JPY">JPY (¥)</option>
- <option value="PHP">PHP (₱)</option>
- </select>
- </div>
+          <div className="text-center">
+            <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-primary-green to-leaf-green bg-clip-text text-transparent mb-2">
+              Settings
+            </h1>
+            <p className="text-gray-600">Manage your account preferences and profile</p>
+          </div>
+        </div>
 
- <div className="flex items-center justify-between">
- <div className="flex items-center space-x-3">
- <svg className="w-5 h-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
- <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
- </svg>
- <div>
- <span className="text-gray-700 block">Timezone</span>
- <span className="text-xs text-gray-500">Your local timezone</span>
- </div>
- </div>
- <select
- value={timezone}
- onChange={(e) => setTimezone(e.target.value)}
- className="bg-white border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-green text-gray-800"
- >
- <option value="UTC">UTC</option>
- <option value="America/New_York">Eastern Time</option>
- <option value="America/Chicago">Central Time</option>
- <option value="America/Los_Angeles">Pacific Time</option>
- <option value="Asia/Manila">Manila</option>
- <option value="Asia/Tokyo">Tokyo</option>
- </select>
- </div>
- </div>
- </div>
+        <div className="space-y-6">
+          {/* Profile Section */}
+          <Section title="Profile" icon="👤">
+            <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
+              <div className="relative">
+                <img
+                  src={profilePicture || '/default-avatar.png'}
+                  alt="Profile"
+                  className="w-24 h-24 rounded-full object-cover border-4 border-primary-green/20 shadow-lg"
+                />
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  className="absolute bottom-0 right-0 bg-primary-green hover:bg-leaf-green text-white rounded-full p-2 shadow-lg transition-colors"
+                  title="Change profile picture"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                </button>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleProfilePictureChange}
+                  className="hidden"
+                />
+              </div>
+              <div className="flex-1 w-full text-center sm:text-left">
+                <h4 className="text-lg font-medium text-gray-800">{session?.user?.name || 'User'}</h4>
+                <p className="text-gray-500 break-all">{session?.user?.email}</p>
 
- {/* Privacy Settings */}
- <div className="bg-gray-50 rounded-xl p-6">
- <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
- <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
- <path fillRule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
- </svg>
- Privacy Settings
- </h3>
- <div className="space-y-4">
- <ToggleSetting
- label="Show Profile Publicly"
- description="Allow others to view your profile"
- value={privacySettings.showProfile}
- onChange={(val) => setPrivacySettings({...privacySettings, showProfile: val})}
- color="blue"
- />
- <ToggleSetting
- label="Show Order History"
- description="Display your order history on your profile"
- value={privacySettings.showOrders}
- onChange={(val) => setPrivacySettings({...privacySettings, showOrders: val})}
- color="green"
- />
- <ToggleSetting
- label="Show Wishlist"
- description="Make your wishlist visible to others"
- value={privacySettings.showWishlist}
- onChange={(val) => setPrivacySettings({...privacySettings, showWishlist: val})}
- color="purple"
- />
- </div>
- </div>
+                <div className="mt-4 space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Display Name</label>
+                    <input
+                      type="text"
+                      value={displayName || session?.user?.name || ''}
+                      onChange={(e) => setDisplayName(e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-green bg-white text-gray-800"
+                      placeholder="Your display name"
+                    />
+                  </div>
 
- {/* Security Section */}
- <div className="bg-gray-50 rounded-xl p-6">
- <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
- <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
- <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
- </svg>
- Security
- </h3>
- 
- <div className="space-y-4 mb-6">
- <ToggleSetting
- label="Two-Factor Authentication"
- description="Add an extra layer of security to your account"
- value={twoFactorEnabled}
- onChange={setTwoFactorEnabled}
- color="red"
- />
- </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Bio</label>
+                    <textarea
+                      value={bio}
+                      onChange={(e) => setBio(e.target.value)}
+                      rows={3}
+                      maxLength={200}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-green bg-white text-gray-800"
+                      placeholder="Tell others about yourself..."
+                    />
+                    <p className="text-xs text-gray-500 mt-1">{bio.length}/200 characters</p>
+                  </div>
 
- <div className="space-y-4">
- <div>
- <label className="block text-sm font-medium text-gray-700 mb-2">
- Current Password
- </label>
- <input
- type="password"
- value={currentPassword}
- onChange={(e) => setCurrentPassword(e.target.value)}
- className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-green bg-white text-gray-800"
- placeholder="Enter current password"
- />
- </div>
- <div>
- <label className="block text-sm font-medium text-gray-700 mb-2">
- New Password
- </label>
- <input
- type="password"
- value={newPassword}
- onChange={(e) => setNewPassword(e.target.value)}
- className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-green bg-white text-gray-800"
- placeholder="Enter new password"
- />
- </div>
- <div>
- <label className="block text-sm font-medium text-gray-700 mb-2">
- Confirm New Password
- </label>
- <input
- type="password"
- value={confirmPassword}
- onChange={(e) => setConfirmPassword(e.target.value)}
- className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-green bg-white text-gray-800"
- placeholder="Confirm new password"
- />
- </div>
- <button
- onClick={handlePasswordChange}
- className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-md transition-colors"
- >
- Change Password
- </button>
- </div>
- </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-3">Profile Theme Color</label>
+                    <div className="grid grid-cols-6 gap-3">
+                      {[
+                        { name: 'green', color: 'bg-green-500' },
+                        { name: 'blue', color: 'bg-blue-500' },
+                        { name: 'purple', color: 'bg-purple-500' },
+                        { name: 'pink', color: 'bg-pink-500' },
+                        { name: 'orange', color: 'bg-orange-500' },
+                        { name: 'red', color: 'bg-red-500' },
+                      ].map((theme) => (
+                        <button
+                          key={theme.name}
+                          onClick={() => setThemeColor(theme.name)}
+                          className={`aspect-square rounded-lg ${theme.color} transition-all hover:scale-105 ${
+                            themeColor === theme.name ? 'ring-4 ring-offset-2 ring-primary-green' : ''
+                          }`}
+                        >
+                          {themeColor === theme.name && (
+                            <svg className="w-6 h-6 text-white mx-auto" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                            </svg>
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Section>
 
- {/* Data & Account Management */}
- <div className="bg-gray-50 rounded-xl p-6">
- <h3 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
- <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
- <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
- </svg>
- Data & Account Management
- </h3>
- <div className="space-y-3">
- <button
- onClick={exportData}
- className="w-full bg-primary-green hover:bg-leaf-green text-white font-semibold py-3 px-4 rounded-md transition-colors flex items-center justify-center"
- >
- <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
- <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
- </svg>
- Export My Data
- </button>
- 
- <button
- onClick={() => setShowDeleteConfirm(true)}
- className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-4 rounded-md transition-colors flex items-center justify-center"
- >
- <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
- <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
- </svg>
- Delete Account
- </button>
- </div>
- </div>
+          {/* Business Information (Sellers Only) */}
+          {session?.user?.role === 'seller' && hasBusinessInfo && (
+            <Section title="Business Information" icon="🏢">
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Business Logo</label>
+                  <div className="flex items-center gap-4">
+                    {businessInfo.businessLogo && (
+                      <img
+                        src={businessInfo.businessLogo}
+                        alt="Business Logo"
+                        className="w-20 h-20 rounded-lg object-cover border-2 border-primary-green"
+                      />
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => logoInputRef.current?.click()}
+                      className="bg-primary-green hover:bg-leaf-green text-white px-4 py-2 rounded-lg font-medium transition-colors"
+                    >
+                      {businessInfo.businessLogo ? 'Change Logo' : 'Upload Logo'}
+                    </button>
+                    <input
+                      ref={logoInputRef}
+                      type="file"
+                      accept="image/*"
+                      onChange={handleLogoChange}
+                      className="hidden"
+                    />
+                  </div>
+                </div>
 
- {/* Save Button - Mobile Optimized */}
- <div className="flex flex-col sm:flex-row justify-end gap-3 sm:space-x-4">
- <button
- onClick={() => router.push('/profile')}
- className="w-full sm:w-auto bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 px-6 rounded-lg transition-colors text-sm sm:text-base"
- >
- Cancel
- </button>
- <button
- onClick={handleSave}
- className="w-full sm:w-auto bg-gradient-to-r from-primary-green to-banana-leaf hover:from-leaf-green hover:to-soft-green text-white font-semibold py-3 px-6 rounded-lg shadow-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary-green focus:ring-offset-2 text-sm sm:text-base"
- >
- Save All Changes
- </button>
- </div>
- </div>
- </div>
+                <InputField
+                  label="Business Name *"
+                  value={businessInfo.businessName}
+                  onChange={(e) => setBusinessInfo({...businessInfo, businessName: e.target.value})}
+                  placeholder="Your business name"
+                />
 
- {/* Delete Account Confirmation Modal */}
- {showDeleteConfirm && (
- <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
- <div className="bg-white rounded-lg p-6 max-w-md w-full">
- <h3 className="text-xl font-bold text-gray-900 mb-4">
- Delete Account?
- </h3>
- <p className="text-gray-600 mb-6">
- Are you sure you want to delete your account? This action cannot be undone and all your data will be permanently deleted.
- </p>
- <div className="flex space-x-3">
- <button
- onClick={() => setShowDeleteConfirm(false)}
- className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 px-4 rounded-md transition-colors"
- >
- Cancel
- </button>
- <button
- onClick={handleAccountDeletion}
- className="flex-1 bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-md transition-colors"
- >
- Delete Account
- </button>
- </div>
- </div>
- </div>
- )}
- </div>
- );
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Business Type *</label>
+                  <select
+                    value={businessInfo.businessType}
+                    onChange={(e) => setBusinessInfo({...businessInfo, businessType: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-green bg-white text-gray-800"
+                  >
+                    <option value="">Select business type</option>
+                    <option value="Fisherman">Fisherman</option>
+                    <option value="Farmer">Farmer</option>
+                    <option value="Processor">Processor</option>
+                    <option value="Distributor">Distributor</option>
+                    <option value="Retailer">Retailer</option>
+                    <option value="General">General</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Description *</label>
+                  <textarea
+                    value={businessInfo.description}
+                    onChange={(e) => setBusinessInfo({...businessInfo, description: e.target.value})}
+                    rows={3}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-green bg-white text-gray-800"
+                    placeholder="Describe your business"
+                  />
+                </div>
+
+                <InputField
+                  label="Contact Number *"
+                  type="tel"
+                  value={businessInfo.contactNumber}
+                  onChange={(e) => setBusinessInfo({...businessInfo, contactNumber: e.target.value})}
+                  placeholder="+63 912 345 6789"
+                />
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Address *</label>
+                  <textarea
+                    value={businessInfo.address}
+                    onChange={(e) => setBusinessInfo({...businessInfo, address: e.target.value})}
+                    rows={2}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-green bg-white text-gray-800"
+                    placeholder="Your business address"
+                  />
+                </div>
+
+                <button
+                  onClick={handleBusinessInfoUpdate}
+                  className="w-full bg-gradient-to-r from-primary-green to-leaf-green text-white font-semibold py-3 px-4 rounded-lg shadow-md hover:shadow-lg transition-all"
+                >
+                  Update Business Information
+                </button>
+              </div>
+            </Section>
+          )}
+
+          {/* Store Settings (Sellers Only) */}
+          {session?.user?.role === 'seller' && (
+            <Section title="Store Settings" icon="🏪">
+              <div className="space-y-4">
+                <InputField
+                  label="Store Hours"
+                  value={storeSettings.storeHours}
+                  onChange={(e) => setStoreSettings({...storeSettings, storeHours: e.target.value})}
+                  placeholder="e.g., 9:00 AM - 6:00 PM"
+                />
+
+                <InputField
+                  label="Processing/Shipping Time"
+                  value={storeSettings.shippingTime}
+                  onChange={(e) => setStoreSettings({...storeSettings, shippingTime: e.target.value})}
+                  placeholder="e.g., 1-3 business days"
+                />
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Return Policy</label>
+                  <textarea
+                    value={storeSettings.returnPolicy}
+                    onChange={(e) => setStoreSettings({...storeSettings, returnPolicy: e.target.value})}
+                    rows={3}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-green bg-white text-gray-800"
+                    placeholder="Describe your return policy"
+                  />
+                </div>
+
+                <InputField
+                  label="Minimum Order Amount"
+                  type="number"
+                  value={storeSettings.minimumOrder}
+                  onChange={(e) => setStoreSettings({...storeSettings, minimumOrder: e.target.value})}
+                  placeholder="e.g., 50"
+                />
+
+                <InputField
+                  label="Free Shipping Threshold"
+                  type="number"
+                  value={storeSettings.freeShippingThreshold}
+                  onChange={(e) => setStoreSettings({...storeSettings, freeShippingThreshold: e.target.value})}
+                  placeholder="e.g., 100"
+                />
+
+                <button
+                  onClick={() => toast.success('Store settings saved!')}
+                  className="w-full bg-gradient-to-r from-primary-green to-leaf-green text-white font-semibold py-3 px-4 rounded-lg shadow-md hover:shadow-lg transition-all"
+                >
+                  Save Store Settings
+                </button>
+              </div>
+            </Section>
+          )}
+
+          {/* Shipping Preferences (Buyers Only) */}
+          {session?.user?.role !== 'seller' && (
+            <Section title="Shipping Preferences" icon="📦">
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Default Shipping Address</label>
+                  <textarea
+                    value={shippingPreferences.defaultAddress}
+                    onChange={(e) => setShippingPreferences({...shippingPreferences, defaultAddress: e.target.value})}
+                    rows={3}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-green bg-white text-gray-800"
+                    placeholder="Your default shipping address"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">This address will be pre-selected during checkout</p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Preferred Delivery Time</label>
+                  <select
+                    value={shippingPreferences.preferredTimeSlot}
+                    onChange={(e) => setShippingPreferences({...shippingPreferences, preferredTimeSlot: e.target.value})}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-green bg-white text-gray-800"
+                  >
+                    <option value="anytime">Anytime</option>
+                    <option value="morning">Morning (8AM - 12PM)</option>
+                    <option value="afternoon">Afternoon (12PM - 5PM)</option>
+                    <option value="evening">Evening (5PM - 8PM)</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Special Delivery Instructions</label>
+                  <textarea
+                    value={shippingPreferences.specialInstructions}
+                    onChange={(e) => setShippingPreferences({...shippingPreferences, specialInstructions: e.target.value})}
+                    rows={3}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-green bg-white text-gray-800"
+                    placeholder="e.g., Leave at front door, Call upon arrival"
+                  />
+                </div>
+
+                <button
+                  onClick={() => toast.success('Shipping preferences saved!')}
+                  className="w-full bg-gradient-to-r from-primary-green to-leaf-green text-white font-semibold py-3 px-4 rounded-lg shadow-md hover:shadow-lg transition-all"
+                >
+                  Save Shipping Preferences
+                </button>
+              </div>
+            </Section>
+          )}
+
+          {/* Payment Methods */}
+          <Section title="Payment Methods" icon="💳">
+            <div className="space-y-4">
+              {session?.user?.role === 'seller' ? (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <h4 className="font-semibold text-blue-900 mb-2">Bank Account for Payouts</h4>
+                  <InputField
+                    label="Bank Name"
+                    placeholder="e.g., BDO, BPI, Metrobank"
+                  />
+                  <InputField
+                    label="Account Number"
+                    placeholder="Your account number"
+                  />
+                  <InputField
+                    label="Account Name"
+                    placeholder="Account holder name"
+                  />
+                  <button
+                    onClick={() => toast.success('Payment information saved!')}
+                    className="w-full mt-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors"
+                  >
+                    Save Payment Information
+                  </button>
+                </div>
+              ) : (
+                <div>
+                  <p className="text-gray-600 mb-4">Manage your saved payment methods</p>
+                  <div className="bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                    <svg className="w-12 h-12 mx-auto text-gray-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                    </svg>
+                    <p className="text-gray-500 mb-3">No payment methods saved yet</p>
+                    <button
+                      onClick={() => toast('This feature will be available soon')}
+                      className="bg-primary-green hover:bg-leaf-green text-white px-4 py-2 rounded-lg font-medium transition-colors"
+                    >
+                      Add Payment Method
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </Section>
+
+          {/* Notifications */}
+          <Section title="Notification Preferences" icon="🔔">
+            <div className="space-y-3">
+              <ToggleSetting
+                label="Push Notifications"
+                description="Receive push notifications on your device"
+                value={notifications}
+                onChange={setNotifications}
+              />
+              <ToggleSetting
+                label="Email Updates"
+                description="Get email updates about your account activity"
+                value={emailUpdates}
+                onChange={setEmailUpdates}
+              />
+              <ToggleSetting
+                label="SMS Notifications"
+                description="Receive text messages for important updates"
+                value={smsNotifications}
+                onChange={setSmsNotifications}
+              />
+              <ToggleSetting
+                label="In-App Notifications"
+                description="Show notifications within the app"
+                value={inAppNotifications}
+                onChange={setInAppNotifications}
+              />
+              <ToggleSetting
+                label="Order Updates"
+                description="Get notified about order status changes"
+                value={orderUpdates}
+                onChange={setOrderUpdates}
+              />
+              <ToggleSetting
+                label="Promotional Emails"
+                description="Receive promotional offers and deals"
+                value={promotionalEmails}
+                onChange={setPromotionalEmails}
+              />
+            </div>
+          </Section>
+
+          {/* Localization */}
+          <Section title="Localization" icon="🌍">
+            <div className="space-y-4">
+              <SelectField
+                label="Language"
+                value={language}
+                onChange={(e) => setLanguage(e.target.value)}
+                options={[
+                  { value: 'en', label: 'English' },
+                  { value: 'es', label: 'Español' },
+                  { value: 'fr', label: 'Français' },
+                  { value: 'de', label: 'Deutsch' },
+                  { value: 'zh', label: '中文' },
+                  { value: 'ja', label: '日本語' },
+                ]}
+              />
+
+              <SelectField
+                label="Currency"
+                value={currency}
+                onChange={(e) => setCurrency(e.target.value)}
+                options={[
+                  { value: 'USD', label: 'USD ($)' },
+                  { value: 'EUR', label: 'EUR (€)' },
+                  { value: 'GBP', label: 'GBP (£)' },
+                  { value: 'JPY', label: 'JPY (¥)' },
+                  { value: 'PHP', label: 'PHP (₱)' },
+                ]}
+              />
+
+              <SelectField
+                label="Timezone"
+                value={timezone}
+                onChange={(e) => setTimezone(e.target.value)}
+                options={[
+                  { value: 'UTC', label: 'UTC' },
+                  { value: 'America/New_York', label: 'Eastern Time' },
+                  { value: 'America/Chicago', label: 'Central Time' },
+                  { value: 'America/Los_Angeles', label: 'Pacific Time' },
+                  { value: 'Asia/Manila', label: 'Manila' },
+                  { value: 'Asia/Tokyo', label: 'Tokyo' },
+                ]}
+              />
+            </div>
+          </Section>
+
+          {/* Privacy */}
+          <Section title="Privacy Settings" icon="🔒">
+            <div className="space-y-3">
+              <ToggleSetting
+                label="Show Profile Publicly"
+                description="Allow others to view your profile"
+                value={privacySettings.showProfile}
+                onChange={(val) => setPrivacySettings({...privacySettings, showProfile: val})}
+              />
+              <ToggleSetting
+                label="Show Order History"
+                description="Display your order history on your profile"
+                value={privacySettings.showOrders}
+                onChange={(val) => setPrivacySettings({...privacySettings, showOrders: val})}
+              />
+              <ToggleSetting
+                label="Show Wishlist"
+                description="Make your wishlist visible to others"
+                value={privacySettings.showWishlist}
+                onChange={(val) => setPrivacySettings({...privacySettings, showWishlist: val})}
+              />
+            </div>
+          </Section>
+
+          {/* Accessibility */}
+          <Section title="Accessibility" icon="♿">
+            <div className="space-y-4">
+              <SelectField
+                label="Font Size"
+                value={accessibility.fontSize}
+                onChange={(e) => setAccessibility({...accessibility, fontSize: e.target.value})}
+                options={[
+                  { value: 'small', label: 'Small' },
+                  { value: 'medium', label: 'Medium' },
+                  { value: 'large', label: 'Large' },
+                  { value: 'extra-large', label: 'Extra Large' },
+                ]}
+              />
+
+              <ToggleSetting
+                label="High Contrast Mode"
+                description="Increase contrast for better visibility"
+                value={accessibility.highContrast}
+                onChange={(val) => setAccessibility({...accessibility, highContrast: val})}
+              />
+
+              <ToggleSetting
+                label="Reduced Motion"
+                description="Minimize animations and transitions"
+                value={accessibility.reducedMotion}
+                onChange={(val) => setAccessibility({...accessibility, reducedMotion: val})}
+              />
+            </div>
+          </Section>
+
+          {/* Security */}
+          <Section title="Security" icon="🛡️">
+            <div className="space-y-4">
+              <ToggleSetting
+                label="Two-Factor Authentication"
+                description="Add an extra layer of security to your account"
+                value={twoFactorEnabled}
+                onChange={setTwoFactorEnabled}
+              />
+
+              <div className="border-t pt-4 mt-4">
+                <h4 className="font-semibold text-gray-900 mb-4">Change Password</h4>
+                <div className="space-y-3">
+                  <InputField
+                    label="Current Password"
+                    type="password"
+                    value={currentPassword}
+                    onChange={(e) => setCurrentPassword(e.target.value)}
+                    placeholder="Enter current password"
+                  />
+                  <InputField
+                    label="New Password"
+                    type="password"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    placeholder="Enter new password"
+                  />
+                  <InputField
+                    label="Confirm New Password"
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="Confirm new password"
+                  />
+                  <button
+                    onClick={handlePasswordChange}
+                    className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors"
+                  >
+                    Change Password
+                  </button>
+                </div>
+              </div>
+            </div>
+          </Section>
+
+          {/* Session Management */}
+          <Section title="Active Sessions" icon="💻">
+            <div className="space-y-3">
+              {activeSessions.map((session) => (
+                <div key={session.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200">
+                  <div className="flex items-center gap-3">
+                    <div className="bg-primary-green/10 p-2 rounded-lg">
+                      <svg className="w-5 h-5 text-primary-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                      </svg>
+                    </div>
+                    <div>
+                      <p className="font-medium text-gray-900">{session.device}</p>
+                      <p className="text-sm text-gray-500">{session.location}</p>
+                      <p className="text-xs text-gray-400">{session.lastActive}</p>
+                    </div>
+                  </div>
+                  {session.current && (
+                    <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-semibold">
+                      Current
+                    </span>
+                  )}
+                </div>
+              ))}
+
+              <button
+                onClick={handleLogoutAllSessions}
+                className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors"
+              >
+                Logout All Other Devices
+              </button>
+            </div>
+          </Section>
+
+          {/* Legal & Compliance */}
+          <Section title="Legal & Compliance" icon="⚖️">
+            <div className="space-y-3">
+              <Link
+                href="/terms"
+                className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 transition-colors"
+              >
+                <div className="flex items-center gap-3">
+                  <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  <span className="font-medium text-gray-900">Terms & Conditions</span>
+                </div>
+                <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </Link>
+
+              <Link
+                href="/privacy"
+                className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 transition-colors"
+              >
+                <div className="flex items-center gap-3">
+                  <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                  </svg>
+                  <span className="font-medium text-gray-900">Privacy Policy</span>
+                </div>
+                <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </Link>
+
+              <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <h4 className="font-semibold text-blue-900 mb-2">Cookie Preferences</h4>
+                <p className="text-sm text-blue-700 mb-3">We use cookies to improve your experience</p>
+                <button
+                  onClick={() => toast('Cookie preferences updated')}
+                  className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                >
+                  Manage Cookie Settings →
+                </button>
+              </div>
+            </div>
+          </Section>
+
+          {/* Data Management */}
+          <Section title="Data & Account Management" icon="📊">
+            <div className="space-y-3">
+              <button
+                onClick={exportData}
+                className="w-full bg-primary-green hover:bg-leaf-green text-white font-semibold py-3 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
+                Export My Data
+              </button>
+
+              <button
+                onClick={() => setShowDeleteConfirm(true)}
+                className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+                Delete Account
+              </button>
+            </div>
+          </Section>
+
+          {/* Save Button */}
+          <div className="flex gap-4 pt-4">
+            <button
+              onClick={() => router.push('/profile')}
+              className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-3 px-6 rounded-lg transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleSave}
+              className="flex-1 bg-gradient-to-r from-primary-green to-leaf-green text-white font-semibold py-3 px-6 rounded-lg shadow-lg hover:shadow-xl transition-all"
+            >
+              Save All Changes
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Delete Account Modal */}
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl">
+            <h3 className="text-xl font-bold text-gray-900 mb-4">Delete Account?</h3>
+            <p className="text-gray-600 mb-6">
+              Are you sure you want to delete your account? This action cannot be undone and all your data will be permanently deleted.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowDeleteConfirm(false)}
+                className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 px-4 rounded-lg transition-colors font-medium"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleAccountDeletion}
+                className="flex-1 bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-lg transition-colors font-medium"
+              >
+                Delete Account
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }
 
-// Toggle Setting Component
-function ToggleSetting({ 
- label, 
- description, 
- value, 
- onChange, 
- color = 'indigo',
- icon 
-}: { 
- label: string; 
- description?: string; 
- value: boolean; 
- onChange: (val: boolean) => void; 
- color?: string;
- icon?: React.ReactNode;
-}) {
- const colorMap: Record<string, string> = {
- indigo: 'bg-primary-green',
- green: 'bg-leaf-green',
- blue: 'bg-banana-leaf',
- purple: 'bg-soft-green',
- red: 'bg-red-600',
- };
+// Helper Components
+function Section({ title, icon, children }: { title: string; icon: string; children: React.ReactNode }) {
+  return (
+    <div className="bg-white rounded-xl shadow-lg border border-soft-green/20 p-6">
+      <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+        <span className="text-2xl">{icon}</span>
+        {title}
+      </h2>
+      {children}
+    </div>
+  );
+}
 
- return (
- <div className="flex items-center justify-between">
- <div className="flex items-center space-x-3">
- {icon}
- <div>
- <span className="text-gray-700 block">{label}</span>
- {description && (
- <span className="text-xs text-gray-500">{description}</span>
- )}
- </div>
- </div>
- <button
- onClick={() => onChange(!value)}
- className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 ${
- value ? colorMap[color] : 'bg-gray-200'
- }`}
- >
- <span
- className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
- value ? 'translate-x-6' : 'translate-x-1'
- }`}
- />
- </button>
- </div>
- );
+interface InputFieldProps {
+  label: string;
+  type?: string;
+  value?: string;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  placeholder?: string;
+}
+
+function InputField({ label, type = 'text', value, onChange, placeholder }: InputFieldProps) {
+  return (
+    <div>
+      <label className="block text-sm font-medium text-gray-700 mb-2">{label}</label>
+      <input
+        type={type}
+        value={value}
+        onChange={onChange}
+        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-green bg-white text-gray-800"
+        placeholder={placeholder}
+      />
+    </div>
+  );
+}
+
+interface SelectFieldProps {
+  label: string;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+  options: { value: string; label: string }[];
+}
+
+function SelectField({ label, value, onChange, options }: SelectFieldProps) {
+  return (
+    <div>
+      <label className="block text-sm font-medium text-gray-700 mb-2">{label}</label>
+      <select
+        value={value}
+        onChange={onChange}
+        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-green bg-white text-gray-800"
+      >
+        {options.map((opt) => (
+          <option key={opt.value} value={opt.value}>
+            {opt.label}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
+}
+
+interface ToggleSettingProps {
+  label: string;
+  description?: string;
+  value: boolean;
+  onChange: (value: boolean) => void;
+}
+
+function ToggleSetting({ label, description, value, onChange }: ToggleSettingProps) {
+  return (
+    <div className="flex items-center justify-between py-2">
+      <div>
+        <p className="font-medium text-gray-900">{label}</p>
+        {description && <p className="text-sm text-gray-500">{description}</p>}
+      </div>
+      <button
+        onClick={() => onChange(!value)}
+        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+          value ? 'bg-primary-green' : 'bg-gray-200'
+        }`}
+      >
+        <span
+          className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+            value ? 'translate-x-6' : 'translate-x-1'
+          }`}
+        />
+      </button>
+    </div>
+  );
 }

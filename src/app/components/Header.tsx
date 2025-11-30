@@ -115,7 +115,7 @@ useEffect(() => {
  {/* Desktop Search */}
  <form
  onSubmit={handleSearch}
- className="hidden md:flex items-center gap-3 bg-soft-green/10 px-5 py-2.5 rounded-full border border-soft-green/30 flex-grow max-w-xl hover:border-primary-green/40 transition-colors shadow-sm"
+ className="hidden md:flex items-center gap-3 bg-soft-green/10 px-5 py-2.5 rounded-full border border-soft-green/30 flex-grow max-w-xl hover:border-primary-green/50 hover:shadow-md focus-within:border-primary-green focus-within:shadow-lg transition-all duration-300 shadow-sm"
  >
  <Search className="w-5 h-5 text-primary-green" />
  <input
@@ -131,29 +131,41 @@ useEffect(() => {
  <div className="hidden md:flex items-center gap-8">
  <div className="flex items-center gap-6 text-gray-700">
  {!session && (
- <Link href="/" className="hover:text-primary-green transition-colors">
- <Home className="w-6 h-6" />
+ <Link href="/" className="relative group p-2 rounded-lg overflow-hidden transition-all duration-300 hover:shadow-md">
+ <Home className="w-6 h-6 relative z-10 group-hover:text-primary-green group-hover:scale-110 group-hover:rotate-3 transition-all duration-300" />
+ <span className="absolute inset-0 bg-gradient-to-r from-primary-green/5 to-leaf-green/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+            <span className="absolute inset-x-0 bottom-0 h-0.5 bg-gradient-to-r from-primary-green to-leaf-green scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></span>
  </Link>
  )}
 
- <Link href="/products" className="hover:text-primary-green transition-colors">
- <Boxes className="w-6 h-6" />
+ <Link href="/products" className="relative group p-2 rounded-lg overflow-hidden transition-all duration-300 hover:shadow-md">
+ <Boxes className="w-6 h-6 relative z-10 group-hover:text-primary-green group-hover:scale-110 group-hover:rotate-3 transition-all duration-300" />
+ <span className="absolute inset-0 bg-gradient-to-r from-primary-green/5 to-leaf-green/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+            <span className="absolute inset-x-0 bottom-0 h-0.5 bg-gradient-to-r from-primary-green to-leaf-green scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></span>
  </Link>
- <Link href="/recipes" className="hover:text-primary-green transition-colors">
- <BookOpen className="w-6 h-6" />
+ <Link href="/recipes" className="relative group p-2 rounded-lg overflow-hidden transition-all duration-300 hover:shadow-md">
+ <BookOpen className="w-6 h-6 relative z-10 group-hover:text-primary-green group-hover:scale-110 group-hover:rotate-3 transition-all duration-300" />
+ <span className="absolute inset-0 bg-gradient-to-r from-primary-green/5 to-leaf-green/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+            <span className="absolute inset-x-0 bottom-0 h-0.5 bg-gradient-to-r from-primary-green to-leaf-green scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></span>
  </Link>
 
- <Link href="/cart" className="hover:text-primary-green transition-colors relative">
- <ShoppingCart className="w-6 h-6" />
+ {session?.user?.role !== 'seller' && (
+ <Link href="/cart" className="relative group p-2 rounded-lg overflow-hidden transition-all duration-300 hover:shadow-md">
+ <ShoppingCart className="w-6 h-6 relative z-10 group-hover:text-primary-green group-hover:scale-110 group-hover:rotate-3 transition-all duration-300" />
+ <span className="absolute inset-0 bg-gradient-to-r from-primary-green/5 to-leaf-green/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+            <span className="absolute inset-x-0 bottom-0 h-0.5 bg-gradient-to-r from-primary-green to-leaf-green scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></span>
  </Link>
+ )}
 
  {session && (
  <>
- <Link href="/notifications" className="hover:text-primary-green transition-colors relative">
- <Bell className="w-6 h-6" />
+ <Link href="/notifications" className="relative group p-2 rounded-lg overflow-hidden transition-all duration-300 hover:shadow-md">
+ <Bell className="w-6 h-6 relative z-10 group-hover:text-primary-green group-hover:scale-110 group-hover:rotate-3 transition-all duration-300" />
+ <span className="absolute inset-0 bg-gradient-to-r from-primary-green/5 to-leaf-green/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+            <span className="absolute inset-x-0 bottom-0 h-0.5 bg-gradient-to-r from-primary-green to-leaf-green scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></span>
  {unreadNotifications > 0 && (
  <>
- <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-semibold shadow-lg">
+ <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-semibold shadow-lg z-10">
  {unreadNotifications > 9 ? '9+' : unreadNotifications}
  </span>
  <span className="absolute -top-0.5 -right-0.5 bg-red-500 rounded-full h-2.5 w-2.5 animate-ping"></span>
@@ -161,11 +173,13 @@ useEffect(() => {
  )}
  </Link>
 
- <Link href="/chat" className="hover:text-primary-green transition-colors relative">
- <MessageCircle className="w-6 h-6" />
+ <Link href="/chat" className="relative group p-2 rounded-lg overflow-hidden transition-all duration-300 hover:shadow-md">
+ <MessageCircle className="w-6 h-6 relative z-10 group-hover:text-primary-green group-hover:scale-110 group-hover:rotate-3 transition-all duration-300" />
+ <span className="absolute inset-0 bg-gradient-to-r from-primary-green/5 to-leaf-green/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+            <span className="absolute inset-x-0 bottom-0 h-0.5 bg-gradient-to-r from-primary-green to-leaf-green scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></span>
  {unreadMessages > 0 && (
  <>
- <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-semibold shadow-lg">
+ <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-semibold shadow-lg z-10">
  {unreadMessages > 9 ? '9+' : unreadMessages}
  </span>
  <span className="absolute -top-0.5 -right-0.5 bg-red-500 rounded-full h-2.5 w-2.5 animate-ping"></span>
@@ -179,12 +193,16 @@ useEffect(() => {
  {status === 'loading' ? (
  <div className="w-6 h-6 bg-gray-200 rounded animate-pulse"></div>
  ) : (status === 'authenticated' && session) ? (
- <Link href="/profile" className="p-1 hover:text-primary-green transition-colors" title="Profile">
- <User className="w-6 h-6" />
+ <Link href="/profile" className="relative group p-2 rounded-lg overflow-hidden transition-all duration-300 hover:shadow-md" title="Profile">
+ <User className="w-6 h-6 relative z-10 group-hover:text-primary-green group-hover:scale-110 group-hover:rotate-3 transition-all duration-300" />
+ <span className="absolute inset-0 bg-gradient-to-r from-primary-green/5 to-leaf-green/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+            <span className="absolute inset-x-0 bottom-0 h-0.5 bg-gradient-to-r from-primary-green to-leaf-green scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></span>
  </Link>
  ) : (
- <Link href="/login" className="hover:text-primary-green transition-colors" title="Login">
- <LogIn className="w-6 h-6" />
+ <Link href="/login" className="relative group p-2 rounded-lg overflow-hidden transition-all duration-300 hover:shadow-md" title="Login">
+ <LogIn className="w-6 h-6 relative z-10 group-hover:text-primary-green group-hover:scale-110 group-hover:rotate-3 transition-all duration-300" />
+ <span className="absolute inset-0 bg-gradient-to-r from-primary-green/5 to-leaf-green/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+            <span className="absolute inset-x-0 bottom-0 h-0.5 bg-gradient-to-r from-primary-green to-leaf-green scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></span>
  </Link>
  )}
  </div>
@@ -223,49 +241,59 @@ useEffect(() => {
  <nav className="fixed bottom-0 left-0 right-0 bg-gradient-to-r from-white via-accent-cream/50 to-white border-t border-soft-green/30 shadow-lg z-[100] md:hidden">
  <div className="flex justify-around items-center h-16 text-gray-600">
  {!session && (
- <Link href="/" className="flex flex-col items-center text-xs hover:text-primary-green transition-colors">
- <Home className="w-6 h-6" />
- <span className="text-[10px]">Home</span>
+ <Link href="/" className="relative group flex flex-col items-center text-xs active:scale-95 transition-all duration-200">
+ <div className="p-2 rounded-xl group-hover:bg-primary-green/10 transition-all duration-200">
+ <Home className="w-6 h-6 group-hover:text-primary-green group-active:scale-90 transition-all duration-200" />
+ </div>
+ <span className="text-[10px] group-hover:text-primary-green group-hover:font-medium transition-all duration-200">Home</span>
  </Link>
  )}
 
- <Link href="/products" className="flex flex-col items-center text-xs hover:text-primary-green transition-colors">
- <Boxes className="w-6 h-6" />
- <span className="text-[10px]">Products</span>
+ <Link href="/products" className="relative group flex flex-col items-center text-xs active:scale-95 transition-all duration-200">
+ <div className="p-2 rounded-xl group-hover:bg-primary-green/10 transition-all duration-200">
+ <Boxes className="w-6 h-6 group-hover:text-primary-green group-active:scale-90 transition-all duration-200" />
+ </div>
+ <span className="text-[10px] group-hover:text-primary-green group-hover:font-medium transition-all duration-200">Products</span>
  </Link>
 
- <Link href="/recipes" className="flex flex-col items-center text-xs hover:text-primary-green transition-colors">
- <BookOpen className="w-6 h-6" />
- <span className="text-[10px]">Recipes</span>
+ <Link href="/recipes" className="relative group flex flex-col items-center text-xs active:scale-95 transition-all duration-200">
+ <div className="p-2 rounded-xl group-hover:bg-primary-green/10 transition-all duration-200">
+ <BookOpen className="w-6 h-6 group-hover:text-primary-green group-active:scale-90 transition-all duration-200" />
+ </div>
+ <span className="text-[10px] group-hover:text-primary-green group-hover:font-medium transition-all duration-200">Recipes</span>
  </Link>
 
  {session && (
- <Link href="/chat" className="relative flex flex-col items-center text-xs hover:text-primary-green transition-colors">
- <MessageCircle className="w-6 h-6" />
- <span className="text-[10px]">Chat</span>
+ <Link href="/chat" className="relative group flex flex-col items-center text-xs active:scale-95 transition-all duration-200">
+ <div className="relative p-2 rounded-xl group-hover:bg-primary-green/10 transition-all duration-200">
+ <MessageCircle className="w-6 h-6 group-hover:text-primary-green group-active:scale-90 transition-all duration-200" />
  {unreadMessages > 0 && (
  <>
- <span className="absolute -top-1 -right-2 bg-red-500 text-white text-[10px] rounded-full h-4 w-4 flex items-center justify-center font-semibold shadow-lg z-10">
+ <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] rounded-full h-4 w-4 flex items-center justify-center font-semibold shadow-lg z-10">
  {unreadMessages > 9 ? '9+' : unreadMessages}
  </span>
- <span className="absolute -top-0.5 -right-1.5 bg-red-500 rounded-full h-2 w-2 animate-ping"></span>
+ <span className="absolute -top-0.5 -right-0.5 bg-red-500 rounded-full h-2 w-2 animate-ping"></span>
  </>
  )}
+ </div>
+ <span className="text-[10px] group-hover:text-primary-green group-hover:font-medium transition-all duration-200">Chat</span>
  </Link>
  )}
 
  {session && (
- <Link href="/notifications" className="relative flex flex-col items-center text-xs hover:text-primary-green transition-colors">
- <Bell className="w-6 h-6" />
- <span className="text-[10px]">Notification</span>
+ <Link href="/notifications" className="relative group flex flex-col items-center text-xs active:scale-95 transition-all duration-200">
+ <div className="relative p-2 rounded-xl group-hover:bg-primary-green/10 transition-all duration-200">
+ <Bell className="w-6 h-6 group-hover:text-primary-green group-active:scale-90 transition-all duration-200" />
  {unreadNotifications > 0 && (
  <>
- <span className="absolute -top-1 -right-2 bg-red-500 text-white text-[10px] rounded-full h-4 w-4 flex items-center justify-center font-semibold shadow-lg z-10">
+ <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] rounded-full h-4 w-4 flex items-center justify-center font-semibold shadow-lg z-10">
  {unreadNotifications > 9 ? '9+' : unreadNotifications}
  </span>
- <span className="absolute -top-0.5 -right-1.5 bg-red-500 rounded-full h-2 w-2 animate-ping"></span>
+ <span className="absolute -top-0.5 -right-0.5 bg-red-500 rounded-full h-2 w-2 animate-ping"></span>
  </>
  )}
+ </div>
+ <span className="text-[10px] group-hover:text-primary-green group-hover:font-medium transition-all duration-200">Notification</span>
  </Link>
  )}
 
@@ -277,11 +305,13 @@ useEffect(() => {
  ) : (
  <Link
  href={(status === 'authenticated' && session) ? '/profile' : '/login'}
- className="flex flex-col items-center text-xs hover:text-primary-green transition-colors"
+ className="relative group flex flex-col items-center text-xs active:scale-95 transition-all duration-200"
  title={(status === 'authenticated' && session) ? 'Profile' : 'Login'}
  >
- {(status === 'authenticated' && session) ? <User className="w-6 h-6" /> : <LogIn className="w-6 h-6" />}
- <span className="text-[10px]">{(status === 'authenticated' && session) ? 'Profile' : 'Login'}</span>
+ <div className="p-2 rounded-xl group-hover:bg-primary-green/10 transition-all duration-200">
+ {(status === 'authenticated' && session) ? <User className="w-6 h-6 group-hover:text-primary-green group-active:scale-90 transition-all duration-200" /> : <LogIn className="w-6 h-6 group-hover:text-primary-green group-active:scale-90 transition-all duration-200" />}
+ </div>
+ <span className="text-[10px] group-hover:text-primary-green group-hover:font-medium transition-all duration-200">{(status === 'authenticated' && session) ? 'Profile' : 'Login'}</span>
  </Link>
  )}
  </div>

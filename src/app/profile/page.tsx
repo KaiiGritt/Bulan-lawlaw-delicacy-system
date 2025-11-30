@@ -153,7 +153,7 @@ export default function ProfilePage() {
  const [wishlistItems, setWishlistItems] = useState<WishlistItem[]>([]);
  const [recipeFavorites, setRecipeFavorites] = useState<RecipeFavorite[]>([]);
  const [savedRecipes, setSavedRecipes] = useState<SavedRecipe[]>([]);
- 
+
  const [newProduct, setNewProduct] = useState({
  name: '',
  description: '',
@@ -164,6 +164,19 @@ export default function ProfilePage() {
  });
  const [imageFile, setImageFile] = useState<File | null>(null);
  const [imagePreview, setImagePreview] = useState<string>('');
+
+ // Tutorial/Onboarding states
+ const [showTutorial, setShowTutorial] = useState(false);
+ const [tutorialStep, setTutorialStep] = useState(0);
+ const [showTooltips, setShowTooltips] = useState(false);
+
+ // Check if first time visit
+ useEffect(() => {
+ const hasSeenTutorial = localStorage.getItem('profileTutorialCompleted');
+ if (!hasSeenTutorial && profile) {
+ setShowTutorial(true);
+ }
+ }, [profile]);
 
  useEffect(() => {
  if (status === 'loading') return;
@@ -557,6 +570,37 @@ export default function ProfilePage() {
  );
  }
 
+ // Tutorial steps configuration
+ const tutorialSteps = profile?.role === 'seller' ? [
+ { target: 'profile-completion', title: 'Complete Your Profile', content: 'Fill in your profile information to unlock all features and build trust with customers.' },
+ { target: 'quick-actions', title: 'Quick Actions', content: 'Access your seller dashboard, manage products, view orders, and check analytics from here.' },
+ { target: 'performance-overview', title: 'Performance Overview', content: 'Track your sales, revenue, and business metrics at a glance.' },
+ ] : [
+ { target: 'profile-completion', title: 'Complete Your Profile', content: 'Add your details to personalize your shopping experience.' },
+ { target: 'achievement-badges', title: 'Earn Badges', content: 'Complete activities to earn achievement badges and unlock rewards!' },
+ { target: 'quick-actions', title: 'Quick Actions', content: 'Access your orders, wishlist, favorite recipes, and more from this menu.' },
+ { target: 'shopping-insights', title: 'Shopping Insights', content: 'View your order history, spending, and saved items.' },
+ ];
+
+ const completeTutorial = () => {
+ localStorage.setItem('profileTutorialCompleted', 'true');
+ setShowTutorial(false);
+ setTutorialStep(0);
+ toast.success('Tutorial completed! You can always access help from settings.');
+ };
+
+ const nextTutorialStep = () => {
+ if (tutorialStep < tutorialSteps.length - 1) {
+ setTutorialStep(tutorialStep + 1);
+ } else {
+ completeTutorial();
+ }
+ };
+
+ const skipTutorial = () => {
+ completeTutorial();
+ };
+
  if (!profile) return null;
 
  return (
@@ -568,6 +612,91 @@ export default function ProfilePage() {
  <div className="floating-orb absolute top-1/2 right-1/3 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl" style={{ animationDelay: '8s' }}></div>
  </div>
  <Toaster position="top-right" />
+
+ {/* Tutorial Overlay */}
+ {showTutorial && (
+ <>
+ {/* Dark overlay */}
+ <div className="fixed inset-0 bg-black/50 z-[200] backdrop-blur-sm" onClick={skipTutorial}></div>
+
+ {/* Tutorial Card */}
+ <motion.div
+ initial={{ opacity: 0, scale: 0.9, y: 20 }}
+ animate={{ opacity: 1, scale: 1, y: 0 }}
+ className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[201] bg-white rounded-2xl shadow-2xl p-6 max-w-md w-[90%] sm:w-full border-2 border-primary-green"
+ >
+ {/* Progress Indicator */}
+ <div className="flex gap-2 mb-4">
+ {tutorialSteps.map((_, index) => (
+ <div
+ key={index}
+ className={`flex-1 h-1.5 rounded-full transition-all ${
+ index <= tutorialStep ? 'bg-primary-green' : 'bg-gray-200'
+ }`}
+ />
+ ))}
+ </div>
+
+ {/* Tutorial Content */}
+ <div className="mb-6">
+ <div className="flex items-start gap-3 mb-3">
+ <div className="bg-primary-green/10 p-2 rounded-lg">
+ <svg className="w-6 h-6 text-primary-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+ <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+ </svg>
+ </div>
+ <div className="flex-1">
+ <h3 className="text-xl font-bold text-gray-900 mb-1">
+ {tutorialSteps[tutorialStep].title}
+ </h3>
+ <p className="text-sm text-gray-600">
+ Step {tutorialStep + 1} of {tutorialSteps.length}
+ </p>
+ </div>
+ </div>
+ <p className="text-gray-700 leading-relaxed">
+ {tutorialSteps[tutorialStep].content}
+ </p>
+ </div>
+
+ {/* Tutorial Actions */}
+ <div className="flex gap-3">
+ <button
+ onClick={skipTutorial}
+ className="flex-1 px-4 py-2 rounded-lg border-2 border-gray-300 text-gray-700 font-medium hover:bg-gray-50 transition-colors"
+ >
+ Skip Tutorial
+ </button>
+ <button
+ onClick={nextTutorialStep}
+ className="flex-1 px-4 py-2 rounded-lg bg-gradient-to-r from-primary-green to-leaf-green text-white font-medium hover:shadow-lg transition-all"
+ >
+ {tutorialStep < tutorialSteps.length - 1 ? 'Next' : 'Get Started'}
+ </button>
+ </div>
+ </motion.div>
+ </>
+ )}
+
+ {/* Help Button - Floating */}
+ <motion.button
+ initial={{ opacity: 0, scale: 0 }}
+ animate={{ opacity: 1, scale: 1 }}
+ transition={{ delay: 1 }}
+ onClick={() => setShowTooltips(!showTooltips)}
+ className="fixed bottom-20 right-4 sm:bottom-8 sm:right-8 z-[100] bg-gradient-to-r from-primary-green to-leaf-green text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all group"
+ title="Toggle Help Tooltips"
+ >
+ <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+ <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+ </svg>
+ {showTooltips && (
+ <span className="absolute -top-12 right-0 bg-gray-900 text-white text-xs px-3 py-1 rounded-lg whitespace-nowrap">
+ Tooltips Active
+ </span>
+ )}
+ </motion.button>
+
  <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
 
  {/* Sidebar */}
@@ -612,6 +741,86 @@ export default function ProfilePage() {
  )}
  </span>
 
+ {/* Profile Completion Progress */}
+ <div id="profile-completion" className="w-full mt-4 sm:mt-6 bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-4 border border-blue-100 relative">
+ {showTooltips && (
+ <motion.div
+ initial={{ opacity: 0, y: -10 }}
+ animate={{ opacity: 1, y: 0 }}
+ className="absolute -top-2 -right-2 z-10"
+ >
+ <div className="bg-primary-green text-white text-xs px-2 py-1 rounded-full animate-bounce flex items-center gap-1">
+ <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+ <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+ </svg>
+ Complete profile!
+ </div>
+ </motion.div>
+ )}
+ <div className="flex items-center justify-between mb-2">
+ <span className="text-xs font-semibold text-gray-700">Profile Completion</span>
+ <span className="text-xs font-bold text-primary-green">
+ {(() => {
+ let completionScore = 40; // Base score for having an account
+ if (profile.name) completionScore += 20;
+ if (profile.phone) completionScore += 20;
+ if (profile.profilePicture) completionScore += 20;
+ return completionScore;
+ })()}%
+ </span>
+ </div>
+ <div className="w-full bg-gray-200 rounded-full h-2.5 mb-3">
+ <motion.div
+ initial={{ width: 0 }}
+ animate={{
+ width: `${(() => {
+ let completionScore = 40;
+ if (profile.name) completionScore += 20;
+ if (profile.phone) completionScore += 20;
+ if (profile.profilePicture) completionScore += 20;
+ return completionScore;
+ })()}%`
+ }}
+ transition={{ duration: 1, ease: "easeOut" }}
+ className="bg-gradient-to-r from-primary-green to-leaf-green h-2.5 rounded-full"
+ ></motion.div>
+ </div>
+ <div className="space-y-1">
+ {!profile.name && (
+ <p className="text-[10px] text-gray-600 flex items-center gap-1">
+ <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+ <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+ </svg>
+ Add your name
+ </p>
+ )}
+ {!profile.phone && (
+ <p className="text-[10px] text-gray-600 flex items-center gap-1">
+ <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+ <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+ </svg>
+ Add phone number
+ </p>
+ )}
+ {!profile.profilePicture && (
+ <p className="text-[10px] text-gray-600 flex items-center gap-1">
+ <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+ <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+ </svg>
+ Upload profile picture
+ </p>
+ )}
+ {profile.name && profile.phone && profile.profilePicture && (
+ <p className="text-[10px] text-green-600 font-semibold flex items-center gap-1">
+ <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+ <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+ </svg>
+ Profile Complete!
+ </p>
+ )}
+ </div>
+ </div>
+
  <div className="w-full mt-4 sm:mt-6 space-y-2 sm:space-y-3">
  <Link href="/settings" className="flex items-center justify-center gap-2 px-4 py-2.5 sm:py-3 rounded-xl bg-gradient-to-r from-primary-green to-banana-leaf hover:from-leaf-green hover:to-soft-green text-white text-sm font-medium shadow-md hover:shadow-lg transition-all transform hover:scale-[1.02]">
  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -633,12 +842,212 @@ export default function ProfilePage() {
  </div>
  </motion.div>
 
+ {/* Achievement Badges */}
  <motion.div
+ id="achievement-badges"
+ initial={{ opacity: 0, y: 20 }}
+ animate={{ opacity: 1, y: 0 }}
+ transition={{ delay: 0.15 }}
+ className="bg-white rounded-2xl p-4 shadow-lg border border-soft-green/20 relative"
+ >
+ {showTooltips && (
+ <motion.div
+ initial={{ opacity: 0, scale: 0.8 }}
+ animate={{ opacity: 1, scale: 1 }}
+ className="absolute -top-3 -right-3 z-10"
+ >
+ <div className="bg-yellow-500 text-white text-xs px-3 py-1.5 rounded-lg shadow-lg flex items-center gap-1">
+ <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+ <path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+ </svg>
+ Earn badges!
+ </div>
+ </motion.div>
+ )}
+ <p className="text-xs text-gray-600 font-bold uppercase tracking-wide flex items-center gap-2 mb-3">
+ <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+ <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+ </svg>
+ Achievements
+ </p>
+ <div className="grid grid-cols-3 gap-2">
+ {/* First Purchase Badge */}
+ {userOrders.length > 0 && (
+ <div className="relative group">
+ <div className="bg-gradient-to-br from-green-100 to-green-200 p-3 rounded-xl border-2 border-green-300 flex flex-col items-center justify-center aspect-square">
+ <svg className="w-6 h-6 text-green-600" fill="currentColor" viewBox="0 0 24 24">
+ <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+ </svg>
+ <p className="text-[8px] font-bold text-green-700 mt-1 text-center">First Order</p>
+ </div>
+ <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block z-10">
+ <div className="bg-gray-900 text-white text-xs rounded-lg py-1 px-2 whitespace-nowrap">
+ Completed your first purchase!
+ <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
+ </div>
+ </div>
+ </div>
+ )}
+
+ {/* Active Shopper Badge */}
+ {userOrders.length >= 5 && (
+ <div className="relative group">
+ <div className="bg-gradient-to-br from-blue-100 to-blue-200 p-3 rounded-xl border-2 border-blue-300 flex flex-col items-center justify-center aspect-square">
+ <svg className="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
+ <path d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+ </svg>
+ <p className="text-[8px] font-bold text-blue-700 mt-1 text-center">Active Shopper</p>
+ </div>
+ <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block z-10">
+ <div className="bg-gray-900 text-white text-xs rounded-lg py-1 px-2 whitespace-nowrap">
+ Placed 5+ orders!
+ <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
+ </div>
+ </div>
+ </div>
+ )}
+
+ {/* Loyal Customer Badge */}
+ {userOrders.length >= 10 && (
+ <div className="relative group">
+ <div className="bg-gradient-to-br from-yellow-100 to-yellow-200 p-3 rounded-xl border-2 border-yellow-300 flex flex-col items-center justify-center aspect-square">
+ <svg className="w-6 h-6 text-yellow-600" fill="currentColor" viewBox="0 0 24 24">
+ <path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+ </svg>
+ <p className="text-[8px] font-bold text-yellow-700 mt-1 text-center">Loyal Customer</p>
+ </div>
+ <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block z-10">
+ <div className="bg-gray-900 text-white text-xs rounded-lg py-1 px-2 whitespace-nowrap">
+ 10+ orders completed!
+ <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
+ </div>
+ </div>
+ </div>
+ )}
+
+ {/* Recipe Contributor Badge */}
+ {savedRecipes.length >= 3 && (
+ <div className="relative group">
+ <div className="bg-gradient-to-br from-purple-100 to-purple-200 p-3 rounded-xl border-2 border-purple-300 flex flex-col items-center justify-center aspect-square">
+ <svg className="w-6 h-6 text-purple-600" fill="currentColor" viewBox="0 0 24 24">
+ <path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+ </svg>
+ <p className="text-[8px] font-bold text-purple-700 mt-1 text-center">Recipe Lover</p>
+ </div>
+ <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block z-10">
+ <div className="bg-gray-900 text-white text-xs rounded-lg py-1 px-2 whitespace-nowrap">
+ Saved 3+ recipes!
+ <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
+ </div>
+ </div>
+ </div>
+ )}
+
+ {/* Wishlist Curator Badge */}
+ {wishlistItems.length >= 5 && (
+ <div className="relative group">
+ <div className="bg-gradient-to-br from-pink-100 to-pink-200 p-3 rounded-xl border-2 border-pink-300 flex flex-col items-center justify-center aspect-square">
+ <svg className="w-6 h-6 text-pink-600" fill="currentColor" viewBox="0 0 24 24">
+ <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+ </svg>
+ <p className="text-[8px] font-bold text-pink-700 mt-1 text-center">Wishlist Curator</p>
+ </div>
+ <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block z-10">
+ <div className="bg-gray-900 text-white text-xs rounded-lg py-1 px-2 whitespace-nowrap">
+ 5+ items in wishlist!
+ <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
+ </div>
+ </div>
+ </div>
+ )}
+
+ {/* Profile Complete Badge */}
+ {profile.name && profile.phone && profile.profilePicture && (
+ <div className="relative group">
+ <div className="bg-gradient-to-br from-indigo-100 to-indigo-200 p-3 rounded-xl border-2 border-indigo-300 flex flex-col items-center justify-center aspect-square">
+ <svg className="w-6 h-6 text-indigo-600" fill="currentColor" viewBox="0 0 24 24">
+ <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+ </svg>
+ <p className="text-[8px] font-bold text-indigo-700 mt-1 text-center">All Set</p>
+ </div>
+ <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block z-10">
+ <div className="bg-gray-900 text-white text-xs rounded-lg py-1 px-2 whitespace-nowrap">
+ Profile completed!
+ <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
+ </div>
+ </div>
+ </div>
+ )}
+
+ {/* Seller Badges */}
+ {profile.role === 'seller' && stats && (
+ <>
+ {stats.totalProducts >= 5 && (
+ <div className="relative group">
+ <div className="bg-gradient-to-br from-orange-100 to-orange-200 p-3 rounded-xl border-2 border-orange-300 flex flex-col items-center justify-center aspect-square">
+ <svg className="w-6 h-6 text-orange-600" fill="currentColor" viewBox="0 0 24 24">
+ <path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+ </svg>
+ <p className="text-[8px] font-bold text-orange-700 mt-1 text-center">Top Seller</p>
+ </div>
+ <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block z-10">
+ <div className="bg-gray-900 text-white text-xs rounded-lg py-1 px-2 whitespace-nowrap">
+ 5+ products listed!
+ <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
+ </div>
+ </div>
+ </div>
+ )}
+
+ {stats.totalOrders >= 10 && (
+ <div className="relative group">
+ <div className="bg-gradient-to-br from-red-100 to-red-200 p-3 rounded-xl border-2 border-red-300 flex flex-col items-center justify-center aspect-square">
+ <svg className="w-6 h-6 text-red-600" fill="currentColor" viewBox="0 0 24 24">
+ <path d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+ </svg>
+ <p className="text-[8px] font-bold text-red-700 mt-1 text-center">Super Seller</p>
+ </div>
+ <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block z-10">
+ <div className="bg-gray-900 text-white text-xs rounded-lg py-1 px-2 whitespace-nowrap">
+ 10+ orders fulfilled!
+ <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
+ </div>
+ </div>
+ </div>
+ )}
+ </>
+ )}
+ </div>
+
+ {/* Badge Progress Message */}
+ {userOrders.length === 0 && savedRecipes.length === 0 && wishlistItems.length === 0 && (
+ <p className="text-xs text-gray-500 text-center mt-3">
+ Complete activities to earn badges!
+ </p>
+ )}
+ </motion.div>
+
+ <motion.div
+ id="quick-actions"
  initial={{ opacity: 0, y: 20 }}
  animate={{ opacity: 1, y: 0 }}
  transition={{ delay: 0.1 }}
- className="bg-white rounded-2xl p-3 sm:p-4 shadow-lg border border-soft-green/20 space-y-2 sm:space-y-3"
+ className="bg-white rounded-2xl p-3 sm:p-4 shadow-lg border border-soft-green/20 space-y-2 sm:space-y-3 relative"
  >
+ {showTooltips && (
+ <motion.div
+ initial={{ opacity: 0, x: 10 }}
+ animate={{ opacity: 1, x: 0 }}
+ className="absolute -top-3 left-1/2 -translate-x-1/2 z-10"
+ >
+ <div className="bg-blue-500 text-white text-xs px-3 py-1.5 rounded-lg shadow-lg whitespace-nowrap flex items-center gap-1">
+ <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+ <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+ </svg>
+ Quick access menu
+ </div>
+ </motion.div>
+ )}
  <p className="text-xs text-gray-600 font-bold uppercase tracking-wide flex items-center gap-2">
  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
@@ -654,50 +1063,25 @@ export default function ProfilePage() {
  </svg>
  <span className="text-center sm:text-left">Orders</span>
  </Link>
- <button
- onClick={() => setActiveTab('wishlist')}
- className="text-xs sm:text-sm p-2.5 sm:p-3 rounded-lg bg-yellow-50 hover:bg-yellow-100 transition-colors flex flex-col sm:flex-row items-center justify-center sm:justify-between gap-1 sm:gap-2 relative"
- >
- <div className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2">
+ <Link href="/collections" className="col-span-2 sm:col-span-1 text-xs sm:text-sm p-2.5 sm:p-3 rounded-lg bg-gradient-to-r from-purple-50 to-pink-50 hover:from-purple-100 hover:to-pink-100 transition-colors flex flex-row items-center justify-between gap-2 border border-purple-200 relative">
+ <div className="flex items-center gap-2">
  <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
  </svg>
- <span className="text-center">Wishlist</span>
+ <span className="font-semibold">My Collections</span>
  </div>
- <span className="absolute top-1 right-1 sm:static sm:top-auto sm:right-auto px-1.5 sm:px-2 py-0.5 bg-yellow-200 text-yellow-800 rounded-full text-[10px] sm:text-xs font-semibold min-w-[18px] sm:min-w-0 text-center">
+ <div className="flex items-center gap-1">
+ <span className="px-2 py-0.5 bg-yellow-200 text-yellow-800 rounded-full text-[10px] sm:text-xs font-semibold">
  {wishlistItems.length}
  </span>
- </button>
- <button
- onClick={() => setActiveTab('favorites')}
- className="text-xs sm:text-sm p-2.5 sm:p-3 rounded-lg bg-rose-50 hover:bg-rose-100 transition-colors flex flex-col sm:flex-row items-center justify-center sm:justify-between gap-1 sm:gap-2 relative"
- >
- <div className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2">
- <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
- <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
- </svg>
- <span className="text-center hidden sm:inline">Recipe Favorites</span>
- <span className="text-center sm:hidden">Favorites</span>
- </div>
- <span className="absolute top-1 right-1 sm:static sm:top-auto sm:right-auto px-1.5 sm:px-2 py-0.5 bg-rose-200 text-rose-800 rounded-full text-[10px] sm:text-xs font-semibold min-w-[18px] sm:min-w-0 text-center">
+ <span className="px-2 py-0.5 bg-rose-200 text-rose-800 rounded-full text-[10px] sm:text-xs font-semibold">
  {recipeFavorites.length}
  </span>
- </button>
- <button
- onClick={() => setActiveTab('saved')}
- className="text-xs sm:text-sm p-2.5 sm:p-3 rounded-lg bg-purple-50 hover:bg-purple-100 transition-colors flex flex-col sm:flex-row items-center justify-center sm:justify-between gap-1 sm:gap-2 relative"
- >
- <div className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2">
- <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
- <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
- </svg>
- <span className="text-center hidden sm:inline">Saved Recipes</span>
- <span className="text-center sm:hidden">Saved</span>
- </div>
- <span className="absolute top-1 right-1 sm:static sm:top-auto sm:right-auto px-1.5 sm:px-2 py-0.5 bg-purple-200 text-purple-800 rounded-full text-[10px] sm:text-xs font-semibold min-w-[18px] sm:min-w-0 text-center">
+ <span className="px-2 py-0.5 bg-purple-200 text-purple-800 rounded-full text-[10px] sm:text-xs font-semibold">
  {savedRecipes.length}
  </span>
- </button>
+ </div>
+ </Link>
  <Link href="/add-recipe" className="col-span-2 sm:col-span-1 text-xs sm:text-sm p-2.5 sm:p-3 rounded-lg bg-gradient-to-r from-orange-50 to-orange-100 hover:from-orange-100 hover:to-orange-200 transition-colors flex flex-row items-center justify-center gap-2 border border-orange-200">
  <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -715,25 +1099,50 @@ export default function ProfilePage() {
  )}
  {profile.role === 'seller' && (
  <>
- <button
- onClick={() => setActiveTab('products')}
- className="text-xs sm:text-sm p-2.5 sm:p-3 rounded-lg bg-purple-50 hover:bg-purple-100 transition-colors flex flex-col sm:flex-row items-center justify-center sm:justify-start gap-1 sm:gap-2"
- >
+ <Link href="/seller-dashboard" className="text-xs sm:text-sm p-2.5 sm:p-3 rounded-lg bg-gradient-to-r from-green-50 to-green-100 hover:from-green-100 hover:to-green-200 transition-colors flex flex-col sm:flex-row items-center justify-center sm:justify-start gap-1 sm:gap-2 border border-green-200">
+ <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+ <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+ </svg>
+ <span className="text-center font-medium">Dashboard</span>
+ </Link>
+ <Link href="/seller-products" className="text-xs sm:text-sm p-2.5 sm:p-3 rounded-lg bg-purple-50 hover:bg-purple-100 transition-colors flex flex-col sm:flex-row items-center justify-center sm:justify-start gap-1 sm:gap-2">
  <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
  </svg>
  <span className="text-center">Products</span>
- </button>
- <button
- onClick={() => setActiveTab('orders')}
- className="text-xs sm:text-sm p-2.5 sm:p-3 rounded-lg bg-orange-50 hover:bg-orange-100 transition-colors flex flex-col sm:flex-row items-center justify-center sm:justify-start gap-1 sm:gap-2"
- >
+ </Link>
+ <Link href="/seller-orders" className="text-xs sm:text-sm p-2.5 sm:p-3 rounded-lg bg-orange-50 hover:bg-orange-100 transition-colors flex flex-col sm:flex-row items-center justify-center sm:justify-start gap-1 sm:gap-2">
  <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
  </svg>
  <span className="text-center">Orders</span>
- </button>
- <Link href="/add-recipe" className="col-span-2 sm:col-span-1 text-xs sm:text-sm p-2.5 sm:p-3 rounded-lg bg-gradient-to-r from-green-50 to-green-100 hover:from-green-100 hover:to-green-200 transition-colors flex flex-row items-center justify-center gap-2 border border-green-200">
+ </Link>
+ <Link href="/seller-analytics" className="text-xs sm:text-sm p-2.5 sm:p-3 rounded-lg bg-blue-50 hover:bg-blue-100 transition-colors flex flex-col sm:flex-row items-center justify-center sm:justify-start gap-1 sm:gap-2">
+ <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+ <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+ </svg>
+ <span className="text-center">Analytics</span>
+ </Link>
+ <Link href="/collections" className="col-span-2 sm:col-span-1 text-xs sm:text-sm p-2.5 sm:p-3 rounded-lg bg-gradient-to-r from-purple-50 to-pink-50 hover:from-purple-100 hover:to-pink-100 transition-colors flex flex-row items-center justify-between gap-2 border border-purple-200 relative">
+ <div className="flex items-center gap-2">
+ <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+ <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+ </svg>
+ <span className="font-semibold">My Collections</span>
+ </div>
+ <div className="flex items-center gap-1">
+ <span className="px-2 py-0.5 bg-yellow-200 text-yellow-800 rounded-full text-[10px] sm:text-xs font-semibold">
+ {wishlistItems.length}
+ </span>
+ <span className="px-2 py-0.5 bg-rose-200 text-rose-800 rounded-full text-[10px] sm:text-xs font-semibold">
+ {recipeFavorites.length}
+ </span>
+ <span className="px-2 py-0.5 bg-purple-200 text-purple-800 rounded-full text-[10px] sm:text-xs font-semibold">
+ {savedRecipes.length}
+ </span>
+ </div>
+ </Link>
+ <Link href="/seller-shop?action=add" className="col-span-2 sm:col-span-1 text-xs sm:text-sm p-2.5 sm:p-3 rounded-lg bg-gradient-to-r from-emerald-50 to-emerald-100 hover:from-emerald-100 hover:to-emerald-200 transition-colors flex flex-row items-center justify-center gap-2 border border-emerald-300">
  <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
  </svg>
@@ -821,768 +1230,304 @@ export default function ProfilePage() {
  {/* Main Content */}
  <main className="lg:col-span-2 space-y-6">
 
- {/* Order Management for Non-Sellers - Shopee Style */}
- {profile.role !== 'seller' && (
- <motion.div
- initial={{ opacity: 0, y: 20 }}
- animate={{ opacity: 1, y: 0 }}
- className="bg-white rounded-2xl shadow-lg border border-soft-green/20 overflow-hidden"
- >
- <div className="p-6 border-b border-gray-200">
- <h3 className="font-bold text-2xl bg-gradient-to-r from-primary-green to-leaf-green bg-clip-text text-transparent flex items-center gap-2">
- <svg className="w-6 h-6 text-primary-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
- <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
- </svg>
- My Orders
- </h3>
- </div>
-
- {/* Order Status Tabs - Shopee Style */}
- <div className="border-b border-gray-200 overflow-hidden">
- <div className="flex overflow-x-auto overflow-y-hidden scrollbar-hide -mb-px" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
- {[
- {
- key: 'all',
- label: 'All',
- icon: <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>,
- count: userOrders.length
- },
- {
- key: 'pending',
- label: 'To Pay',
- icon: <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" /></svg>,
- count: userOrders.filter(o => o.status === 'pending').length
- },
- {
- key: 'processing',
- label: 'To Ship',
- icon: <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" /></svg>,
- count: userOrders.filter(o => o.status === 'processing').length
- },
- {
- key: 'shipped',
- label: 'To Receive',
- icon: <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" /></svg>,
- count: userOrders.filter(o => o.status === 'shipped').length
- },
- {
- key: 'delivered',
- label: 'Completed',
- icon: <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>,
- count: userOrders.filter(o => o.status === 'delivered').length
- },
- {
- key: 'cancelled',
- label: 'Cancelled',
- icon: <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>,
- count: userOrders.filter(o => o.status === 'cancelled').length
- }
- ].map(tab => (
- <button
- key={tab.key}
- onClick={() => setOrderFilter(tab.key)}
- className={`flex-shrink-0 min-w-[90px] sm:min-w-[100px] px-3 sm:px-4 py-3 sm:py-4 text-center transition-all duration-200 relative ${
- orderFilter === tab.key
- ? 'text-primary-green font-semibold'
- : 'text-gray-600 hover:text-gray-900'
- }`}
- >
- <div className="flex flex-col items-center gap-0.5 sm:gap-1">
- {tab.icon}
- <span className="text-[10px] sm:text-xs leading-tight">{tab.label}</span>
- {tab.count > 0 && (
- <span className={`text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 rounded-full ${
- orderFilter === tab.key
- ? 'bg-primary-green text-white'
- : 'bg-gray-200 text-gray-700'
- }`}>
- {tab.count}
- </span>
- )}
- </div>
- {orderFilter === tab.key && (
- <div className="absolute bottom-0 left-0 right-0 h-0.5 sm:h-1 bg-gradient-to-r from-primary-green to-leaf-green"></div>
- )}
- </button>
- ))}
- </div>
- </div>
-
- {/* Orders List */}
- <div className="p-3 sm:p-4 lg:p-6 space-y-3 sm:space-y-4">
- {userOrders
- .filter(order => orderFilter === 'all' || order.status === orderFilter)
- .slice(0, 5)
- .map((order) => (
- <div
- key={order.id}
- className="border border-gray-200 rounded-xl overflow-hidden hover:shadow-md transition-shadow"
- >
- {/* Order Header */}
- <div className="bg-gray-50 px-3 sm:px-4 py-2.5 sm:py-3 flex items-center justify-between border-b border-gray-200">
- <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
- <svg className="w-4 h-4 sm:w-5 sm:h-5 text-primary-green flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
- <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
- </svg>
- <div className="min-w-0 flex-1">
- <p className="text-[10px] sm:text-xs text-gray-500">Order ID</p>
- <p className="font-medium text-xs sm:text-sm text-gray-900 truncate">#{order.id.slice(0, 8)}<span className="hidden sm:inline">{order.id.slice(8, 12)}</span></p>
- </div>
- </div>
- <span className={`px-2 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs font-semibold whitespace-nowrap flex-shrink-0 ${
- order.status === 'delivered' ? 'bg-green-100 text-green-700' :
- order.status === 'shipped' ? 'bg-blue-100 text-blue-700' :
- order.status === 'processing' ? 'bg-yellow-100 text-yellow-700' :
- order.status === 'cancelled' ? 'bg-red-100 text-red-700' :
- 'bg-orange-100 text-orange-700'
- }`}>
- {order.status.toUpperCase()}
- </span>
- </div>
-
- {/* Order Items */}
- <div className="p-3 sm:p-4 space-y-2 sm:space-y-3">
- {order.orderItems.map((item) => (
- <div key={item.id} className="flex gap-2 sm:gap-4">
- <img
- src={item.product.image || '/placeholder.png'}
- alt={item.product.name}
- className="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-lg border border-gray-200 flex-shrink-0"
- />
- <div className="flex-1 min-w-0">
- <Link
- href={`/products/${item.product.id}`}
- className="font-medium text-xs sm:text-sm text-gray-900 hover:text-primary-green line-clamp-2 block"
- >
- {item.product.name}
- </Link>
- <p className="text-xs sm:text-sm text-gray-500 mt-1">x{item.quantity}</p>
- </div>
- <div className="text-right flex-shrink-0">
- <p className="font-semibold text-xs sm:text-sm text-primary-green">${item.price}</p>
- </div>
- </div>
- ))}
- </div>
-
- {/* Order Footer */}
- <div className="bg-gray-50 px-3 sm:px-4 py-2.5 sm:py-3 flex flex-col sm:flex-row items-start sm:items-center justify-between border-t border-gray-200 gap-3 sm:gap-4">
- <div className="text-xs sm:text-sm text-gray-600">
- <span className="hidden sm:inline">Order Date: </span>
- <span className="font-medium">{new Date(order.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })}</span>
- </div>
- <div className="flex items-center justify-between sm:justify-end gap-3 sm:gap-4 w-full sm:w-auto">
- <div className="text-left sm:text-right">
- <p className="text-[10px] sm:text-xs text-gray-500">Order Total</p>
- <p className="text-base sm:text-lg font-bold text-primary-green">${order.totalAmount.toFixed(2)}</p>
- </div>
- <Link
- href={`/orders/${order.id}`}
- className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg bg-gradient-to-r from-primary-green to-leaf-green text-white text-xs sm:text-sm font-medium hover:from-leaf-green hover:to-soft-green transition-all shadow-sm hover:shadow-md whitespace-nowrap"
- >
- <span className="hidden sm:inline">View Details</span>
- <span className="sm:hidden">Details</span>
- </Link>
- </div>
- </div>
- </div>
- ))}
-
- {/* Empty State */}
- {userOrders.filter(order => orderFilter === 'all' || order.status === orderFilter).length === 0 && (
- <div className="text-center py-12">
- <svg className="w-24 h-24 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
- <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
- </svg>
- <h4 className="text-lg font-semibold text-gray-700 mb-2">No orders found</h4>
- <p className="text-gray-500 mb-6">
- {orderFilter === 'all' ? "You haven't placed any orders yet" : `You have no ${orderFilter} orders`}
- </p>
- <Link
- href="/products"
- className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-primary-green to-banana-leaf text-white font-medium hover:from-leaf-green hover:to-soft-green transition-all shadow-md hover:shadow-lg"
- >
- <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
- <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
- </svg>
- Start Shopping
- </Link>
- </div>
- )}
-
- {/* View All Orders Button */}
- {userOrders.filter(order => orderFilter === 'all' || order.status === orderFilter).length > 5 && (
- <div className="text-center pt-4">
- <Link
- href="/orders"
- className="inline-flex items-center gap-2 text-primary-green hover:text-leaf-green font-medium"
- >
- View All Orders
- <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
- <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
- </svg>
- </Link>
- </div>
- )}
- </div>
- </motion.div>
- )}
-
- {/* Wishlist, Favorites & Saved Recipes for Non-Sellers */}
- {profile.role !== 'seller' && (
- <motion.div
- initial={{ opacity: 0, y: 20 }}
- animate={{ opacity: 1, y: 0 }}
- transition={{ delay: 0.1 }}
- className="bg-white rounded-2xl p-6 shadow-lg border border-soft-green/20"
- >
- <h3 className="font-bold text-2xl bg-gradient-to-r from-primary-green to-leaf-green bg-clip-text text-transparent mb-6 flex items-center gap-2">
- <svg className="w-6 h-6 text-primary-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
- <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
- </svg>
- My Collections
- </h3>
-
- {/* Tabs for Wishlist, Favorites, and Saved Recipes */}
- <div className="flex gap-2 mb-6 overflow-x-auto">
- {[
- { key: 'wishlist', label: 'Wishlist', count: wishlistItems.length },
- { key: 'favorites', label: 'Recipe Favorites', count: recipeFavorites.length },
- { key: 'saved', label: 'Saved Recipes', count: savedRecipes.length }
- ].map(tab => (
- <button
- key={tab.key}
- onClick={() => setActiveTab(tab.key as typeof activeTab)}
- className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all ${
- activeTab === tab.key
- ? 'bg-gradient-to-r from-primary-green to-banana-leaf text-white shadow-md'
- : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
- }`}
- >
- {tab.label} ({tab.count})
- </button>
- ))}
- </div>
-
- {/* Wishlist Content */}
- {activeTab === 'wishlist' && (
- <div>
- <h4 className="font-semibold text-gray-700 mb-3">My Wishlist</h4>
- {wishlistItems.length === 0 ? (
- <div className="text-center py-8 text-gray-500">
- <svg className="w-16 h-16 mx-auto mb-3 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
- <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
- </svg>
- <p>Your wishlist is empty</p>
- <Link href="/products" className="text-primary-green hover:underline mt-2 inline-block">
- Browse Products
- </Link>
- </div>
- ) : (
- <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
- {wishlistItems.map((item) => (
- <div key={item.id} className="bg-gray-50 p-4 rounded-lg flex gap-4">
- <img
- src={item.product.image || '/placeholder.png'}
- alt={item.product.name}
- className="w-20 h-20 object-cover rounded-lg"
- />
- <div className="flex-1">
- <Link href={`/products/${item.product.id}`} className="font-medium text-gray-900 hover:text-primary-green">
- {item.product.name}
- </Link>
- <p className="text-sm text-gray-600 line-clamp-2">{item.product.description}</p>
- <p className="font-semibold text-primary-green mt-1">${item.product.price}</p>
- </div>
- </div>
- ))}
- </div>
- )}
- </div>
- )}
-
- {/* Recipe Favorites Content */}
- {activeTab === 'favorites' && (
- <div>
- <h4 className="font-semibold text-gray-700 mb-3">Favorite Recipes</h4>
- {recipeFavorites.length === 0 ? (
- <div className="text-center py-8 text-gray-500">
- <svg className="w-16 h-16 mx-auto mb-3 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
- <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
- </svg>
- <p>You haven't favorited any recipes yet</p>
- <Link href="/recipes" className="text-primary-green hover:underline mt-2 inline-block">
- Explore Recipes
- </Link>
- </div>
- ) : (
- <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
- {recipeFavorites.map((fav) => (
- <div key={fav.id} className="bg-gray-50 p-4 rounded-lg flex gap-4">
- <img
- src={fav.recipe.image || '/placeholder.png'}
- alt={fav.recipe.title}
- className="w-20 h-20 object-cover rounded-lg"
- />
- <div className="flex-1">
- <Link href={`/recipes/${fav.recipe.id}`} className="font-medium text-gray-900 hover:text-primary-green">
- {fav.recipe.title}
- </Link>
- <p className="text-sm text-gray-600 line-clamp-2">{fav.recipe.description}</p>
- <div className="flex gap-2 text-xs text-gray-500 mt-1">
- <span>⏱️ {fav.recipe.prepTime + fav.recipe.cookTime} min</span>
- <span>🍽️ {fav.recipe.servings} servings</span>
- </div>
- </div>
- </div>
- ))}
- </div>
- )}
- </div>
- )}
-
- {/* Saved Recipes Content */}
- {activeTab === 'saved' && (
- <div>
- <h4 className="font-semibold text-gray-700 mb-3">Saved Recipes</h4>
- {savedRecipes.length === 0 ? (
- <div className="text-center py-8 text-gray-500">
- <svg className="w-16 h-16 mx-auto mb-3 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
- <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
- </svg>
- <p>You haven't saved any recipes yet</p>
- <Link href="/recipes" className="text-primary-green hover:underline mt-2 inline-block">
- Explore Recipes
- </Link>
- </div>
- ) : (
- <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
- {savedRecipes.map((saved) => (
- <div key={saved.id} className="bg-gray-50 p-4 rounded-lg flex gap-4">
- <img
- src={saved.recipe.image || '/placeholder.png'}
- alt={saved.recipe.title}
- className="w-20 h-20 object-cover rounded-lg"
- />
- <div className="flex-1">
- <Link href={`/recipes/${saved.recipe.id}`} className="font-medium text-gray-900 hover:text-primary-green">
- {saved.recipe.title}
- </Link>
- <p className="text-sm text-gray-600 line-clamp-2">{saved.recipe.description}</p>
- {saved.notes && (
- <p className="text-xs text-gray-500 italic mt-1">
- Note: {saved.notes}
- </p>
- )}
- <div className="flex gap-2 text-xs text-gray-500 mt-1">
- <span>⏱️ {saved.recipe.prepTime + saved.recipe.cookTime} min</span>
- <span>🍽️ {saved.recipe.servings} servings</span>
- </div>
- </div>
- </div>
- ))}
- </div>
- )}
- </div>
- )}
- </motion.div>
- )}
-
- {/* Seller Dashboard */}
- {profile.role === 'seller' && (
+ {/* Activity Timeline */}
  <motion.div
  initial={{ opacity: 0, y: 20 }}
  animate={{ opacity: 1, y: 0 }}
  className="bg-white rounded-2xl shadow-lg border border-soft-green/20 p-6"
  >
- <div className="mb-6">
- <h2 className="text-3xl font-bold bg-gradient-to-r from-primary-green to-leaf-green bg-clip-text text-transparent flex items-center gap-2">
- <svg className="w-8 h-8 text-primary-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
- <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
- </svg>
- Seller Dashboard
- </h2>
- <p className="text-sm text-gray-600 mt-1">Manage your business operations</p>
- </div>
-
- {/* Tabs - Mobile Optimized */}
- <div className="overflow-x-auto -mx-4 sm:mx-0 mb-4 sm:mb-6">
- <div className="flex gap-2 px-4 sm:px-0 min-w-min sm:flex-wrap">
- {[
- {
- key: 'overview',
- label: 'Overview',
- icon: <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
- },
- {
- key: 'products',
- label: 'Products',
- icon: <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>
- },
- {
- key: 'orders',
- label: 'Orders',
- icon: <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" /></svg>
- },
- {
- key: 'analytics',
- label: 'Analytics',
- icon: <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" /></svg>
- },
- {
- key: 'profile',
- label: 'Business',
- icon: <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
- },
- ].map(tab => (
- <button
- key={tab.key}
- onClick={() => setActiveTab(tab.key as typeof activeTab)}
- className={`flex-shrink-0 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 flex items-center gap-1.5 sm:gap-2 whitespace-nowrap ${
- activeTab === tab.key
- ? 'bg-gradient-to-r from-primary-green to-banana-leaf text-white shadow-lg transform scale-[1.02]'
- : 'bg-gray-50 text-gray-700 hover:bg-gray-100 hover:shadow-md'
- }`}
- >
- {tab.icon} <span>{tab.label}</span>
- </button>
- ))}
- </div>
- </div>
-
- {/* Tab content */}
- <div className="space-y-4">
- {activeTab === 'overview' && stats && (
- <div className="space-y-4 sm:space-y-6">
- <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
- <StatCard label="Total Products" value={stats.totalProducts} color="green" icon={
- <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
- <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
- </svg>
- } />
- <StatCard label="Total Orders" value={stats.totalOrders} color="blue" icon={
- <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
- <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
- </svg>
- } />
- <StatCard label="Total Revenue" value={`$${stats.totalRevenue.toFixed(2)}`} color="yellow" icon={
- <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
- <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
- </svg>
- } />
- <StatCard label="Pending" value={stats.pendingProducts} color="red" icon={
- <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+ <h3 className="font-bold text-2xl bg-gradient-to-r from-primary-green to-leaf-green bg-clip-text text-transparent flex items-center gap-2 mb-6">
+ <svg className="w-6 h-6 text-primary-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
  </svg>
- } />
- </div>
-
- {/* Recent Orders Preview - Mobile Optimized */}
- <div>
- <h4 className="font-semibold text-base sm:text-lg mb-3 text-gray-800">Recent Orders</h4>
- <div className="space-y-2">
- {stats.recentOrders.slice(0, 5).map((order) => (
- <div key={order.id} className="bg-gray-50 p-2.5 sm:p-3 rounded-lg flex justify-between items-center">
- <div className="min-w-0 flex-1">
- <p className="font-medium text-xs sm:text-sm truncate">{order.user.name}</p>
- <p className="text-[10px] sm:text-xs text-gray-500">{new Date(order.createdAt).toLocaleDateString()}</p>
- </div>
- <div className="text-right flex-shrink-0 ml-2">
- <p className="font-semibold text-xs sm:text-sm text-primary-green">${order.totalAmount}</p>
- <span className="text-[10px] sm:text-xs text-gray-600">{order.status}</span>
- </div>
- </div>
- ))}
- </div>
- </div>
- </div>
- )}
-
- {activeTab === 'products' && (
- <div>
- <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4 sm:mb-6">
- <h3 className="font-semibold text-lg sm:text-xl text-gray-900">Product Inventory</h3>
- <button
- onClick={() => {
- setShowAddProductForm(!showAddProductForm);
- if (showAddProductForm) {
- // Reset form when canceling
- setNewProduct({ name: '', description: '', price: '', category: '', image: '', stock: '' });
- setImageFile(null);
- setImagePreview('');
- }
- }}
- className="w-full sm:w-auto bg-primary-green text-white px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg hover:bg-leaf-green transition-colors flex items-center justify-center gap-2 text-sm sm:text-base font-medium shadow-md hover:shadow-lg"
- >
- {showAddProductForm ? (
- <>
- <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
- <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+ Recent Activity
+ </h3>
+ <div className="space-y-4">
+ {/* Activity Item */}
+ {userOrders.length > 0 && (
+ <div className="flex gap-4 items-start pb-4 border-b border-gray-100 last:border-0 last:pb-0">
+ <div className="bg-green-100 p-2 rounded-full flex-shrink-0">
+ <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+ <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
  </svg>
- Cancel
- </>
- ) : (
- <>
- <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
- <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
- </svg>
- Add Product
- </>
- )}
- </button>
  </div>
-
- {showAddProductForm && (
- <motion.form
- initial={{ opacity: 0, height: 0 }}
- animate={{ opacity: 1, height: 'auto' }}
- onSubmit={handleAddProduct}
- className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-4 sm:mb-6 bg-gray-50 p-4 sm:p-6 rounded-lg sm:rounded-xl border border-gray-200"
- >
- <input
- type="text"
- placeholder="Product Name"
- value={newProduct.name}
- onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}
- className="p-2.5 sm:p-3 rounded-lg border border-gray-300 bg-white text-sm sm:text-base focus:ring-2 focus:ring-primary-green focus:border-transparent"
- required
- />
- <input
- type="number"
- step="0.01"
- placeholder="Price ($)"
- value={newProduct.price}
- onChange={(e) => setNewProduct({ ...newProduct, price: e.target.value })}
- className="p-2.5 sm:p-3 rounded-lg border border-gray-300 bg-white text-sm sm:text-base focus:ring-2 focus:ring-primary-green focus:border-transparent"
- required
- />
- <select
- value={newProduct.category}
- onChange={(e) => setNewProduct({ ...newProduct, category: e.target.value })}
- className="p-2.5 sm:p-3 rounded-lg border border-gray-300 bg-white text-sm sm:text-base focus:ring-2 focus:ring-primary-green focus:border-transparent"
- required
- >
- <option value="">Select Category</option>
- <option value="fresh">Fresh</option>
- <option value="dried">Dried</option>
- <option value="processed">Processed</option>
- </select>
- <input
- type="number"
- placeholder="Stock Quantity"
- value={newProduct.stock}
- onChange={(e) => setNewProduct({ ...newProduct, stock: e.target.value })}
- className="p-2.5 sm:p-3 rounded-lg border border-gray-300 bg-white text-sm sm:text-base focus:ring-2 focus:ring-primary-green focus:border-transparent"
- />
- <div className="sm:col-span-2">
- <label className="block text-xs sm:text-sm font-medium mb-2 text-gray-700">
- Product Image (Max 2MB)
- </label>
- <input
- type="file"
- accept="image/*"
- onChange={handleImageChange}
- className="block w-full text-xs sm:text-sm text-gray-500
- file:mr-3 sm:file:mr-4 file:py-2 file:px-3 sm:file:px-4
- file:rounded-lg file:border-0
- file:text-xs sm:file:text-sm file:font-semibold
- file:bg-primary-green file:text-white
- hover:file:bg-leaf-green
- file:cursor-pointer cursor-pointer"
- required
- />
- {imagePreview && (
- <div className="mt-3 sm:mt-4">
- <p className="text-xs sm:text-sm text-gray-600 mb-2">Preview:</p>
- <img
- src={imagePreview}
- alt="Preview"
- className="w-24 h-24 sm:w-32 sm:h-32 object-cover rounded-lg border-2 border-gray-200 shadow-sm"
- />
- </div>
- )}
- </div>
- <textarea
- placeholder="Product Description"
- value={newProduct.description}
- onChange={(e) => setNewProduct({ ...newProduct, description: e.target.value })}
- className="p-2.5 sm:p-3 rounded-lg border border-gray-300 bg-white sm:col-span-2 text-sm sm:text-base focus:ring-2 focus:ring-primary-green focus:border-transparent"
- rows={3}
- required
- />
- <button
- type="submit"
- className="bg-primary-green text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg hover:bg-leaf-green transition-colors col-span-full font-medium flex items-center justify-center gap-2 text-sm sm:text-base shadow-md hover:shadow-lg"
- >
- <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
- <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
- </svg>
- Add Product
- </button>
- </motion.form>
- )}
-
- <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
- {Array.isArray(products) && products.map((p) => (
- <motion.div
- key={p.id}
- initial={{ opacity: 0, scale: 0.95 }}
- animate={{ opacity: 1, scale: 1 }}
- className="bg-white rounded-lg sm:rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-all duration-300 border border-gray-100"
- >
- <div className="relative">
- <img
- src={p.image || '/placeholder.png'}
- alt={p.name}
- className="w-full h-40 sm:h-48 object-cover"
- />
- <span className={`absolute top-2 right-2 px-2 sm:px-2.5 py-1 text-[10px] sm:text-xs font-medium rounded-full shadow-md ${
- p.status === 'approved' ? 'bg-green-500 text-white' :
- p.status === 'pending' ? 'bg-yellow-500 text-white' :
- 'bg-red-500 text-white'
- }`}>
- {p.status}
- </span>
- </div>
- <div className="p-3 sm:p-4">
- <h4 className="font-semibold text-base sm:text-lg text-primary-green mb-1 line-clamp-1">{p.name}</h4>
- <p className="text-gray-600 text-xs sm:text-sm line-clamp-2 mb-3">{p.description}</p>
- <div className="flex justify-between items-center mb-3 sm:mb-4">
- <div>
- <p className="text-lg sm:text-xl font-bold text-gray-900">${p.price}</p>
- <p className="text-[10px] sm:text-xs text-gray-500 flex items-center gap-1">
- <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
- <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
- </svg>
- Stock: {p.stock}
+ <div className="flex-1">
+ <p className="text-sm font-semibold text-gray-900">Order Placed</p>
+ <p className="text-xs text-gray-600 mt-1">
+ You placed an order worth ${userOrders[0]?.totalAmount.toFixed(2)}
+ </p>
+ <p className="text-xs text-gray-400 mt-1">
+ {new Date(userOrders[0]?.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
  </p>
  </div>
- <div className="text-right">
- <p className="text-[10px] sm:text-xs text-gray-500">Category</p>
- <p className="text-xs sm:text-sm font-medium text-gray-700 capitalize">{p.category}</p>
+ </div>
+ )}
+
+ {savedRecipes.length > 0 && (
+ <div className="flex gap-4 items-start pb-4 border-b border-gray-100 last:border-0 last:pb-0">
+ <div className="bg-purple-100 p-2 rounded-full flex-shrink-0">
+ <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+ <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+ </svg>
+ </div>
+ <div className="flex-1">
+ <p className="text-sm font-semibold text-gray-900">Recipe Saved</p>
+ <p className="text-xs text-gray-600 mt-1">
+ You saved "{savedRecipes[0]?.recipe.title}"
+ </p>
+ <p className="text-xs text-gray-400 mt-1">
+ {new Date(savedRecipes[0]?.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+ </p>
  </div>
  </div>
- <div className="flex gap-2">
- <button
- onClick={() => setEditingProduct(p.id)}
- className="flex-1 bg-blue-500 text-white px-2 sm:px-3 py-1.5 sm:py-2 rounded-md sm:rounded-lg hover:bg-blue-600 transition-colors flex items-center justify-center gap-1 sm:gap-2 text-xs sm:text-sm font-medium shadow-sm"
- >
- <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
- <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+ )}
+
+ {wishlistItems.length > 0 && (
+ <div className="flex gap-4 items-start pb-4 border-b border-gray-100 last:border-0 last:pb-0">
+ <div className="bg-yellow-100 p-2 rounded-full flex-shrink-0">
+ <svg className="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+ <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
  </svg>
- <span className="hidden xs:inline">Edit</span>
- </button>
- <button
- onClick={() => setShowDeleteConfirm(p.id)}
- className="flex-1 bg-red-500 text-white px-2 sm:px-3 py-1.5 sm:py-2 rounded-md sm:rounded-lg hover:bg-red-600 transition-colors flex items-center justify-center gap-1 sm:gap-2 text-xs sm:text-sm font-medium shadow-sm"
- >
- <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
- <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+ </div>
+ <div className="flex-1">
+ <p className="text-sm font-semibold text-gray-900">Added to Wishlist</p>
+ <p className="text-xs text-gray-600 mt-1">
+ You added "{wishlistItems[0]?.product.name}" to your wishlist
+ </p>
+ <p className="text-xs text-gray-400 mt-1">
+ {new Date(wishlistItems[0]?.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+ </p>
+ </div>
+ </div>
+ )}
+
+ <div className="flex gap-4 items-start pb-4 border-b border-gray-100 last:border-0 last:pb-0">
+ <div className="bg-blue-100 p-2 rounded-full flex-shrink-0">
+ <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+ <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
  </svg>
- <span className="hidden xs:inline">Delete</span>
- </button>
+ </div>
+ <div className="flex-1">
+ <p className="text-sm font-semibold text-gray-900">Account Created</p>
+ <p className="text-xs text-gray-600 mt-1">
+ Welcome to Lawlaw Delights!
+ </p>
+ <p className="text-xs text-gray-400 mt-1">
+ {new Date(profile.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+ </p>
+ </div>
  </div>
 
- {/* Delete confirmation */}
- {showDeleteConfirm === p.id && (
+ {(userOrders.length === 0 && savedRecipes.length === 0 && wishlistItems.length === 0) && (
+ <div className="text-center py-8 text-gray-500">
+ <svg className="w-16 h-16 mx-auto mb-3 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+ <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+ </svg>
+ <p>No recent activity</p>
+ <p className="text-sm">Start shopping or saving recipes!</p>
+ </div>
+ )}
+ </div>
+ </motion.div>
+
+ {/* Shopping Insights for Buyers */}
+ {profile.role !== 'seller' && userOrders.length > 0 && (
  <motion.div
- initial={{ opacity: 0, y: -10 }}
+ id="shopping-insights"
+ initial={{ opacity: 0, y: 20 }}
  animate={{ opacity: 1, y: 0 }}
- className="mt-3 p-2.5 sm:p-3 bg-red-50 rounded-lg text-xs sm:text-sm text-red-800 border border-red-200"
+ transition={{ delay: 0.1 }}
+ className="bg-white rounded-2xl shadow-lg border border-soft-green/20 p-6 relative"
  >
- <p className="font-medium mb-2">Delete this product?</p>
- <div className="flex gap-2">
- <button
- onClick={() => handleDeleteProduct(p.id)}
- className="flex-1 bg-red-600 text-white px-3 py-1.5 rounded-md hover:bg-red-700 font-medium text-xs sm:text-sm"
+ {showTooltips && (
+ <motion.div
+ initial={{ opacity: 0, scale: 0.8 }}
+ animate={{ opacity: 1, scale: 1 }}
+ className="absolute top-2 right-2 z-10"
  >
- Yes, Delete
- </button>
- <button
- onClick={() => setShowDeleteConfirm(null)}
- className="flex-1 bg-gray-200 text-gray-700 px-3 py-1.5 rounded-md hover:bg-gray-300 font-medium text-xs sm:text-sm"
- >
- Cancel
- </button>
- </div>
- </motion.div>
- )}
- </div>
- </motion.div>
- ))}
- </div>
- </div>
- )}
-
- {activeTab === 'orders' && (
- <div>
- <h3 className="font-semibold text-lg mb-3 text-gray-800">Orders</h3>
- <div className="mb-4 flex gap-2 flex-wrap">
- {['all', 'pending', 'processing', 'shipped', 'delivered'].map(status => (
- <button
- key={status}
- onClick={() => setOrderFilter(status)}
- className={`px-3 py-1 rounded-lg text-sm font-medium ${
- orderFilter === status
- ? 'bg-primary-green text-white'
- : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
- }`}
- >
- {status.charAt(0).toUpperCase() + status.slice(1)}
- </button>
- ))}
- </div>
-
- <div className="space-y-3">
- {filteredOrders.map(order => (
- <div key={order.id} className="bg-gray-50 p-4 rounded-lg flex justify-between items-center">
- <div>
- <p className="font-medium text-gray-900">Order #{order.id.slice(0, 8)}</p>
- <p className="text-sm text-gray-500">{new Date(order.createdAt).toLocaleDateString()}</p>
- <p className="text-xs text-gray-600">Customer: {order.user.name} ({order.user.email})</p>
- </div>
- <div className="text-right space-y-1">
- <p className="font-semibold text-primary-green">${order.totalAmount}</p>
- <select
- value={order.status}
- onChange={(e) => handleUpdateOrderStatus(order.id, e.target.value)}
- className="p-1 text-sm rounded-lg border bg-white"
- >
- {['pending', 'processing', 'shipped', 'delivered', 'cancelled'].map(s => (
- <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>
- ))}
- </select>
- </div>
- </div>
- ))}
- {filteredOrders.length === 0 && <p className="text-gray-500">No orders found.</p>}
- </div>
- </div>
- )}
-
- {activeTab === 'profile' && sellerProfile && (
- <div className="space-y-3">
- <h3 className="font-semibold text-lg text-gray-800">Business Profile</h3>
- <p><span className="font-medium">Name:</span> {sellerProfile.businessName}</p>
- <p><span className="font-medium">Type:</span> {sellerProfile.businessType}</p>
- {sellerProfile.description && <p><span className="font-medium">Description:</span> {sellerProfile.description}</p>}
- {sellerProfile.address && <p><span className="font-medium">Address:</span> {sellerProfile.address}</p>}
- {sellerProfile.phone && <p><span className="font-medium">Phone:</span> {sellerProfile.phone}</p>}
- </div>
- )}
-
- {/* Analytics Tab Placeholder */}
- {activeTab === 'analytics' && (
- <div className="text-gray-500 flex items-center gap-2">
- <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
- <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+ <div className="bg-purple-500 text-white text-xs px-3 py-1.5 rounded-lg shadow-lg flex items-center gap-1">
+ <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+ <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
  </svg>
- Analytics coming soon...
- </div>
- )}
+ Your stats
  </div>
  </motion.div>
  )}
+ <h3 className="font-bold text-2xl bg-gradient-to-r from-primary-green to-leaf-green bg-clip-text text-transparent flex items-center gap-2 mb-6">
+ <svg className="w-6 h-6 text-primary-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+ <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+ </svg>
+ Shopping Insights
+ </h3>
+ <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+ <div className="bg-gradient-to-br from-green-50 to-green-100 p-4 rounded-xl border border-green-200">
+ <div className="flex items-center gap-2 mb-2">
+ <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+ <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+ </svg>
+ <span className="text-xs font-medium text-green-700">Total Orders</span>
+ </div>
+ <p className="text-2xl font-bold text-green-900">{userOrders.length}</p>
+ </div>
+
+ <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-xl border border-blue-200">
+ <div className="flex items-center gap-2 mb-2">
+ <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+ <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+ </svg>
+ <span className="text-xs font-medium text-blue-700">Total Spent</span>
+ </div>
+ <p className="text-2xl font-bold text-blue-900">
+ ${userOrders.reduce((sum, order) => sum + order.totalAmount, 0).toFixed(2)}
+ </p>
+ </div>
+
+ <div className="bg-gradient-to-br from-yellow-50 to-yellow-100 p-4 rounded-xl border border-yellow-200">
+ <div className="flex items-center gap-2 mb-2">
+ <svg className="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+ <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+ </svg>
+ <span className="text-xs font-medium text-yellow-700">Wishlist</span>
+ </div>
+ <p className="text-2xl font-bold text-yellow-900">{wishlistItems.length}</p>
+ </div>
+
+ <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-4 rounded-xl border border-purple-200">
+ <div className="flex items-center gap-2 mb-2">
+ <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+ <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+ </svg>
+ <span className="text-xs font-medium text-purple-700">Saved Recipes</span>
+ </div>
+ <p className="text-2xl font-bold text-purple-900">{savedRecipes.length}</p>
+ </div>
+ </div>
+ </motion.div>
+ )}
+
+ {/* Performance Widget for Sellers */}
+ {profile.role === 'seller' && stats && (
+ <motion.div
+ id="performance-overview"
+ initial={{ opacity: 0, y: 20 }}
+ animate={{ opacity: 1, y: 0 }}
+ transition={{ delay: 0.1 }}
+ className="bg-white rounded-2xl shadow-lg border border-soft-green/20 p-6 relative"
+ >
+ {showTooltips && (
+ <motion.div
+ initial={{ opacity: 0, scale: 0.8 }}
+ animate={{ opacity: 1, scale: 1 }}
+ className="absolute top-2 right-2 z-10"
+ >
+ <div className="bg-green-600 text-white text-xs px-3 py-1.5 rounded-lg shadow-lg flex items-center gap-1">
+ <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+ <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+ </svg>
+ Business metrics
+ </div>
+ </motion.div>
+ )}
+ <div className="flex items-center justify-between mb-6">
+ <h3 className="font-bold text-2xl bg-gradient-to-r from-primary-green to-leaf-green bg-clip-text text-transparent flex items-center gap-2">
+ <svg className="w-6 h-6 text-primary-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+ <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+ </svg>
+ Performance Overview
+ </h3>
+ <Link href="/seller-dashboard" className="text-sm text-primary-green hover:text-leaf-green font-medium flex items-center gap-1">
+ View Full Dashboard
+ <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+ <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+ </svg>
+ </Link>
+ </div>
+
+ <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+ <div className="bg-gradient-to-br from-green-50 to-green-100 p-4 rounded-xl border-2 border-green-200">
+ <div className="flex items-center gap-2 mb-2">
+ <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+ <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+ </svg>
+ <span className="text-xs font-semibold text-green-700">Products</span>
+ </div>
+ <p className="text-3xl font-bold text-green-900">{stats.totalProducts}</p>
+ <p className="text-xs text-green-600 mt-1">{stats.pendingProducts} pending</p>
+ </div>
+
+ <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-xl border-2 border-blue-200">
+ <div className="flex items-center gap-2 mb-2">
+ <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+ <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+ </svg>
+ <span className="text-xs font-semibold text-blue-700">Orders</span>
+ </div>
+ <p className="text-3xl font-bold text-blue-900">{stats.totalOrders}</p>
+ <p className="text-xs text-blue-600 mt-1">All time</p>
+ </div>
+
+ <div className="bg-gradient-to-br from-yellow-50 to-yellow-100 p-4 rounded-xl border-2 border-yellow-200">
+ <div className="flex items-center gap-2 mb-2">
+ <svg className="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+ <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+ </svg>
+ <span className="text-xs font-semibold text-yellow-700">Revenue</span>
+ </div>
+ <p className="text-3xl font-bold text-yellow-900">${stats.totalRevenue.toFixed(0)}</p>
+ <p className="text-xs text-yellow-600 mt-1">Total earned</p>
+ </div>
+
+ <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-4 rounded-xl border-2 border-purple-200">
+ <div className="flex items-center gap-2 mb-2">
+ <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+ <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+ </svg>
+ <span className="text-xs font-semibold text-purple-700">Avg Order</span>
+ </div>
+ <p className="text-3xl font-bold text-purple-900">
+ ${stats.totalOrders > 0 ? (stats.totalRevenue / stats.totalOrders).toFixed(0) : '0'}
+ </p>
+ <p className="text-xs text-purple-600 mt-1">Per order</p>
+ </div>
+ </div>
+
+ {/* Recent Orders Mini List */}
+ {stats.recentOrders.length > 0 && (
+ <div>
+ <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+ <svg className="w-5 h-5 text-primary-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+ <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+ </svg>
+ Recent Orders
+ </h4>
+ <div className="space-y-2">
+ {stats.recentOrders.slice(0, 3).map((order) => (
+ <div key={order.id} className="bg-gray-50 p-3 rounded-lg flex justify-between items-center hover:bg-gray-100 transition-colors">
+ <div className="flex-1">
+ <p className="font-medium text-sm text-gray-900">{order.user.name}</p>
+ <p className="text-xs text-gray-500">{new Date(order.createdAt).toLocaleDateString()}</p>
+ </div>
+ <div className="text-right">
+ <p className="font-semibold text-primary-green">${order.totalAmount.toFixed(2)}</p>
+ <span className={`text-xs px-2 py-0.5 rounded-full ${
+ order.status === 'delivered' ? 'bg-green-100 text-green-700' :
+ order.status === 'shipped' ? 'bg-blue-100 text-blue-700' :
+ order.status === 'processing' ? 'bg-yellow-100 text-yellow-700' :
+ 'bg-orange-100 text-orange-700'
+ }`}>
+ {order.status}
+ </span>
+ </div>
+ </div>
+ ))}
+ </div>
+ </div>
+ )}
+ </motion.div>
+ )}
+
+
+
  </main>
  </div>
  </div>

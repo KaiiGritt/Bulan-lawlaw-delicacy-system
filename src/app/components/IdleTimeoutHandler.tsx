@@ -79,14 +79,18 @@ export default function IdleTimeoutHandler({
     // Only track if user is logged in
     if (status !== 'authenticated') return;
 
-    // Activity events to track
+    // Activity events to track (including mobile-specific events)
     const events = [
       'mousedown',
       'mousemove',
       'keypress',
       'scroll',
       'touchstart',
+      'touchmove',
+      'touchend',
       'click',
+      'wheel',
+      'keydown',
     ];
 
     // Throttle function to prevent too many resets
@@ -103,10 +107,31 @@ export default function IdleTimeoutHandler({
       }
     };
 
-    // Add event listeners
+    // Handle visibility change (user switches tabs or minimizes app)
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        // User came back to the page
+        const timeSinceLastActivity = Date.now() - lastActivityRef.current;
+        if (timeSinceLastActivity >= TIMEOUT_MS) {
+          // User was away too long, logout immediately
+          handleLogout();
+        } else {
+          // Reset timer when user comes back
+          handleActivity();
+        }
+      }
+    };
+
+    // Add event listeners with passive option for better mobile performance
     events.forEach((event) => {
-      window.addEventListener(event, handleActivity);
+      const options = event.includes('touch') || event === 'scroll' || event === 'wheel'
+        ? { passive: true } as AddEventListenerOptions
+        : undefined;
+      window.addEventListener(event, handleActivity, options);
     });
+
+    // Add visibility change listener
+    document.addEventListener('visibilitychange', handleVisibilityChange);
 
     // Initialize timer
     resetTimer();
@@ -114,8 +139,12 @@ export default function IdleTimeoutHandler({
     // Cleanup
     return () => {
       events.forEach((event) => {
-        window.removeEventListener(event, handleActivity);
+        const options = event.includes('touch') || event === 'scroll' || event === 'wheel'
+          ? { passive: true } as AddEventListenerOptions
+          : undefined;
+        window.removeEventListener(event, handleActivity, options);
       });
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
       if (warningTimeoutRef.current) clearTimeout(warningTimeoutRef.current);
       if (countdownRef.current) clearInterval(countdownRef.current);

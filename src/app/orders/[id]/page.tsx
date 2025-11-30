@@ -19,6 +19,25 @@ interface OrderItem {
  };
 }
 
+interface TrackingHistoryItem {
+ id: string;
+ status: string;
+ location?: string;
+ description: string;
+ createdAt: string;
+}
+
+interface TrackingInfo {
+ orderId: string;
+ status: string;
+ trackingNumber?: string;
+ courier?: string;
+ estimatedDeliveryDate?: string;
+ shippedAt?: string;
+ deliveredAt?: string;
+ trackingHistory: TrackingHistoryItem[];
+}
+
 interface Order {
  id: string;
  status: string;
@@ -41,6 +60,8 @@ export default function OrderDetailsPage() {
 
  const [order, setOrder] = useState<Order | null>(null);
  const [loading, setLoading] = useState(true);
+ const [trackingInfo, setTrackingInfo] = useState<TrackingInfo | null>(null);
+ const [loadingTracking, setLoadingTracking] = useState(false);
 
  useEffect(() => {
  if (status === 'unauthenticated') {
@@ -50,6 +71,7 @@ export default function OrderDetailsPage() {
 
  if (status === 'authenticated' && orderId) {
  fetchOrderDetails();
+ fetchTrackingInfo();
  }
  }, [status, orderId]);
 
@@ -70,6 +92,24 @@ export default function OrderDetailsPage() {
  toast.error('Failed to load order details');
  } finally {
  setLoading(false);
+ }
+ };
+
+ const fetchTrackingInfo = async () => {
+ setLoadingTracking(true);
+ try {
+ const res = await fetch(`/api/orders/${orderId}/tracking`, {
+ credentials: 'include',
+ });
+
+ if (res.ok) {
+ const data = await res.json();
+ setTrackingInfo(data);
+ }
+ } catch (error) {
+ console.error('Error fetching tracking info:', error);
+ } finally {
+ setLoadingTracking(false);
  }
  };
 
@@ -314,6 +354,143 @@ export default function OrderDetailsPage() {
  </div>
  )}
  </motion.div>
+
+ {/* Order Tracking Information */}
+ {trackingInfo && (order.status === 'shipped' || order.status === 'delivered') && (
+ <motion.div
+ initial={{ opacity: 0, y: 20 }}
+ animate={{ opacity: 1, y: 0 }}
+ transition={{ delay: 0.15 }}
+ className="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-lg border border-soft-green/20"
+ >
+ <div className="flex items-center gap-2 mb-6">
+ <svg className="w-6 h-6 text-primary-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+ <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+ </svg>
+ <h2 className="text-lg sm:text-xl font-bold text-gray-900">Tracking Information</h2>
+ </div>
+
+ {/* Tracking Details Grid */}
+ <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+ {trackingInfo.trackingNumber && (
+ <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-xl border-2 border-blue-200">
+ <p className="text-xs font-medium text-blue-700 mb-1">Tracking Number</p>
+ <p className="text-lg font-bold text-blue-900 font-mono">{trackingInfo.trackingNumber}</p>
+ </div>
+ )}
+
+ {trackingInfo.courier && (
+ <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-4 rounded-xl border-2 border-purple-200">
+ <p className="text-xs font-medium text-purple-700 mb-1">Courier</p>
+ <p className="text-lg font-bold text-purple-900">{trackingInfo.courier}</p>
+ </div>
+ )}
+
+ {trackingInfo.estimatedDeliveryDate && (
+ <div className="bg-gradient-to-br from-green-50 to-green-100 p-4 rounded-xl border-2 border-green-200">
+ <p className="text-xs font-medium text-green-700 mb-1">Estimated Delivery</p>
+ <p className="text-lg font-bold text-green-900">
+ {new Date(trackingInfo.estimatedDeliveryDate).toLocaleDateString('en-US', {
+ month: 'short',
+ day: 'numeric',
+ year: 'numeric'
+ })}
+ </p>
+ </div>
+ )}
+ </div>
+
+ {/* Tracking History */}
+ {trackingInfo.trackingHistory && trackingInfo.trackingHistory.length > 0 && (
+ <div>
+ <h3 className="text-base font-bold text-gray-900 mb-4 flex items-center gap-2">
+ <svg className="w-5 h-5 text-primary-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+ <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+ </svg>
+ Tracking History
+ </h3>
+
+ <div className="relative">
+ {/* Vertical Timeline Line */}
+ <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-gradient-to-b from-primary-green to-leaf-green"></div>
+
+ {/* Timeline Items */}
+ <div className="space-y-6">
+ {trackingInfo.trackingHistory.map((item, index) => (
+ <motion.div
+ key={item.id}
+ initial={{ opacity: 0, x: -20 }}
+ animate={{ opacity: 1, x: 0 }}
+ transition={{ delay: index * 0.1 }}
+ className="relative pl-12"
+ >
+ {/* Timeline Dot */}
+ <div className={`absolute left-0 w-8 h-8 rounded-full flex items-center justify-center ${
+ index === 0
+ ? 'bg-gradient-to-r from-primary-green to-leaf-green ring-4 ring-primary-green/20'
+ : 'bg-white border-2 border-primary-green'
+ }`}>
+ {index === 0 ? (
+ <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+ <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+ </svg>
+ ) : (
+ <div className="w-3 h-3 rounded-full bg-primary-green"></div>
+ )}
+ </div>
+
+ {/* Content */}
+ <div className={`bg-gradient-to-r p-4 rounded-lg ${
+ index === 0
+ ? 'from-primary-green/10 to-leaf-green/10 border-2 border-primary-green/30'
+ : 'from-gray-50 to-gray-100 border border-gray-200'
+ }`}>
+ <div className="flex items-start justify-between gap-4 mb-2">
+ <div>
+ <p className={`font-bold ${index === 0 ? 'text-primary-green' : 'text-gray-900'}`}>
+ {item.description}
+ </p>
+ {item.location && (
+ <p className="text-sm text-gray-600 mt-1 flex items-center gap-1">
+ <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+ <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+ <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+ </svg>
+ {item.location}
+ </p>
+ )}
+ </div>
+ <span className={`px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap ${
+ item.status === 'delivered' ? 'bg-green-100 text-green-700' :
+ item.status === 'shipped' ? 'bg-blue-100 text-blue-700' :
+ item.status === 'processing' ? 'bg-yellow-100 text-yellow-700' :
+ 'bg-gray-100 text-gray-700'
+ }`}>
+ {item.status}
+ </span>
+ </div>
+ <p className="text-xs text-gray-500 flex items-center gap-1">
+ <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+ <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+ </svg>
+ {new Date(item.createdAt).toLocaleString('en-US', {
+ month: 'short',
+ day: 'numeric',
+ year: 'numeric',
+ hour: 'numeric',
+ minute: '2-digit',
+ hour12: true
+ })}
+ </p>
+ </div>
+ </motion.div>
+ ))}
+ </div>
+ </div>
+ </div>
+ )}
+ </motion.div>
+ )}
 
  {/* Order Items */}
  <motion.div

@@ -159,11 +159,38 @@ export default function RecipesPage() {
 
  if (loading) {
  return (
- <div className="min-h-screen bg-gradient-to-br from-cream-50 to-green-50 py-12">
- <div className="container mx-auto px-4">
- <div className="text-center mb-12">
- <div className="animate-spin w-10 h-10 sm:w-12 sm:h-12 border-4 border-primary-green border-t-transparent rounded-full mx-auto"></div>
- <p className="mt-4 text-sm sm:text-base text-gray-600">Loading recipes...</p>
+ <div className="min-h-screen bg-gradient-to-br from-cream-50 to-green-50 py-8 sm:py-12">
+ <div className="container mx-auto px-3 sm:px-4">
+ {/* Skeleton Header */}
+ <div className="text-center mb-8 sm:mb-16">
+ <div className="h-10 sm:h-12 bg-gray-200 rounded animate-pulse w-64 mx-auto mb-3 sm:mb-4"></div>
+ <div className="h-6 bg-gray-200 rounded animate-pulse w-96 mx-auto max-w-full"></div>
+ </div>
+
+ {/* Skeleton Filter */}
+ <div className="flex justify-center mb-6 sm:mb-12">
+ <div className="bg-white/80 backdrop-blur-sm rounded-xl sm:rounded-2xl p-1.5 sm:p-2 shadow-lg border border-white/20">
+ <div className="flex gap-2">
+ {[1, 2, 3, 4].map((i) => (
+ <div key={i} className="h-10 sm:h-12 w-24 sm:w-32 bg-gray-200 rounded-lg animate-pulse"></div>
+ ))}
+ </div>
+ </div>
+ </div>
+
+ {/* Skeleton Cards */}
+ <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2 sm:gap-4 lg:gap-6">
+ {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+ <div key={i} className="bg-white rounded-lg sm:rounded-2xl shadow-md overflow-hidden border border-gray-100">
+ <div className="relative aspect-square bg-gray-200 animate-pulse"></div>
+ <div className="p-2 sm:p-4 space-y-2 sm:space-y-3">
+ <div className="h-4 sm:h-6 bg-gray-200 rounded animate-pulse w-3/4"></div>
+ <div className="h-3 sm:h-4 bg-gray-200 rounded animate-pulse w-1/2"></div>
+ <div className="h-3 sm:h-4 bg-gray-200 rounded animate-pulse w-2/3"></div>
+ <div className="h-8 sm:h-10 bg-gray-200 rounded-lg animate-pulse"></div>
+ </div>
+ </div>
+ ))}
  </div>
  </div>
  </div>
@@ -237,7 +264,7 @@ export default function RecipesPage() {
  <Link
  key={recipe.id}
  href={`/recipes/${recipe.id}`}
- className="block bg-white rounded-lg sm:rounded-2xl shadow-sm hover:shadow-xl overflow-hidden border border-gray-100 transition-all duration-300 hover:-translate-y-1 fade-in-up"
+ className="block bg-white rounded-lg sm:rounded-2xl shadow-sm hover:shadow-2xl overflow-hidden border border-gray-100 transition-all duration-400 hover:-translate-y-2 hover:scale-[1.02] fade-in-up group"
  style={{ animationDelay: `${index * 0.05}s` }}
  >
  {/* Recipe Image */}
@@ -246,7 +273,7 @@ export default function RecipesPage() {
  src={recipe.image || "/api/placeholder/400/250"}
  alt={recipe.title}
  fill
- className="object-cover group-hover:scale-110 transition-transform duration-500"
+ className="object-cover group-hover:scale-125 group-hover:rotate-2 transition-all duration-700 ease-out"
  />
 
  {/* Difficulty Badge */}
@@ -326,7 +353,7 @@ export default function RecipesPage() {
 
  {/* View Recipe Button - Mobile Optimized */}
  <button
- className="w-full bg-warm-orange hover:bg-earth-brown text-white py-1.5 sm:py-2 rounded-md sm:rounded-lg text-xs sm:text-sm font-medium transition-all flex items-center justify-center gap-1 sm:gap-2"
+ className="w-full bg-warm-orange hover:bg-earth-brown text-white py-1.5 sm:py-2 rounded-md sm:rounded-lg text-xs sm:text-sm font-medium transition-all duration-300 flex items-center justify-center gap-1 sm:gap-2 hover:shadow-lg hover:scale-105 active:scale-95"
  >
  <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
