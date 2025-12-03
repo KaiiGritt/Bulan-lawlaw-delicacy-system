@@ -147,13 +147,14 @@ export const authOptions = {
         token.role = user.role;
         token.emailVerified = user.emailVerified;
       }
-      // Always fetch latest emailVerified status from database
+      // Always fetch latest user data from database (including the actual DB id)
       if (token.email) {
         const dbUser = await prisma.user.findUnique({
           where: { email: token.email },
-          select: { role: true, emailVerified: true },
+          select: { id: true, role: true, emailVerified: true },
         });
         if (dbUser) {
+          token.dbId = dbUser.id; // Store the actual database ID
           token.role = dbUser.role;
           token.emailVerified = dbUser.emailVerified;
         }
@@ -162,7 +163,8 @@ export const authOptions = {
     },
     async session({ session, token }: any) {
       if (session.user) {
-        session.user.id = token.sub!;
+        // Use the database ID instead of Google's sub for OAuth users
+        session.user.id = token.dbId || token.sub!;
         session.user.role = token.role;
         session.user.emailVerified = token.emailVerified;
       }
