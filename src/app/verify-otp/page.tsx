@@ -1,35 +1,39 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 import OTPInput from '../components/OTPInput';
 import CountdownTimer from '../components/CountdownTimer';
 import OTPSuccessModal from '../components/OTPSuccessModal';
 
-export default function VerifyOTPPage() {
+function VerifyOTPContent() {
  const router = useRouter();
  const searchParams = useSearchParams();
- const email = searchParams.get('email');
+ const { data: session, update: updateSession } = useSession();
+ const email = searchParams.get('email') || session?.user?.email;
 
- const [otp, setOtp] = useState('');
  const [error, setError] = useState('');
  const [isVerifying, setIsVerifying] = useState(false);
  const [isResending, setIsResending] = useState(false);
  const [showSuccess, setShowSuccess] = useState(false);
  const [otpInputKey, setOtpInputKey] = useState(0);
+ const [isLoading, setIsLoading] = useState(true);
+ const [isNewUser, setIsNewUser] = useState(false);
 
  useEffect(() => {
- // Redirect if no email or already verified
+ // Wait a moment to ensure searchParams are loaded
+ const timer = setTimeout(() => {
+ setIsLoading(false);
+
+ // Redirect if no email
  if (!email) {
  router.push('/login');
  return;
  }
+ }, 100);
 
- // Check if already verified
- const isVerified = localStorage.getItem(`otp_verified_${email}`);
- if (isVerified === 'true') {
- router.push('/');
- }
+ return () => clearTimeout(timer);
  }, [email, router]);
 
  const handleOTPComplete = async (otpCode: string) => {
@@ -54,6 +58,14 @@ export default function VerifyOTPPage() {
  // Store verification status
  localStorage.setItem(`otp_verified_${email}`, 'true');
  sessionStorage.setItem('otp_verified', 'true');
+
+ // Check if this is a new user (from registration) or existing user (Google sign-in)
+ setIsNewUser(data.isNewUser || false);
+
+ // Update session to reflect new emailVerified status
+ if (session) {
+ await updateSession();
+ }
 
  // Show success modal
  setShowSuccess(true);
@@ -95,12 +107,27 @@ export default function VerifyOTPPage() {
 
  const handleSuccessModalContinue = () => {
  setShowSuccess(false);
- // After successful OTP verification, redirect to login
+ // If user is already logged in (Google sign-in), go to profile
+ // If new user from registration, go to login
+ if (session) {
+ router.push('/profile');
+ } else if (isNewUser) {
  router.push('/login');
+ } else {
+ router.push('/login');
+ }
  };
 
- if (!email) {
- return null;
+ // Show loading state while checking params
+ if (isLoading || !email) {
+ return (
+ <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center p-4">
+ <div className="text-center">
+ <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+ <p className="text-gray-600">Loading...</p>
+ </div>
+ </div>
+ );
  }
 
  return (
@@ -222,5 +249,21 @@ export default function VerifyOTPPage() {
  {/* Success Modal */}
  <OTPSuccessModal isOpen={showSuccess} onContinue={handleSuccessModalContinue} />
  </div>
+ );
+}
+
+// Wrap with Suspense to handle useSearchParams properly
+export default function VerifyOTPPage() {
+ return (
+ <Suspense fallback={
+ <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center p-4">
+ <div className="text-center">
+ <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+ <p className="text-gray-600">Loading...</p>
+ </div>
+ </div>
+ }>
+ <VerifyOTPContent />
+ </Suspense>
  );
 }

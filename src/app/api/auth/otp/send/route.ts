@@ -22,14 +22,30 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Email is required' }, { status: 400 });
     }
 
-    // Check if user exists
+    // Check if user exists OR if there's a pending registration
     const user = await prisma.user.findUnique({
       where: { email },
     });
 
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    const pendingRegistration = await prisma.pendingRegistration.findUnique({
+      where: { email },
+    });
+
+    // If neither user nor pending registration exists, return error
+    if (!user && !pendingRegistration) {
+      return NextResponse.json({ error: 'No account found for this email. Please register first.' }, { status: 404 });
     }
+
+    // Check if pending registration has expired
+    if (pendingRegistration && new Date() > pendingRegistration.expiresAt) {
+      // Clean up expired pending registration
+      await prisma.pendingRegistration.delete({ where: { email } });
+      await prisma.otp.deleteMany({ where: { email } });
+      return NextResponse.json({ error: 'Registration has expired. Please register again.' }, { status: 400 });
+    }
+
+    // Get the name from either user or pending registration
+    const name = user?.name || pendingRegistration?.name || 'User';
 
     // Delete any existing OTPs for this email
     await prisma.otp.deleteMany({
@@ -50,7 +66,7 @@ export async function POST(request: NextRequest) {
     });
 
     // Send OTP email (with fallback logging)
-    await sendOtpEmail(email, user.name || 'User', otpCode);
+    await sendOtpEmail(email, name, otpCode);
 
     return NextResponse.json({
       success: true,

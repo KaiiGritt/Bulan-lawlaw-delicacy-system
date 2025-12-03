@@ -312,6 +312,20 @@ model Otp {
   @@map("otps")
 }
 
+model PendingRegistration {
+  id          String   @id @default(cuid())
+  email       String   @unique
+  name        String
+  password    String   // Already hashed
+  phoneNumber String?  // Optional phone number
+  role        String   @default("user")
+  expiresAt   DateTime // Registration expires if OTP not verified
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("pending_registrations")
+}
+
 model Address {
   id          String   @id @default(cuid())
   userId      String

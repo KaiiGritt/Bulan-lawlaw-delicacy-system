@@ -6,6 +6,7 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import UsersTab from "./UsersTab";
+import OverviewCharts from "./components/OverviewCharts";
 import toast, { Toaster } from 'react-hot-toast';
 import {
  CheckCircleIcon,
@@ -108,9 +109,25 @@ function StatCard({ label, value, icon }: { label: string; value: string | numbe
  );
 }
 
+// Analytics data interface
+interface AnalyticsData {
+ sales: {
+   total: number;
+   orders: number;
+   averageOrderValue: number;
+   byDate: { date: string; amount: number }[];
+ };
+ products: {
+   topSelling: { name: string; quantity: number; revenue: number }[];
+ };
+ categories: { category: string; revenue: number; orders: number }[];
+ orderStatus: { [key: string]: number };
+}
+
 export default function AdminPage() {
  const [activeTab, setActiveTab] = useState<TabId>('overview');
  const [stats, setStats] = useState<AdminStats | null>(null);
+ const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(null);
  const [orders, setOrders] = useState<Order[]>([]);
  const [loading, setLoading] = useState(false);
  const [showConfirmModal, setShowConfirmModal] = useState(false);
@@ -222,10 +239,20 @@ export default function AdminPage() {
  async function fetchOverview() {
  setLoading(true);
  try {
- const res = await fetch('/api/admin/stats');
- if (!res.ok) throw new Error('Failed to fetch stats');
- const data = await res.json();
- setStats(data);
+ // Fetch both stats and analytics data in parallel
+ const [statsRes, analyticsRes] = await Promise.all([
+ fetch('/api/admin/stats'),
+ fetch('/api/admin/analytics?period=monthly')
+ ]);
+
+ if (!statsRes.ok) throw new Error('Failed to fetch stats');
+ const statsData = await statsRes.json();
+ setStats(statsData);
+
+ if (analyticsRes.ok) {
+ const analyticsJson = await analyticsRes.json();
+ setAnalyticsData(analyticsJson);
+ }
  } catch (err) {
  console.error(err);
  toast.error('Failed to load dashboard stats');
@@ -520,6 +547,19 @@ export default function AdminPage() {
  <StatCard label="Total Orders" value={stats.totalOrders} icon={<ClipboardDocumentListIcon className="w-8 h-8 sm:w-10 sm:h-10" />} />
  <StatCard label="Total Revenue" value={`₱${stats.totalRevenue.toLocaleString()}`} icon={<CurrencyDollarIcon className="w-8 h-8 sm:w-10 sm:h-10" />} />
  </div>
+
+ {/* Charts Section */}
+ {analyticsData && (
+ <OverviewCharts
+   salesData={analyticsData.sales?.byDate || []}
+   topProducts={analyticsData.products?.topSelling || []}
+   categoryData={analyticsData.categories || []}
+   orderStatus={analyticsData.orderStatus || {}}
+   totalSales={analyticsData.sales?.total || 0}
+   totalOrders={analyticsData.sales?.orders || 0}
+   averageOrderValue={analyticsData.sales?.averageOrderValue || 0}
+ />
+ )}
 
  <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-lg border border-soft-green/30">
  <div className="flex items-center justify-between mb-4">

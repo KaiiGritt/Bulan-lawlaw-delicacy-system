@@ -59,21 +59,19 @@ export async function sendEmail(options: EmailOptions) {
       subject: options.subject,
       html: options.html,
       text: options.text || options.subject,
-      // Improved anti-spam headers
+      // Remove high priority headers - they can trigger spam filters
       headers: {
-        'X-Priority': '1',
-        'X-MSMail-Priority': 'High',
-        'Importance': 'high',
-        'X-Entity-Ref-ID': `${Date.now()}`,
+        'X-Entity-Ref-ID': `blds-${Date.now()}`,
+        'List-Unsubscribe': `<mailto:${senderEmail}?subject=unsubscribe>`,
       },
-      // Tracking settings to improve deliverability
+      // Disable click/open tracking - tracking links can trigger spam filters
       trackingSettings: {
         clickTracking: {
-          enable: true,
+          enable: false,
           enableText: false
         },
         openTracking: {
-          enable: true
+          enable: false
         },
         subscriptionTracking: {
           enable: false
@@ -83,16 +81,13 @@ export async function sendEmail(options: EmailOptions) {
       mailSettings: {
         sandboxMode: {
           enable: false
+        },
+        bypassListManagement: {
+          enable: false
         }
       },
       // Category for better analytics
-      categories: ['transactional', 'lawlaw-delicacy'],
-      // Custom args for tracking
-      customArgs: {
-        sent_via: 'bulan-lawlaw-system',
-        environment: process.env.NODE_ENV || 'production',
-        timestamp: new Date().toISOString()
-      }
+      categories: ['transactional'],
     });
 
     console.log(`✅ Email sent successfully to ${options.to}`);
@@ -250,8 +245,8 @@ export async function sendOtpEmail(email: string, name: string, otpCode: string)
 
     <div style="background:#fef3c7; border-left:4px solid #f59e0b; padding:20px; border-radius:8px; margin:30px 0;">
       <p style="font-size:14px; color:#92400e; margin:0; line-height:1.6;">
-        <strong>⏰ Important Security Notice:</strong><br>
-        This code will expire in <strong>10 minutes</strong> for your security. Please complete the verification process as soon as possible.
+        <strong>Important Security Notice:</strong><br>
+        This code will expire in <strong>5 minutes</strong> for your security. Please complete the verification process as soon as possible.
       </p>
     </div>
 
@@ -277,9 +272,9 @@ export async function sendOtpEmail(email: string, name: string, otpCode: string)
   try {
     await sendEmail({
       to: email,
-      subject: `${otpCode} - Your Verification Code for Bulan Lawlaw System`,
+      subject: `Your Bulan Lawlaw Verification Code`,
       html,
-      text: `Hello ${name},\n\nThank you for registering with Bulan Lawlaw Delicacy System.\n\nYour verification code is: ${otpCode}\n\nThis code will expire in 10 minutes.\n\nIf you didn't create an account, please ignore this email.\n\nBest regards,\nBulan Lawlaw Delicacy System Team`
+      text: `Hello ${name},\n\nThank you for registering with Bulan Lawlaw Delicacy System.\n\nYour verification code is: ${otpCode}\n\nThis code will expire in 5 minutes.\n\nIf you didn't create an account, please ignore this email.\n\nBest regards,\nBulan Lawlaw Delicacy System Team`
     })
   } catch (error) {
     console.error('Error in sendOtpEmail:', error);

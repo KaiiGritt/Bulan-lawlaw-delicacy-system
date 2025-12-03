@@ -4,32 +4,98 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { EyeIcon, EyeSlashIcon, CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline';
+import { EyeIcon, EyeSlashIcon, CheckCircleIcon, XCircleIcon, EnvelopeIcon } from '@heroicons/react/24/outline';
 
-interface ToastProps {
- message: string;
+interface ModalProps {
+ isOpen: boolean;
  type: 'success' | 'error';
+ title: string;
+ message: string;
+ email?: string;
  onClose: () => void;
+ onAction?: () => void;
+ actionText?: string;
 }
 
-function Toast({ message, type, onClose }: ToastProps) {
- useEffect(() => {
- const timer = setTimeout(onClose, 4000);
- return () => clearTimeout(timer);
- }, [onClose]);
+function Modal({ isOpen, type, title, message, email, onClose, onAction, actionText }: ModalProps) {
+ if (!isOpen) return null;
 
  return (
+ <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+ {/* Backdrop */}
  <motion.div
- initial={{ opacity: 0, y: -50 }}
- animate={{ opacity: 1, y: 0 }}
- exit={{ opacity: 0, y: -50 }}
- className={`fixed top-5 right-5 z-50 px-6 py-4 rounded-xl shadow-2xl text-white ${
- type === 'success' ? 'bg-gradient-to-r from-green-500 to-green-600' : 'bg-gradient-to-r from-red-500 to-red-600'
- } flex items-center gap-3 min-w-[300px] backdrop-blur-lg`}
+ initial={{ opacity: 0 }}
+ animate={{ opacity: 1 }}
+ exit={{ opacity: 0 }}
+ className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+ onClick={onClose}
+ />
+
+ {/* Modal Content */}
+ <motion.div
+ initial={{ opacity: 0, scale: 0.9, y: 20 }}
+ animate={{ opacity: 1, scale: 1, y: 0 }}
+ exit={{ opacity: 0, scale: 0.9, y: 20 }}
+ className="relative bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full mx-4"
  >
- <span className="flex-1">{message}</span>
- <button onClick={onClose} className="text-white/80 hover:text-white font-bold text-xl">×</button>
+ {/* Icon */}
+ <div className="flex justify-center mb-6">
+ {type === 'success' ? (
+ <div className="w-20 h-20 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center shadow-lg">
+ <EnvelopeIcon className="w-10 h-10 text-white" />
+ </div>
+ ) : (
+ <div className="w-20 h-20 bg-gradient-to-br from-red-400 to-red-600 rounded-full flex items-center justify-center shadow-lg">
+ <XCircleIcon className="w-10 h-10 text-white" />
+ </div>
+ )}
+ </div>
+
+ {/* Title */}
+ <h2 className={`text-2xl font-bold text-center mb-3 ${type === 'success' ? 'text-green-700' : 'text-red-700'}`}>
+ {title}
+ </h2>
+
+ {/* Message */}
+ <p className="text-gray-600 text-center mb-2">{message}</p>
+
+ {/* Email display */}
+ {email && (
+ <p className="text-center mb-6">
+ <span className="font-semibold text-gray-900 bg-gray-100 px-3 py-1 rounded-lg">{email}</span>
+ </p>
+ )}
+
+ {/* Info box for success */}
+ {type === 'success' && (
+ <div className="bg-green-50 border border-green-200 rounded-xl p-4 mb-6">
+ <div className="flex items-start gap-3">
+ <CheckCircleIcon className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
+ <div className="text-sm text-green-700">
+ <p className="font-medium mb-1">What's next?</p>
+ <ul className="list-disc list-inside space-y-1 text-green-600">
+ <li>Check your email inbox</li>
+ <li>Look for spam folder if not found</li>
+ <li>Enter the 6-digit code to verify</li>
+ </ul>
+ </div>
+ </div>
+ </div>
+ )}
+
+ {/* Action Button */}
+ <button
+ onClick={onAction || onClose}
+ className={`w-full py-3.5 px-6 rounded-xl font-semibold shadow-lg transform hover:scale-[1.02] transition-all duration-200 ${
+ type === 'success'
+ ? 'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white'
+ : 'bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white'
+ }`}
+ >
+ {actionText || 'Continue'}
+ </button>
  </motion.div>
+ </div>
  );
 }
 
@@ -53,12 +119,20 @@ export default function RegisterPage() {
  firstName: '',
  lastName: '',
  email: '',
+ phoneNumber: '',
  password: '',
  confirmPassword: '',
  agreeToTerms: false,
  });
  const [isLoading, setIsLoading] = useState(false);
- const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+ const [modal, setModal] = useState<{
+ isOpen: boolean;
+ type: 'success' | 'error';
+ title: string;
+ message: string;
+ email?: string;
+ redirectTo?: string;
+ } | null>(null);
  const [showPassword, setShowPassword] = useState(false);
  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
  const [passwordStrength, setPasswordStrength] = useState(getPasswordStrength(''));
@@ -90,17 +164,32 @@ export default function RegisterPage() {
 
  const passwordError = validatePassword(formData.password);
  if (passwordError) {
- setToast({ message: passwordError, type: 'error' });
+ setModal({
+ isOpen: true,
+ type: 'error',
+ title: 'Invalid Password',
+ message: passwordError,
+ });
  return;
  }
 
  if (formData.password !== formData.confirmPassword) {
- setToast({ message: 'Passwords do not match', type: 'error' });
+ setModal({
+ isOpen: true,
+ type: 'error',
+ title: 'Password Mismatch',
+ message: 'The passwords you entered do not match. Please try again.',
+ });
  return;
  }
 
  if (!formData.agreeToTerms) {
- setToast({ message: 'Please agree to the terms and conditions', type: 'error' });
+ setModal({
+ isOpen: true,
+ type: 'error',
+ title: 'Terms Required',
+ message: 'Please agree to the terms and conditions to continue.',
+ });
  return;
  }
 
@@ -114,6 +203,7 @@ export default function RegisterPage() {
  firstName: formData.firstName,
  lastName: formData.lastName,
  email: formData.email,
+ phoneNumber: formData.phoneNumber,
  password: formData.password,
  }),
  });
@@ -121,21 +211,40 @@ export default function RegisterPage() {
  const data = await response.json();
 
  if (response.ok) {
- setToast({ message: 'Registration successful! Check your email for OTP.', type: 'success' });
- setTimeout(() => {
- if (data.redirectTo) {
- router.push(data.redirectTo);
+ // Show success modal
+ setModal({
+ isOpen: true,
+ type: 'success',
+ title: 'Check Your Email!',
+ message: 'We\'ve sent a verification code to:',
+ email: formData.email,
+ redirectTo: data.redirectTo || `/verify-otp?email=${encodeURIComponent(formData.email)}`,
+ });
  } else {
- router.push(`/verify-otp?email=${encodeURIComponent(formData.email)}`);
- }
- }, 1500);
- } else {
- setToast({ message: data.error || 'Registration failed', type: 'error' });
+ setModal({
+ isOpen: true,
+ type: 'error',
+ title: 'Registration Failed',
+ message: data.error || 'Something went wrong. Please try again.',
+ });
  }
  } catch {
- setToast({ message: 'An error occurred. Please try again.', type: 'error' });
+ setModal({
+ isOpen: true,
+ type: 'error',
+ title: 'Connection Error',
+ message: 'Unable to connect to the server. Please check your internet connection and try again.',
+ });
  } finally {
  setIsLoading(false);
+ }
+ };
+
+ const handleModalAction = () => {
+ if (modal?.type === 'success' && modal.redirectTo) {
+ router.push(modal.redirectTo);
+ } else {
+ setModal(null);
  }
  };
 
@@ -149,8 +258,20 @@ export default function RegisterPage() {
 
  return (
  <div className="min-h-screen bg-gradient-to-br from-accent-cream to-soft-green/20 flex items-center justify-center p-4">
+ {/* Modal */}
  <AnimatePresence>
- {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
+ {modal && (
+ <Modal
+ isOpen={modal.isOpen}
+ type={modal.type}
+ title={modal.title}
+ message={modal.message}
+ email={modal.email}
+ onClose={() => setModal(null)}
+ onAction={handleModalAction}
+ actionText={modal.type === 'success' ? 'Continue to Verification' : 'Try Again'}
+ />
+ )}
  </AnimatePresence>
 
  <motion.div
@@ -242,6 +363,21 @@ export default function RegisterPage() {
  onChange={handleChange}
  className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
  placeholder="john@example.com"
+ />
+ </div>
+
+ {/* Phone Number */}
+ <div>
+ <label className="block text-sm font-medium text-gray-700 mb-2">
+ Phone Number <span className="text-gray-400 font-normal">(optional)</span>
+ </label>
+ <input
+ name="phoneNumber"
+ type="tel"
+ value={formData.phoneNumber}
+ onChange={handleChange}
+ className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary-green focus:border-transparent transition-all"
+ placeholder="09123456789"
  />
  </div>
 

@@ -5,11 +5,13 @@ import type { JWT } from "next-auth/jwt";
 import type { User, Session } from "next-auth";
 import { prisma } from "../../../lib/prisma"; // adjust to your DB setup
 import bcrypt from "bcryptjs"; // if passwords are hashed
+import { sendOtpEmail } from "../../../lib/email";
 
 // Extend the User type to include role
 declare module "next-auth" {
   interface User {
     role?: string;
+    emailVerified?: boolean;
   }
   interface Session {
     user: {
@@ -18,6 +20,7 @@ declare module "next-auth" {
       email?: string | null;
       name?: string | null;
       image?: string | null;
+      emailVerified?: boolean;
     };
   }
 }
@@ -25,6 +28,7 @@ declare module "next-auth" {
 declare module "next-auth/jwt" {
   interface JWT {
     role?: string;
+    emailVerified?: boolean;
   }
 }
 
@@ -86,27 +90,50 @@ export const authOptions = {
             where: { email: user.email },
           });
 
+          let dbUser;
           if (existingUser) {
-            // Update existing user
-            await prisma.user.update({
+            // Update existing user name but keep emailVerified status
+            dbUser = await prisma.user.update({
               where: { email: user.email },
               data: {
                 name: user.name,
-                emailVerified: true, // Google users are auto-verified
               },
             });
           } else {
-            // Create new user with Google OAuth
-            await prisma.user.create({
+            // Create new user with Google OAuth - NOT verified yet (needs OTP)
+            dbUser = await prisma.user.create({
               data: {
                 email: user.email,
                 name: user.name,
                 password: "", // No password for OAuth users
                 role: "user",
-                emailVerified: true, // Google users are auto-verified
+                emailVerified: false, // Requires OTP verification
               },
             });
           }
+
+          // Generate and send OTP for verification
+          const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+          const otpExpiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
+
+          // Delete any existing OTPs for this email
+          await prisma.otp.deleteMany({
+            where: { email: user.email },
+          });
+
+          // Save OTP to database
+          await prisma.otp.create({
+            data: {
+              email: user.email,
+              code: otpCode,
+              expiresAt: otpExpiresAt,
+            },
+          });
+
+          // Send OTP email
+          console.log('Sending OTP to Google user:', user.email);
+          await sendOtpEmail(user.email, user.name || 'User', otpCode);
+
           return true;
         } catch (error) {
           console.error("Error in Google sign-in:", error);
@@ -115,25 +142,29 @@ export const authOptions = {
       }
       return true; // Allow credentials login
     },
-    async jwt({ token, user }: { token: JWT; user: User | undefined }) {
+    async jwt({ token, user }: any) {
       if (user) {
         token.role = user.role;
-      } else if (token.email) {
-        // Fetch role from database for OAuth users
+        token.emailVerified = user.emailVerified;
+      }
+      // Always fetch latest emailVerified status from database
+      if (token.email) {
         const dbUser = await prisma.user.findUnique({
           where: { email: token.email },
-          select: { role: true },
+          select: { role: true, emailVerified: true },
         });
         if (dbUser) {
           token.role = dbUser.role;
+          token.emailVerified = dbUser.emailVerified;
         }
       }
       return token;
     },
-    async session({ session, token }: { session: any; token: JWT }) {
+    async session({ session, token }: any) {
       if (session.user) {
         session.user.id = token.sub!;
         session.user.role = token.role;
+        session.user.emailVerified = token.emailVerified;
       }
       return session;
     },

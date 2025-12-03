@@ -14,6 +14,8 @@ export async function middleware(request: NextRequest) {
   // Check if user is logged in
   const isLoggedIn = !!token;
   const userEmail = token?.email as string | undefined;
+  const emailVerified = token?.emailVerified as boolean | undefined;
+  const userRole = token?.role as string | undefined;
 
   // Debug logging for production
   console.log('[Middleware]', {
@@ -21,6 +23,8 @@ export async function middleware(request: NextRequest) {
     isLoggedIn,
     hasToken: !!token,
     userEmail,
+    emailVerified,
+    userRole,
     nextAuthUrl: process.env.NEXTAUTH_URL,
   });
 
@@ -39,14 +43,28 @@ export async function middleware(request: NextRequest) {
   const isProtectedRoute = protectedRoutes.some((route) => pathname.startsWith(route));
   const isAuthRoute = authRoutes.some((route) => pathname.startsWith(route));
   const isOTPRoute = pathname.startsWith(otpRoute);
+  const isAdminRoute = pathname.startsWith('/admin');
 
   // If user is not logged in and trying to access the home page, redirect to login
   if (!isLoggedIn && pathname === '/') {
     return NextResponse.redirect(new URL('/login', request.url));
   }
 
-  // If user is logged in and trying to access auth routes, redirect to profile
-  if (isLoggedIn && isAuthRoute) {
+  // If user is logged in but NOT email verified (except for OTP page and admin)
+  if (isLoggedIn && !emailVerified && !isOTPRoute && userRole !== 'admin') {
+    // Redirect to OTP verification
+    const otpUrl = new URL('/verify-otp', request.url);
+    otpUrl.searchParams.set('email', userEmail || '');
+    return NextResponse.redirect(otpUrl);
+  }
+
+  // If user is logged in, verified, and trying to access auth routes, redirect to profile
+  if (isLoggedIn && emailVerified && isAuthRoute) {
+    return NextResponse.redirect(new URL('/profile', request.url));
+  }
+
+  // If user is logged in, verified, and trying to access OTP page, redirect to profile
+  if (isLoggedIn && emailVerified && isOTPRoute) {
     return NextResponse.redirect(new URL('/profile', request.url));
   }
 
@@ -57,8 +75,8 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
-  // If user is trying to access OTP page without email parameter
-  if (isOTPRoute && !request.nextUrl.searchParams.get('email')) {
+  // If user is trying to access OTP page without email parameter and not logged in
+  if (isOTPRoute && !request.nextUrl.searchParams.get('email') && !isLoggedIn) {
     return NextResponse.redirect(new URL('/login', request.url));
   }
 
