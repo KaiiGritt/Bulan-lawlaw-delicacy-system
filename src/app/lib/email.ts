@@ -107,6 +107,23 @@ export async function sendEmail(options: EmailOptions) {
 
 // Email template wrapper for consistent styling
 function getEmailTemplate(content: string): string {
+  // Professional SVG logo for email - fish/wave design representing Lawlaw delicacy
+  const logoSvg = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 60 60" fill="none">
+      <!-- Circular background -->
+      <circle cx="30" cy="30" r="28" fill="#2E7D32"/>
+      <!-- Fish body -->
+      <ellipse cx="28" cy="30" rx="14" ry="8" fill="white"/>
+      <!-- Fish tail -->
+      <path d="M40 30L48 24L48 36L40 30Z" fill="white"/>
+      <!-- Fish eye -->
+      <circle cx="20" cy="28" r="2.5" fill="#2E7D32"/>
+      <!-- Wave lines under fish -->
+      <path d="M12 40C16 38 20 42 24 40C28 38 32 42 36 40C40 38 44 42 48 40" stroke="white" stroke-width="2" stroke-linecap="round" fill="none"/>
+      <path d="M12 45C16 43 20 47 24 45C28 43 32 47 36 45C40 43 44 47 48 45" stroke="white" stroke-width="1.5" stroke-linecap="round" fill="none" opacity="0.7"/>
+    </svg>
+  `;
+
   return `
   <!DOCTYPE html>
   <html lang="en">
@@ -134,8 +151,8 @@ function getEmailTemplate(content: string): string {
                 <table width="100%" cellpadding="0" cellspacing="0">
                   <tr>
                     <td align="center">
-                      <div style="background:white; border-radius:50%; width:80px; height:80px; display:inline-flex; align-items:center; justify-content:center; margin-bottom:15px;">
-                        <span style="font-size:40px;">🐟</span>
+                      <div style="background:white; border-radius:50%; width:80px; height:80px; display:inline-block; text-align:center; line-height:80px; margin-bottom:15px; box-shadow:0 4px 12px rgba(0,0,0,0.15);">
+                        ${logoSvg}
                       </div>
                     </td>
                   </tr>
@@ -212,10 +229,26 @@ export async function sendOtpEmail(email: string, name: string, otpCode: string)
     return;
   }
 
+  // Mail icon SVG for OTP verification
+  const mailIconSvg = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#2E7D32" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="2" y="4" width="20" height="16" rx="2"/>
+      <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+    </svg>
+  `;
+
+  // Lock icon SVG for security tips
+  const lockIconSvg = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle; margin-right:6px;">
+      <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+      <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+    </svg>
+  `;
+
   const content = `
     <div style="text-align:center;">
       <div style="background:#f0fdf4; border-radius:12px; padding:20px; margin-bottom:30px; display:inline-block;">
-        <span style="font-size:48px;">📧</span>
+        ${mailIconSvg}
       </div>
     </div>
 
@@ -252,7 +285,7 @@ export async function sendOtpEmail(email: string, name: string, otpCode: string)
 
     <div style="background:#f3f4f6; padding:20px; border-radius:8px; margin:25px 0;">
       <p style="font-size:14px; color:#4b5563; margin:0 0 10px 0; line-height:1.6;">
-        <strong>🔒 Security Tips:</strong>
+        <strong>${lockIconSvg}Security Tips:</strong>
       </p>
       <ul style="font-size:14px; color:#6b7280; margin:0; padding-left:20px; line-height:1.8;">
         <li>Never share this code with anyone</li>
@@ -308,10 +341,18 @@ export async function sendOrderConfirmation(email: string, orderDetails: {
     </tr>
   `).join('')
 
+  // Checkmark icon SVG
+  const checkIconSvg = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="#2E7D32" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+      <polyline points="22 4 12 14.01 9 11.01"/>
+    </svg>
+  `;
+
   const content = `
     <div style="text-align:center;">
       <div style="background:#dcfce7; border-radius:50%; width:100px; height:100px; display:inline-flex; align-items:center; justify-content:center; margin-bottom:20px;">
-        <span style="font-size:50px;">✅</span>
+        ${checkIconSvg}
       </div>
     </div>
 
@@ -330,7 +371,7 @@ export async function sendOrderConfirmation(email: string, orderDetails: {
     <!-- Order Items -->
     <div style="margin:30px 0;">
       <h3 style="color:#1f2937; font-size:20px; font-weight:600; margin:0 0 20px 0; padding-bottom:10px; border-bottom:2px solid #2E7D32;">
-        📦 Order Items
+        Order Items
       </h3>
 
       <table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #e5e7eb; border-radius:8px; overflow:hidden;">
@@ -359,7 +400,7 @@ export async function sendOrderConfirmation(email: string, orderDetails: {
     <!-- Shipping Address -->
     <div style="margin:30px 0;">
       <h3 style="color:#1f2937; font-size:20px; font-weight:600; margin:0 0 15px 0;">
-        📍 Shipping Address
+        Shipping Address
       </h3>
       <div style="background:#f9fafb; border:1px solid #e5e7eb; border-radius:8px; padding:20px;">
         <p style="font-size:15px; color:#374151; margin:0; line-height:1.8;">
@@ -398,10 +439,20 @@ export async function sendOrderConfirmation(email: string, orderDetails: {
 
 // Registration confirmation email
 export async function sendRegistrationConfirmation(email: string, name: string) {
+  // Welcome hand wave icon
+  const welcomeIconSvg = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M18 11V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2v0"/>
+      <path d="M14 10V4a2 2 0 0 0-2-2a2 2 0 0 0-2 2v2"/>
+      <path d="M10 10.5V6a2 2 0 0 0-2-2a2 2 0 0 0-2 2v8"/>
+      <path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/>
+    </svg>
+  `;
+
   const content = `
     <div style="text-align:center;">
       <div style="background:#dbeafe; border-radius:50%; width:100px; height:100px; display:inline-flex; align-items:center; justify-content:center; margin-bottom:20px;">
-        <span style="font-size:50px;">👋</span>
+        ${welcomeIconSvg}
       </div>
     </div>
 
@@ -417,7 +468,7 @@ export async function sendRegistrationConfirmation(email: string, name: string) 
 
     <div style="background:#eff6ff; border-left:4px solid #3b82f6; padding:20px; border-radius:8px; margin:25px 0;">
       <p style="font-size:15px; color:#1e40af; margin:0; line-height:1.7;">
-        <strong>🎉 Get Started:</strong> Browse our fresh and processed Lawlaw products, chat with sellers, and enjoy a seamless shopping experience!
+        <strong>Get Started:</strong> Browse our fresh and processed Lawlaw products, chat with sellers, and enjoy a seamless shopping experience!
       </p>
     </div>
 
@@ -436,7 +487,7 @@ export async function sendRegistrationConfirmation(email: string, name: string) 
 
   await sendEmail({
     to: email,
-    subject: 'Welcome to Bulan Lawlaw Delicacy System! 🎉',
+    subject: 'Welcome to Bulan Lawlaw Delicacy System',
     html,
     text: `Hello ${name}!\n\nWelcome to Bulan Lawlaw Delicacy System! Thank you for joining our community.\n\nVisit ${process.env.NEXTAUTH_URL}/products to start shopping for premium Lawlaw products.\n\nBest regards,\nBulan Lawlaw Team`
   })
@@ -444,10 +495,18 @@ export async function sendRegistrationConfirmation(email: string, name: string) 
 
 // Password reset email
 export async function sendPasswordResetEmail(email: string, resetUrl: string) {
+  // Lock/key icon for password reset
+  const lockIconSvg = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+      <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+    </svg>
+  `;
+
   const content = `
     <div style="text-align:center;">
       <div style="background:#fee2e2; border-radius:50%; width:100px; height:100px; display:inline-flex; align-items:center; justify-content:center; margin-bottom:20px;">
-        <span style="font-size:50px;">🔒</span>
+        ${lockIconSvg}
       </div>
     </div>
 
@@ -469,7 +528,7 @@ export async function sendPasswordResetEmail(email: string, resetUrl: string) {
 
     <div style="background:#fef3c7; border-left:4px solid #f59e0b; padding:20px; border-radius:8px; margin:25px 0;">
       <p style="font-size:14px; color:#92400e; margin:0; line-height:1.6;">
-        <strong>⏰ Important:</strong> This link will expire in <strong>1 hour</strong> for security reasons.
+        <strong>Important:</strong> This link will expire in <strong>1 hour</strong> for security reasons.
       </p>
     </div>
 
@@ -499,10 +558,19 @@ export async function sendPasswordResetEmail(email: string, resetUrl: string) {
 export async function sendEmailVerification(email: string, name: string, token: string) {
   const verificationUrl = `${process.env.NEXTAUTH_URL}/verify-email?token=${token}`
 
+  // Email verification icon
+  const emailVerifyIconSvg = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="2" y="4" width="20" height="16" rx="2"/>
+      <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+      <path d="m9 12 2 2 4-4"/>
+    </svg>
+  `;
+
   const content = `
     <div style="text-align:center;">
       <div style="background:#dbeafe; border-radius:50%; width:100px; height:100px; display:inline-flex; align-items:center; justify-content:center; margin-bottom:20px;">
-        <span style="font-size:50px;">📧</span>
+        ${emailVerifyIconSvg}
       </div>
     </div>
 
@@ -528,7 +596,7 @@ export async function sendEmailVerification(email: string, name: string, token: 
 
     <div style="background:#fef3c7; border-left:4px solid #f59e0b; padding:20px; border-radius:8px; margin:25px 0;">
       <p style="font-size:14px; color:#92400e; margin:0; line-height:1.6;">
-        <strong>⏰ Important:</strong> This verification link will expire in <strong>24 hours</strong>.
+        <strong>Important:</strong> This verification link will expire in <strong>24 hours</strong>.
       </p>
     </div>
 
@@ -552,10 +620,22 @@ export async function sendEmailVerification(email: string, name: string, token: 
 
 // Seller approval
 export async function sendSellerApprovalNotification(email: string, name: string, businessName: string) {
+  // Trophy/celebration icon for approval
+  const trophyIconSvg = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="#2E7D32" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/>
+      <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/>
+      <path d="M4 22h16"/>
+      <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/>
+      <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/>
+      <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>
+    </svg>
+  `;
+
   const content = `
     <div style="text-align:center;">
       <div style="background:#dcfce7; border-radius:50%; width:100px; height:100px; display:inline-flex; align-items:center; justify-content:center; margin-bottom:20px;">
-        <span style="font-size:50px;">🎉</span>
+        ${trophyIconSvg}
       </div>
     </div>
 
@@ -571,10 +651,10 @@ export async function sendSellerApprovalNotification(email: string, name: string
 
     <div style="background:#dcfce7; border-left:4px solid #2E7D32; padding:20px; border-radius:8px; margin:25px 0;">
       <p style="font-size:15px; color:#166534; margin:0; line-height:1.7;">
-        <strong>🚀 Next Steps:</strong><br>
-        • Set up your seller profile<br>
-        • Add your first products<br>
-        • Start receiving orders!
+        <strong>Next Steps:</strong><br>
+        - Set up your seller profile<br>
+        - Add your first products<br>
+        - Start receiving orders!
       </p>
     </div>
 
@@ -601,10 +681,22 @@ export async function sendSellerApprovalNotification(email: string, name: string
 
 // Seller rejection
 export async function sendSellerRejectionNotification(email: string, name: string, businessName: string) {
+  // Clipboard/document icon for application update
+  const clipboardIconSvg = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="8" y="2" width="8" height="4" rx="1" ry="1"/>
+      <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/>
+      <path d="M12 11h4"/>
+      <path d="M12 16h4"/>
+      <path d="M8 11h.01"/>
+      <path d="M8 16h.01"/>
+    </svg>
+  `;
+
   const content = `
     <div style="text-align:center;">
       <div style="background:#fee2e2; border-radius:50%; width:100px; height:100px; display:inline-flex; align-items:center; justify-content:center; margin-bottom:20px;">
-        <span style="font-size:50px;">📋</span>
+        ${clipboardIconSvg}
       </div>
     </div>
 
@@ -621,9 +713,9 @@ export async function sendSellerRejectionNotification(email: string, name: strin
     <div style="background:#fef3c7; border-left:4px solid #f59e0b; padding:20px; border-radius:8px; margin:25px 0;">
       <p style="font-size:15px; color:#92400e; margin:0; line-height:1.7;">
         <strong>What's Next?</strong><br>
-        • You may reapply after 3 months<br>
-        • Contact our support team for detailed feedback<br>
-        • Review our seller guidelines and requirements
+        - You may reapply after 3 months<br>
+        - Contact our support team for detailed feedback<br>
+        - Review our seller guidelines and requirements
       </p>
     </div>
 
@@ -659,7 +751,7 @@ export async function sendAdminOrderNotification(email: string, orderDetails: {
   const { orderId, buyerName, buyerEmail, totalAmount, itemCount } = orderDetails
 
   const content = `
-    <h2 style="color:#1f2937; margin:0 0 20px 0; font-size:24px; font-weight:700;">🔔 New Order Alert</h2>
+    <h2 style="color:#1f2937; margin:0 0 20px 0; font-size:24px; font-weight:700;">New Order Alert</h2>
 
     <div style="background:#f9fafb; border:1px solid #e5e7eb; border-radius:8px; padding:20px; margin:20px 0;">
       <p style="font-size:14px; color:#6b7280; margin:0 0 5px 0;">Order ID</p>
@@ -690,7 +782,7 @@ export async function sendAdminOrderNotification(email: string, orderDetails: {
 
   await sendEmail({
     to: email,
-    subject: `🔔 New Order #${orderId} - Bulan Lawlaw System`,
+    subject: `New Order #${orderId} - Bulan Lawlaw System`,
     html,
     text: `New Order Alert\n\nOrder: ${orderId}\nCustomer: ${buyerName} (${buyerEmail})\nItems: ${itemCount}\nTotal: ₱${totalAmount.toFixed(2)}`
   })
@@ -706,10 +798,19 @@ export async function sendSellerOrderNotification(email: string, orderDetails: {
 }) {
   const { orderId, buyerName, productName, quantity, totalAmount } = orderDetails
 
+  // Package/box icon for new order
+  const packageIconSvg = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="#2E7D32" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/>
+      <path d="m3.3 7 8.7 5 8.7-5"/>
+      <path d="M12 22V12"/>
+    </svg>
+  `;
+
   const content = `
     <div style="text-align:center;">
       <div style="background:#dcfce7; border-radius:50%; width:100px; height:100px; display:inline-flex; align-items:center; justify-content:center; margin-bottom:20px;">
-        <span style="font-size:50px;">📦</span>
+        ${packageIconSvg}
       </div>
     </div>
 

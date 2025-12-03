@@ -3,61 +3,79 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '../../../lib/auth'
 import { prisma } from '../../../lib/prisma'
 
+// Helper function to update cart item
+async function updateCartItem(request: NextRequest, params: Promise<{ id: string }>) {
+  const session = await getServerSession(authOptions)
+
+  if (!session) {
+    return NextResponse.json(
+      { error: 'Unauthorized' },
+      { status: 401 }
+    )
+  }
+
+  const body = await request.json()
+  const { quantity } = body
+
+  if (quantity === undefined || quantity < 1) {
+    return NextResponse.json(
+      { error: 'Valid quantity is required' },
+      { status: 400 }
+    )
+  }
+
+  const { id } = await params
+
+  // Verify the cart item belongs to the user
+  const cartItem = await prisma.cartItem.findFirst({
+    where: {
+      id,
+      userId: session.user.id
+    },
+    include: { product: true }
+  })
+
+  if (!cartItem) {
+    return NextResponse.json(
+      { error: 'Cart item not found' },
+      { status: 404 }
+    )
+  }
+
+  // Check stock availability
+  if (cartItem.product.stock < quantity) {
+    return NextResponse.json(
+      { error: 'Insufficient stock' },
+      { status: 400 }
+    )
+  }
+
+  const updatedItem = await prisma.cartItem.update({
+    where: { id },
+    data: { quantity },
+    include: { product: true }
+  })
+
+  return NextResponse.json(updatedItem)
+}
+
 // PUT /api/cart/[id] - Update cart item quantity
 export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const session = await getServerSession(authOptions)
+    return await updateCartItem(request, params)
+  } catch (error) {
+    console.error('Error updating cart item:', error)
+    return NextResponse.json(
+      { error: 'Failed to update cart item' },
+      { status: 500 }
+    )
+  }
+}
 
-    if (!session) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      )
-    }
-
-    const body = await request.json()
-    const { quantity } = body
-
-    if (quantity === undefined || quantity < 1) {
-      return NextResponse.json(
-        { error: 'Valid quantity is required' },
-        { status: 400 }
-      )
-    }
-
-    const { id } = await params
-
-    // Verify the cart item belongs to the user
-    const cartItem = await prisma.cartItem.findFirst({
-      where: {
-        id,
-        userId: session.user.id
-      },
-      include: { product: true }
-    })
-
-    if (!cartItem) {
-      return NextResponse.json(
-        { error: 'Cart item not found' },
-        { status: 404 }
-      )
-    }
-
-    // Check stock availability
-    if (cartItem.product.stock < quantity) {
-      return NextResponse.json(
-        { error: 'Insufficient stock' },
-        { status: 400 }
-      )
-    }
-
-    const updatedItem = await prisma.cartItem.update({
-      where: { id },
-      data: { quantity },
-      include: { product: true }
-    })
-
-    return NextResponse.json(updatedItem)
+// PATCH /api/cart/[id] - Update cart item quantity (alias for PUT)
+export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  try {
+    return await updateCartItem(request, params)
   } catch (error) {
     console.error('Error updating cart item:', error)
     return NextResponse.json(

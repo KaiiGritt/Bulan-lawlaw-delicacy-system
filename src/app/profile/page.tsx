@@ -1032,166 +1032,291 @@ export default function ProfilePage() {
  initial={{ opacity: 0, y: 20 }}
  animate={{ opacity: 1, y: 0 }}
  transition={{ delay: 0.1 }}
- className="bg-white rounded-2xl p-3 sm:p-4 shadow-lg border border-soft-green/20 space-y-2 sm:space-y-3 relative"
+ className="bg-white rounded-2xl p-4 sm:p-5 shadow-lg border border-soft-green/20 relative overflow-hidden"
  >
+ {/* Background decoration */}
+ <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-primary-green/5 to-transparent rounded-full -translate-y-1/2 translate-x-1/2" />
+
  {showTooltips && (
  <motion.div
- initial={{ opacity: 0, x: 10 }}
- animate={{ opacity: 1, x: 0 }}
- className="absolute -top-3 left-1/2 -translate-x-1/2 z-10"
+ initial={{ opacity: 0, y: -10 }}
+ animate={{ opacity: 1, y: 0 }}
+ className="absolute -top-2 left-1/2 -translate-x-1/2 z-10"
  >
- <div className="bg-blue-500 text-white text-xs px-3 py-1.5 rounded-lg shadow-lg whitespace-nowrap flex items-center gap-1">
- <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+ <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white text-xs px-4 py-2 rounded-full shadow-lg whitespace-nowrap flex items-center gap-2">
+ <svg className="w-4 h-4 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
  </svg>
  Quick access menu
  </div>
  </motion.div>
  )}
- <p className="text-xs text-gray-600 font-bold uppercase tracking-wide flex items-center gap-2">
- <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+
+ <div className="flex items-center justify-between mb-4">
+ <h3 className="text-sm sm:text-base font-bold text-gray-800 flex items-center gap-2">
+ <div className="p-1.5 bg-gradient-to-br from-primary-green to-leaf-green rounded-lg">
+ <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
  </svg>
+ </div>
  Quick Actions
- </p>
- <div className="grid grid-cols-2 sm:grid-cols-1 gap-2">
- {profile.role !== 'seller' && (
- <>
- <Link href="/orders" className="text-xs sm:text-sm p-2.5 sm:p-3 rounded-lg bg-emerald-50 hover:bg-emerald-100 transition-colors flex flex-col sm:flex-row items-center justify-center sm:justify-start gap-1 sm:gap-2">
- <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+ </h3>
+ </div>
+
+ {profile.role !== 'seller' ? (
+ /* User Quick Actions - Modern Grid Layout */
+ <div className="space-y-3">
+ {/* Main Action Buttons - 2x2 Grid on Mobile */}
+ <div className="grid grid-cols-2 gap-2 sm:gap-3">
+ <Link
+ href="/orders"
+ className="group relative p-3 sm:p-4 rounded-xl bg-gradient-to-br from-emerald-50 to-emerald-100/50 hover:from-emerald-100 hover:to-emerald-200/50 border border-emerald-200/50 transition-all duration-300 hover:shadow-md hover:scale-[1.02] active:scale-[0.98]"
+ >
+ <div className="flex flex-col items-center gap-2">
+ <div className="p-2.5 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl shadow-sm group-hover:shadow-md transition-shadow">
+ <svg className="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
  </svg>
- <span className="text-center sm:text-left">Orders</span>
- </Link>
- <Link href="/collections" className="col-span-2 sm:col-span-1 text-xs sm:text-sm p-2.5 sm:p-3 rounded-lg bg-gradient-to-r from-purple-50 to-pink-50 hover:from-purple-100 hover:to-pink-100 transition-colors flex flex-row items-center justify-between gap-2 border border-purple-200 relative">
- <div className="flex items-center gap-2">
- <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
- <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
- </svg>
- <span className="font-semibold">My Collections</span>
  </div>
- <div className="flex items-center gap-1">
- <span className="px-2 py-0.5 bg-yellow-200 text-yellow-800 rounded-full text-[10px] sm:text-xs font-semibold">
- {wishlistItems.length}
- </span>
- <span className="px-2 py-0.5 bg-rose-200 text-rose-800 rounded-full text-[10px] sm:text-xs font-semibold">
- {recipeFavorites.length}
- </span>
- <span className="px-2 py-0.5 bg-purple-200 text-purple-800 rounded-full text-[10px] sm:text-xs font-semibold">
- {savedRecipes.length}
- </span>
+ <span className="text-xs sm:text-sm font-semibold text-gray-700 group-hover:text-emerald-700 transition-colors">My Orders</span>
  </div>
  </Link>
- <Link href="/add-recipe" className="col-span-2 sm:col-span-1 text-xs sm:text-sm p-2.5 sm:p-3 rounded-lg bg-gradient-to-r from-orange-50 to-orange-100 hover:from-orange-100 hover:to-orange-200 transition-colors flex flex-row items-center justify-center gap-2 border border-orange-200">
- <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
- <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
- </svg>
- <span className="font-semibold">Add Recipe</span>
- </Link>
- <Link href="/addresses" className="col-span-2 sm:col-span-1 text-xs sm:text-sm p-2.5 sm:p-3 rounded-lg bg-blue-50 hover:bg-blue-100 transition-colors flex flex-row items-center justify-center gap-2">
- <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+
+ <Link
+ href="/addresses"
+ className="group relative p-3 sm:p-4 rounded-xl bg-gradient-to-br from-blue-50 to-blue-100/50 hover:from-blue-100 hover:to-blue-200/50 border border-blue-200/50 transition-all duration-300 hover:shadow-md hover:scale-[1.02] active:scale-[0.98]"
+ >
+ <div className="flex flex-col items-center gap-2">
+ <div className="p-2.5 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-sm group-hover:shadow-md transition-shadow">
+ <svg className="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
  </svg>
- <span>Address Book</span>
+ </div>
+ <span className="text-xs sm:text-sm font-semibold text-gray-700 group-hover:text-blue-700 transition-colors">Addresses</span>
+ </div>
  </Link>
- </>
- )}
- {profile.role === 'seller' && (
- <>
- <Link href="/seller-dashboard" className="text-xs sm:text-sm p-2.5 sm:p-3 rounded-lg bg-gradient-to-r from-green-50 to-green-100 hover:from-green-100 hover:to-green-200 transition-colors flex flex-col sm:flex-row items-center justify-center sm:justify-start gap-1 sm:gap-2 border border-green-200">
- <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
- <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
- </svg>
- <span className="text-center font-medium">Dashboard</span>
- </Link>
- <Link href="/seller-products" className="text-xs sm:text-sm p-2.5 sm:p-3 rounded-lg bg-purple-50 hover:bg-purple-100 transition-colors flex flex-col sm:flex-row items-center justify-center sm:justify-start gap-1 sm:gap-2">
- <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
- <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
- </svg>
- <span className="text-center">Products</span>
- </Link>
- <Link href="/seller-orders" className="text-xs sm:text-sm p-2.5 sm:p-3 rounded-lg bg-orange-50 hover:bg-orange-100 transition-colors flex flex-col sm:flex-row items-center justify-center sm:justify-start gap-1 sm:gap-2">
- <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
- <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
- </svg>
- <span className="text-center">Orders</span>
- </Link>
- <Link href="/seller-analytics" className="text-xs sm:text-sm p-2.5 sm:p-3 rounded-lg bg-blue-50 hover:bg-blue-100 transition-colors flex flex-col sm:flex-row items-center justify-center sm:justify-start gap-1 sm:gap-2">
- <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
- <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
- </svg>
- <span className="text-center">Analytics</span>
- </Link>
- <Link href="/collections" className="col-span-2 sm:col-span-1 text-xs sm:text-sm p-2.5 sm:p-3 rounded-lg bg-gradient-to-r from-purple-50 to-pink-50 hover:from-purple-100 hover:to-pink-100 transition-colors flex flex-row items-center justify-between gap-2 border border-purple-200 relative">
- <div className="flex items-center gap-2">
- <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+ </div>
+
+ {/* Collections Card - Full Width with Badges */}
+ <Link
+ href="/collections"
+ className="group block p-3 sm:p-4 rounded-xl bg-gradient-to-r from-purple-50 via-pink-50 to-rose-50 hover:from-purple-100 hover:via-pink-100 hover:to-rose-100 border border-purple-200/50 transition-all duration-300 hover:shadow-md"
+ >
+ <div className="flex items-center justify-between">
+ <div className="flex items-center gap-3">
+ <div className="p-2.5 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl shadow-sm group-hover:shadow-md transition-shadow">
+ <svg className="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
  </svg>
- <span className="font-semibold">My Collections</span>
  </div>
- <div className="flex items-center gap-1">
- <span className="px-2 py-0.5 bg-yellow-200 text-yellow-800 rounded-full text-[10px] sm:text-xs font-semibold">
+ <div>
+ <span className="text-sm sm:text-base font-bold text-gray-800 group-hover:text-purple-700 transition-colors">My Collections</span>
+ <p className="text-[10px] sm:text-xs text-gray-500">Wishlist, Favorites & Saved</p>
+ </div>
+ </div>
+ <div className="flex items-center gap-1.5">
+ <span className="px-2 py-1 bg-yellow-400/20 text-yellow-700 rounded-full text-[10px] sm:text-xs font-bold border border-yellow-300/50">
  {wishlistItems.length}
  </span>
- <span className="px-2 py-0.5 bg-rose-200 text-rose-800 rounded-full text-[10px] sm:text-xs font-semibold">
+ <span className="px-2 py-1 bg-rose-400/20 text-rose-700 rounded-full text-[10px] sm:text-xs font-bold border border-rose-300/50">
  {recipeFavorites.length}
  </span>
- <span className="px-2 py-0.5 bg-purple-200 text-purple-800 rounded-full text-[10px] sm:text-xs font-semibold">
+ <span className="px-2 py-1 bg-purple-400/20 text-purple-700 rounded-full text-[10px] sm:text-xs font-bold border border-purple-300/50">
  {savedRecipes.length}
  </span>
+ <svg className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400 group-hover:text-purple-500 group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+ <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+ </svg>
+ </div>
  </div>
  </Link>
- <Link href="/seller-shop?action=add" className="col-span-2 sm:col-span-1 text-xs sm:text-sm p-2.5 sm:p-3 rounded-lg bg-gradient-to-r from-emerald-50 to-emerald-100 hover:from-emerald-100 hover:to-emerald-200 transition-colors flex flex-row items-center justify-center gap-2 border border-emerald-300">
- <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+
+ {/* Add Recipe Button - Full Width */}
+ <Link
+ href="/add-recipe"
+ className="group flex items-center justify-center gap-2 p-3 sm:p-4 rounded-xl bg-gradient-to-r from-orange-100 to-amber-100 hover:from-orange-200 hover:to-amber-200 border border-orange-200/50 transition-all duration-300 hover:shadow-md"
+ >
+ <div className="p-2 bg-gradient-to-br from-orange-500 to-amber-500 rounded-lg shadow-sm group-hover:shadow-md transition-shadow">
+ <svg className="w-4 h-4 sm:w-5 sm:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
  </svg>
- <span className="font-semibold">Add Recipe</span>
- </Link>
- </>
- )}
  </div>
+ <span className="text-sm sm:text-base font-bold text-orange-700">Share Your Recipe</span>
+ </Link>
+ </div>
+ ) : (
+ /* Seller Quick Actions - Modern Grid Layout */
+ <div className="space-y-3">
+ {/* Main Action Buttons - 2x2 Grid */}
+ <div className="grid grid-cols-2 gap-2 sm:gap-3">
+ <Link
+ href="/seller-dashboard"
+ className="group relative p-3 sm:p-4 rounded-xl bg-gradient-to-br from-green-50 to-emerald-100/50 hover:from-green-100 hover:to-emerald-200/50 border border-green-200/50 transition-all duration-300 hover:shadow-md hover:scale-[1.02] active:scale-[0.98]"
+ >
+ <div className="flex flex-col items-center gap-2">
+ <div className="p-2.5 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl shadow-sm group-hover:shadow-md transition-shadow">
+ <svg className="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+ <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+ </svg>
+ </div>
+ <span className="text-xs sm:text-sm font-semibold text-gray-700 group-hover:text-green-700 transition-colors">Dashboard</span>
+ </div>
+ </Link>
+
+ <Link
+ href="/seller-products"
+ className="group relative p-3 sm:p-4 rounded-xl bg-gradient-to-br from-purple-50 to-purple-100/50 hover:from-purple-100 hover:to-purple-200/50 border border-purple-200/50 transition-all duration-300 hover:shadow-md hover:scale-[1.02] active:scale-[0.98]"
+ >
+ <div className="flex flex-col items-center gap-2">
+ <div className="p-2.5 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl shadow-sm group-hover:shadow-md transition-shadow">
+ <svg className="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+ <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+ </svg>
+ </div>
+ <span className="text-xs sm:text-sm font-semibold text-gray-700 group-hover:text-purple-700 transition-colors">Products</span>
+ </div>
+ </Link>
+
+ <Link
+ href="/seller-orders"
+ className="group relative p-3 sm:p-4 rounded-xl bg-gradient-to-br from-orange-50 to-orange-100/50 hover:from-orange-100 hover:to-orange-200/50 border border-orange-200/50 transition-all duration-300 hover:shadow-md hover:scale-[1.02] active:scale-[0.98]"
+ >
+ <div className="flex flex-col items-center gap-2">
+ <div className="p-2.5 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl shadow-sm group-hover:shadow-md transition-shadow">
+ <svg className="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+ <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+ </svg>
+ </div>
+ <span className="text-xs sm:text-sm font-semibold text-gray-700 group-hover:text-orange-700 transition-colors">Orders</span>
+ </div>
+ </Link>
+
+ <Link
+ href="/seller-analytics"
+ className="group relative p-3 sm:p-4 rounded-xl bg-gradient-to-br from-blue-50 to-blue-100/50 hover:from-blue-100 hover:to-blue-200/50 border border-blue-200/50 transition-all duration-300 hover:shadow-md hover:scale-[1.02] active:scale-[0.98]"
+ >
+ <div className="flex flex-col items-center gap-2">
+ <div className="p-2.5 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-sm group-hover:shadow-md transition-shadow">
+ <svg className="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+ <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+ </svg>
+ </div>
+ <span className="text-xs sm:text-sm font-semibold text-gray-700 group-hover:text-blue-700 transition-colors">Analytics</span>
+ </div>
+ </Link>
+ </div>
+
+ {/* Collections Card - Full Width with Badges */}
+ <Link
+ href="/collections"
+ className="group block p-3 sm:p-4 rounded-xl bg-gradient-to-r from-purple-50 via-pink-50 to-rose-50 hover:from-purple-100 hover:via-pink-100 hover:to-rose-100 border border-purple-200/50 transition-all duration-300 hover:shadow-md"
+ >
+ <div className="flex items-center justify-between">
+ <div className="flex items-center gap-3">
+ <div className="p-2.5 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl shadow-sm group-hover:shadow-md transition-shadow">
+ <svg className="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+ <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+ </svg>
+ </div>
+ <div>
+ <span className="text-sm sm:text-base font-bold text-gray-800 group-hover:text-purple-700 transition-colors">My Collections</span>
+ <p className="text-[10px] sm:text-xs text-gray-500">Wishlist, Favorites & Saved</p>
+ </div>
+ </div>
+ <div className="flex items-center gap-1.5">
+ <span className="px-2 py-1 bg-yellow-400/20 text-yellow-700 rounded-full text-[10px] sm:text-xs font-bold border border-yellow-300/50">
+ {wishlistItems.length}
+ </span>
+ <span className="px-2 py-1 bg-rose-400/20 text-rose-700 rounded-full text-[10px] sm:text-xs font-bold border border-rose-300/50">
+ {recipeFavorites.length}
+ </span>
+ <span className="px-2 py-1 bg-purple-400/20 text-purple-700 rounded-full text-[10px] sm:text-xs font-bold border border-purple-300/50">
+ {savedRecipes.length}
+ </span>
+ <svg className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400 group-hover:text-purple-500 group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+ <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+ </svg>
+ </div>
+ </div>
+ </Link>
+
+ {/* Add Recipe Button - Full Width */}
+ <Link
+ href="/seller-shop?action=add"
+ className="group flex items-center justify-center gap-2 p-3 sm:p-4 rounded-xl bg-gradient-to-r from-emerald-100 to-green-100 hover:from-emerald-200 hover:to-green-200 border border-emerald-300/50 transition-all duration-300 hover:shadow-md"
+ >
+ <div className="p-2 bg-gradient-to-br from-emerald-500 to-green-500 rounded-lg shadow-sm group-hover:shadow-md transition-shadow">
+ <svg className="w-4 h-4 sm:w-5 sm:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+ <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+ </svg>
+ </div>
+ <span className="text-sm sm:text-base font-bold text-emerald-700">Add New Recipe</span>
+ </Link>
+ </div>
+ )}
+ </motion.div>
+
+ {/* Become a Seller Section */}
  {profile.role !== 'seller' && !profile.sellerApplication && (
  <motion.div
  initial={{ opacity: 0, y: 20 }}
  animate={{ opacity: 1, y: 0 }}
- className="bg-white rounded-2xl p-6 shadow mt-6"
+ transition={{ delay: 0.15 }}
+ className="bg-gradient-to-br from-white to-green-50/50 rounded-2xl p-4 sm:p-5 shadow-lg border border-soft-green/20 relative overflow-hidden"
  >
- <h3 className="text-lg font-semibold text-primary-green mb-3">Become a Seller</h3>
- <p className="text-sm text-gray-600 mb-4">
- Start selling your products and grow your business. Apply to become a seller today!
- </p>
- {profile.role !== 'seller' && !profile.sellerApplication && (
- <button
- onClick={() => router.push('/seller-application')}
- className="bg-primary-green text-white px-4 py-2 rounded-lg hover:bg-leaf-green transition-colors font-medium mt-4 flex items-center gap-2"
- >
- <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+ <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-primary-green/10 to-transparent rounded-full -translate-y-1/2 translate-x-1/2" />
+ <div className="flex items-start gap-3 sm:gap-4">
+ <div className="p-2.5 sm:p-3 bg-gradient-to-br from-primary-green to-leaf-green rounded-xl shadow-sm flex-shrink-0">
+ <svg className="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
  </svg>
- Apply to Become a Seller
+ </div>
+ <div className="flex-1 min-w-0">
+ <h3 className="text-sm sm:text-base font-bold text-gray-800 mb-1">Become a Seller</h3>
+ <p className="text-xs sm:text-sm text-gray-600 mb-3 line-clamp-2">
+ Start selling your products and grow your business today!
+ </p>
+ <button
+ onClick={() => router.push('/seller-application')}
+ className="w-full sm:w-auto bg-gradient-to-r from-primary-green to-leaf-green text-white px-4 py-2.5 rounded-xl hover:shadow-md transition-all duration-300 font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-[0.98]"
+ >
+ <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+ <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+ </svg>
+ Apply Now
  </button>
- )}
+ </div>
+ </div>
  </motion.div>
  )}
 
+ {/* Seller Application Status */}
  {profile.sellerApplication && (
  <motion.div
  initial={{ opacity: 0, y: 20 }}
  animate={{ opacity: 1, y: 0 }}
- className="bg-yellow-50 rounded-2xl p-6 shadow mt-6"
+ transition={{ delay: 0.15 }}
+ className="bg-gradient-to-br from-yellow-50 to-amber-50/50 rounded-2xl p-4 sm:p-5 shadow-lg border border-yellow-200/50"
  >
- <h3 className="text-lg font-semibold text-yellow-700 mb-3">Seller Application Status</h3>
- <p className="text-sm text-gray-700">
- Your application for becoming a seller is currently <span className="font-semibold">{profile.sellerApplication.status}</span>.
+ <div className="flex items-start gap-3 sm:gap-4">
+ <div className="p-2.5 sm:p-3 bg-gradient-to-br from-yellow-500 to-amber-500 rounded-xl shadow-sm flex-shrink-0">
+ <svg className="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+ <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+ </svg>
+ </div>
+ <div className="flex-1 min-w-0">
+ <h3 className="text-sm sm:text-base font-bold text-yellow-800 mb-1">Application Status</h3>
+ <p className="text-xs sm:text-sm text-gray-700">
+ Your seller application is <span className="font-bold text-yellow-700 capitalize">{profile.sellerApplication.status}</span>
  </p>
- <p className="text-xs text-gray-500 mt-1">
- Submitted on: {new Date(profile.sellerApplication.submittedAt).toLocaleDateString()}
+ <p className="text-[10px] sm:text-xs text-gray-500 mt-1">
+ Submitted: {new Date(profile.sellerApplication.submittedAt).toLocaleDateString()}
  </p>
+ </div>
+ </div>
  </motion.div>
  )}
-
- </motion.div>
 
  {/* Account Info */}
  <motion.div
