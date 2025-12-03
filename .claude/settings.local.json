@@ -20,7 +20,9 @@
       "Bash(tee:*)",
       "Bash(npx prisma generate:*)",
       "Bash(dir:*)",
-      "Bash(npm ls:*)"
+      "Bash(npm ls:*)",
+      "Bash(git push:*)",
+      "Bash(npx tsc:*)"
     ],
     "deny": [],
     "ask": []

@@ -358,24 +358,9 @@ npm run build
 - Supported formats: JPG, PNG, WebP
 - Images are stored as Base64 in database
 
-## 📄 License
+# Leader #
+- John Loyd Serapion
 
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## 👥 Team & Contact
-
-Built with ❤️ by the Lawlaw Delights team
-
-- **GitHub Repository**: [Bulan-lawlaw-delicacy-system](https://github.com/KaiiGritt/Bulan-lawlaw-delicacy-system)
-- **Report Issues**: [GitHub Issues](https://github.com/KaiiGritt/Bulan-lawlaw-delicacy-system/issues)
-- **Email Support**: support@lawlawdelights.com
-
-## 🙏 Acknowledgments
-
-- Inspired by the rich culinary traditions of Bulan, Sorsogon, Philippines
-- Built with modern web technologies for optimal performance and user experience
-- Designed to empower local Filipino artisan businesses and preserve traditional recipes
-
----
-
-**Made with 🍤 for authentic Filipino delicacies | Remember:** Always run `npm run build` before pushing (done automatically by git hook)!
+# Members #
+- Jessica Mae Jamisal
+- Ren-ian Mantes
