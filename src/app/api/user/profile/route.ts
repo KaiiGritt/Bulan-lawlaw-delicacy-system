@@ -24,9 +24,9 @@ export async function GET(request: NextRequest) {
     console.log('Profile API - User ID:', session.user.id)
 
     const user = await prisma.user.findUnique({
-      where: { id: session.user.id },
+      where: { userId: parseInt(session.user.id) },
       select: {
-        id: true,
+        userId: true,
         email: true,
         name: true,
         phoneNumber: true,
@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
         emailVerified: true,
         sellerApplication: {
           select: {
-            id: true,
+            applicationId: true,
             businessName: true,
             businessType: true,
             status: true,
@@ -101,7 +101,7 @@ export async function PUT(request: NextRequest) {
       }
 
       const user = await prisma.user.findUnique({
-        where: { id: session.user.id }
+        where: { userId: parseInt(session.user.id) }
       })
 
       if (!user) {
@@ -128,10 +128,10 @@ export async function PUT(request: NextRequest) {
     }
 
     const updatedUser = await prisma.user.update({
-      where: { id: session.user.id },
+      where: { userId: parseInt(session.user.id) },
       data: updateData,
       select: {
-        id: true,
+        userId: true,
         email: true,
         name: true,
         role: true,
@@ -197,10 +197,10 @@ export async function POST(request: NextRequest) {
 
     // Update user profile with base64 image
     const updatedUser = await prisma.user.update({
-      where: { id: session.user.id },
+      where: { userId: parseInt(session.user.id) },
       data: { profilePicture: base64Image },
       select: {
-        id: true,
+        userId: true,
         email: true,
         name: true,
         role: true,

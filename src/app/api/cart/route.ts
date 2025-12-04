@@ -16,7 +16,7 @@ export async function GET() {
     }
 
     const cartItems = await prisma.cartItem.findMany({
-      where: { userId: session.user.id },
+      where: { userId: parseInt(session.user.id) },
       include: {
         product: true
       }
@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
 
     // Check if product exists and has stock
     const product = await prisma.product.findUnique({
-      where: { id: productId }
+      where: { productId: productId }
     })
 
     if (!product) {
@@ -67,7 +67,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Prevent sellers from buying their own products
-    if (product.userId === session.user.id) {
+    if (product.userId === parseInt(session.user.id)) {
       return NextResponse.json(
         { error: 'You cannot purchase your own product' },
         { status: 400 }
@@ -85,7 +85,7 @@ export async function POST(request: NextRequest) {
     const existingItem = await prisma.cartItem.findUnique({
       where: {
         userId_productId: {
-          userId: session.user.id,
+          userId: parseInt(session.user.id),
           productId
         }
       }
@@ -95,7 +95,7 @@ export async function POST(request: NextRequest) {
     if (existingItem) {
       // Update quantity
       cartItem = await prisma.cartItem.update({
-        where: { id: existingItem.id },
+        where: { cartItemId: existingItem.cartItemId },
         data: { quantity: existingItem.quantity + quantity },
         include: { product: true }
       })
@@ -103,7 +103,7 @@ export async function POST(request: NextRequest) {
       // Create new cart item
       cartItem = await prisma.cartItem.create({
         data: {
-          userId: session.user.id,
+          userId: parseInt(session.user.id),
           productId,
           quantity
         },
@@ -134,7 +134,7 @@ export async function DELETE() {
     }
 
     await prisma.cartItem.deleteMany({
-      where: { userId: session.user.id }
+      where: { userId: parseInt(session.user.id) }
     })
 
     return NextResponse.json({ message: 'Cart cleared successfully' })

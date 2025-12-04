@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
 
     // Check if user exists
     const user = await prisma.user.findUnique({
-      where: { id: session.user.id }
+      where: { userId: parseInt(session.user.id) }
     })
 
     if (!user) {
@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
 
     // Delete user (cascading deletes will handle related records)
     await prisma.user.delete({
-      where: { id: session.user.id }
+      where: { userId: parseInt(session.user.id) }
     })
 
     return NextResponse.json({

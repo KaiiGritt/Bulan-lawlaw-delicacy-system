@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
 
     // Get all user data
     const user = await prisma.user.findUnique({
-      where: { id: session.user.id },
+      where: { userId: parseInt(session.user.id) },
       include: {
         orders: {
           include: {
@@ -43,7 +43,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Remove sensitive data
-    const { password, resetToken, resetTokenExpiry, emailVerificationToken, emailVerificationTokenExpiry, ...userData } = user
+    const { password, resetToken, resetTokenExpiry, ...userData } = user
 
     // Create JSON export
     const exportData = {

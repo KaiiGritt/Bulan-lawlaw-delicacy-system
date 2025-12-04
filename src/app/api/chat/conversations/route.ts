@@ -18,14 +18,14 @@ export async function GET(request: NextRequest) {
     const conversations = await prisma.conversation.findMany({
       where: {
         OR: [
-          { sellerId: session.user.id },
-          { buyerId: session.user.id }
+          { sellerId: parseInt(session.user.id) },
+          { buyerId: parseInt(session.user.id) }
         ]
       },
       include: {
         seller: {
           select: {
-            id: true,
+            userId: true,
             name: true,
             email: true,
             sellerApplication: {
@@ -37,15 +37,15 @@ export async function GET(request: NextRequest) {
           }
         },
         buyer: {
-          select: { id: true, name: true, email: true }
+          select: { userId: true, name: true, email: true }
         },
         product: {
-          select: { id: true, name: true, image: true }
+          select: { productId: true, name: true, image: true }
         },
         messages: {
           include: {
             sender: {
-              select: { id: true, name: true, email: true }
+              select: { userId: true, name: true, email: true }
             }
           },
           orderBy: { createdAt: 'asc' }
@@ -87,7 +87,7 @@ export async function POST(request: NextRequest) {
 
     // Get the product to find the seller
     const product = await prisma.product.findUnique({
-      where: { id: productId },
+      where: { productId: productId },
       select: { userId: true }
     })
 
@@ -102,7 +102,7 @@ export async function POST(request: NextRequest) {
     const existingConversation = await prisma.conversation.findFirst({
       where: {
         sellerId: product.userId,
-        buyerId: session.user.id,
+        buyerId: parseInt(session.user.id),
         productId: productId
       }
     })
@@ -115,11 +115,11 @@ export async function POST(request: NextRequest) {
     const conversation = await prisma.conversation.create({
       data: {
         sellerId: product.userId,
-        buyerId: session.user.id,
+        buyerId: parseInt(session.user.id),
         productId: productId,
         messages: {
           create: {
-            senderId: session.user.id,
+            senderId: parseInt(session.user.id),
             content: message
           }
         }
@@ -127,7 +127,7 @@ export async function POST(request: NextRequest) {
       include: {
         seller: {
           select: {
-            id: true,
+            userId: true,
             name: true,
             email: true,
             sellerApplication: {
@@ -139,15 +139,15 @@ export async function POST(request: NextRequest) {
           }
         },
         buyer: {
-          select: { id: true, name: true, email: true }
+          select: { userId: true, name: true, email: true }
         },
         product: {
-          select: { id: true, name: true, image: true }
+          select: { productId: true, name: true, image: true }
         },
         messages: {
           include: {
             sender: {
-              select: { id: true, name: true, email: true }
+              select: { userId: true, name: true, email: true }
             }
           },
           orderBy: { createdAt: 'asc' }

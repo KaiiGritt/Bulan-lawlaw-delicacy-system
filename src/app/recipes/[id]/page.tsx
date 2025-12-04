@@ -421,7 +421,7 @@ export default function RecipePage({ params }: RecipePageProps) {
  };
 
  return (
- <div className="min-h-screen bg-gradient-to-br from-accent-cream to-soft-green/20 py-12">
+ <div className="min-h-screen bg-gradient-to-br from-lawlaw-silver via-lawlaw-silver-shimmer to-lawlaw-steel-blue/20 py-12">
  <Toaster position="top-right" />
  <div className="container mx-auto px-4">
  <div className="max-w-4xl mx-auto">

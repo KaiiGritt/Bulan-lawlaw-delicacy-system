@@ -14,7 +14,7 @@ export async function GET(req: NextRequest) {
 
     const addresses = await prisma.address.findMany({
       where: {
-        userId: session.user.id
+        userId: parseInt(session.user.id)
       },
       orderBy: [
         { isDefault: 'desc' }, // Default address first
@@ -85,7 +85,7 @@ export async function POST(req: NextRequest) {
     if (isDefault) {
       await prisma.address.updateMany({
         where: {
-          userId: session.user.id,
+          userId: parseInt(session.user.id),
           isDefault: true
         },
         data: {
@@ -96,7 +96,7 @@ export async function POST(req: NextRequest) {
 
     const address = await prisma.address.create({
       data: {
-        userId: session.user.id,
+        userId: parseInt(session.user.id),
         fullName,
         phoneNumber,
         region,

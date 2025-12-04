@@ -7,196 +7,205 @@ datasource db {
   url      = "mysql://root:FTavJoRuTQvmAlGmAWSXTizPznUmmFWP@shortline.proxy.rlwy.net:13005/railway"
 }
 
-model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  phoneNumber String? @unique // For WhatsApp login
-  name      String?
-  password  String
-  role      String   @default("user") // user, admin, seller
-  blocked   Boolean  @default(false)
-  profilePicture String? @db.LongText // Store base64 images
-  emailVerified Boolean @default(false)
-  emailVerificationToken String?
-  emailVerificationTokenExpiry DateTime?
-  resetToken String?
-  resetTokenExpiry DateTime?
-  marketingEmails Boolean @default(true) // Opt-in for marketing emails
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+// ==================== MAIN MODELS ====================
 
-  // Relations
-  cartItems CartItem[]
-  orders    Order[]
-  products  Product[]
-  addresses Address[]
-  sellerApplication SellerApplication?
-  sentMessages Message[]
-  sellerConversations Conversation[] @relation("SellerConversations")
-  buyerConversations Conversation[] @relation("BuyerConversations")
-  notifications Notification[]
-  comments Comment[]
-  wishlistItems WishlistItem[]
-  recipeFavorites RecipeFavorite[]
-  savedRecipes SavedRecipe[]
-  recipeReviews RecipeReview[]
+model User {
+  userId           Int       @id @default(autoincrement())
+  email            String    @unique
+  phoneNumber      String?   @unique
+  name             String?
+  password         String
+  role             String    @default("user") // user, admin, seller
+  remarks          String?   @db.Text
+  profilePicture   String?   @db.LongText
+  emailVerified    Boolean   @default(false)
+  resetToken       String?
+  resetTokenExpiry DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  cartItems           CartItem[]
+  orders              Order[]
+  products            Product[]
+  addresses           Address[]
+  sellerApplication   SellerApplication?
+  sentMessages        Message[]
+  sellerConversations Conversation[]     @relation("SellerConversations")
+  buyerConversations  Conversation[]     @relation("BuyerConversations")
+  notifications       Notification[]
+  comments            Comment[]
+  savedRecipes        SavedRecipe[]
+  recipeReviews       RecipeReview[]
+  otps                Otp[]
 
   @@map("users")
 }
 
 model Product {
-  id          String   @id @default(cuid())
+  productId   Int      @id @default(autoincrement())
   name        String
   description String   @db.Text
   price       Float
   category    String   // fresh, dried, processed
-  image       String   @db.LongText // Store base64 images
+  image       String   @db.LongText
   stock       Int      @default(0)
-  userId      String
-  status      String   @default("pending") // pending, approved, rejected
-  featured    Boolean  @default(false)  // new field to feature/highlight product
+  userId      Int
+  featured    Boolean  @default(false)
   rating      Float    @default(0)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  // Relations
-  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  cartItems CartItem[]
-  orderItems OrderItem[]
+  user          User           @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  cartItems     CartItem[]
+  orderItems    OrderItem[]
   conversations Conversation[]
-  comments Comment[]
-  wishlistItems WishlistItem[]
+  comments      Comment[]
 
   @@map("products")
 }
 
 model Recipe {
-  id           String   @id @default(cuid())
-  title        String
-  description  String   @db.Text
-  ingredients  String   @db.Text  // JSON string array
-  instructions String   @db.Text  // JSON string array
-  image        String   @db.LongText // Store base64 images
-  prepTime     Int
-  cookTime     Int
-  servings     Int
-  difficulty   String   // Beginner, Intermediate, Advanced
-  rating       Float    @default(0)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  recipeId    Int      @id @default(autoincrement())
+  title       String
+  description String   @db.Text
+  image       String   @db.LongText
+  prepTime    Int
+  cookTime    Int
+  servings    Int
+  difficulty  String   // Beginner, Intermediate, Advanced
+  rating      Float    @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-  // Relations
-  recipeFavorites RecipeFavorite[]
+  ingredients  RecipeIngredient[]
+  instructions RecipeInstruction[]
   savedRecipes SavedRecipe[]
-  reviews RecipeReview[]
+  reviews      RecipeReview[]
 
   @@map("recipes")
 }
 
-model CartItem {
-  id        String  @id @default(cuid())
-  userId    String
-  productId String
-  quantity  Int     @default(1)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model RecipeIngredient {
+  ingredientId Int     @id @default(autoincrement())
+  recipeId     Int
+  name         String
+  quantity     String?
+  order        Int
+  recipe       Recipe  @relation(fields: [recipeId], references: [recipeId], onDelete: Cascade)
 
-  // Relations
-  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  @@map("recipe_ingredients")
+}
+
+model RecipeInstruction {
+  instructionId Int    @id @default(autoincrement())
+  recipeId      Int
+  stepNumber    Int
+  instruction   String @db.Text
+  recipe        Recipe @relation(fields: [recipeId], references: [recipeId], onDelete: Cascade)
+
+  @@map("recipe_instructions")
+}
+
+model CartItem {
+  cartItemId Int      @id @default(autoincrement())
+  userId     Int
+  productId  Int
+  quantity   Int      @default(1)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  user    User    @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [productId], onDelete: Cascade)
 
   @@unique([userId, productId])
   @@map("cart_items")
 }
 
 model Order {
-  id          String      @id @default(cuid())
-  userId      String
-  status      String      @default("pending")
-  totalAmount Float
-  shippingAddress String
-  billingAddress  String
-  paymentMethod   String
-  adminApprovalRequired Boolean @default(false)
-  cancellationReason String?
-  cancelledAt DateTime?
-
-  // Tracking fields
-  trackingNumber String?
-  courier String? // J&T, LBC, Lalamove, etc.
+  orderId               Int       @id @default(autoincrement())
+  userId                Int
+  status                String    @default("pending") // pending, processing, shipped, delivered, cancelled
+  totalAmount           Float
+  shippingAddress       String    @db.Text
+  billingAddress        String    @db.Text
+  paymentMethod         String    // COD, GCash, Bank Transfer, etc.
+  adminApprovalRequired Boolean   @default(false)
+  cancellationReason    String?
+  cancelledAt           DateTime?
+  trackingNumber        String?
+  courier               String?   // J&T, LBC, Lalamove, etc.
   estimatedDeliveryDate DateTime?
-  shippedAt DateTime?
-  deliveredAt DateTime?
+  shippedAt             DateTime?
+  deliveredAt           DateTime?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
 
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-
-  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  orderItems OrderItem[]
+  user            User                   @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  orderItems      OrderItem[]
   trackingHistory OrderTrackingHistory[]
 
   @@map("orders")
 }
 
 model OrderItem {
-  id        String  @id @default(cuid())
-  orderId   String
-  productId String
-  quantity  Int
-  price     Float
-  createdAt DateTime @default(now())
+  orderItemId Int      @id @default(autoincrement())
+  orderId     Int
+  productId   Int
+  quantity    Int
+  price       Float
+  createdAt   DateTime @default(now())
 
-  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  order   Order   @relation(fields: [orderId], references: [orderId], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [productId], onDelete: Cascade)
 
   @@map("order_items")
 }
 
 model OrderTrackingHistory {
-  id          String   @id @default(cuid())
-  orderId     String
-  status      String   // Order status at this point
-  location    String?  // Current location of package
-  description String   // Status description
-  createdAt   DateTime @default(now())
+  trackingHistoryId Int      @id @default(autoincrement())
+  orderId           Int
+  status            String
+  location          String?
+  description       String
+  createdAt         DateTime @default(now())
 
-  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  order Order @relation(fields: [orderId], references: [orderId], onDelete: Cascade)
 
   @@map("order_tracking_history")
 }
 
 model SellerApplication {
-  id            String   @id @default(cuid())
-  userId        String   @unique
+  applicationId Int      @id @default(autoincrement())
+  userId        Int      @unique
   businessName  String
   businessType  String
   description   String
   contactNumber String
   address       String
-  businessLogo  String?  @db.LongText // Store business logo as base64
-  primaryId     String?  @db.LongText // Store primary ID (required) as base64
-  secondaryId   String?  @db.LongText // Store secondary ID (optional) as base64
-  status        String   @default("pending")
+  businessLogo  String?  @db.LongText
+  primaryId     String?  @db.LongText
+  secondaryId   String?  @db.LongText
+  status        String   @default("pending") // pending, approved, rejected
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [userId], onDelete: Cascade)
 
   @@map("seller_applications")
 }
 
 model Conversation {
-  id            String   @id @default(cuid())
-  sellerId      String
-  buyerId       String
-  productId     String
-  status        String   @default("active")
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  conversationId Int      @id @default(autoincrement())
+  sellerId       Int
+  buyerId        Int
+  productId      Int
+  status         String   @default("active")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
-  seller User @relation("SellerConversations", fields: [sellerId], references: [id], onDelete: Cascade)
-  buyer  User @relation("BuyerConversations", fields: [buyerId], references: [id], onDelete: Cascade)
-  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  seller   User      @relation("SellerConversations", fields: [sellerId], references: [userId], onDelete: Cascade)
+  buyer    User      @relation("BuyerConversations", fields: [buyerId], references: [userId], onDelete: Cascade)
+  product  Product   @relation(fields: [productId], references: [productId], onDelete: Cascade)
   messages Message[]
 
   @@unique([sellerId, buyerId, productId])
@@ -204,103 +213,85 @@ model Conversation {
 }
 
 model Message {
-  id             String   @id @default(cuid())
-  conversationId String
-  senderId       String
+  messageId      Int      @id @default(autoincrement())
+  conversationId Int
+  senderId       Int
   content        String
   isRead         Boolean  @default(false)
   createdAt      DateTime @default(now())
 
-  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
-  sender       User         @relation(fields: [senderId], references: [id], onDelete: Cascade)
+  conversation Conversation @relation(fields: [conversationId], references: [conversationId], onDelete: Cascade)
+  sender       User         @relation(fields: [senderId], references: [userId], onDelete: Cascade)
 
   @@map("messages")
 }
 
 model Notification {
-  id        String   @id @default(cuid())
-  userId    String
-  title     String
-  message   String
-  type      String
-  isRead    Boolean  @default(false)
-  createdAt DateTime @default(now())
+  notificationId Int      @id @default(autoincrement())
+  userId         Int
+  title          String
+  message        String
+  type           String   // order, message, announcement, etc.
+  isRead         Boolean  @default(false)
+  createdAt      DateTime @default(now())
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [userId], onDelete: Cascade)
 
   @@map("notifications")
 }
 
 model Comment {
-  id             String    @id @default(cuid())
-  productId      String
-  userId         String
-  rating         Int
-  content        String
-  sellerReply    String?
-  sellerReplyAt  DateTime?
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
+  commentId     Int       @id @default(autoincrement())
+  productId     Int
+  userId        Int
+  rating        Int
+  content       String
+  sellerReply   String?
+  sellerReplyAt DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
-  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
-  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product Product @relation(fields: [productId], references: [productId], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [userId], onDelete: Cascade)
 
   @@unique([productId, userId])
   @@map("comments")
 }
 
 model RecipeReview {
-  id        String   @id @default(cuid())
-  recipeId  String
-  userId    String
+  reviewId  Int      @id @default(autoincrement())
+  recipeId  Int
+  userId    Int
   rating    Int
   content   String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  recipe Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  recipe Recipe @relation(fields: [recipeId], references: [recipeId], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [userId], onDelete: Cascade)
 
   @@unique([recipeId, userId])
   @@map("recipe_reviews")
 }
 
-model Announcement {
-  id          String   @id @default(cuid())
-  title       String
-  message     String   @db.Text
-  type        String   // info, warning, success, promotion
-  targetAudience String @default("all") // all, users, sellers, specific
-  isActive    Boolean  @default(true)
-  priority    Int      @default(0) // 0=normal, 1=high, 2=urgent
-  expiresAt   DateTime?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+model SavedRecipe {
+  savedRecipeId Int      @id @default(autoincrement())
+  userId        Int
+  recipeId      Int
+  notes         String?  @db.Text
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
-  @@map("announcements")
-}
+  user   User   @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  recipe Recipe @relation(fields: [recipeId], references: [recipeId], onDelete: Cascade)
 
-model Campaign {
-  id          String   @id @default(cuid())
-  name        String
-  subject     String
-  message     String   @db.Text
-  type        String   // email, push, sms
-  targetAudience String // all, users, sellers, inactive
-  status      String   @default("draft") // draft, scheduled, sent, failed
-  scheduledAt DateTime?
-  sentAt      DateTime?
-  recipientCount Int   @default(0)
-  openCount   Int      @default(0)
-  clickCount  Int      @default(0)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  @@map("campaigns")
+  @@unique([userId, recipeId])
+  @@map("saved_recipes")
 }
 
 model Otp {
-  id        String   @id @default(cuid())
+  otpId     Int      @id @default(autoincrement())
+  userId    Int?
   email     String
   code      String
   verified  Boolean  @default(false)
@@ -308,94 +299,44 @@ model Otp {
   expiresAt DateTime
   createdAt DateTime @default(now())
 
+  user User? @relation(fields: [userId], references: [userId], onDelete: Cascade)
+
   @@index([email])
   @@map("otps")
 }
 
 model PendingRegistration {
-  id          String   @id @default(cuid())
-  email       String   @unique
-  name        String
-  password    String   // Already hashed
-  phoneNumber String?  // Optional phone number
-  role        String   @default("user")
-  expiresAt   DateTime // Registration expires if OTP not verified
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  registrationId Int      @id @default(autoincrement())
+  email          String   @unique
+  name           String
+  password       String
+  phoneNumber    String?
+  role           String   @default("user")
+  expiresAt      DateTime
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
   @@map("pending_registrations")
 }
 
 model Address {
-  id          String   @id @default(cuid())
-  userId      String
-  fullName    String
-  phoneNumber String
-  region      String
-  province    String
-  city        String
-  barangay    String
+  addressId     Int      @id @default(autoincrement())
+  userId        Int
+  fullName      String
+  phoneNumber   String
+  region        String
+  province      String
+  city          String
+  barangay      String
   streetAddress String
-  postalCode  String
-  landmark    String?
-  isDefault   Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  postalCode    String
+  landmark      String?
+  isDefault     Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [userId], onDelete: Cascade)
 
   @@map("addresses")
 }
 
-model WishlistItem {
-  id        String   @id @default(cuid())
-  userId    String
-  productId String
-  createdAt DateTime @default(now())
-
-  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, productId])
-  @@map("wishlist_items")
-}
-
-model RecipeFavorite {
-  id        String   @id @default(cuid())
-  userId    String
-  recipeId  String
-  createdAt DateTime @default(now())
-
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  recipe Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, recipeId])
-  @@map("recipe_favorites")
-}
-
-model SavedRecipe {
-  id        String   @id @default(cuid())
-  userId    String
-  recipeId  String
-  notes     String?  @db.Text
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  recipe Recipe @relation(fields: [recipeId], references: [id], onDelete: Cascade)
-
-  @@unique([userId, recipeId])
-  @@map("saved_recipes")
-}
-
-model WhatsAppOTP {
-  id          String   @id @default(cuid())
-  phoneNumber String   @unique
-  otp         String
-  verified    Boolean  @default(false)
-  expiresAt   DateTime
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  @@map("whatsapp_otp")
-}

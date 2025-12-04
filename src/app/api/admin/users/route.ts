@@ -5,11 +5,10 @@ export async function GET(req: NextRequest) {
   try {
     const users = await prisma.user.findMany({
       select: {
-        id: true,
+        userId: true,
         name: true,
         email: true,
         role: true,
-        blocked: true,
       },
       orderBy: {
         name: 'asc',

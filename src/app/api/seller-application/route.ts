@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
 
     // Check if user already has an application
     const existingApplication = await prisma.sellerApplication.findUnique({
-      where: { userId: session.user.id }
+      where: { userId: parseInt(session.user.id) }
     })
 
     if (existingApplication) {
@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
 
     const application = await prisma.sellerApplication.create({
       data: {
-        userId: session.user.id,
+        userId: parseInt(session.user.id),
         businessName,
         businessType,
         description,
@@ -73,7 +73,7 @@ export async function GET(request: NextRequest) {
     }
 
     const application = await prisma.sellerApplication.findUnique({
-      where: { userId: session.user.id }
+      where: { userId: parseInt(session.user.id) }
     })
 
     if (!application) {
@@ -107,7 +107,7 @@ export async function PUT(request: NextRequest) {
 
     // Check if user is a seller
     const user = await prisma.user.findUnique({
-      where: { id: session.user.id },
+      where: { userId: parseInt(session.user.id) },
       include: { sellerApplication: true }
     })
 
@@ -138,7 +138,7 @@ export async function PUT(request: NextRequest) {
 
     // Update seller application
     const updatedApplication = await prisma.sellerApplication.update({
-      where: { userId: session.user.id },
+      where: { userId: parseInt(session.user.id) },
       data: {
         businessName,
         businessType,

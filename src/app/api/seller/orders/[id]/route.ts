@@ -39,7 +39,7 @@ export async function PATCH(
 
     // Check if the order exists and if it contains the seller's products
     const order = await prisma.order.findUnique({
-      where: { id },
+      where: { orderId: parseInt(id) },
       include: {
         orderItems: {
           include: {
@@ -60,7 +60,7 @@ export async function PATCH(
 
     // Check if the seller owns at least one product in the order
     const sellerOwnsProduct = order.orderItems.some(
-      item => item.product.userId === session.user.id
+      item => item.product.userId === parseInt(session.user.id)
     );
 
     if (!sellerOwnsProduct) {
@@ -72,16 +72,16 @@ export async function PATCH(
 
     // Update the order status
     const updatedOrder = await prisma.order.update({
-      where: { id },
+      where: { orderId: parseInt(id) },
       data: { status },
       include: {
         user: {
-          select: { id: true, name: true, email: true }
+          select: { userId: true, name: true, email: true }
         },
         orderItems: {
           include: {
             product: {
-              select: { id: true, name: true, price: true }
+              select: { productId: true, name: true, price: true }
             }
           }
         }
@@ -116,20 +116,20 @@ export async function GET(
     const { id } = await params;
 
     const order = await prisma.order.findUnique({
-      where: { id },
+      where: { orderId: parseInt(id) },
       include: {
         user: {
-          select: { id: true, name: true, email: true }
+          select: { userId: true, name: true, email: true }
         },
         orderItems: {
           where: {
             product: {
-              userId: session.user.id
+              userId: parseInt(session.user.id)
             }
           },
           include: {
             product: {
-              select: { id: true, name: true, price: true, image: true }
+              select: { productId: true, name: true, price: true, image: true }
             }
           }
         }

@@ -54,12 +54,12 @@ export async function GET(req: NextRequest) {
     });
 
     // Top Selling Products
-    const productSales: { [key: string]: { name: string; quantity: number; revenue: number; productId: string } } = {};
+    const productSales: { [key: number]: { name: string; quantity: number; revenue: number; productId: number } } = {};
 
     for (const order of orders) {
       for (const item of order.orderItems) {
         const product = await prisma.product.findUnique({
-          where: { id: item.productId },
+          where: { productId: item.productId },
           select: { name: true }
         });
 
@@ -83,12 +83,12 @@ export async function GET(req: NextRequest) {
       .slice(0, 10);
 
     // Top Sellers
-    const sellerSales: { [key: string]: { name: string; revenue: number; orders: number; sellerId: string } } = {};
+    const sellerSales: { [key: number]: { name: string; revenue: number; orders: number; sellerId: number } } = {};
 
     for (const order of orders) {
       for (const item of order.orderItems) {
         const product = await prisma.product.findUnique({
-          where: { id: item.productId },
+          where: { productId: item.productId },
           include: { user: true }
         });
 
@@ -185,7 +185,7 @@ export async function GET(req: NextRequest) {
     for (const order of orders) {
       for (const item of order.orderItems) {
         const product = await prisma.product.findUnique({
-          where: { id: item.productId },
+          where: { productId: item.productId },
           select: { category: true }
         });
 

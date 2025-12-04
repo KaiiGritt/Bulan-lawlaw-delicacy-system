@@ -11,14 +11,14 @@ export async function GET(req: NextRequest) {
     }
 
     const notifications = await prisma.notification.findMany({
-      where: { userId: session.user.id },
+      where: { userId: parseInt(session.user.id) },
       orderBy: { createdAt: 'desc' },
       take: 20, // Limit to 20 most recent notifications
     });
 
     const unreadCount = await prisma.notification.count({
       where: {
-        userId: session.user.id,
+        userId: parseInt(session.user.id),
         isRead: false,
       },
     });
@@ -48,13 +48,13 @@ export async function PATCH(req: NextRequest) {
     if (notificationId) {
       // Mark specific notification as read
       await prisma.notification.update({
-        where: { id: notificationId, userId: session.user.id },
+        where: { notificationId: notificationId, userId: parseInt(session.user.id) },
         data: { isRead: true },
       });
     } else {
       // Mark all notifications as read
       await prisma.notification.updateMany({
-        where: { userId: session.user.id, isRead: false },
+        where: { userId: parseInt(session.user.id), isRead: false },
         data: { isRead: true },
       });
     }

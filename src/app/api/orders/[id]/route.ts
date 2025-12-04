@@ -21,7 +21,7 @@ export async function GET(
     const { id } = await params
 
     const order = await prisma.order.findUnique({
-      where: { id },
+      where: { orderId: parseInt(id) },
       include: {
         orderItems: {
           include: {
@@ -43,7 +43,7 @@ export async function GET(
     }
 
     // Check if user owns this order
-    if (order.userId !== session.user.id) {
+    if (order.userId !== parseInt(session.user.id)) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 403 }

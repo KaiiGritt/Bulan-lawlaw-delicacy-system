@@ -16,7 +16,7 @@ export async function GET(
 
     const params = await context.params;
     const product = await prisma.product.findUnique({
-      where: { id: params.id },
+      where: { productId: parseInt(params.id) },
     });
 
     if (!product) {
@@ -24,7 +24,7 @@ export async function GET(
     }
 
     // Verify ownership
-    if (product.userId !== session.user.id) {
+    if (product.userId !== parseInt(session.user.id)) {
       return NextResponse.json({ error: 'Unauthorized to access this product' }, { status: 403 });
     }
 
@@ -51,7 +51,7 @@ export async function PUT(
 
     const params = await context.params;
     const product = await prisma.product.findUnique({
-      where: { id: params.id },
+      where: { productId: parseInt(params.id) },
     });
 
     if (!product) {
@@ -59,7 +59,7 @@ export async function PUT(
     }
 
     // Verify ownership
-    if (product.userId !== session.user.id) {
+    if (product.userId !== parseInt(session.user.id)) {
       return NextResponse.json({ error: 'Unauthorized to update this product' }, { status: 403 });
     }
 
@@ -67,7 +67,7 @@ export async function PUT(
     const { name, description, price, category, image, stock } = body;
 
     const updatedProduct = await prisma.product.update({
-      where: { id: params.id },
+      where: { productId: parseInt(params.id) },
       data: {
         ...(name && { name }),
         ...(description && { description }),
@@ -101,7 +101,7 @@ export async function DELETE(
 
     const params = await context.params;
     const product = await prisma.product.findUnique({
-      where: { id: params.id },
+      where: { productId: parseInt(params.id) },
     });
 
     if (!product) {
@@ -109,13 +109,13 @@ export async function DELETE(
     }
 
     // Verify ownership
-    if (product.userId !== session.user.id) {
+    if (product.userId !== parseInt(session.user.id)) {
       return NextResponse.json({ error: 'Unauthorized to delete this product' }, { status: 403 });
     }
 
     // Delete the product (cascading deletes will handle cart items, order items, etc.)
     await prisma.product.delete({
-      where: { id: params.id },
+      where: { productId: parseInt(params.id) },
     });
 
     return NextResponse.json({ message: 'Product deleted successfully' });

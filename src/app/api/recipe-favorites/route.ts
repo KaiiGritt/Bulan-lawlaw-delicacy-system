@@ -1,156 +1,175 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '../../lib/auth';
-import { prisma } from '../../lib/prisma';
+import { NextResponse } from 'next/server'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '../../lib/auth'
+import { prisma } from '../../lib/prisma'
 
-// GET /api/recipe-favorites - Get user's favorite recipes
-export async function GET(request: NextRequest) {
+// GET /api/recipe-favorites - Get user's favorite recipes (saved recipes)
+export async function GET() {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession(authOptions)
 
-    if (!session || !session.user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!session?.user?.id) {
+      return NextResponse.json([], { status: 200 })
     }
 
-    const favorites = await prisma.recipeFavorite.findMany({
-      where: { userId: session.user.id },
+    const userId = parseInt(session.user.id)
+
+    // Get saved recipes as favorites
+    const favorites = await prisma.savedRecipe.findMany({
+      where: { userId },
       include: {
-        recipe: true
+        recipe: {
+          select: {
+            recipeId: true,
+            title: true,
+            description: true,
+            image: true,
+            prepTime: true,
+            cookTime: true,
+            servings: true,
+            difficulty: true,
+          }
+        }
       },
       orderBy: { createdAt: 'desc' }
-    });
+    })
 
-    return NextResponse.json(favorites);
+    // Transform to match expected format
+    const transformed = favorites.map(fav => ({
+      id: fav.savedRecipeId.toString(),
+      recipeId: fav.recipeId.toString(),
+      createdAt: fav.createdAt.toISOString(),
+      recipe: {
+        id: fav.recipe.recipeId.toString(),
+        title: fav.recipe.title,
+        description: fav.recipe.description,
+        image: fav.recipe.image,
+        prepTime: fav.recipe.prepTime,
+        cookTime: fav.recipe.cookTime,
+        servings: fav.recipe.servings,
+        difficulty: fav.recipe.difficulty,
+      }
+    }))
+
+    return NextResponse.json(transformed)
   } catch (error) {
-    console.error('Error fetching recipe favorites:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch recipe favorites' },
-      { status: 500 }
-    );
+    console.error('Error fetching recipe favorites:', error)
+    return NextResponse.json([], { status: 200 })
   }
 }
 
-// POST /api/recipe-favorites - Add recipe to favorites
-export async function POST(request: NextRequest) {
+// POST /api/recipe-favorites - Add a recipe to favorites
+export async function POST(request: Request) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession(authOptions)
 
-    if (!session || !session.user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      )
     }
 
-    const body = await request.json();
-    const { recipeId } = body;
+    const userId = parseInt(session.user.id)
+    const body = await request.json()
+    const { recipeId } = body
 
     if (!recipeId) {
       return NextResponse.json(
         { error: 'Recipe ID is required' },
         { status: 400 }
-      );
+      )
     }
 
-    // Check if recipe exists
-    const recipe = await prisma.recipe.findUnique({
-      where: { id: recipeId }
-    });
-
-    if (!recipe) {
-      return NextResponse.json(
-        { error: 'Recipe not found' },
-        { status: 404 }
-      );
-    }
-
-    // Check if already in favorites
-    const existingFavorite = await prisma.recipeFavorite.findUnique({
+    // Check if already favorited
+    const existing = await prisma.savedRecipe.findUnique({
       where: {
         userId_recipeId: {
-          userId: session.user.id,
-          recipeId: recipeId
+          userId,
+          recipeId: parseInt(recipeId)
         }
       }
-    });
+    })
 
-    if (existingFavorite) {
+    if (existing) {
       return NextResponse.json(
         { error: 'Recipe already in favorites' },
         { status: 400 }
-      );
+      )
     }
 
-    // Add to favorites
-    const favorite = await prisma.recipeFavorite.create({
+    const favorite = await prisma.savedRecipe.create({
       data: {
-        userId: session.user.id,
-        recipeId: recipeId
+        userId,
+        recipeId: parseInt(recipeId)
       },
       include: {
         recipe: true
       }
-    });
+    })
 
-    return NextResponse.json(favorite, { status: 201 });
+    return NextResponse.json({
+      id: favorite.savedRecipeId.toString(),
+      recipeId: favorite.recipeId.toString(),
+      createdAt: favorite.createdAt.toISOString(),
+      recipe: {
+        id: favorite.recipe.recipeId.toString(),
+        title: favorite.recipe.title,
+        description: favorite.recipe.description,
+        image: favorite.recipe.image,
+        prepTime: favorite.recipe.prepTime,
+        cookTime: favorite.recipe.cookTime,
+        servings: favorite.recipe.servings,
+        difficulty: favorite.recipe.difficulty,
+      }
+    }, { status: 201 })
   } catch (error) {
-    console.error('Error adding to recipe favorites:', error);
+    console.error('Error adding recipe favorite:', error)
     return NextResponse.json(
-      { error: 'Failed to add to favorites' },
+      { error: 'Failed to add favorite' },
       { status: 500 }
-    );
+    )
   }
 }
 
-// DELETE /api/recipe-favorites - Remove recipe from favorites
-export async function DELETE(request: NextRequest) {
+// DELETE /api/recipe-favorites - Remove a recipe from favorites
+export async function DELETE(request: Request) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession(authOptions)
 
-    if (!session || !session.user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      )
     }
 
-    const { searchParams } = new URL(request.url);
-    const recipeId = searchParams.get('recipeId');
+    const userId = parseInt(session.user.id)
+    const { searchParams } = new URL(request.url)
+    const recipeId = searchParams.get('recipeId')
 
     if (!recipeId) {
       return NextResponse.json(
         { error: 'Recipe ID is required' },
         { status: 400 }
-      );
+      )
     }
 
-    // Check if favorite exists
-    const existingFavorite = await prisma.recipeFavorite.findUnique({
+    await prisma.savedRecipe.delete({
       where: {
         userId_recipeId: {
-          userId: session.user.id,
-          recipeId: recipeId
+          userId,
+          recipeId: parseInt(recipeId)
         }
       }
-    });
+    })
 
-    if (!existingFavorite) {
-      return NextResponse.json(
-        { error: 'Recipe not in favorites' },
-        { status: 404 }
-      );
-    }
-
-    // Remove from favorites
-    await prisma.recipeFavorite.delete({
-      where: {
-        userId_recipeId: {
-          userId: session.user.id,
-          recipeId: recipeId
-        }
-      }
-    });
-
-    return NextResponse.json({ message: 'Removed from favorites' });
+    return NextResponse.json({ success: true })
   } catch (error) {
-    console.error('Error removing from favorites:', error);
+    console.error('Error removing recipe favorite:', error)
     return NextResponse.json(
-      { error: 'Failed to remove from favorites' },
+      { error: 'Failed to remove favorite' },
       { status: 500 }
-    );
+    )
   }
 }

@@ -10,7 +10,11 @@ export async function GET(
     const { id } = await params;
 
     const recipe = await prisma.recipe.findUnique({
-      where: { id },
+      where: { recipeId: parseInt(id) },
+      include: {
+        ingredients: { orderBy: { order: 'asc' } },
+        instructions: { orderBy: { stepNumber: 'asc' } }
+      }
     });
 
     if (!recipe) {
@@ -20,14 +24,7 @@ export async function GET(
       );
     }
 
-    // Parse JSON strings back to arrays
-    const recipeWithParsedData = {
-      ...recipe,
-      ingredients: JSON.parse(recipe.ingredients),
-      instructions: JSON.parse(recipe.instructions),
-    };
-
-    return NextResponse.json(recipeWithParsedData);
+    return NextResponse.json(recipe);
   } catch (error) {
     console.error('Error fetching recipe:', error);
     return NextResponse.json(

@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 
 export default function PrivacyPolicy() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-accent-cream to-soft-green/20 py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-lawlaw-silver via-lawlaw-silver-shimmer to-lawlaw-steel-blue/20 py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <motion.div
@@ -15,7 +15,7 @@ export default function PrivacyPolicy() {
         >
           <Link
             href="/"
-            className="inline-flex items-center gap-2 text-primary-green hover:text-leaf-green mb-4 transition-colors"
+            className="inline-flex items-center gap-2 text-lawlaw-ocean-teal hover:text-lawlaw-deep-blue mb-4 transition-colors"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -70,7 +70,7 @@ export default function PrivacyPolicy() {
                 <ul className="list-disc list-inside ml-4 space-y-2 mt-2">
                   <li>Order history and purchase details</li>
                   <li>Shopping cart contents</li>
-                  <li>Wishlist and saved items</li>
+                  <li>Saved recipes and favorites</li>
                   <li>Product reviews and ratings</li>
                 </ul>
               </div>
@@ -269,7 +269,7 @@ export default function PrivacyPolicy() {
                 </div>
               </div>
 
-              <p className="mt-4">To exercise these rights, please contact us at <a href="mailto:privacy@lawlawdelights.com" className="text-primary-green hover:text-leaf-green">privacy@lawlawdelights.com</a></p>
+              <p className="mt-4">To exercise these rights, please contact us at <a href="mailto:privacy@lawlawdelights.com" className="text-lawlaw-ocean-teal hover:text-lawlaw-deep-blue">privacy@lawlawdelights.com</a></p>
             </div>
           </section>
 
@@ -311,7 +311,7 @@ export default function PrivacyPolicy() {
                 <li>Right to opt-out of the sale of personal information</li>
                 <li>Right to non-discrimination for exercising your rights</li>
               </ul>
-              <p className="mt-4">To exercise these rights, contact us at <a href="mailto:privacy@lawlawdelights.com" className="text-primary-green hover:text-leaf-green">privacy@lawlawdelights.com</a></p>
+              <p className="mt-4">To exercise these rights, contact us at <a href="mailto:privacy@lawlawdelights.com" className="text-lawlaw-ocean-teal hover:text-lawlaw-deep-blue">privacy@lawlawdelights.com</a></p>
             </div>
           </section>
 
@@ -353,7 +353,7 @@ export default function PrivacyPolicy() {
               <p>If you have any questions, concerns, or requests regarding this Privacy Policy or our data practices, please contact us:</p>
               <div className="bg-gradient-to-r from-primary-green/10 to-leaf-green/10 p-4 rounded-lg border border-primary-green/20 mt-3">
                 <p className="font-semibold text-gray-900">Privacy Team - Lawlaw Delights</p>
-                <p className="mt-2">Email: <a href="mailto:privacy@lawlawdelights.com" className="text-primary-green hover:text-leaf-green">privacy@lawlawdelights.com</a></p>
+                <p className="mt-2">Email: <a href="mailto:privacy@lawlawdelights.com" className="text-lawlaw-ocean-teal hover:text-lawlaw-deep-blue">privacy@lawlawdelights.com</a></p>
                 <p className="mt-1">Phone: +1 (555) 123-4567</p>
                 <p className="mt-1">Address: 123 Delicacy Street, Food City, FC 12345</p>
                 <p className="mt-2 text-sm text-gray-600">We will respond to your inquiry within 30 days.</p>
@@ -380,7 +380,7 @@ export default function PrivacyPolicy() {
         >
           <Link
             href="/terms"
-            className="text-primary-green hover:text-leaf-green font-medium transition-colors"
+            className="text-lawlaw-ocean-teal hover:text-lawlaw-deep-blue font-medium transition-colors"
           >
             Read our Terms and Conditions
           </Link>

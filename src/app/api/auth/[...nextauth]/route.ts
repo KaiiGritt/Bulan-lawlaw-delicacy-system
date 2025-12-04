@@ -77,7 +77,7 @@ export const authOptions = {
         }
         console.log('User authorized successfully:', email);
         // 3. Return user object for session
-        return { id: user.id, email: user.email, role: user.role };
+        return { id: user.userId.toString(), email: user.email, role: user.role };
       },
     }),
   ],
@@ -116,14 +116,15 @@ export const authOptions = {
           const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
           const otpExpiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
 
-          // Delete any existing OTPs for this email
+          // Delete any existing OTPs for this user
           await prisma.otp.deleteMany({
-            where: { email: user.email },
+            where: { userId: dbUser.userId },
           });
 
           // Save OTP to database
           await prisma.otp.create({
             data: {
+              userId: dbUser.userId,
               email: user.email,
               code: otpCode,
               expiresAt: otpExpiresAt,
@@ -151,10 +152,10 @@ export const authOptions = {
       if (token.email) {
         const dbUser = await prisma.user.findUnique({
           where: { email: token.email },
-          select: { id: true, role: true, emailVerified: true },
+          select: { userId: true, role: true, emailVerified: true },
         });
         if (dbUser) {
-          token.dbId = dbUser.id; // Store the actual database ID
+          token.dbId = dbUser.userId; // Store the actual database ID
           token.role = dbUser.role;
           token.emailVerified = dbUser.emailVerified;
         }

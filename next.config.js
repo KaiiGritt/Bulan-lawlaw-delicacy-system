@@ -11,7 +11,10 @@ const nextConfig = {
       },
     ],
   },
-  // Removed experimental key to fix turbopack build issue
+  serverExternalPackages: ['formidable'],
+  experimental: {
+    serverComponentsExternalPackages: ['formidable'],
+  },
 };
 
 module.exports = nextConfig;

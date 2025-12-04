@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 
 export default function TermsAndConditions() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-accent-cream to-soft-green/20 py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-lawlaw-silver via-lawlaw-silver-shimmer to-lawlaw-steel-blue/20 py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <motion.div
@@ -15,7 +15,7 @@ export default function TermsAndConditions() {
         >
           <Link
             href="/"
-            className="inline-flex items-center gap-2 text-primary-green hover:text-leaf-green mb-4 transition-colors"
+            className="inline-flex items-center gap-2 text-lawlaw-ocean-teal hover:text-lawlaw-deep-blue mb-4 transition-colors"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -234,7 +234,7 @@ export default function TermsAndConditions() {
               <p>If you have any questions about these Terms and Conditions, please contact us:</p>
               <div className="bg-gradient-to-r from-primary-green/10 to-leaf-green/10 p-4 rounded-lg border border-primary-green/20 mt-3">
                 <p className="font-semibold text-gray-900">Lawlaw Delights</p>
-                <p className="mt-2">Email: <a href="mailto:support@lawlawdelights.com" className="text-primary-green hover:text-leaf-green">support@lawlawdelights.com</a></p>
+                <p className="mt-2">Email: <a href="mailto:support@lawlawdelights.com" className="text-lawlaw-ocean-teal hover:text-lawlaw-deep-blue">support@lawlawdelights.com</a></p>
                 <p className="mt-1">Phone: +1 (555) 123-4567</p>
                 <p className="mt-1">Address: 123 Delicacy Street, Food City, FC 12345</p>
               </div>
@@ -260,7 +260,7 @@ export default function TermsAndConditions() {
         >
           <Link
             href="/privacy"
-            className="text-primary-green hover:text-leaf-green font-medium transition-colors"
+            className="text-lawlaw-ocean-teal hover:text-lawlaw-deep-blue font-medium transition-colors"
           >
             Read our Privacy Policy
           </Link>

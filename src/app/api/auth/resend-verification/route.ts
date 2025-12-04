@@ -1,7 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '../../../lib/prisma'
-import { sendEmailVerification } from '../../../lib/email'
-import crypto from 'crypto'
+import { sendOtpEmail } from '../../../lib/email'
+
+// Generate a random OTP code
+function generateOTP(length: number = 6): string {
+  const digits = '0123456789';
+  let otp = '';
+  for (let i = 0; i < length; i++) {
+    otp += digits[Math.floor(Math.random() * digits.length)];
+  }
+  return otp;
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -26,35 +35,32 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Email is already verified' }, { status: 400 })
     }
 
-    // Check if token is still valid (not expired)
-    if (user.emailVerificationTokenExpiry && user.emailVerificationTokenExpiry > new Date()) {
-      // Token still valid, resend the same token
-      try {
-        await sendEmailVerification(user.email, user.name || 'User', user.emailVerificationToken!)
-        return NextResponse.json({ message: 'Verification email sent successfully' })
-      } catch (emailError) {
-        console.error('Failed to resend verification email:', emailError)
-        return NextResponse.json({ error: 'Failed to send email' }, { status: 500 })
-      }
-    }
+    // Delete any existing OTPs for this user
+    await prisma.otp.deleteMany({
+      where: { email },
+    });
 
-    // Generate new token
-    const emailVerificationToken = crypto.randomBytes(32).toString('hex')
-    const emailVerificationTokenExpiry = new Date(Date.now() + 24 * 60 * 60 * 1000) // 24 hours
+    // Generate new OTP
+    const otpCode = generateOTP(6);
+    const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
 
-    // Update user with new token
-    await prisma.user.update({
-      where: { id: user.id },
+    // Save OTP to database
+    await prisma.otp.create({
       data: {
-        emailVerificationToken,
-        emailVerificationTokenExpiry
-      }
-    })
+        userId: user.userId,
+        email,
+        code: otpCode,
+        expiresAt,
+      },
+    });
 
-    // Send new verification email
+    // Send OTP email
     try {
-      await sendEmailVerification(user.email, user.name || 'User', emailVerificationToken)
-      return NextResponse.json({ message: 'Verification email sent successfully' })
+      await sendOtpEmail(user.email, user.name || 'User', otpCode)
+      return NextResponse.json({
+        message: 'Verification code sent successfully',
+        redirectTo: `/verify-otp?email=${encodeURIComponent(email)}`
+      })
     } catch (emailError) {
       console.error('Failed to send verification email:', emailError)
       return NextResponse.json({ error: 'Failed to send email' }, { status: 500 })

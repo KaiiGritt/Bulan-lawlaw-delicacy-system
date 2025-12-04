@@ -35,8 +35,8 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
     // Check if the application exists
     const application = await prisma.sellerApplication.findUnique({
-      where: { id },
-      include: { user: { select: { id: true, name: true, email: true, role: true } } },
+      where: { applicationId: parseInt(id) },
+      include: { user: { select: { userId: true, name: true, email: true, role: true } } },
     });
 
     if (!application) {
@@ -48,9 +48,9 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
     // Update the application status
     const updatedApplication = await prisma.sellerApplication.update({
-      where: { id },
+      where: { applicationId: parseInt(id) },
       data: { status },
-      include: { user: { select: { id: true, name: true, email: true, role: true } } },
+      include: { user: { select: { userId: true, name: true, email: true, role: true } } },
     });
 
     console.log('Application updated:', updatedApplication);
@@ -65,18 +65,18 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
         );
       }
 
-      console.log('Updating user role to seller for user id:', updatedApplication.user.id);
+      console.log('Updating user role to seller for user id:', updatedApplication.user.userId);
 
       try {
         await prisma.user.update({
-          where: { id: updatedApplication.user.id },
+          where: { userId: updatedApplication.user.userId },
           data: { role: 'seller' },
         });
 
         // Create in-app notification
         await prisma.notification.create({
           data: {
-            userId: updatedApplication.user.id,
+            userId: updatedApplication.user.userId,
             title: 'Seller Application Approved!',
             message: `Congratulations! Your seller application for "${updatedApplication.businessName}" has been approved. You can now start selling your products.`,
             type: 'seller_approval',

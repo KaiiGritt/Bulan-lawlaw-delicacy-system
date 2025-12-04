@@ -93,13 +93,6 @@ interface Order {
  }>;
 }
 
-interface WishlistItem {
- id: string;
- productId: string;
- createdAt: string;
- product: Product;
-}
-
 interface RecipeFavorite {
  id: string;
  recipeId: string;
@@ -140,7 +133,7 @@ export default function ProfilePage() {
 
  const [profile, setProfile] = useState<UserProfile | null>(null);
  const [loading, setLoading] = useState(true);
- const [activeTab, setActiveTab] = useState<'overview' | 'products' | 'orders' | 'analytics' | 'profile' | 'wishlist' | 'favorites' | 'saved'>('overview');
+ const [activeTab, setActiveTab] = useState<'overview' | 'products' | 'orders' | 'analytics' | 'profile' | 'favorites' | 'saved'>('overview');
  const [stats, setStats] = useState<SellerStats | null>(null);
  const [products, setProducts] = useState<Product[]>([]);
  const [orders, setOrders] = useState<SellerOrder[]>([]);
@@ -150,7 +143,6 @@ export default function ProfilePage() {
  const [editingProduct, setEditingProduct] = useState<string | null>(null);
  const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
  const [orderFilter, setOrderFilter] = useState<string>('all');
- const [wishlistItems, setWishlistItems] = useState<WishlistItem[]>([]);
  const [recipeFavorites, setRecipeFavorites] = useState<RecipeFavorite[]>([]);
  const [savedRecipes, setSavedRecipes] = useState<SavedRecipe[]>([]);
 
@@ -196,7 +188,6 @@ export default function ProfilePage() {
  useEffect(() => {
  if (profile && profile.role !== 'seller') {
  fetchUserOrders();
- fetchWishlist();
  fetchRecipeFavorites();
  fetchSavedRecipes();
  }
@@ -290,16 +281,6 @@ export default function ProfilePage() {
  const res = await fetch('/api/orders', { credentials: 'include' });
  const data = await res.json();
  setUserOrders(data);
- } catch (err) {
- console.error(err);
- }
- };
-
- const fetchWishlist = async () => {
- try {
- const res = await fetch('/api/wishlist', { credentials: 'include' });
- const data = await res.json();
- setWishlistItems(data);
  } catch (err) {
  console.error(err);
  }
@@ -486,7 +467,7 @@ export default function ProfilePage() {
 
  if (loading || status === 'loading') {
  return (
- <div className="min-h-screen bg-gradient-to-br from-accent-cream to-soft-green/20 py-12 px-4 sm:px-6 lg:px-8 relative">
+ <div className="min-h-screen bg-gradient-to-br from-lawlaw-silver via-lawlaw-silver-shimmer to-lawlaw-steel-blue/20 py-12 px-4 sm:px-6 lg:px-8 relative">
  {/* Animated background for dark mode */}
  <div className="fixed inset-0 -z-10 hidden overflow-hidden pointer-events-none">
  <div className="floating-orb absolute top-20 right-20 w-96 h-96 bg-green-500/10 rounded-full blur-3xl" style={{ animationDelay: '2s' }}></div>
@@ -578,7 +559,7 @@ export default function ProfilePage() {
  ] : [
  { target: 'profile-completion', title: 'Complete Your Profile', content: 'Add your details to personalize your shopping experience.' },
  { target: 'achievement-badges', title: 'Earn Badges', content: 'Complete activities to earn achievement badges and unlock rewards!' },
- { target: 'quick-actions', title: 'Quick Actions', content: 'Access your orders, wishlist, favorite recipes, and more from this menu.' },
+ { target: 'quick-actions', title: 'Quick Actions', content: 'Access your orders, favorite recipes, and more from this menu.' },
  { target: 'shopping-insights', title: 'Shopping Insights', content: 'View your order history, spending, and saved items.' },
  ];
 
@@ -604,7 +585,7 @@ export default function ProfilePage() {
  if (!profile) return null;
 
  return (
- <div className="min-h-screen bg-gradient-to-br from-accent-cream to-soft-green/20 py-4 sm:py-8 lg:py-12 px-4 sm:px-6 lg:px-8 relative">
+ <div className="min-h-screen bg-gradient-to-br from-lawlaw-silver via-lawlaw-silver-shimmer to-lawlaw-steel-blue/20 py-4 sm:py-8 lg:py-12 px-4 sm:px-6 lg:px-8 relative">
  {/* Animated background for dark mode */}
  <div className="fixed inset-0 -z-10 hidden overflow-hidden pointer-events-none">
  <div className="floating-orb absolute top-20 right-20 w-96 h-96 bg-green-500/10 rounded-full blur-3xl" style={{ animationDelay: '2s' }}></div>
@@ -623,7 +604,7 @@ export default function ProfilePage() {
  <motion.div
  initial={{ opacity: 0, scale: 0.9, y: 20 }}
  animate={{ opacity: 1, scale: 1, y: 0 }}
- className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[201] bg-white rounded-2xl shadow-2xl p-6 max-w-md w-[90%] sm:w-full border-2 border-primary-green"
+ className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[201] bg-white rounded-2xl shadow-2xl p-6 max-w-md w-[90%] sm:w-full border-2 border-lawlaw-ocean-teal"
  >
  {/* Progress Indicator */}
  <div className="flex gap-2 mb-4">
@@ -631,7 +612,7 @@ export default function ProfilePage() {
  <div
  key={index}
  className={`flex-1 h-1.5 rounded-full transition-all ${
- index <= tutorialStep ? 'bg-primary-green' : 'bg-gray-200'
+ index <= tutorialStep ? 'bg-lawlaw-ocean-teal' : 'bg-gray-200'
  }`}
  />
  ))}
@@ -640,8 +621,8 @@ export default function ProfilePage() {
  {/* Tutorial Content */}
  <div className="mb-6">
  <div className="flex items-start gap-3 mb-3">
- <div className="bg-primary-green/10 p-2 rounded-lg">
- <svg className="w-6 h-6 text-primary-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+ <div className="bg-lawlaw-ocean-teal/10 p-2 rounded-lg">
+ <svg className="w-6 h-6 text-lawlaw-ocean-teal" fill="none" stroke="currentColor" viewBox="0 0 24 24">
  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
  </svg>
  </div>
@@ -669,7 +650,7 @@ export default function ProfilePage() {
  </button>
  <button
  onClick={nextTutorialStep}
- className="flex-1 px-4 py-2 rounded-lg bg-gradient-to-r from-primary-green to-leaf-green text-white font-medium hover:shadow-lg transition-all"
+ className="flex-1 px-4 py-2 rounded-lg bg-gradient-to-r from-lawlaw-steel-blue to-lawlaw-ocean-teal text-white font-medium hover:shadow-lg transition-all"
  >
  {tutorialStep < tutorialSteps.length - 1 ? 'Next' : 'Get Started'}
  </button>
@@ -684,7 +665,7 @@ export default function ProfilePage() {
  animate={{ opacity: 1, scale: 1 }}
  transition={{ delay: 1 }}
  onClick={() => setShowTooltips(!showTooltips)}
- className="fixed bottom-20 right-4 sm:bottom-8 sm:right-8 z-[100] bg-gradient-to-r from-primary-green to-leaf-green text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all group"
+ className="fixed bottom-20 right-4 sm:bottom-8 sm:right-8 z-[100] bg-gradient-to-r from-lawlaw-steel-blue to-lawlaw-ocean-teal text-white p-4 rounded-full shadow-lg hover:shadow-xl transition-all group"
  title="Toggle Help Tooltips"
  >
  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -704,14 +685,14 @@ export default function ProfilePage() {
  <motion.div
  initial={{ opacity: 0, y: 20 }}
  animate={{ opacity: 1, y: 0 }}
- className="bg-white rounded-2xl p-4 sm:p-6 shadow-lg border border-soft-green/20"
+ className="bg-white rounded-2xl p-4 sm:p-6 shadow-lg border border-lawlaw-steel-blue/20"
  >
  <div className="flex flex-col items-center">
  <div className="relative w-24 h-24 sm:w-32 sm:h-32">
  {profile.profilePicture ? (
- <img src={profile.profilePicture} alt="profile" className="w-full h-full rounded-full object-cover border-4 border-primary-green/20 shadow-lg" />
+ <img src={profile.profilePicture} alt="profile" className="w-full h-full rounded-full object-cover border-4 border-lawlaw-ocean-teal/20 shadow-lg" />
  ) : (
- <div className="w-full h-full bg-gradient-to-br from-primary-green via-leaf-green to-banana-leaf rounded-full flex items-center justify-center text-white font-bold shadow-lg">
+ <div className="w-full h-full bg-gradient-to-br from-lawlaw-steel-blue via-lawlaw-aqua-teal to-lawlaw-ocean-teal rounded-full flex items-center justify-center text-white font-bold shadow-lg">
  {profile.name?.charAt(0).toUpperCase() || (
  <svg className="w-12 h-12 sm:w-16 sm:h-16" fill="currentColor" viewBox="0 0 24 24">
  <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
@@ -721,7 +702,7 @@ export default function ProfilePage() {
  )}
  </div>
 
- <h3 className="mt-3 sm:mt-4 font-bold text-lg sm:text-xl bg-gradient-to-r from-primary-green to-leaf-green bg-clip-text text-transparent text-center">{profile.name || 'No Name'}</h3>
+ <h3 className="mt-3 sm:mt-4 font-bold text-lg sm:text-xl bg-gradient-to-r from-lawlaw-steel-blue to-lawlaw-ocean-teal bg-clip-text text-transparent text-center">{profile.name || 'No Name'}</h3>
  <p className="text-xs sm:text-sm text-gray-600 text-center break-all px-2">{profile.email}</p>
  <span className="mt-2 px-3 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800 flex items-center gap-1.5">
  {profile.role === 'seller' ? (
@@ -749,7 +730,7 @@ export default function ProfilePage() {
  animate={{ opacity: 1, y: 0 }}
  className="absolute -top-2 -right-2 z-10"
  >
- <div className="bg-primary-green text-white text-xs px-2 py-1 rounded-full animate-bounce flex items-center gap-1">
+ <div className="bg-lawlaw-ocean-teal text-white text-xs px-2 py-1 rounded-full animate-bounce flex items-center gap-1">
  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
  </svg>
@@ -759,7 +740,7 @@ export default function ProfilePage() {
  )}
  <div className="flex items-center justify-between mb-2">
  <span className="text-xs font-semibold text-gray-700">Profile Completion</span>
- <span className="text-xs font-bold text-primary-green">
+ <span className="text-xs font-bold text-lawlaw-ocean-teal">
  {(() => {
  let completionScore = 40; // Base score for having an account
  if (profile.name) completionScore += 20;
@@ -782,7 +763,7 @@ export default function ProfilePage() {
  })()}%`
  }}
  transition={{ duration: 1, ease: "easeOut" }}
- className="bg-gradient-to-r from-primary-green to-leaf-green h-2.5 rounded-full"
+ className="bg-gradient-to-r from-lawlaw-steel-blue to-lawlaw-ocean-teal h-2.5 rounded-full"
  ></motion.div>
  </div>
  <div className="space-y-1">
@@ -822,7 +803,7 @@ export default function ProfilePage() {
  </div>
 
  <div className="w-full mt-4 sm:mt-6 space-y-2 sm:space-y-3">
- <Link href="/settings" className="flex items-center justify-center gap-2 px-4 py-2.5 sm:py-3 rounded-xl bg-gradient-to-r from-primary-green to-banana-leaf hover:from-leaf-green hover:to-soft-green text-white text-sm font-medium shadow-md hover:shadow-lg transition-all transform hover:scale-[1.02]">
+ <Link href="/settings" className="flex items-center justify-center gap-2 px-4 py-2.5 sm:py-3 rounded-xl bg-gradient-to-r from-lawlaw-steel-blue to-lawlaw-ocean-teal hover:from-lawlaw-aqua-teal hover:to-lawlaw-deep-blue text-white text-sm font-medium shadow-md hover:shadow-lg transition-all transform hover:scale-[1.02]">
  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -848,7 +829,7 @@ export default function ProfilePage() {
  initial={{ opacity: 0, y: 20 }}
  animate={{ opacity: 1, y: 0 }}
  transition={{ delay: 0.15 }}
- className="bg-white rounded-2xl p-4 shadow-lg border border-soft-green/20 relative"
+ className="bg-white rounded-2xl p-4 shadow-lg border border-lawlaw-steel-blue/20 relative"
  >
  {showTooltips && (
  <motion.div
@@ -943,24 +924,6 @@ export default function ProfilePage() {
  </div>
  )}
 
- {/* Wishlist Curator Badge */}
- {wishlistItems.length >= 5 && (
- <div className="relative group">
- <div className="bg-gradient-to-br from-pink-100 to-pink-200 p-3 rounded-xl border-2 border-pink-300 flex flex-col items-center justify-center aspect-square">
- <svg className="w-6 h-6 text-pink-600" fill="currentColor" viewBox="0 0 24 24">
- <path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
- </svg>
- <p className="text-[8px] font-bold text-pink-700 mt-1 text-center">Wishlist Curator</p>
- </div>
- <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block z-10">
- <div className="bg-gray-900 text-white text-xs rounded-lg py-1 px-2 whitespace-nowrap">
- 5+ items in wishlist!
- <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
- </div>
- </div>
- </div>
- )}
-
  {/* Profile Complete Badge */}
  {profile.name && profile.phone && profile.profilePicture && (
  <div className="relative group">
@@ -1020,7 +983,7 @@ export default function ProfilePage() {
  </div>
 
  {/* Badge Progress Message */}
- {userOrders.length === 0 && savedRecipes.length === 0 && wishlistItems.length === 0 && (
+ {userOrders.length === 0 && savedRecipes.length === 0 && (
  <p className="text-xs text-gray-500 text-center mt-3">
  Complete activities to earn badges!
  </p>
@@ -1032,10 +995,10 @@ export default function ProfilePage() {
  initial={{ opacity: 0, y: 20 }}
  animate={{ opacity: 1, y: 0 }}
  transition={{ delay: 0.1 }}
- className="bg-white rounded-2xl p-4 sm:p-5 shadow-lg border border-soft-green/20 relative overflow-hidden"
+ className="bg-white rounded-2xl p-4 sm:p-5 shadow-lg border border-lawlaw-steel-blue/20 relative overflow-hidden"
  >
  {/* Background decoration */}
- <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-primary-green/5 to-transparent rounded-full -translate-y-1/2 translate-x-1/2" />
+ <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-lawlaw-ocean-teal/5 to-transparent rounded-full -translate-y-1/2 translate-x-1/2" />
 
  {showTooltips && (
  <motion.div
@@ -1043,7 +1006,7 @@ export default function ProfilePage() {
  animate={{ opacity: 1, y: 0 }}
  className="absolute -top-2 left-1/2 -translate-x-1/2 z-10"
  >
- <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white text-xs px-4 py-2 rounded-full shadow-lg whitespace-nowrap flex items-center gap-2">
+ <div className="bg-gradient-to-r from-lawlaw-ocean-teal to-lawlaw-deep-blue text-white text-xs px-4 py-2 rounded-full shadow-lg whitespace-nowrap flex items-center gap-2">
  <svg className="w-4 h-4 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
  </svg>
@@ -1054,7 +1017,7 @@ export default function ProfilePage() {
 
  <div className="flex items-center justify-between mb-4">
  <h3 className="text-sm sm:text-base font-bold text-gray-800 flex items-center gap-2">
- <div className="p-1.5 bg-gradient-to-br from-primary-green to-leaf-green rounded-lg">
+ <div className="p-1.5 bg-gradient-to-br from-lawlaw-steel-blue to-lawlaw-ocean-teal rounded-lg">
  <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
  </svg>
@@ -1064,36 +1027,36 @@ export default function ProfilePage() {
  </div>
 
  {profile.role !== 'seller' ? (
- /* User Quick Actions - Modern Grid Layout */
+ /* User Quick Actions - Modern Grid Layout - Lawlaw Theme */
  <div className="space-y-3">
  {/* Main Action Buttons - 2x2 Grid on Mobile */}
  <div className="grid grid-cols-2 gap-2 sm:gap-3">
  <Link
  href="/orders"
- className="group relative p-3 sm:p-4 rounded-xl bg-gradient-to-br from-emerald-50 to-emerald-100/50 hover:from-emerald-100 hover:to-emerald-200/50 border border-emerald-200/50 transition-all duration-300 hover:shadow-md hover:scale-[1.02] active:scale-[0.98]"
+ className="group relative p-3 sm:p-4 rounded-xl bg-gradient-to-br from-lawlaw-silver to-lawlaw-steel-blue/20 hover:from-lawlaw-silver-shimmer hover:to-lawlaw-steel-blue/30 border border-lawlaw-steel-blue/30 transition-all duration-300 hover:shadow-md hover:scale-[1.02] active:scale-[0.98]"
  >
  <div className="flex flex-col items-center gap-2">
- <div className="p-2.5 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl shadow-sm group-hover:shadow-md transition-shadow">
+ <div className="p-2.5 bg-gradient-to-br from-lawlaw-aqua-teal to-lawlaw-ocean-teal rounded-xl shadow-sm group-hover:shadow-md transition-shadow">
  <svg className="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
  </svg>
  </div>
- <span className="text-xs sm:text-sm font-semibold text-gray-700 group-hover:text-emerald-700 transition-colors">My Orders</span>
+ <span className="text-xs sm:text-sm font-semibold text-gray-700 group-hover:text-lawlaw-ocean-teal transition-colors">My Orders</span>
  </div>
  </Link>
 
  <Link
  href="/addresses"
- className="group relative p-3 sm:p-4 rounded-xl bg-gradient-to-br from-blue-50 to-blue-100/50 hover:from-blue-100 hover:to-blue-200/50 border border-blue-200/50 transition-all duration-300 hover:shadow-md hover:scale-[1.02] active:scale-[0.98]"
+ className="group relative p-3 sm:p-4 rounded-xl bg-gradient-to-br from-lawlaw-silver to-lawlaw-steel-blue/20 hover:from-lawlaw-silver-shimmer hover:to-lawlaw-steel-blue/30 border border-lawlaw-steel-blue/30 transition-all duration-300 hover:shadow-md hover:scale-[1.02] active:scale-[0.98]"
  >
  <div className="flex flex-col items-center gap-2">
- <div className="p-2.5 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-sm group-hover:shadow-md transition-shadow">
+ <div className="p-2.5 bg-gradient-to-br from-lawlaw-steel-blue to-lawlaw-deep-blue rounded-xl shadow-sm group-hover:shadow-md transition-shadow">
  <svg className="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
  </svg>
  </div>
- <span className="text-xs sm:text-sm font-semibold text-gray-700 group-hover:text-blue-700 transition-colors">Addresses</span>
+ <span className="text-xs sm:text-sm font-semibold text-gray-700 group-hover:text-lawlaw-deep-blue transition-colors">Addresses</span>
  </div>
  </Link>
  </div>
@@ -1101,31 +1064,28 @@ export default function ProfilePage() {
  {/* Collections Card - Full Width with Badges */}
  <Link
  href="/collections"
- className="group block p-3 sm:p-4 rounded-xl bg-gradient-to-r from-purple-50 via-pink-50 to-rose-50 hover:from-purple-100 hover:via-pink-100 hover:to-rose-100 border border-purple-200/50 transition-all duration-300 hover:shadow-md"
+ className="group block p-3 sm:p-4 rounded-xl bg-gradient-to-r from-lawlaw-silver via-lawlaw-silver-shimmer to-lawlaw-steel-blue/20 hover:from-lawlaw-silver-shimmer hover:via-lawlaw-steel-blue/20 hover:to-lawlaw-aqua-teal/20 border border-lawlaw-steel-blue/30 transition-all duration-300 hover:shadow-md"
  >
  <div className="flex items-center justify-between">
  <div className="flex items-center gap-3">
- <div className="p-2.5 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl shadow-sm group-hover:shadow-md transition-shadow">
+ <div className="p-2.5 bg-gradient-to-br from-lawlaw-ocean-teal to-lawlaw-deep-blue rounded-xl shadow-sm group-hover:shadow-md transition-shadow">
  <svg className="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
  </svg>
  </div>
  <div>
- <span className="text-sm sm:text-base font-bold text-gray-800 group-hover:text-purple-700 transition-colors">My Collections</span>
- <p className="text-[10px] sm:text-xs text-gray-500">Wishlist, Favorites & Saved</p>
+ <span className="text-sm sm:text-base font-bold text-gray-800 group-hover:text-lawlaw-ocean-teal transition-colors">My Collections</span>
+ <p className="text-[10px] sm:text-xs text-gray-500">Favorites & Saved Recipes</p>
  </div>
  </div>
  <div className="flex items-center gap-1.5">
- <span className="px-2 py-1 bg-yellow-400/20 text-yellow-700 rounded-full text-[10px] sm:text-xs font-bold border border-yellow-300/50">
- {wishlistItems.length}
- </span>
- <span className="px-2 py-1 bg-rose-400/20 text-rose-700 rounded-full text-[10px] sm:text-xs font-bold border border-rose-300/50">
+ <span className="px-2 py-1 bg-lawlaw-aqua-teal/20 text-lawlaw-deep-blue rounded-full text-[10px] sm:text-xs font-bold border border-lawlaw-aqua-teal/30">
  {recipeFavorites.length}
  </span>
- <span className="px-2 py-1 bg-purple-400/20 text-purple-700 rounded-full text-[10px] sm:text-xs font-bold border border-purple-300/50">
+ <span className="px-2 py-1 bg-lawlaw-steel-blue/20 text-lawlaw-navy rounded-full text-[10px] sm:text-xs font-bold border border-lawlaw-steel-blue/30">
  {savedRecipes.length}
  </span>
- <svg className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400 group-hover:text-purple-500 group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+ <svg className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400 group-hover:text-lawlaw-ocean-teal group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
  </svg>
  </div>
@@ -1135,14 +1095,14 @@ export default function ProfilePage() {
  {/* Add Recipe Button - Full Width */}
  <Link
  href="/add-recipe"
- className="group flex items-center justify-center gap-2 p-3 sm:p-4 rounded-xl bg-gradient-to-r from-orange-100 to-amber-100 hover:from-orange-200 hover:to-amber-200 border border-orange-200/50 transition-all duration-300 hover:shadow-md"
+ className="group flex items-center justify-center gap-2 p-3 sm:p-4 rounded-xl bg-gradient-to-r from-lawlaw-aqua-teal/20 to-lawlaw-ocean-teal/20 hover:from-lawlaw-aqua-teal/30 hover:to-lawlaw-ocean-teal/30 border border-lawlaw-aqua-teal/30 transition-all duration-300 hover:shadow-md"
  >
- <div className="p-2 bg-gradient-to-br from-orange-500 to-amber-500 rounded-lg shadow-sm group-hover:shadow-md transition-shadow">
+ <div className="p-2 bg-gradient-to-br from-lawlaw-aqua-teal to-lawlaw-ocean-teal rounded-lg shadow-sm group-hover:shadow-md transition-shadow">
  <svg className="w-4 h-4 sm:w-5 sm:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
  </svg>
  </div>
- <span className="text-sm sm:text-base font-bold text-orange-700">Share Your Recipe</span>
+ <span className="text-sm sm:text-base font-bold text-lawlaw-ocean-teal">Share Your Recipe</span>
  </Link>
  </div>
  ) : (
@@ -1152,57 +1112,57 @@ export default function ProfilePage() {
  <div className="grid grid-cols-2 gap-2 sm:gap-3">
  <Link
  href="/seller-dashboard"
- className="group relative p-3 sm:p-4 rounded-xl bg-gradient-to-br from-green-50 to-emerald-100/50 hover:from-green-100 hover:to-emerald-200/50 border border-green-200/50 transition-all duration-300 hover:shadow-md hover:scale-[1.02] active:scale-[0.98]"
+ className="group relative p-3 sm:p-4 rounded-xl bg-gradient-to-br from-lawlaw-silver to-lawlaw-steel-blue/20 hover:from-lawlaw-silver-shimmer hover:to-lawlaw-steel-blue/30 border border-lawlaw-steel-blue/30 transition-all duration-300 hover:shadow-md hover:scale-[1.02] active:scale-[0.98]"
  >
  <div className="flex flex-col items-center gap-2">
- <div className="p-2.5 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl shadow-sm group-hover:shadow-md transition-shadow">
+ <div className="p-2.5 bg-gradient-to-br from-lawlaw-ocean-teal to-lawlaw-deep-blue rounded-xl shadow-sm group-hover:shadow-md transition-shadow">
  <svg className="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
  </svg>
  </div>
- <span className="text-xs sm:text-sm font-semibold text-gray-700 group-hover:text-green-700 transition-colors">Dashboard</span>
+ <span className="text-xs sm:text-sm font-semibold text-gray-700 group-hover:text-lawlaw-ocean-teal transition-colors">Dashboard</span>
  </div>
  </Link>
 
  <Link
  href="/seller-products"
- className="group relative p-3 sm:p-4 rounded-xl bg-gradient-to-br from-purple-50 to-purple-100/50 hover:from-purple-100 hover:to-purple-200/50 border border-purple-200/50 transition-all duration-300 hover:shadow-md hover:scale-[1.02] active:scale-[0.98]"
+ className="group relative p-3 sm:p-4 rounded-xl bg-gradient-to-br from-lawlaw-silver to-lawlaw-aqua-teal/20 hover:from-lawlaw-silver-shimmer hover:to-lawlaw-aqua-teal/30 border border-lawlaw-aqua-teal/30 transition-all duration-300 hover:shadow-md hover:scale-[1.02] active:scale-[0.98]"
  >
  <div className="flex flex-col items-center gap-2">
- <div className="p-2.5 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl shadow-sm group-hover:shadow-md transition-shadow">
+ <div className="p-2.5 bg-gradient-to-br from-lawlaw-aqua-teal to-lawlaw-ocean-teal rounded-xl shadow-sm group-hover:shadow-md transition-shadow">
  <svg className="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
  </svg>
  </div>
- <span className="text-xs sm:text-sm font-semibold text-gray-700 group-hover:text-purple-700 transition-colors">Products</span>
+ <span className="text-xs sm:text-sm font-semibold text-gray-700 group-hover:text-lawlaw-aqua-teal transition-colors">Products</span>
  </div>
  </Link>
 
  <Link
  href="/seller-orders"
- className="group relative p-3 sm:p-4 rounded-xl bg-gradient-to-br from-orange-50 to-orange-100/50 hover:from-orange-100 hover:to-orange-200/50 border border-orange-200/50 transition-all duration-300 hover:shadow-md hover:scale-[1.02] active:scale-[0.98]"
+ className="group relative p-3 sm:p-4 rounded-xl bg-gradient-to-br from-lawlaw-silver to-lawlaw-deep-blue/20 hover:from-lawlaw-silver-shimmer hover:to-lawlaw-deep-blue/30 border border-lawlaw-deep-blue/30 transition-all duration-300 hover:shadow-md hover:scale-[1.02] active:scale-[0.98]"
  >
  <div className="flex flex-col items-center gap-2">
- <div className="p-2.5 bg-gradient-to-br from-orange-500 to-orange-600 rounded-xl shadow-sm group-hover:shadow-md transition-shadow">
+ <div className="p-2.5 bg-gradient-to-br from-lawlaw-deep-blue to-lawlaw-navy rounded-xl shadow-sm group-hover:shadow-md transition-shadow">
  <svg className="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
  </svg>
  </div>
- <span className="text-xs sm:text-sm font-semibold text-gray-700 group-hover:text-orange-700 transition-colors">Orders</span>
+ <span className="text-xs sm:text-sm font-semibold text-gray-700 group-hover:text-lawlaw-deep-blue transition-colors">Orders</span>
  </div>
  </Link>
 
  <Link
  href="/seller-analytics"
- className="group relative p-3 sm:p-4 rounded-xl bg-gradient-to-br from-blue-50 to-blue-100/50 hover:from-blue-100 hover:to-blue-200/50 border border-blue-200/50 transition-all duration-300 hover:shadow-md hover:scale-[1.02] active:scale-[0.98]"
+ className="group relative p-3 sm:p-4 rounded-xl bg-gradient-to-br from-lawlaw-silver to-lawlaw-navy/20 hover:from-lawlaw-silver-shimmer hover:to-lawlaw-navy/30 border border-lawlaw-navy/30 transition-all duration-300 hover:shadow-md hover:scale-[1.02] active:scale-[0.98]"
  >
  <div className="flex flex-col items-center gap-2">
- <div className="p-2.5 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-sm group-hover:shadow-md transition-shadow">
+ <div className="p-2.5 bg-gradient-to-br from-lawlaw-navy to-lawlaw-deep-blue rounded-xl shadow-sm group-hover:shadow-md transition-shadow">
  <svg className="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
  </svg>
  </div>
- <span className="text-xs sm:text-sm font-semibold text-gray-700 group-hover:text-blue-700 transition-colors">Analytics</span>
+ <span className="text-xs sm:text-sm font-semibold text-gray-700 group-hover:text-lawlaw-navy transition-colors">Analytics</span>
  </div>
  </Link>
  </div>
@@ -1210,31 +1170,28 @@ export default function ProfilePage() {
  {/* Collections Card - Full Width with Badges */}
  <Link
  href="/collections"
- className="group block p-3 sm:p-4 rounded-xl bg-gradient-to-r from-purple-50 via-pink-50 to-rose-50 hover:from-purple-100 hover:via-pink-100 hover:to-rose-100 border border-purple-200/50 transition-all duration-300 hover:shadow-md"
+ className="group block p-3 sm:p-4 rounded-xl bg-gradient-to-r from-lawlaw-silver via-lawlaw-silver-shimmer to-lawlaw-steel-blue/20 hover:from-lawlaw-silver-shimmer hover:via-white hover:to-lawlaw-steel-blue/30 border border-lawlaw-steel-blue/30 transition-all duration-300 hover:shadow-md"
  >
  <div className="flex items-center justify-between">
  <div className="flex items-center gap-3">
- <div className="p-2.5 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl shadow-sm group-hover:shadow-md transition-shadow">
+ <div className="p-2.5 bg-gradient-to-br from-lawlaw-ocean-teal to-lawlaw-aqua-teal rounded-xl shadow-sm group-hover:shadow-md transition-shadow">
  <svg className="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
  </svg>
  </div>
  <div>
- <span className="text-sm sm:text-base font-bold text-gray-800 group-hover:text-purple-700 transition-colors">My Collections</span>
- <p className="text-[10px] sm:text-xs text-gray-500">Wishlist, Favorites & Saved</p>
+ <span className="text-sm sm:text-base font-bold text-gray-800 group-hover:text-lawlaw-ocean-teal transition-colors">My Collections</span>
+ <p className="text-[10px] sm:text-xs text-gray-500">Favorites & Saved Recipes</p>
  </div>
  </div>
  <div className="flex items-center gap-1.5">
- <span className="px-2 py-1 bg-yellow-400/20 text-yellow-700 rounded-full text-[10px] sm:text-xs font-bold border border-yellow-300/50">
- {wishlistItems.length}
- </span>
- <span className="px-2 py-1 bg-rose-400/20 text-rose-700 rounded-full text-[10px] sm:text-xs font-bold border border-rose-300/50">
+ <span className="px-2 py-1 bg-lawlaw-aqua-teal/20 text-lawlaw-ocean-teal rounded-full text-[10px] sm:text-xs font-bold border border-lawlaw-aqua-teal/50">
  {recipeFavorites.length}
  </span>
- <span className="px-2 py-1 bg-purple-400/20 text-purple-700 rounded-full text-[10px] sm:text-xs font-bold border border-purple-300/50">
+ <span className="px-2 py-1 bg-lawlaw-deep-blue/20 text-lawlaw-deep-blue rounded-full text-[10px] sm:text-xs font-bold border border-lawlaw-deep-blue/50">
  {savedRecipes.length}
  </span>
- <svg className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400 group-hover:text-purple-500 group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+ <svg className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400 group-hover:text-lawlaw-ocean-teal group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
  </svg>
  </div>
@@ -1244,14 +1201,14 @@ export default function ProfilePage() {
  {/* Add Recipe Button - Full Width */}
  <Link
  href="/seller-shop?action=add"
- className="group flex items-center justify-center gap-2 p-3 sm:p-4 rounded-xl bg-gradient-to-r from-emerald-100 to-green-100 hover:from-emerald-200 hover:to-green-200 border border-emerald-300/50 transition-all duration-300 hover:shadow-md"
+ className="group flex items-center justify-center gap-2 p-3 sm:p-4 rounded-xl bg-gradient-to-r from-lawlaw-silver to-lawlaw-aqua-teal/20 hover:from-lawlaw-silver-shimmer hover:to-lawlaw-aqua-teal/30 border border-lawlaw-aqua-teal/50 transition-all duration-300 hover:shadow-md"
  >
- <div className="p-2 bg-gradient-to-br from-emerald-500 to-green-500 rounded-lg shadow-sm group-hover:shadow-md transition-shadow">
+ <div className="p-2 bg-gradient-to-br from-lawlaw-aqua-teal to-lawlaw-ocean-teal rounded-lg shadow-sm group-hover:shadow-md transition-shadow">
  <svg className="w-4 h-4 sm:w-5 sm:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
  </svg>
  </div>
- <span className="text-sm sm:text-base font-bold text-emerald-700">Add New Recipe</span>
+ <span className="text-sm sm:text-base font-bold text-lawlaw-ocean-teal">Add New Recipe</span>
  </Link>
  </div>
  )}
@@ -1263,11 +1220,11 @@ export default function ProfilePage() {
  initial={{ opacity: 0, y: 20 }}
  animate={{ opacity: 1, y: 0 }}
  transition={{ delay: 0.15 }}
- className="bg-gradient-to-br from-white to-green-50/50 rounded-2xl p-4 sm:p-5 shadow-lg border border-soft-green/20 relative overflow-hidden"
+ className="bg-gradient-to-br from-white to-green-50/50 rounded-2xl p-4 sm:p-5 shadow-lg border border-lawlaw-steel-blue/20 relative overflow-hidden"
  >
- <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-primary-green/10 to-transparent rounded-full -translate-y-1/2 translate-x-1/2" />
+ <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-br from-lawlaw-ocean-teal/10 to-transparent rounded-full -translate-y-1/2 translate-x-1/2" />
  <div className="flex items-start gap-3 sm:gap-4">
- <div className="p-2.5 sm:p-3 bg-gradient-to-br from-primary-green to-leaf-green rounded-xl shadow-sm flex-shrink-0">
+ <div className="p-2.5 sm:p-3 bg-gradient-to-br from-lawlaw-steel-blue to-lawlaw-ocean-teal rounded-xl shadow-sm flex-shrink-0">
  <svg className="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
  </svg>
@@ -1279,7 +1236,7 @@ export default function ProfilePage() {
  </p>
  <button
  onClick={() => router.push('/seller-application')}
- className="w-full sm:w-auto bg-gradient-to-r from-primary-green to-leaf-green text-white px-4 py-2.5 rounded-xl hover:shadow-md transition-all duration-300 font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-[0.98]"
+ className="w-full sm:w-auto bg-gradient-to-r from-lawlaw-steel-blue to-lawlaw-ocean-teal text-white px-4 py-2.5 rounded-xl hover:shadow-md transition-all duration-300 font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-[0.98]"
  >
  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
@@ -1323,7 +1280,7 @@ export default function ProfilePage() {
  initial={{ opacity: 0, y: 20 }}
  animate={{ opacity: 1, y: 0 }}
  transition={{ delay: 0.2 }}
- className="bg-white rounded-2xl p-3 sm:p-4 shadow-lg border border-soft-green/20 space-y-2 sm:space-y-3"
+ className="bg-white rounded-2xl p-3 sm:p-4 shadow-lg border border-lawlaw-steel-blue/20 space-y-2 sm:space-y-3"
  >
  <p className="text-xs text-gray-600 font-bold uppercase tracking-wide flex items-center gap-2">
  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1333,7 +1290,7 @@ export default function ProfilePage() {
  </p>
  <div className="text-xs sm:text-sm space-y-2">
  <div className="flex items-center gap-2 text-gray-700">
- <svg className="w-4 h-4 text-primary-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+ <svg className="w-4 h-4 text-lawlaw-ocean-teal" fill="none" stroke="currentColor" viewBox="0 0 24 24">
  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
  </svg>
  <span className="font-medium">Joined:</span>
@@ -1341,7 +1298,7 @@ export default function ProfilePage() {
  </div>
  {profile.phone && (
  <div className="flex items-center gap-2 text-gray-700">
- <svg className="w-4 h-4 text-primary-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+ <svg className="w-4 h-4 text-lawlaw-ocean-teal" fill="none" stroke="currentColor" viewBox="0 0 24 24">
  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
  </svg>
  <span className="font-medium">Phone:</span>
@@ -1359,10 +1316,10 @@ export default function ProfilePage() {
  <motion.div
  initial={{ opacity: 0, y: 20 }}
  animate={{ opacity: 1, y: 0 }}
- className="bg-white rounded-2xl shadow-lg border border-soft-green/20 p-6"
+ className="bg-white rounded-2xl shadow-lg border border-lawlaw-steel-blue/20 p-6"
  >
- <h3 className="font-bold text-2xl bg-gradient-to-r from-primary-green to-leaf-green bg-clip-text text-transparent flex items-center gap-2 mb-6">
- <svg className="w-6 h-6 text-primary-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+ <h3 className="font-bold text-2xl bg-gradient-to-r from-lawlaw-steel-blue to-lawlaw-ocean-teal bg-clip-text text-transparent flex items-center gap-2 mb-6">
+ <svg className="w-6 h-6 text-lawlaw-ocean-teal" fill="none" stroke="currentColor" viewBox="0 0 24 24">
  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
  </svg>
  Recent Activity
@@ -1407,25 +1364,6 @@ export default function ProfilePage() {
  </div>
  )}
 
- {wishlistItems.length > 0 && (
- <div className="flex gap-4 items-start pb-4 border-b border-gray-100 last:border-0 last:pb-0">
- <div className="bg-yellow-100 p-2 rounded-full flex-shrink-0">
- <svg className="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
- <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
- </svg>
- </div>
- <div className="flex-1">
- <p className="text-sm font-semibold text-gray-900">Added to Wishlist</p>
- <p className="text-xs text-gray-600 mt-1">
- You added "{wishlistItems[0]?.product.name}" to your wishlist
- </p>
- <p className="text-xs text-gray-400 mt-1">
- {new Date(wishlistItems[0]?.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
- </p>
- </div>
- </div>
- )}
-
  <div className="flex gap-4 items-start pb-4 border-b border-gray-100 last:border-0 last:pb-0">
  <div className="bg-blue-100 p-2 rounded-full flex-shrink-0">
  <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1443,7 +1381,7 @@ export default function ProfilePage() {
  </div>
  </div>
 
- {(userOrders.length === 0 && savedRecipes.length === 0 && wishlistItems.length === 0) && (
+ {(userOrders.length === 0 && savedRecipes.length === 0) && (
  <div className="text-center py-8 text-gray-500">
  <svg className="w-16 h-16 mx-auto mb-3 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -1462,7 +1400,7 @@ export default function ProfilePage() {
  initial={{ opacity: 0, y: 20 }}
  animate={{ opacity: 1, y: 0 }}
  transition={{ delay: 0.1 }}
- className="bg-white rounded-2xl shadow-lg border border-soft-green/20 p-6 relative"
+ className="bg-white rounded-2xl shadow-lg border border-lawlaw-steel-blue/20 p-6 relative"
  >
  {showTooltips && (
  <motion.div
@@ -1478,8 +1416,8 @@ export default function ProfilePage() {
  </div>
  </motion.div>
  )}
- <h3 className="font-bold text-2xl bg-gradient-to-r from-primary-green to-leaf-green bg-clip-text text-transparent flex items-center gap-2 mb-6">
- <svg className="w-6 h-6 text-primary-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+ <h3 className="font-bold text-2xl bg-gradient-to-r from-lawlaw-steel-blue to-lawlaw-ocean-teal bg-clip-text text-transparent flex items-center gap-2 mb-6">
+ <svg className="w-6 h-6 text-lawlaw-ocean-teal" fill="none" stroke="currentColor" viewBox="0 0 24 24">
  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
  </svg>
  Shopping Insights
@@ -1507,16 +1445,6 @@ export default function ProfilePage() {
  </p>
  </div>
 
- <div className="bg-gradient-to-br from-yellow-50 to-yellow-100 p-4 rounded-xl border border-yellow-200">
- <div className="flex items-center gap-2 mb-2">
- <svg className="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
- <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
- </svg>
- <span className="text-xs font-medium text-yellow-700">Wishlist</span>
- </div>
- <p className="text-2xl font-bold text-yellow-900">{wishlistItems.length}</p>
- </div>
-
  <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-4 rounded-xl border border-purple-200">
  <div className="flex items-center gap-2 mb-2">
  <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1537,7 +1465,7 @@ export default function ProfilePage() {
  initial={{ opacity: 0, y: 20 }}
  animate={{ opacity: 1, y: 0 }}
  transition={{ delay: 0.1 }}
- className="bg-white rounded-2xl shadow-lg border border-soft-green/20 p-6 relative"
+ className="bg-white rounded-2xl shadow-lg border border-lawlaw-steel-blue/20 p-6 relative"
  >
  {showTooltips && (
  <motion.div
@@ -1554,13 +1482,13 @@ export default function ProfilePage() {
  </motion.div>
  )}
  <div className="flex items-center justify-between mb-6">
- <h3 className="font-bold text-2xl bg-gradient-to-r from-primary-green to-leaf-green bg-clip-text text-transparent flex items-center gap-2">
- <svg className="w-6 h-6 text-primary-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+ <h3 className="font-bold text-2xl bg-gradient-to-r from-lawlaw-steel-blue to-lawlaw-ocean-teal bg-clip-text text-transparent flex items-center gap-2">
+ <svg className="w-6 h-6 text-lawlaw-ocean-teal" fill="none" stroke="currentColor" viewBox="0 0 24 24">
  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
  </svg>
  Performance Overview
  </h3>
- <Link href="/seller-dashboard" className="text-sm text-primary-green hover:text-leaf-green font-medium flex items-center gap-1">
+ <Link href="/seller-dashboard" className="text-sm text-lawlaw-ocean-teal hover:text-lawlaw-deep-blue font-medium flex items-center gap-1">
  View Full Dashboard
  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -1620,7 +1548,7 @@ export default function ProfilePage() {
  {stats.recentOrders.length > 0 && (
  <div>
  <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
- <svg className="w-5 h-5 text-primary-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+ <svg className="w-5 h-5 text-lawlaw-ocean-teal" fill="none" stroke="currentColor" viewBox="0 0 24 24">
  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
  </svg>
  Recent Orders
@@ -1633,7 +1561,7 @@ export default function ProfilePage() {
  <p className="text-xs text-gray-500">{new Date(order.createdAt).toLocaleDateString()}</p>
  </div>
  <div className="text-right">
- <p className="font-semibold text-primary-green">${order.totalAmount.toFixed(2)}</p>
+ <p className="font-semibold text-lawlaw-ocean-teal">${order.totalAmount.toFixed(2)}</p>
  <span className={`text-xs px-2 py-0.5 rounded-full ${
  order.status === 'delivered' ? 'bg-green-100 text-green-700' :
  order.status === 'shipped' ? 'bg-blue-100 text-blue-700' :

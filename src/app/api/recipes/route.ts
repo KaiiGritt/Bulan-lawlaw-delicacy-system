@@ -7,17 +7,14 @@ import { prisma } from '../../lib/prisma'
 export async function GET() {
   try {
     const recipes = await prisma.recipe.findMany({
-      orderBy: { createdAt: 'desc' }
+      orderBy: { createdAt: 'desc' },
+      include: {
+        ingredients: { orderBy: { order: 'asc' } },
+        instructions: { orderBy: { stepNumber: 'asc' } }
+      }
     })
 
-    // Parse JSON strings back to arrays
-    const parsedRecipes = recipes.map((recipe: any) => ({
-      ...recipe,
-      ingredients: JSON.parse(recipe.ingredients),
-      instructions: JSON.parse(recipe.instructions)
-    }))
-
-    return NextResponse.json(parsedRecipes)
+    return NextResponse.json(recipes)
   } catch (error) {
     console.error('Error fetching recipes:', error)
     return NextResponse.json(
@@ -53,21 +50,32 @@ export async function POST(request: NextRequest) {
       data: {
         title,
         description,
-        ingredients: JSON.stringify(ingredients),
-        instructions: JSON.stringify(instructions),
         image,
         prepTime: parseInt(prepTime),
         cookTime: parseInt(cookTime),
         servings: parseInt(servings),
-        difficulty
+        difficulty,
+        ingredients: {
+          create: ingredients.map((ing: { name: string; quantity?: string }, index: number) => ({
+            name: ing.name,
+            quantity: ing.quantity,
+            order: index
+          }))
+        },
+        instructions: {
+          create: instructions.map((inst: string, index: number) => ({
+            stepNumber: index + 1,
+            instruction: inst
+          }))
+        }
+      },
+      include: {
+        ingredients: { orderBy: { order: 'asc' } },
+        instructions: { orderBy: { stepNumber: 'asc' } }
       }
     })
 
-    return NextResponse.json({
-      ...recipe,
-      ingredients: JSON.parse(recipe.ingredients),
-      instructions: JSON.parse(recipe.instructions)
-    }, { status: 201 })
+    return NextResponse.json(recipe, { status: 201 })
   } catch (error) {
     console.error('Error creating recipe:', error)
     return NextResponse.json(

@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
 
     // Get user's cart items
     const cartItems = await prisma.cartItem.findMany({
-      where: { userId: session.user.id },
+      where: { userId: parseInt(session.user.id) },
       include: { product: true }
     })
 
@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
     // Step 1: Create the order
     const order = await prisma.order.create({
       data: {
-        userId: session.user.id,
+        userId: parseInt(session.user.id),
         totalAmount,
         shippingAddress: JSON.stringify(shippingAddress),
         billingAddress: JSON.stringify(billingAddress),
@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
 
     // Step 2: Create order items
     const orderItemsData = cartItems.map((item: { productId: any; quantity: any; product: { price: any } }) => ({
-      orderId: order.id,
+      orderId: order.orderId,
       productId: item.productId,
       quantity: item.quantity,
       price: item.product.price
@@ -80,7 +80,7 @@ export async function POST(request: NextRequest) {
     await Promise.all(
       cartItems.map((item) =>
         prisma.product.update({
-          where: { id: item.productId },
+          where: { productId: item.productId },
           data: { stock: { decrement: item.quantity } }
         })
       )
@@ -88,7 +88,7 @@ export async function POST(request: NextRequest) {
 
     // Step 4: Clear the cart
     await prisma.cartItem.deleteMany({
-      where: { userId: session.user.id }
+      where: { userId: parseInt(session.user.id) }
     })
 
     const result = order
@@ -104,7 +104,7 @@ export async function POST(request: NextRequest) {
           price: item.product.price
         }))
         await sendOrderConfirmation(session.user.email!, {
-          orderId: result.id,
+          orderId: String(result.orderId),
           totalAmount,
           shippingAddress,
           orderItems
@@ -117,9 +117,9 @@ export async function POST(request: NextRequest) {
       try {
         await prisma.notification.create({
           data: {
-            userId: session.user.id,
+            userId: parseInt(session.user.id),
             title: 'Order Placed Successfully',
-            message: `Your order #${result.id.slice(-8)} has been placed and is being processed.`,
+            message: `Your order #${result.orderId} has been placed and is being processed.`,
             type: 'order_update'
           }
         })
@@ -132,7 +132,7 @@ export async function POST(request: NextRequest) {
         const admins = await prisma.user.findMany({ where: { role: 'admin' } })
         for (const admin of admins) {
           sendAdminOrderNotification(admin.email, {
-            orderId: result.id,
+            orderId: String(result.orderId),
             buyerName: session.user.name || 'Customer',
             buyerEmail: session.user.email!,
             totalAmount,
@@ -147,13 +147,13 @@ export async function POST(request: NextRequest) {
       for (const item of cartItems) {
         try {
           const seller = await prisma.user.findUnique({
-            where: { id: item.product.userId },
+            where: { userId: item.product.userId },
             include: { sellerApplication: true }
           })
 
           if (seller?.email) {
             sendSellerOrderNotification(seller.email, {
-              orderId: result.id,
+              orderId: String(result.orderId),
               buyerName: session.user.name || 'Customer',
               productName: item.product.name,
               quantity: item.quantity,
@@ -166,7 +166,7 @@ export async function POST(request: NextRequest) {
             where: {
               sellerId_buyerId_productId: {
                 sellerId: item.product.userId,
-                buyerId: session.user.id,
+                buyerId: parseInt(session.user.id),
                 productId: item.productId
               }
             }
@@ -178,24 +178,24 @@ export async function POST(request: NextRequest) {
             const conversation = await prisma.conversation.create({
               data: {
                 sellerId: item.product.userId,
-                buyerId: session.user.id,
+                buyerId: parseInt(session.user.id),
                 productId: item.productId,
                 status: 'active'
               }
             })
             await prisma.message.create({
               data: {
-                conversationId: conversation.id,
+                conversationId: conversation.conversationId,
                 senderId: item.product.userId,
-                content: `Hello! Thank you for ordering ${item.quantity}x ${item.product.name} from ${businessName}. Your order #${result.id.slice(-8)} is now being processed.`
+                content: `Hello! Thank you for ordering ${item.quantity}x ${item.product.name} from ${businessName}. Your order #${result.orderId} is now being processed.`
               }
             })
           } else {
             await prisma.message.create({
               data: {
-                conversationId: existingConversation.id,
+                conversationId: existingConversation.conversationId,
                 senderId: item.product.userId,
-                content: `Thank you for your new order! You've ordered ${item.quantity}x ${item.product.name} (Order #${result.id.slice(-8)}).`
+                content: `Thank you for your new order! You've ordered ${item.quantity}x ${item.product.name} (Order #${result.orderId}).`
               }
             })
           }
@@ -211,7 +211,7 @@ export async function POST(request: NextRequest) {
     // Return immediately after order is created
     return NextResponse.json({
       message: 'Order placed successfully',
-      orderId: result.id,
+      orderId: result.orderId,
       totalAmount
     }, { status: 201 })
 

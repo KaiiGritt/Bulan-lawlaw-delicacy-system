@@ -23,7 +23,7 @@ export async function POST(
 
     // Check if product exists and belongs to the seller
     const product = await prisma.product.findUnique({
-      where: { id: productId },
+      where: { productId: parseInt(productId) },
       select: { userId: true },
     });
 
@@ -32,22 +32,22 @@ export async function POST(
     }
 
     // Only the product owner (seller) can reply
-    if (product.userId !== session.user.id) {
+    if (product.userId !== parseInt(session.user.id)) {
       return NextResponse.json({ error: 'Only the seller can reply to reviews' }, { status: 403 });
     }
 
     // Check if review exists
     const review = await prisma.comment.findUnique({
-      where: { id: reviewId },
+      where: { commentId: parseInt(reviewId) },
     });
 
-    if (!review || review.productId !== productId) {
+    if (!review || review.productId !== parseInt(productId)) {
       return NextResponse.json({ error: 'Review not found' }, { status: 404 });
     }
 
     // Update the review with seller's reply
     const updatedReview = await prisma.comment.update({
-      where: { id: reviewId },
+      where: { commentId: parseInt(reviewId) },
       data: {
         sellerReply: reply.trim(),
         sellerReplyAt: new Date(),
@@ -55,7 +55,7 @@ export async function POST(
       include: {
         user: {
           select: {
-            id: true,
+            userId: true,
             name: true,
             profilePicture: true,
           },
@@ -85,7 +85,7 @@ export async function DELETE(
 
     // Check if product exists and belongs to the seller
     const product = await prisma.product.findUnique({
-      where: { id: productId },
+      where: { productId: parseInt(productId) },
       select: { userId: true },
     });
 
@@ -94,13 +94,13 @@ export async function DELETE(
     }
 
     // Only the product owner (seller) can delete their reply
-    if (product.userId !== session.user.id) {
+    if (product.userId !== parseInt(session.user.id)) {
       return NextResponse.json({ error: 'Only the seller can delete their reply' }, { status: 403 });
     }
 
     // Remove the reply
     await prisma.comment.update({
-      where: { id: reviewId },
+      where: { commentId: parseInt(reviewId) },
       data: {
         sellerReply: null,
         sellerReplyAt: null,

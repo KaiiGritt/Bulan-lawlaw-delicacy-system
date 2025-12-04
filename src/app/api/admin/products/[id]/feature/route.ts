@@ -15,7 +15,7 @@ export async function PATCH(request: NextRequest, context: { params: Promise<{ i
   try {
     // Get current featured value with ensured typing
     const product = await prisma.product.findUnique({
-      where: { id },
+      where: { productId: parseInt(id) },
       select: { featured: true },
     });
 
@@ -25,7 +25,7 @@ export async function PATCH(request: NextRequest, context: { params: Promise<{ i
 
     // Toggle featured boolean
     const updatedProduct = await prisma.product.update({
-      where: { id },
+      where: { productId: parseInt(id) },
       data: { featured: !product.featured },
     });
 

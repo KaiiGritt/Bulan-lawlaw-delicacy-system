@@ -154,12 +154,7 @@ export default function UsersTab() {
  {/* Mobile Card View */}
  <div className="block lg:hidden space-y-4">
  {users.map((user, index) => (
- <motion.div
- key={user.id}
- initial={{ opacity: 0, y: 10 }}
- animate={{ opacity: 1, y: 0 }}
- transition={{ delay: index * 0.05 }}
- className="bg-gradient-to-br from-gray-50 to-green-50/30 rounded-xl p-4 border border-gray-200 shadow-sm hover:shadow-md transition-shadow"
+ <motion.div key={user.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.05 }} className="bg-gradient-to-br from-gray-50 to-green-50/30 rounded-xl p-4 border border-gray-200 shadow-sm hover:shadow-md transition-shadow"
  >
  {/* User Info */}
  <div className="mb-4">
@@ -191,15 +186,15 @@ export default function UsersTab() {
  : 'bg-gradient-to-r from-green-100 to-green-200 text-green-800'
  }`}>
  {user.blocked ? (
- <>
+ <span className="flex items-center gap-1.5">
  <LockClosedIcon className="w-3.5 h-3.5" />
  Blocked
- </>
+ </span>
  ) : (
- <>
+ <span className="flex items-center gap-1.5">
  <LockOpenIcon className="w-3.5 h-3.5" />
  Active
- </>
+ </span>
  )}
  </span>
  </div>
@@ -217,15 +212,15 @@ export default function UsersTab() {
  }`}
  >
  {user.blocked ? (
- <>
+ <span className="flex items-center gap-2">
  <LockOpenIcon className="w-5 h-5" />
  Unblock User
- </>
+ </span>
  ) : (
- <>
+ <span className="flex items-center gap-2">
  <LockClosedIcon className="w-5 h-5" />
  Block User
- </>
+ </span>
  )}
  </button>
  <div className="grid grid-cols-2 gap-2">
@@ -264,13 +259,8 @@ export default function UsersTab() {
  </tr>
  </thead>
  <tbody>
- {users.map((user, index) => (
- <motion.tr
- key={user.id}
- initial={{ opacity: 0, y: 10 }}
- animate={{ opacity: 1, y: 0 }}
- transition={{ delay: index * 0.05 }}
- className="border-b border-gray-100 hover:bg-gradient-to-r hover:from-soft-green/10 hover:to-banana-leaf/10 transition-all"
+ {users.map((user) => (
+ <tr key={user.id} className="border-b border-gray-100 hover:bg-gradient-to-r hover:from-soft-green/10 hover:to-banana-leaf/10 transition-all"
  >
  <td className="px-4 py-3 font-medium text-gray-900">{user.name || '-'}</td>
  <td className="px-4 py-3 text-gray-600">{user.email}</td>
@@ -294,15 +284,15 @@ export default function UsersTab() {
  : 'bg-gradient-to-r from-green-100 to-green-200 text-green-800'
  }`}>
  {user.blocked ? (
- <>
+ <span className="flex items-center gap-1.5">
  <LockClosedIcon className="w-3.5 h-3.5" />
  Blocked
- </>
+ </span>
  ) : (
- <>
+ <span className="flex items-center gap-1.5">
  <LockOpenIcon className="w-3.5 h-3.5" />
  Active
- </>
+ </span>
  )}
  </span>
  </td>
@@ -318,15 +308,15 @@ export default function UsersTab() {
  }`}
  >
  {user.blocked ? (
- <>
+ <span className="flex items-center gap-1.5">
  <LockOpenIcon className="w-4 h-4" />
  Unblock
- </>
+ </span>
  ) : (
- <>
+ <span className="flex items-center gap-1.5">
  <LockClosedIcon className="w-4 h-4" />
  Block
- </>
+ </span>
  )}
  </button>
  <button
@@ -347,7 +337,7 @@ export default function UsersTab() {
  </button>
  </div>
  </td>
- </motion.tr>
+ </tr>
  ))}
  </tbody>
  </table>

@@ -16,7 +16,7 @@ export async function POST(
     const { id } = await context.params
 
     // Find user
-    const user = await prisma.user.findUnique({ where: { id } })
+    const user = await prisma.user.findUnique({ where: { userId: parseInt(id) } })
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
@@ -38,7 +38,7 @@ export async function POST(
       newRole = 'seller'
       // Create a blank SellerApplication for the user if not exists
       const existingApp = await prisma.sellerApplication.findUnique({
-        where: { userId: id },
+        where: { userId: parseInt(id) },
       })
       if (!existingApp) {
         sellerApplicationData = {
@@ -54,14 +54,14 @@ export async function POST(
       } else {
         // If exists, update status to approved
         await prisma.sellerApplication.update({
-          where: { userId: id },
+          where: { userId: parseInt(id) },
           data: { status: 'approved' }
         })
       }
     } else if (user.role === 'seller') {
       newRole = 'user'
       // Delete seller application if any
-      await prisma.sellerApplication.deleteMany({ where: { userId: id } })
+      await prisma.sellerApplication.deleteMany({ where: { userId: parseInt(id) } })
     } else {
       return NextResponse.json(
         { error: 'Cannot convert admin role' },
@@ -71,13 +71,13 @@ export async function POST(
 
     // Update user role and create seller application if needed
     const updatedUser = await prisma.user.update({
-      where: { id },
+      where: { userId: parseInt(id) },
       data: {
         role: newRole,
         sellerApplication: sellerApplicationData,
       },
       select: {
-        id: true,
+        userId: true,
         name: true,
         email: true,
         role: true,

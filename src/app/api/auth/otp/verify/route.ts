@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
 
     // Check if OTP has expired
     if (new Date() > otpRecord.expiresAt) {
-      await prisma.otp.delete({ where: { id: otpRecord.id } });
+      await prisma.otp.delete({ where: { otpId: otpRecord.otpId } });
       return NextResponse.json(
         { error: 'OTP has expired. Please request a new one.' },
         { status: 400 }
@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
 
     // Check max attempts
     if (otpRecord.attempts >= MAX_ATTEMPTS) {
-      await prisma.otp.delete({ where: { id: otpRecord.id } });
+      await prisma.otp.delete({ where: { otpId: otpRecord.otpId } });
       return NextResponse.json(
         { error: 'Maximum attempts exceeded. Please request a new OTP.' },
         { status: 429 }
@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
     if (otpRecord.code !== code) {
       // Increment attempts
       await prisma.otp.update({
-        where: { id: otpRecord.id },
+        where: { otpId: otpRecord.otpId },
         data: { attempts: otpRecord.attempts + 1 },
       });
 
@@ -73,7 +73,7 @@ export async function POST(request: NextRequest) {
 
     // OTP is correct - mark as verified
     await prisma.otp.update({
-      where: { id: otpRecord.id },
+      where: { otpId: otpRecord.otpId },
       data: { verified: true },
     });
 
@@ -137,7 +137,7 @@ export async function POST(request: NextRequest) {
     await prisma.otp.deleteMany({
       where: {
         email,
-        id: { not: otpRecord.id },
+        otpId: { not: otpRecord.otpId },
       },
     });
 

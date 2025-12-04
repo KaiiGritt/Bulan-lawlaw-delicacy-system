@@ -15,7 +15,7 @@ export async function DELETE(
 
   try {
     const message = await prisma.message.findUnique({
-      where: { id: messageId },
+      where: { messageId: parseInt(messageId) },
       include: {
         conversation: {
           include: {
@@ -30,14 +30,14 @@ export async function DELETE(
       return NextResponse.json({ error: 'Message not found' }, { status: 404 });
     }
 
-    const userId = session.user.id;
+    const userId = parseInt(session.user.id);
 
     // Check if user is sender of message or seller in conversation
-    if (message.senderId !== userId && message.conversation.seller.id !== userId) {
+    if (message.senderId !== userId && message.conversation.seller.userId !== userId) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
-    await prisma.message.delete({ where: { id: messageId } });
+    await prisma.message.delete({ where: { messageId: parseInt(messageId) } });
 
     return NextResponse.json({ success: true });
 

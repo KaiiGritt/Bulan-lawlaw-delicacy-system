@@ -41,7 +41,7 @@ export async function GET(request: NextRequest) {
 
     // Check if user is part of the conversation
     const conversation = await prisma.conversation.findUnique({
-      where: { id: conversationId },
+      where: { conversationId: parseInt(conversationId) },
       select: { sellerId: true, buyerId: true }
     })
 
@@ -52,7 +52,7 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    if (conversation.sellerId !== session.user.id && conversation.buyerId !== session.user.id) {
+    if (conversation.sellerId !== parseInt(session.user.id) && conversation.buyerId !== parseInt(session.user.id)) {
       return NextResponse.json(
         { error: 'Unauthorized to access this conversation' },
         { status: 403 }
@@ -60,10 +60,10 @@ export async function GET(request: NextRequest) {
     }
 
     const messages = await prisma.message.findMany({
-      where: { conversationId },
+      where: { conversationId: parseInt(conversationId) },
       include: {
         sender: {
-          select: { id: true, name: true, email: true }
+          select: { userId: true, name: true, email: true }
         }
       },
       orderBy: { createdAt: 'asc' }
@@ -72,8 +72,8 @@ export async function GET(request: NextRequest) {
     // Mark messages as read for the current user
     await prisma.message.updateMany({
       where: {
-        conversationId,
-        senderId: { not: session.user.id },
+        conversationId: parseInt(conversationId),
+        senderId: { not: parseInt(session.user.id) },
         isRead: false
       },
       data: { isRead: true }
@@ -112,7 +112,7 @@ export async function POST(request: NextRequest) {
 
     // Check if user is part of the conversation
     const conversation = await prisma.conversation.findUnique({
-      where: { id: conversationId },
+      where: { conversationId: conversationId },
       select: { sellerId: true, buyerId: true }
     })
 
@@ -123,7 +123,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    if (conversation.sellerId !== session.user.id && conversation.buyerId !== session.user.id) {
+    if (conversation.sellerId !== parseInt(session.user.id) && conversation.buyerId !== parseInt(session.user.id)) {
       return NextResponse.json(
         { error: 'Unauthorized to send messages in this conversation' },
         { status: 403 }
@@ -134,31 +134,31 @@ export async function POST(request: NextRequest) {
     const message = await prisma.message.create({
       data: {
         conversationId,
-        senderId: session.user.id,
+        senderId: parseInt(session.user.id),
         content
       },
       include: {
         sender: {
-          select: { id: true, name: true, email: true }
+          select: { userId: true, name: true, email: true }
         }
       }
     })
 
     // Update conversation updatedAt
     await prisma.conversation.update({
-      where: { id: conversationId },
+      where: { conversationId: conversationId },
       data: { updatedAt: new Date() }
     })
 
     // Trigger Pusher event to notify sender and receiver (only if Pusher is configured)
     if (pusher) {
       const senderChannel = `user-${session.user.id}`
-      const receiverId = conversation.sellerId === session.user.id ? conversation.buyerId : conversation.sellerId
+      const receiverId = conversation.sellerId === parseInt(session.user.id) ? conversation.buyerId : conversation.sellerId
       const receiverChannel = `user-${receiverId}`
 
       const eventPayload = {
         message: {
-          id: message.id,
+          id: message.messageId,
           content: message.content,
           createdAt: message.createdAt,
           sender: message.sender

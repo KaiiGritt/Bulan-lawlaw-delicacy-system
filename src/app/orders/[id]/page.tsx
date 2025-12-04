@@ -139,7 +139,7 @@ export default function OrderDetailsPage() {
 
  if (loading || status === 'loading') {
  return (
- <div className="min-h-screen bg-gradient-to-br from-accent-cream to-soft-green/20 py-4 sm:py-8 lg:py-12 px-4 sm:px-6 lg:px-8">
+ <div className="min-h-screen bg-gradient-to-br from-lawlaw-silver via-lawlaw-silver-shimmer to-lawlaw-steel-blue/20 py-4 sm:py-8 lg:py-12 px-4 sm:px-6 lg:px-8">
  <div className="max-w-4xl mx-auto">
  {/* Back Button Skeleton */}
  <div className="mb-6 animate-pulse">
@@ -205,7 +205,7 @@ export default function OrderDetailsPage() {
 
  if (!order) {
  return (
- <div className="min-h-screen bg-gradient-to-br from-accent-cream to-soft-green/20 py-4 sm:py-8 lg:py-12 px-4 sm:px-6 lg:px-8">
+ <div className="min-h-screen bg-gradient-to-br from-lawlaw-silver via-lawlaw-silver-shimmer to-lawlaw-steel-blue/20 py-4 sm:py-8 lg:py-12 px-4 sm:px-6 lg:px-8">
  <div className="max-w-4xl mx-auto">
  <div className="bg-white rounded-2xl p-8 shadow-lg text-center">
  <svg className="w-24 h-24 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -232,7 +232,7 @@ export default function OrderDetailsPage() {
  const steps = getStatusSteps();
 
  return (
- <div className="min-h-screen bg-gradient-to-br from-accent-cream to-soft-green/20 py-4 sm:py-8 lg:py-12 px-4 sm:px-6 lg:px-8">
+ <div className="min-h-screen bg-gradient-to-br from-lawlaw-silver via-lawlaw-silver-shimmer to-lawlaw-steel-blue/20 py-4 sm:py-8 lg:py-12 px-4 sm:px-6 lg:px-8">
  <Toaster position="top-right" />
 
  <div className="max-w-4xl mx-auto space-y-4 sm:space-y-6">

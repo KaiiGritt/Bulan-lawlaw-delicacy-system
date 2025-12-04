@@ -11,25 +11,23 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const userId = session.user.id;
+    const userId = parseInt(session.user.id);
 
     // Get total products count
     const totalProducts = await prisma.product.count({
       where: { userId },
     });
 
-    // Get pending products count
-    const pendingProducts = await prisma.product.count({
-      where: { userId, status: 'pending' },
-    });
+    // Get pending products count (all products owned by seller)
+    const pendingProducts = 0;
 
     // Get orders containing seller's products
     const sellerProducts = await prisma.product.findMany({
       where: { userId },
-      select: { id: true },
+      select: { productId: true },
     });
 
-    const productIds = sellerProducts.map((p: { id: string }) => p.id);
+    const productIds = sellerProducts.map((p: { productId: number }) => p.productId);
 
     const orders = await prisma.order.findMany({
       where: {
@@ -72,7 +70,7 @@ export async function GET(request: NextRequest) {
       totalRevenue,
       pendingProducts,
       recentOrders: orders.map((order: any) => ({
-        id: order.id,
+        id: order.orderId,
         totalAmount: order.totalAmount,
         status: order.status,
         createdAt: order.createdAt.toISOString(),

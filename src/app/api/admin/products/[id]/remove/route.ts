@@ -13,10 +13,9 @@ export async function PATCH(
   const { id } = await context.params;
 
   try {
-    // Soft delete by setting status to 'removed'
-    const product = await prisma.product.update({
-      where: { id },
-      data: { status: 'removed' },
+    // Delete the product
+    const product = await prisma.product.delete({
+      where: { productId: parseInt(id) },
     });
     return NextResponse.json(product);
   } catch (error) {

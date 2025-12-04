@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
     }
 
     const products = await prisma.product.findMany({
-      where: { userId: session.user.id },
+      where: { userId: parseInt(session.user.id) },
       orderBy: { createdAt: 'desc' },
     });
 
@@ -50,8 +50,7 @@ export async function POST(req: NextRequest) {
         category,
         image,
         stock: stock ? parseInt(stock) : 0,
-        userId: session.user.id,
-        status: 'pending', // Products require admin approval
+        userId: parseInt(session.user.id),
       },
     });
 

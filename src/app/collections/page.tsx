@@ -7,24 +7,6 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import toast, { Toaster } from 'react-hot-toast';
 
-interface Product {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  category: string;
-  image: string;
-  stock: number;
-  status: string;
-}
-
-interface WishlistItem {
-  id: string;
-  productId: string;
-  createdAt: string;
-  product: Product;
-}
-
 interface RecipeFavorite {
   id: string;
   recipeId: string;
@@ -62,8 +44,7 @@ interface SavedRecipe {
 export default function CollectionsPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<'wishlist' | 'favorites' | 'saved'>('wishlist');
-  const [wishlistItems, setWishlistItems] = useState<WishlistItem[]>([]);
+  const [activeTab, setActiveTab] = useState<'favorites' | 'saved'>('favorites');
   const [recipeFavorites, setRecipeFavorites] = useState<RecipeFavorite[]>([]);
   const [savedRecipes, setSavedRecipes] = useState<SavedRecipe[]>([]);
   const [loading, setLoading] = useState(true);
@@ -79,16 +60,10 @@ export default function CollectionsPage() {
 
   const fetchCollections = async () => {
     try {
-      const [wishlistRes, favoritesRes, savedRes] = await Promise.all([
-        fetch('/api/wishlist', { credentials: 'include' }),
+      const [favoritesRes, savedRes] = await Promise.all([
         fetch('/api/recipe-favorites', { credentials: 'include' }),
         fetch('/api/saved-recipes', { credentials: 'include' }),
       ]);
-
-      if (wishlistRes.ok) {
-        const wishlistData = await wishlistRes.json();
-        setWishlistItems(wishlistData);
-      }
 
       if (favoritesRes.ok) {
         const favoritesData = await favoritesRes.json();
@@ -104,23 +79,6 @@ export default function CollectionsPage() {
       toast.error('Failed to load collections');
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleRemoveFromWishlist = async (itemId: string) => {
-    try {
-      const res = await fetch(`/api/wishlist/${itemId}`, {
-        method: 'DELETE',
-        credentials: 'include',
-      });
-
-      if (!res.ok) throw new Error('Failed to remove from wishlist');
-
-      setWishlistItems(wishlistItems.filter(item => item.id !== itemId));
-      toast.success('Removed from wishlist');
-    } catch (err) {
-      console.error(err);
-      toast.error('Failed to remove item');
     }
   };
 
@@ -160,13 +118,13 @@ export default function CollectionsPage() {
 
   if (loading || status === 'loading') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-accent-cream to-soft-green/20 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen bg-gradient-to-br from-lawlaw-silver via-lawlaw-silver-shimmer to-lawlaw-steel-blue/20 py-12 px-4 sm:px-6 lg:px-8">
         <Toaster position="top-right" />
         <div className="max-w-7xl mx-auto">
           <div className="animate-pulse space-y-6">
             <div className="h-12 bg-gray-200 rounded w-64"></div>
             <div className="flex gap-4">
-              {[1, 2, 3].map((i) => (
+              {[1, 2].map((i) => (
                 <div key={i} className="h-10 bg-gray-200 rounded w-32"></div>
               ))}
             </div>
@@ -182,14 +140,14 @@ export default function CollectionsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-accent-cream to-soft-green/20 py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-lawlaw-silver via-lawlaw-silver-shimmer to-lawlaw-steel-blue/20 py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
       <Toaster position="top-right" />
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
           <Link
             href="/profile"
-            className="inline-flex items-center gap-2 text-primary-green hover:text-leaf-green mb-4 transition-colors"
+            className="inline-flex items-center gap-2 text-lawlaw-ocean-teal hover:text-leaf-green mb-4 transition-colors"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -199,41 +157,22 @@ export default function CollectionsPage() {
           <motion.h1
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-primary-green to-leaf-green bg-clip-text text-transparent flex items-center gap-3"
+            className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-lawlaw-steel-blue to-lawlaw-ocean-teal bg-clip-text text-transparent flex items-center gap-3"
           >
-            <svg className="w-8 h-8 sm:w-10 sm:h-10 text-primary-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-8 h-8 sm:w-10 sm:h-10 text-lawlaw-ocean-teal" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
             </svg>
             My Collections
           </motion.h1>
-          <p className="text-gray-600 mt-2">Manage your wishlist, favorite recipes, and saved items</p>
+          <p className="text-gray-600 mt-2">Manage your favorite recipes and saved items</p>
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-xl p-6 border-2 border-yellow-200"
-          >
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-yellow-700">Wishlist Items</p>
-                <p className="text-3xl font-bold text-yellow-900 mt-1">{wishlistItems.length}</p>
-              </div>
-              <div className="bg-yellow-200 p-3 rounded-full">
-                <svg className="w-8 h-8 text-yellow-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                </svg>
-              </div>
-            </div>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
             className="bg-gradient-to-br from-rose-50 to-rose-100 rounded-xl p-6 border-2 border-rose-200"
           >
             <div className="flex items-center justify-between">
@@ -252,7 +191,7 @@ export default function CollectionsPage() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
+            transition={{ delay: 0.2 }}
             className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl p-6 border-2 border-purple-200"
           >
             <div className="flex items-center justify-between">
@@ -272,7 +211,6 @@ export default function CollectionsPage() {
         {/* Tabs */}
         <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
           {[
-            { key: 'wishlist', label: 'Wishlist', count: wishlistItems.length, icon: '💛' },
             { key: 'favorites', label: 'Recipe Favorites', count: recipeFavorites.length, icon: '⭐' },
             { key: 'saved', label: 'Saved Recipes', count: savedRecipes.length, icon: '📖' },
           ].map((tab) => (
@@ -290,77 +228,6 @@ export default function CollectionsPage() {
             </button>
           ))}
         </div>
-
-        {/* Wishlist Content */}
-        {activeTab === 'wishlist' && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.3 }}
-          >
-            {wishlistItems.length === 0 ? (
-              <div className="bg-white rounded-2xl shadow-lg border border-soft-green/20 p-12 text-center">
-                <svg className="w-24 h-24 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                </svg>
-                <h3 className="text-2xl font-bold text-gray-700 mb-2">Your wishlist is empty</h3>
-                <p className="text-gray-500 mb-6">Start adding products to your wishlist</p>
-                <Link
-                  href="/products"
-                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-primary-green to-banana-leaf text-white font-medium hover:shadow-lg transition-all"
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                  </svg>
-                  Browse Products
-                </Link>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {wishlistItems.map((item) => (
-                  <motion.div
-                    key={item.id}
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all border border-gray-100"
-                  >
-                    <div className="relative">
-                      <img
-                        src={item.product.image || '/placeholder.png'}
-                        alt={item.product.name}
-                        className="w-full h-48 object-cover"
-                      />
-                      <button
-                        onClick={() => handleRemoveFromWishlist(item.id)}
-                        className="absolute top-3 right-3 bg-red-500 hover:bg-red-600 text-white p-2 rounded-full shadow-lg transition-colors"
-                        title="Remove from wishlist"
-                      >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                      </button>
-                    </div>
-                    <div className="p-5">
-                      <Link href={`/products/${item.product.id}`} className="font-bold text-lg text-gray-900 hover:text-primary-green line-clamp-1 block">
-                        {item.product.name}
-                      </Link>
-                      <p className="text-sm text-gray-600 line-clamp-2 mt-2">{item.product.description}</p>
-                      <div className="flex items-center justify-between mt-4">
-                        <p className="text-2xl font-bold text-primary-green">${item.product.price}</p>
-                        <Link
-                          href={`/products/${item.product.id}`}
-                          className="px-4 py-2 bg-gradient-to-r from-primary-green to-leaf-green text-white rounded-lg hover:shadow-md transition-all text-sm font-medium"
-                        >
-                          View Product
-                        </Link>
-                      </div>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            )}
-          </motion.div>
-        )}
 
         {/* Recipe Favorites Content */}
         {activeTab === 'favorites' && (
@@ -419,7 +286,7 @@ export default function CollectionsPage() {
                       </span>
                     </div>
                     <div className="p-5">
-                      <Link href={`/recipes/${fav.recipe.id}`} className="font-bold text-lg text-gray-900 hover:text-primary-green line-clamp-1 block">
+                      <Link href={`/recipes/${fav.recipe.id}`} className="font-bold text-lg text-gray-900 hover:text-lawlaw-ocean-teal line-clamp-1 block">
                         {fav.recipe.title}
                       </Link>
                       <p className="text-sm text-gray-600 line-clamp-2 mt-2">{fav.recipe.description}</p>
@@ -439,7 +306,7 @@ export default function CollectionsPage() {
                       </div>
                       <Link
                         href={`/recipes/${fav.recipe.id}`}
-                        className="mt-4 w-full block text-center px-4 py-2 bg-gradient-to-r from-primary-green to-leaf-green text-white rounded-lg hover:shadow-md transition-all text-sm font-medium"
+                        className="mt-4 w-full block text-center px-4 py-2 bg-gradient-to-r from-lawlaw-steel-blue to-lawlaw-ocean-teal text-white rounded-lg hover:shadow-md transition-all text-sm font-medium"
                       >
                         View Recipe
                       </Link>
@@ -508,7 +375,7 @@ export default function CollectionsPage() {
                       </span>
                     </div>
                     <div className="p-5">
-                      <Link href={`/recipes/${saved.recipe.id}`} className="font-bold text-lg text-gray-900 hover:text-primary-green line-clamp-1 block">
+                      <Link href={`/recipes/${saved.recipe.id}`} className="font-bold text-lg text-gray-900 hover:text-lawlaw-ocean-teal line-clamp-1 block">
                         {saved.recipe.title}
                       </Link>
                       <p className="text-sm text-gray-600 line-clamp-2 mt-2">{saved.recipe.description}</p>
@@ -534,7 +401,7 @@ export default function CollectionsPage() {
                       </div>
                       <Link
                         href={`/recipes/${saved.recipe.id}`}
-                        className="mt-4 w-full block text-center px-4 py-2 bg-gradient-to-r from-primary-green to-leaf-green text-white rounded-lg hover:shadow-md transition-all text-sm font-medium"
+                        className="mt-4 w-full block text-center px-4 py-2 bg-gradient-to-r from-lawlaw-steel-blue to-lawlaw-ocean-teal text-white rounded-lg hover:shadow-md transition-all text-sm font-medium"
                       >
                         View Recipe
                       </Link>

@@ -18,7 +18,7 @@ export async function POST(
     const { id } = await params;
 
     const address = await prisma.address.findUnique({
-      where: { id }
+      where: { addressId: parseInt(id) }
     });
 
     if (!address) {
@@ -26,14 +26,14 @@ export async function POST(
     }
 
     // Ensure user can only update their own addresses
-    if (address.userId !== session.user.id) {
+    if (address.userId !== parseInt(session.user.id)) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
     // Remove default from all other addresses
     await prisma.address.updateMany({
       where: {
-        userId: session.user.id,
+        userId: parseInt(session.user.id),
         isDefault: true
       },
       data: {
@@ -43,7 +43,7 @@ export async function POST(
 
     // Set this address as default
     const updatedAddress = await prisma.address.update({
-      where: { id },
+      where: { addressId: parseInt(id) },
       data: {
         isDefault: true
       }

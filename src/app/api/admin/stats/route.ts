@@ -36,9 +36,8 @@ export async function GET() {
       orderBy: { createdAt: 'desc' },
     });
 
-    // Pending products
+    // Get some recently added products
     const pendingProducts = await prisma.product.findMany({
-      where: { status: 'pending' }, // optional if you have a status field
       take: 5,
       include: { user: { select: { name: true } } },
       orderBy: { createdAt: 'desc' },
@@ -48,7 +47,7 @@ export async function GET() {
     const pendingSellerApplications = await prisma.sellerApplication.findMany({
       where: { status: 'pending' },
       take: 5,
-      include: { user: { select: { id: true, name: true, email: true } } },
+      include: { user: { select: { userId: true, name: true, email: true } } },
       orderBy: { createdAt: 'desc' },
     });
 

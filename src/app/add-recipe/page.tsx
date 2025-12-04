@@ -29,7 +29,7 @@ export default function AddRecipePage() {
 
  if (status === 'loading') {
  return (
- <div className="min-h-screen bg-gradient-to-br from-accent-cream to-soft-green/20 py-12 px-4 flex items-center justify-center">
+ <div className="min-h-screen bg-gradient-to-br from-lawlaw-silver via-lawlaw-silver-shimmer to-lawlaw-steel-blue/20 py-12 px-4 flex items-center justify-center">
  <div className="text-center">
  <div className="animate-spin w-10 h-10 sm:w-12 sm:h-12 border-4 border-primary-green border-t-transparent rounded-full mx-auto"></div>
  <p className="mt-4 text-sm sm:text-base text-gray-600">Loading...</p>
@@ -171,7 +171,7 @@ export default function AddRecipePage() {
  };
 
  return (
- <div className="min-h-screen bg-gradient-to-br from-accent-cream to-soft-green/20 py-6 sm:py-12 px-3 sm:px-4">
+ <div className="min-h-screen bg-gradient-to-br from-lawlaw-silver via-lawlaw-silver-shimmer to-lawlaw-steel-blue/20 py-6 sm:py-12 px-3 sm:px-4">
  <Toaster position="top-right" />
 
  <div className="max-w-4xl mx-auto">

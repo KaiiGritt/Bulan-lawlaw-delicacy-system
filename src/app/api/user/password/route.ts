@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
 
     // Get user from database
     const user = await prisma.user.findUnique({
-      where: { id: session.user.id }
+      where: { userId: parseInt(session.user.id) }
     })
 
     if (!user) {
@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
 
     // Update password in database
     await prisma.user.update({
-      where: { id: session.user.id },
+      where: { userId: parseInt(session.user.id) },
       data: { password: hashedPassword }
     })
 

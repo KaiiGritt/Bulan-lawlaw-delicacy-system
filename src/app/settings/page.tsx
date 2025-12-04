@@ -26,16 +26,13 @@ export default function Settings() {
   const [smsNotifications, setSmsNotifications] = useState(false);
   const [inAppNotifications, setInAppNotifications] = useState(true);
 
-  // Localization
-  const [language, setLanguage] = useState('en');
-  const [currency, setCurrency] = useState('USD');
-  const [timezone, setTimezone] = useState('UTC');
+  // Currency (PHP only)
+  const currency = 'PHP';
 
   // Privacy settings
   const [privacySettings, setPrivacySettings] = useState({
     showProfile: true,
     showOrders: false,
-    showWishlist: false,
   });
 
   // Security
@@ -207,9 +204,7 @@ export default function Settings() {
         promotionalEmails,
         smsNotifications,
         inAppNotifications,
-        language,
         currency,
-        timezone,
         privacySettings,
         accessibility,
         displayName,
@@ -360,7 +355,7 @@ export default function Settings() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-accent-cream to-soft-green/20 py-6 sm:py-8 px-3 sm:px-4 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-lawlaw-silver via-lawlaw-silver-shimmer to-lawlaw-steel-blue/20 py-6 sm:py-8 px-3 sm:px-4 lg:px-8">
       <Toaster position="top-right" />
 
       <div className="max-w-5xl mx-auto">
@@ -761,52 +756,6 @@ export default function Settings() {
             </div>
           </Section>
 
-          {/* Localization */}
-          <Section title="Localization" icon="🌍">
-            <div className="space-y-4">
-              <SelectField
-                label="Language"
-                value={language}
-                onChange={(e) => setLanguage(e.target.value)}
-                options={[
-                  { value: 'en', label: 'English' },
-                  { value: 'es', label: 'Español' },
-                  { value: 'fr', label: 'Français' },
-                  { value: 'de', label: 'Deutsch' },
-                  { value: 'zh', label: '中文' },
-                  { value: 'ja', label: '日本語' },
-                ]}
-              />
-
-              <SelectField
-                label="Currency"
-                value={currency}
-                onChange={(e) => setCurrency(e.target.value)}
-                options={[
-                  { value: 'USD', label: 'USD ($)' },
-                  { value: 'EUR', label: 'EUR (€)' },
-                  { value: 'GBP', label: 'GBP (£)' },
-                  { value: 'JPY', label: 'JPY (¥)' },
-                  { value: 'PHP', label: 'PHP (₱)' },
-                ]}
-              />
-
-              <SelectField
-                label="Timezone"
-                value={timezone}
-                onChange={(e) => setTimezone(e.target.value)}
-                options={[
-                  { value: 'UTC', label: 'UTC' },
-                  { value: 'America/New_York', label: 'Eastern Time' },
-                  { value: 'America/Chicago', label: 'Central Time' },
-                  { value: 'America/Los_Angeles', label: 'Pacific Time' },
-                  { value: 'Asia/Manila', label: 'Manila' },
-                  { value: 'Asia/Tokyo', label: 'Tokyo' },
-                ]}
-              />
-            </div>
-          </Section>
-
           {/* Privacy */}
           <Section title="Privacy Settings" icon="🔒">
             <div className="space-y-3">
@@ -821,12 +770,6 @@ export default function Settings() {
                 description="Display your order history on your profile"
                 value={privacySettings.showOrders}
                 onChange={(val) => setPrivacySettings({...privacySettings, showOrders: val})}
-              />
-              <ToggleSetting
-                label="Show Wishlist"
-                description="Make your wishlist visible to others"
-                value={privacySettings.showWishlist}
-                onChange={(val) => setPrivacySettings({...privacySettings, showWishlist: val})}
               />
             </div>
           </Section>

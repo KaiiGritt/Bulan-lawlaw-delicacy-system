@@ -257,7 +257,7 @@ export default function RegisterPage() {
  ];
 
  return (
- <div className="min-h-screen bg-gradient-to-br from-accent-cream to-soft-green/20 flex items-center justify-center p-4">
+ <div className="min-h-screen lawlaw-gradient-animated flex items-center justify-center p-4">
  {/* Modal */}
  <AnimatePresence>
  {modal && (
@@ -283,7 +283,7 @@ export default function RegisterPage() {
  <div className="bg-white rounded-3xl shadow-2xl overflow-hidden">
  <div className="grid md:grid-cols-2">
  {/* Left Side - Branding */}
- <div className="hidden md:flex flex-col justify-center p-12 bg-gradient-to-br from-primary-green via-leaf-green to-soft-green text-white">
+ <div className="hidden md:flex flex-col justify-center p-12 bg-gradient-to-br from-lawlaw-steel-blue via-lawlaw-aqua-teal to-lawlaw-ocean-teal text-white">
  <motion.div
  initial={{ x: -20, opacity: 0 }}
  animate={{ x: 0, opacity: 1 }}
@@ -330,7 +330,7 @@ export default function RegisterPage() {
  required
  value={formData.firstName}
  onChange={handleChange}
- className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary-green focus:border-transparent transition-all"
+ className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-lawlaw-aqua-teal focus:border-transparent transition-all"
  placeholder="John"
  />
  </div>
@@ -344,7 +344,7 @@ export default function RegisterPage() {
  required
  value={formData.lastName}
  onChange={handleChange}
- className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary-green focus:border-transparent transition-all"
+ className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-lawlaw-aqua-teal focus:border-transparent transition-all"
  placeholder="Doe"
  />
  </div>
@@ -361,7 +361,7 @@ export default function RegisterPage() {
  required
  value={formData.email}
  onChange={handleChange}
- className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+ className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-lawlaw-aqua-teal focus:border-transparent transition-all"
  placeholder="john@example.com"
  />
  </div>
@@ -376,7 +376,7 @@ export default function RegisterPage() {
  type="tel"
  value={formData.phoneNumber}
  onChange={handleChange}
- className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary-green focus:border-transparent transition-all"
+ className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-lawlaw-aqua-teal focus:border-transparent transition-all"
  placeholder="09123456789"
  />
  </div>
@@ -393,7 +393,7 @@ export default function RegisterPage() {
  required
  value={formData.password}
  onChange={handleChange}
- className="w-full px-4 py-3 pr-12 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary-green focus:border-transparent transition-all"
+ className="w-full px-4 py-3 pr-12 rounded-xl border border-gray-300 focus:ring-2 focus:ring-lawlaw-aqua-teal focus:border-transparent transition-all"
  placeholder="••••••••"
  />
  <button
@@ -463,7 +463,7 @@ export default function RegisterPage() {
  required
  value={formData.confirmPassword}
  onChange={handleChange}
- className="w-full px-4 py-3 pr-12 rounded-xl border border-gray-300 focus:ring-2 focus:ring-primary-green focus:border-transparent transition-all"
+ className="w-full px-4 py-3 pr-12 rounded-xl border border-gray-300 focus:ring-2 focus:ring-lawlaw-aqua-teal focus:border-transparent transition-all"
  placeholder="••••••••"
  />
  <button
@@ -483,15 +483,15 @@ export default function RegisterPage() {
  type="checkbox"
  checked={formData.agreeToTerms}
  onChange={handleChange}
- className="mt-1 w-4 h-4 text-primary-green border-gray-300 rounded focus:ring-primary-green"
+ className="mt-1 w-4 h-4 text-lawlaw-ocean-teal border-gray-300 rounded focus:ring-lawlaw-aqua-teal"
  />
  <label className="text-sm text-gray-600">
  I agree to the{' '}
- <Link href="/terms" className="text-warm-orange hover:text-earth-brown font-medium">
+ <Link href="/terms" className="text-lawlaw-ocean-teal hover:text-lawlaw-deep-blue font-medium">
  Terms and Conditions
  </Link>{' '}
  and{' '}
- <Link href="/privacy" className="text-warm-orange hover:text-earth-brown font-medium">
+ <Link href="/privacy" className="text-lawlaw-ocean-teal hover:text-lawlaw-deep-blue font-medium">
  Privacy Policy
  </Link>
  </label>
@@ -501,7 +501,7 @@ export default function RegisterPage() {
  <button
  type="submit"
  disabled={isLoading}
- className="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-primary-green to-banana-leaf hover:from-leaf-green hover:to-soft-green text-white font-semibold shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+ className="w-full py-3.5 px-6 rounded-xl bg-gradient-to-r from-lawlaw-steel-blue via-lawlaw-aqua-teal to-lawlaw-ocean-teal hover:from-lawlaw-aqua-teal hover:via-lawlaw-ocean-teal hover:to-lawlaw-deep-blue text-white font-semibold shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
  >
  {isLoading ? (
  <span className="flex items-center justify-center gap-2">
@@ -519,7 +519,7 @@ export default function RegisterPage() {
  {/* Login Link */}
  <p className="text-center text-sm text-gray-600">
  Already have an account?{' '}
- <Link href="/login" className="text-warm-orange hover:text-earth-brown font-semibold">
+ <Link href="/login" className="text-lawlaw-ocean-teal hover:text-lawlaw-deep-blue font-semibold">
  Sign In
  </Link>
  </p>

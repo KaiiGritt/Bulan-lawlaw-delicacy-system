@@ -30,13 +30,13 @@ export async function PATCH(
     const { id } = await params
 
     const user = await prisma.user.update({
-      where: { id },
-      data: { blocked },
+      where: { userId: parseInt(id) },
+      data: { remarks: blocked ? 'Blocked by admin' : null },
       select: {
-        id: true,
+        userId: true,
         name: true,
         email: true,
-        blocked: true,
+        remarks: true,
         role: true
       }
     })

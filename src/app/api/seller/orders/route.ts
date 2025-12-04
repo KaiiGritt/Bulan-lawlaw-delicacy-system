@@ -16,24 +16,24 @@ export async function GET(req: NextRequest) {
         orderItems: {
           some: {
             product: {
-              userId: session.user.id,
+              userId: parseInt(session.user.id),
             },
           },
         },
       },
       include: {
         user: {
-          select: { id: true, name: true, email: true },
+          select: { userId: true, name: true, email: true },
         },
         orderItems: {
           where: {
             product: {
-              userId: session.user.id,
+              userId: parseInt(session.user.id),
             },
           },
           include: {
             product: {
-              select: { id: true, name: true, price: true },
+              select: { productId: true, name: true, price: true },
             },
           },
         },

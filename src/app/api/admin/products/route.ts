@@ -12,13 +12,13 @@ export async function GET(request: NextRequest) {
     const products = await prisma.product.findMany({
       orderBy: { createdAt: 'desc' },
       select: {
-        id: true,
+        productId: true,
         name: true,
         image: true,
         category: true,
         price: true,
-        status: true,
         stock: true,
+        featured: true,
         createdAt: true,
       }
     });

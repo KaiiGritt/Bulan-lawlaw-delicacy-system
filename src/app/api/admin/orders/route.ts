@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
       include: {
         user: {
           select: {
-            id: true,
+            userId: true,
             name: true,
             email: true
           }
@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
           include: {
             product: {
               select: {
-                id: true,
+                productId: true,
                 name: true,
                 image: true
               }

@@ -10,11 +10,11 @@ export async function GET(
   try {
     const { id } = await params
     const product = await prisma.product.findUnique({
-      where: { id },
+      where: { productId: parseInt(id) },
       include: {
         user: {
           select: {
-            id: true,
+            userId: true,
             name: true,
             email: true,
             sellerApplication: {

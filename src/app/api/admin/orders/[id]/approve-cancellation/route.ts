@@ -30,7 +30,7 @@ export async function PATCH(
     const { id } = await params
 
     const order = await prisma.order.findUnique({
-      where: { id }
+      where: { orderId: parseInt(id) }
     })
 
     if (!order) {
@@ -48,7 +48,7 @@ export async function PATCH(
     }
 
     const updatedOrder = await prisma.order.update({
-      where: { id },
+      where: { orderId: parseInt(id) },
       data: {
         status: approved ? 'cancelled' : 'processing',
         adminApprovalRequired: false
@@ -56,7 +56,7 @@ export async function PATCH(
       include: {
         user: {
           select: {
-            id: true,
+            userId: true,
             name: true,
             email: true
           }

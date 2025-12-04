@@ -19,7 +19,7 @@ export async function GET(
 
     const address = await prisma.address.findUnique({
       where: {
-        id
+        addressId: parseInt(id)
       }
     });
 
@@ -28,7 +28,7 @@ export async function GET(
     }
 
     // Ensure user can only access their own addresses
-    if (address.userId !== session.user.id) {
+    if (address.userId !== parseInt(session.user.id)) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
@@ -57,7 +57,7 @@ export async function PUT(
     const { id } = await params;
 
     const existingAddress = await prisma.address.findUnique({
-      where: { id }
+      where: { addressId: parseInt(id) }
     });
 
     if (!existingAddress) {
@@ -65,7 +65,7 @@ export async function PUT(
     }
 
     // Ensure user can only update their own addresses
-    if (existingAddress.userId !== session.user.id) {
+    if (existingAddress.userId !== parseInt(session.user.id)) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
@@ -113,9 +113,9 @@ export async function PUT(
     if (isDefault && !existingAddress.isDefault) {
       await prisma.address.updateMany({
         where: {
-          userId: session.user.id,
+          userId: parseInt(session.user.id),
           isDefault: true,
-          id: { not: id }
+          addressId: { not: parseInt(id) }
         },
         data: {
           isDefault: false
@@ -124,7 +124,7 @@ export async function PUT(
     }
 
     const updatedAddress = await prisma.address.update({
-      where: { id },
+      where: { addressId: parseInt(id) },
       data: {
         fullName,
         phoneNumber,
@@ -164,7 +164,7 @@ export async function DELETE(
     const { id } = await params;
 
     const address = await prisma.address.findUnique({
-      where: { id }
+      where: { addressId: parseInt(id) }
     });
 
     if (!address) {
@@ -172,12 +172,12 @@ export async function DELETE(
     }
 
     // Ensure user can only delete their own addresses
-    if (address.userId !== session.user.id) {
+    if (address.userId !== parseInt(session.user.id)) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
     await prisma.address.delete({
-      where: { id }
+      where: { addressId: parseInt(id) }
     });
 
     return NextResponse.json({ message: 'Address deleted successfully' });

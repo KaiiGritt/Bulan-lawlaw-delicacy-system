@@ -17,10 +17,10 @@ export async function GET(req: NextRequest) {
     if (conversationId) {
       // Get messages for specific conversation
       const messages = await prisma.message.findMany({
-        where: { conversationId },
+        where: { conversationId: parseInt(conversationId) },
         include: {
           sender: {
-            select: { id: true, name: true, email: true, role: true }
+            select: { userId: true, name: true, email: true, role: true }
           }
         },
         orderBy: { createdAt: 'asc' }
@@ -31,10 +31,10 @@ export async function GET(req: NextRequest) {
       const conversations = await prisma.conversation.findMany({
         include: {
           buyer: {
-            select: { id: true, name: true, email: true }
+            select: { userId: true, name: true, email: true }
           },
           seller: {
-            select: { id: true, name: true, email: true }
+            select: { userId: true, name: true, email: true }
           },
           messages: {
             take: 1,

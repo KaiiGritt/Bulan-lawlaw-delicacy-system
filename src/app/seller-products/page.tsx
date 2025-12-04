@@ -15,7 +15,6 @@ interface Product {
   category: string;
   image: string;
   stock: number;
-  status: string;
 }
 
 export default function SellerProductsPage() {
@@ -26,7 +25,6 @@ export default function SellerProductsPage() {
   const [showAddProductForm, setShowAddProductForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState<string | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
-  const [filterStatus, setFilterStatus] = useState<string>('all');
 
   const [newProduct, setNewProduct] = useState({
     name: '',
@@ -181,13 +179,10 @@ export default function SellerProductsPage() {
     }
   };
 
-  const filteredProducts = filterStatus === 'all'
-    ? products
-    : products.filter(p => p.status === filterStatus);
 
   if (loading || status === 'loading') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-accent-cream to-soft-green/20 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen bg-gradient-to-br from-lawlaw-silver via-lawlaw-silver-shimmer to-lawlaw-steel-blue/20 py-12 px-4 sm:px-6 lg:px-8">
         <Toaster position="top-right" />
         <div className="max-w-7xl mx-auto">
           <div className="animate-pulse space-y-6">
@@ -204,7 +199,7 @@ export default function SellerProductsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-accent-cream to-soft-green/20 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-lawlaw-silver via-lawlaw-silver-shimmer to-lawlaw-steel-blue/20 py-12 px-4 sm:px-6 lg:px-8">
       <Toaster position="top-right" />
       <div className="max-w-7xl mx-auto">
         {/* Header */}
@@ -352,31 +347,9 @@ export default function SellerProductsPage() {
           </motion.form>
         )}
 
-        {/* Filter Tabs */}
-        <div className="flex gap-2 mb-6 overflow-x-auto">
-          {[
-            { key: 'all', label: 'All Products', count: products.length },
-            { key: 'approved', label: 'Approved', count: products.filter(p => p.status === 'approved').length },
-            { key: 'pending', label: 'Pending', count: products.filter(p => p.status === 'pending').length },
-            { key: 'rejected', label: 'Rejected', count: products.filter(p => p.status === 'rejected').length },
-          ].map(tab => (
-            <button
-              key={tab.key}
-              onClick={() => setFilterStatus(tab.key)}
-              className={`px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all ${
-                filterStatus === tab.key
-                  ? 'bg-gradient-to-r from-primary-green to-banana-leaf text-white shadow-md'
-                  : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'
-              }`}
-            >
-              {tab.label} ({tab.count})
-            </button>
-          ))}
-        </div>
-
         {/* Products Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredProducts.map((p) => (
+          {products.map((p) => (
             <motion.div
               key={p.id}
               initial={{ opacity: 0, scale: 0.95 }}
@@ -389,17 +362,6 @@ export default function SellerProductsPage() {
                   alt={p.name}
                   className="w-full h-56 object-cover"
                 />
-                <span
-                  className={`absolute top-3 right-3 px-3 py-1.5 text-xs font-semibold rounded-full shadow-lg ${
-                    p.status === 'approved'
-                      ? 'bg-green-500 text-white'
-                      : p.status === 'pending'
-                      ? 'bg-yellow-500 text-white'
-                      : 'bg-red-500 text-white'
-                  }`}
-                >
-                  {p.status.toUpperCase()}
-                </span>
               </div>
               <div className="p-5">
                 <h4 className="font-bold text-xl text-primary-green mb-2 line-clamp-1">{p.name}</h4>
@@ -470,7 +432,7 @@ export default function SellerProductsPage() {
         </div>
 
         {/* Empty State */}
-        {filteredProducts.length === 0 && (
+        {products.length === 0 && (
           <div className="bg-white rounded-2xl shadow-lg border border-soft-green/20 p-12 text-center">
             <svg
               className="w-24 h-24 mx-auto text-gray-300 mb-4"
@@ -486,12 +448,8 @@ export default function SellerProductsPage() {
               />
             </svg>
             <h3 className="text-2xl font-bold text-gray-700 mb-2">No products found</h3>
-            <p className="text-gray-500 mb-6">
-              {filterStatus === 'all'
-                ? "You haven't added any products yet"
-                : `You have no ${filterStatus} products`}
-            </p>
-            {filterStatus === 'all' && !showAddProductForm && (
+            <p className="text-gray-500 mb-6">You haven&apos;t added any products yet</p>
+            {!showAddProductForm && (
               <button
                 onClick={() => setShowAddProductForm(true)}
                 className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-primary-green to-banana-leaf text-white font-medium hover:shadow-lg transition-all"

@@ -12,11 +12,11 @@ export async function GET(
     const { id } = await params;
 
     const reviews = await prisma.recipeReview.findMany({
-      where: { recipeId: id },
+      where: { recipeId: parseInt(id) },
       include: {
         user: {
           select: {
-            id: true,
+            userId: true,
             name: true,
             profilePicture: true
           }
@@ -52,7 +52,7 @@ export async function POST(
 
     // Check if recipe exists
     const recipe = await prisma.recipe.findUnique({
-      where: { id },
+      where: { recipeId: parseInt(id) },
     });
 
     if (!recipe) {
@@ -63,8 +63,8 @@ export async function POST(
     const existingReview = await prisma.recipeReview.findUnique({
       where: {
         recipeId_userId: {
-          recipeId: id,
-          userId: session.user.id,
+          recipeId: parseInt(id),
+          userId: parseInt(session.user.id),
         }
       },
     });
@@ -72,7 +72,7 @@ export async function POST(
     if (existingReview) {
       // Update existing review
       await prisma.recipeReview.update({
-        where: { id: existingReview.id },
+        where: { reviewId: existingReview.reviewId },
         data: {
           rating,
           content: content || '',
@@ -82,8 +82,8 @@ export async function POST(
       // Create new review
       await prisma.recipeReview.create({
         data: {
-          recipeId: id,
-          userId: session.user.id,
+          recipeId: parseInt(id),
+          userId: parseInt(session.user.id),
           rating,
           content: content || '',
         },
@@ -92,7 +92,7 @@ export async function POST(
 
     // Update recipe average rating
     const allReviews = await prisma.recipeReview.findMany({
-      where: { recipeId: id },
+      where: { recipeId: parseInt(id) },
       select: { rating: true },
     });
 
@@ -101,7 +101,7 @@ export async function POST(
       : 0;
 
     await prisma.recipe.update({
-      where: { id },
+      where: { recipeId: parseInt(id) },
       data: { rating: averageRating },
     });
 
@@ -129,8 +129,8 @@ export async function DELETE(
     const review = await prisma.recipeReview.findUnique({
       where: {
         recipeId_userId: {
-          recipeId: id,
-          userId: session.user.id,
+          recipeId: parseInt(id),
+          userId: parseInt(session.user.id),
         }
       },
     });
@@ -140,12 +140,12 @@ export async function DELETE(
     }
 
     await prisma.recipeReview.delete({
-      where: { id: review.id },
+      where: { reviewId: review.reviewId },
     });
 
     // Update recipe average rating
     const allReviews = await prisma.recipeReview.findMany({
-      where: { recipeId: id },
+      where: { recipeId: parseInt(id) },
       select: { rating: true },
     });
 
@@ -154,7 +154,7 @@ export async function DELETE(
       : 0;
 
     await prisma.recipe.update({
-      where: { id },
+      where: { recipeId: parseInt(id) },
       data: { rating: averageRating },
     });
 

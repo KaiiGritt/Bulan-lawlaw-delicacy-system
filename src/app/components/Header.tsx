@@ -96,7 +96,7 @@ useEffect(() => {
 
  return (
  <>
- <header className="fixed top-0 left-0 right-0 z-[100] bg-gradient-to-r from-accent-cream via-white to-soft-green/10 backdrop-blur-md border-b border-soft-green/30 shadow-lg transition-colors duration-300">
+ <header className="fixed top-0 left-0 right-0 z-[100] bg-gradient-to-r from-lawlaw-silver via-white to-lawlaw-steel-blue/10 backdrop-blur-md border-b border-lawlaw-steel-blue/30 shadow-lg transition-colors duration-300">
  <div className="container mx-auto px-3 sm:px-4 lg:px-6 py-3 sm:py-4 flex items-center justify-between gap-2 sm:gap-4 lg:gap-6">
  {/* Logo */}
  <Link href="/" className="flex items-center gap-3 flex-shrink-0">

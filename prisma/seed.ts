@@ -4,6 +4,8 @@ import bcrypt from 'bcryptjs'
 const prisma = new PrismaClient()
 
 async function main() {
+  // ==================== SEED USERS ====================
+
   // Create admin user
   const adminPassword = await bcrypt.hash('admin123', 10)
   const admin = await prisma.user.upsert({
@@ -13,7 +15,8 @@ async function main() {
       email: 'admin@lawlawdelights.com',
       name: 'Admin',
       password: adminPassword,
-      role: 'admin'
+      role: 'admin',
+      emailVerified: true
     }
   })
 
@@ -26,16 +29,17 @@ async function main() {
       email: 'user@lawlawdelights.com',
       name: 'Test User',
       password: userPassword,
-      role: 'user'
+      role: 'user',
+      emailVerified: true
     }
   })
 
   // Create seller application for test user
   await prisma.sellerApplication.upsert({
-    where: { userId: user.id },
+    where: { userId: user.userId },
     update: {},
     create: {
-      userId: user.id,
+      userId: user.userId,
       businessName: 'Test Seller Business',
       businessType: 'Retail',
       description: 'A test seller application for demonstration purposes.',
@@ -45,50 +49,44 @@ async function main() {
     }
   })
 
-  // Create products
-  const products = [
-    {
-      id: '1',
-      name: 'Fresh Lawlaw',
-      description: 'Freshly caught Lawlaw fish, perfect for cooking.',
-      price: 150,
-      category: 'fresh',
-      image: '/images/fresh-lawlaw.jpg',
-      stock: 50,
-      userId: user.id,
-    },
-    {
-      id: '2',
-      name: 'Dried Lawlaw',
-      description: 'Sun-dried Lawlaw, great for long-term storage.',
-      price: 200,
-      category: 'dried',
-      image: '/images/dried-lawlaw.jpg',
-      stock: 30,
-      userId: user.id,
-    },
-    {
-      id: '3',
-      name: 'Lawlaw Fillets',
-      description: 'Processed Lawlaw fillets, ready to cook.',
-      price: 180,
-      category: 'processed',
-      image: '/images/lawlaw-fillets.jpg',
-      stock: 25,
-      userId: user.id,
-    },
-  ]
+  // ==================== SEED PRODUCTS ====================
 
-  for (const product of products) {
-    await prisma.product.upsert({
-      where: { id: product.id },
-      update: {},
-      create: product
+  // Create products using createMany or individual creates
+  const existingProducts = await prisma.product.findMany({ where: { userId: user.userId } })
+
+  if (existingProducts.length === 0) {
+    await prisma.product.createMany({
+      data: [
+        {
+          name: 'Fresh Lawlaw',
+          description: 'Freshly caught Lawlaw fish, perfect for cooking.',
+          price: 150,
+          category: 'fresh',
+          image: '/images/fresh-lawlaw.jpg',
+          stock: 50,
+          userId: user.userId,
+        },
+        {
+          name: 'Dried Lawlaw',
+          description: 'Sun-dried Lawlaw, great for long-term storage.',
+          price: 200,
+          category: 'dried',
+          image: '/images/dried-lawlaw.jpg',
+          stock: 30,
+          userId: user.userId,
+        },
+        {
+          name: 'Lawlaw Fillets',
+          description: 'Processed Lawlaw fillets, ready to cook.',
+          price: 180,
+          category: 'processed',
+          image: '/images/lawlaw-fillets.jpg',
+          stock: 25,
+          userId: user.userId,
+        },
+      ]
     })
   }
-
-  // Recipes can now be added by admin, user, and seller roles
-  // No default recipes will be seeded
 
   console.log('Database seeded successfully!')
   console.log('Admin credentials: admin@lawlawdelights.com / admin123')

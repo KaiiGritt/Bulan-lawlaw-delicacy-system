@@ -106,9 +106,10 @@ export async function POST(request: NextRequest) {
       where: { email },
     })
 
-    // Save OTP to database
+    // Save OTP to database (userId is null for pending registrations)
     await prisma.otp.create({
       data: {
+        userId: null,
         email,
         code: otpCode,
         expiresAt: otpExpiresAt,

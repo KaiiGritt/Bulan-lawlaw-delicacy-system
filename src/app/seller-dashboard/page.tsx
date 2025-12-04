@@ -58,7 +58,7 @@ export default function SellerDashboardPage() {
 
   if (loading || status === 'loading') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-accent-cream to-soft-green/20 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen bg-gradient-to-br from-lawlaw-silver via-lawlaw-silver-shimmer to-lawlaw-steel-blue/20 py-12 px-4 sm:px-6 lg:px-8">
         <Toaster position="top-right" />
         <div className="max-w-7xl mx-auto">
           <div className="animate-pulse space-y-6">
@@ -76,7 +76,7 @@ export default function SellerDashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-accent-cream to-soft-green/20 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-lawlaw-silver via-lawlaw-silver-shimmer to-lawlaw-steel-blue/20 py-12 px-4 sm:px-6 lg:px-8">
       <Toaster position="top-right" />
       <div className="max-w-7xl mx-auto">
         {/* Header */}

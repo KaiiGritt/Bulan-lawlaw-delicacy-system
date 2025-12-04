@@ -21,7 +21,6 @@ import {
  ClipboardDocumentListIcon,
  ChartBarIcon,
  DocumentTextIcon,
- MegaphoneIcon,
  ChatBubbleLeftRightIcon,
  CurrencyDollarIcon,
  ArrowRightOnRectangleIcon,
@@ -30,8 +29,6 @@ import {
  ShoppingCartIcon,
  StarIcon,
  TrashIcon,
- BellIcon,
- EnvelopeIcon,
  ChartPieIcon,
  UserGroupIcon,
  BuildingStorefrontIcon,
@@ -40,7 +37,7 @@ import {
 } from '@heroicons/react/24/outline';
 import { motion, AnimatePresence } from 'framer-motion';
 
-type TabId = 'overview' | 'users' | 'products' | 'orders' | 'analytics' | 'sellerApplications' | 'communications' | 'messages';
+type TabId = 'overview' | 'users' | 'products' | 'orders' | 'analytics' | 'sellerApplications' | 'messages';
 
 
 interface AdminStats {
@@ -94,15 +91,15 @@ function StatCard({ label, value, icon }: { label: string; value: string | numbe
  <motion.div
  initial={{ opacity: 0, y: 20 }}
  animate={{ opacity: 1, y: 0 }}
- className="bg-white rounded-2xl p-5 sm:p-6 shadow-lg hover:shadow-xl border border-soft-green/30 transition-all duration-300 hover:scale-[1.02] hover:border-primary-green/50"
+ className="bg-white rounded-2xl p-5 sm:p-6 shadow-lg hover:shadow-xl border border-lawlaw-steel-blue/30 transition-all duration-300 hover:scale-[1.02] hover:border-lawlaw-ocean-teal/50"
  >
  <div className="flex items-center gap-4">
- <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl bg-gradient-to-br from-primary-green/20 to-banana-leaf/20 flex items-center justify-center shadow-sm text-primary-green">
+ <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl bg-gradient-to-br from-lawlaw-steel-blue/20 to-lawlaw-aqua-teal/20 flex items-center justify-center shadow-sm text-lawlaw-ocean-teal">
  {icon}
  </div>
  <div className="flex-1">
  <p className="text-xs sm:text-sm text-gray-500 font-medium uppercase tracking-wide">{label}</p>
- <p className="text-2xl sm:text-3xl font-bold text-primary-green mt-1">{value}</p>
+ <p className="text-2xl sm:text-3xl font-bold text-lawlaw-ocean-teal mt-1">{value}</p>
  </div>
  </div>
  </motion.div>
@@ -136,6 +133,8 @@ export default function AdminPage() {
  const [cancellationReason, setCancellationReason] = useState('');
  const [expandedOrders, setExpandedOrders] = useState<{ [key: string]: boolean }>({});
  const [sidebarOpen, setSidebarOpen] = useState(false);
+ const [showLogoutModal, setShowLogoutModal] = useState(false);
+ const [isLoggingOut, setIsLoggingOut] = useState(false);
 
  useEffect(() => {
  // load overview on mount
@@ -361,6 +360,20 @@ export default function AdminPage() {
  setShowConfirmModal(true);
  }
 
+ // Handle logout
+ async function handleLogout() {
+ setIsLoggingOut(true);
+ try {
+ const { signOut } = await import('next-auth/react');
+ await signOut({ redirect: true, callbackUrl: '/login' });
+ } catch (error) {
+ console.error('Logout error:', error);
+ toast.error('Failed to logout. Please try again.');
+ setIsLoggingOut(false);
+ setShowLogoutModal(false);
+ }
+ }
+
  // utility to show status color
  function statusClasses(status: string) {
  switch (status) {
@@ -374,17 +387,94 @@ export default function AdminPage() {
  }
 
  return (
- <div className="min-h-screen bg-gradient-to-br from-accent-cream to-soft-green/20 text-gray-900 relative">
- {/* Animated background */}
+ <div className="min-h-screen bg-gradient-to-br from-lawlaw-silver via-lawlaw-silver-shimmer to-lawlaw-steel-blue/20 text-gray-900 relative">
+ {/* Animated background - Lawlaw ocean theme */}
  <div className="fixed inset-0 -z-10 hidden overflow-hidden pointer-events-none">
- <div className="floating-orb absolute top-20 right-20 w-96 h-96 bg-green-500/10 rounded-full blur-3xl" style={{ animationDelay: '1s' }}></div>
- <div className="pulsing-orb absolute bottom-20 left-20 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl" style={{ animationDelay: '4s' }}></div>
- <div className="floating-orb absolute top-1/2 left-1/2 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl" style={{ animationDelay: '7s' }}></div>
+ <div className="floating-orb absolute top-20 right-20 w-96 h-96 bg-lawlaw-aqua-teal/10 rounded-full blur-3xl" style={{ animationDelay: '1s' }}></div>
+ <div className="pulsing-orb absolute bottom-20 left-20 w-80 h-80 bg-lawlaw-steel-blue/10 rounded-full blur-3xl" style={{ animationDelay: '4s' }}></div>
+ <div className="floating-orb absolute top-1/2 left-1/2 w-64 h-64 bg-lawlaw-ocean-teal/10 rounded-full blur-3xl" style={{ animationDelay: '7s' }}></div>
  </div>
  <Toaster position="top-right" />
 
+ {/* Logout Confirmation Modal */}
+ <AnimatePresence>
+ {showLogoutModal && (
+ <motion.div
+ initial={{ opacity: 0 }}
+ animate={{ opacity: 1 }}
+ exit={{ opacity: 0 }}
+ className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+ >
+ {/* Backdrop */}
+ <motion.div
+ initial={{ opacity: 0 }}
+ animate={{ opacity: 1 }}
+ exit={{ opacity: 0 }}
+ className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+ onClick={() => !isLoggingOut && setShowLogoutModal(false)}
+ />
+
+ {/* Modal Content */}
+ <motion.div
+ initial={{ opacity: 0, scale: 0.9, y: 20 }}
+ animate={{ opacity: 1, scale: 1, y: 0 }}
+ exit={{ opacity: 0, scale: 0.9, y: 20 }}
+ className="relative bg-white rounded-2xl shadow-2xl p-6 sm:p-8 max-w-md w-full mx-4"
+ >
+ {/* Icon */}
+ <div className="flex justify-center mb-6">
+ <div className="w-20 h-20 bg-gradient-to-br from-red-400 to-red-600 rounded-full flex items-center justify-center shadow-lg">
+ <ArrowRightOnRectangleIcon className="w-10 h-10 text-white" />
+ </div>
+ </div>
+
+ {/* Title */}
+ <h2 className="text-2xl font-bold text-center text-gray-900 mb-3">
+ Confirm Logout
+ </h2>
+
+ {/* Message */}
+ <p className="text-gray-600 text-center mb-6">
+ Are you sure you want to logout from the admin dashboard? You will need to sign in again to access admin features.
+ </p>
+
+ {/* Buttons */}
+ <div className="flex flex-col sm:flex-row gap-3">
+ <button
+ onClick={() => setShowLogoutModal(false)}
+ disabled={isLoggingOut}
+ className="flex-1 px-6 py-3 rounded-xl border-2 border-gray-300 text-gray-700 font-semibold hover:bg-gray-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+ >
+ Cancel
+ </button>
+ <button
+ onClick={handleLogout}
+ disabled={isLoggingOut}
+ className="flex-1 px-6 py-3 rounded-xl bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-semibold shadow-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+ >
+ {isLoggingOut ? (
+ <>
+ <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+ <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+ <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+ </svg>
+ <span>Logging out...</span>
+ </>
+ ) : (
+ <>
+ <ArrowRightOnRectangleIcon className="w-5 h-5" />
+ <span>Logout</span>
+ </>
+ )}
+ </button>
+ </div>
+ </motion.div>
+ </motion.div>
+ )}
+ </AnimatePresence>
+
  {/* Top Navigation Bar */}
- <div className="sticky top-0 z-40 bg-gradient-to-r from-white via-accent-cream/30 to-white backdrop-blur-md border-b border-soft-green/30 shadow-lg">
+ <div className="sticky top-0 z-40 bg-gradient-to-r from-white via-lawlaw-silver/30 to-white backdrop-blur-md border-b border-lawlaw-steel-blue/30 shadow-lg">
  <div className="max-w-[1600px] mx-auto px-4 py-3">
  <div className="flex items-center justify-between">
  <div className="flex items-center gap-3">
@@ -393,51 +483,37 @@ export default function AdminPage() {
  className="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
  aria-label="Toggle sidebar"
  >
- <Bars3Icon className="h-6 w-6 text-primary-green" />
+ <Bars3Icon className="h-6 w-6 text-lawlaw-ocean-teal" />
  </button>
 
  <div className="flex items-center gap-2 sm:gap-3">
- <div className="relative w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-primary-green to-banana-leaf rounded-xl shadow-md flex items-center justify-center overflow-hidden">
+ <div className="relative w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-lawlaw-steel-blue to-lawlaw-ocean-teal rounded-xl shadow-md flex items-center justify-center overflow-hidden">
  <ShieldCheckIcon className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
  </div>
  <div className="hidden sm:block">
- <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-primary-green via-leaf-green to-soft-green bg-clip-text text-transparent">Admin Dashboard</h1>
+ <h1 className="text-xl sm:text-2xl font-bold lawlaw-text-gradient">Admin Dashboard</h1>
  <p className="text-xs text-gray-600 hidden md:block">Manage users, products and orders</p>
  </div>
- <h1 className="sm:hidden text-lg font-bold text-primary-green">Admin</h1>
+ <h1 className="sm:hidden text-lg font-bold text-lawlaw-ocean-teal">Admin</h1>
  </div>
  </div>
 
  <div className="flex items-center gap-2 sm:gap-4">
  <button
- onClick={async () => {
- if (confirm('Are you sure you want to logout?')) {
- const { signOut } = await import('next-auth/react');
- await signOut({ redirect: true, callbackUrl: '/login' });
- }
- }}
+ onClick={() => setShowLogoutModal(true)}
  className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-lg bg-red-500 hover:bg-red-600 text-white font-medium transition-colors shadow-md"
  >
- <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
- <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
- </svg>
+ <ArrowRightOnRectangleIcon className="h-4 w-4" />
  <span>Logout</span>
  </button>
  <button
- onClick={async () => {
- if (confirm('Are you sure you want to logout?')) {
- const { signOut } = await import('next-auth/react');
- await signOut({ redirect: true, callbackUrl: '/login' });
- }
- }}
+ onClick={() => setShowLogoutModal(true)}
  className="sm:hidden p-2 rounded-lg bg-red-500 hover:bg-red-600 text-white transition-colors shadow-md"
  title="Logout"
  >
- <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
- <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
- </svg>
+ <ArrowRightOnRectangleIcon className="h-5 w-5" />
  </button>
- <div className="rounded-full bg-gradient-to-br from-primary-green to-banana-leaf p-2.5 shadow-md text-white">
+ <div className="rounded-full bg-gradient-to-br from-lawlaw-steel-blue to-lawlaw-ocean-teal p-2.5 shadow-md text-white">
  <UsersIcon className="w-5 h-5" />
  </div>
  </div>
@@ -459,7 +535,7 @@ export default function AdminPage() {
  <div className="p-4 h-full overflow-y-auto">
  {/* Mobile close button */}
  <div className="lg:hidden flex justify-between items-center mb-4 pb-3 border-b border-gray-200">
- <h2 className="font-semibold text-primary-green">Navigation</h2>
+ <h2 className="font-semibold text-lawlaw-ocean-teal">Navigation</h2>
  <button
  onClick={() => setSidebarOpen(false)}
  className="p-2 rounded-lg hover:bg-gray-100 text-gray-700"
@@ -479,7 +555,6 @@ export default function AdminPage() {
  { id: 'orders', label: 'Orders', icon: <ClipboardDocumentListIcon className="w-6 h-6" /> },
  { id: 'analytics', label: 'Analytics', icon: <ChartBarIcon className="w-6 h-6" /> },
  { id: 'sellerApplications', label: 'Seller Apps', icon: <DocumentTextIcon className="w-6 h-6" /> },
- { id: 'communications', label: 'Communications', icon: <MegaphoneIcon className="w-6 h-6" /> },
  { id: 'messages', label: 'Messages', icon: <ChatBubbleLeftRightIcon className="w-6 h-6" /> },
  ] as { id: TabId; label: string; icon: React.ReactNode }[]).map((t) => (
  <button
@@ -490,8 +565,8 @@ export default function AdminPage() {
  }}
  className={`w-full text-left px-4 py-3 rounded-xl flex items-center gap-3 transition-all duration-200 ${
  activeTab === t.id
- ? 'bg-gradient-to-r from-primary-green to-banana-leaf text-white shadow-lg transform scale-[1.02]'
- : 'text-gray-700 hover:bg-soft-green/10 hover:text-primary-green'
+ ? 'bg-gradient-to-r from-lawlaw-steel-blue to-lawlaw-ocean-teal text-white shadow-lg transform scale-[1.02]'
+ : 'text-gray-700 hover:bg-lawlaw-silver/30 hover:text-lawlaw-ocean-teal'
  }`}
  >
  <div className="flex-shrink-0">{t.icon}</div>
@@ -507,17 +582,15 @@ export default function AdminPage() {
  setActiveTab('orders');
  setSidebarOpen(false);
  }}
- className="w-full text-left px-4 py-3 rounded-xl bg-gradient-to-r from-warm-orange/20 to-earth-brown/10 text-warm-orange hover:from-warm-orange/30 hover:to-earth-brown/20 transition-all font-medium border border-warm-orange/30 flex items-center gap-3"
+ className="w-full text-left px-4 py-3 rounded-xl bg-gradient-to-r from-lawlaw-aqua-teal/20 to-lawlaw-deep-blue/10 text-lawlaw-aqua-teal hover:from-lawlaw-aqua-teal/30 hover:to-lawlaw-deep-blue/20 transition-all font-medium border border-lawlaw-aqua-teal/30 flex items-center gap-3"
  >
  <ExclamationTriangleIcon className="w-5 h-5" />
  <span>Manage Orders</span>
  </button>
  <button
- onClick={async () => {
- if (confirm('Are you sure you want to logout?')) {
- const { signOut } = await import('next-auth/react');
- await signOut({ redirect: true, callbackUrl: '/login' });
- }
+ onClick={() => {
+ setSidebarOpen(false);
+ setShowLogoutModal(true);
  }}
  className="w-full text-left px-4 py-3 rounded-xl bg-red-50 text-red-600 hover:bg-red-100 transition-colors font-medium border border-red-200 flex items-center gap-3"
  >
@@ -561,9 +634,9 @@ export default function AdminPage() {
  />
  )}
 
- <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-lg border border-soft-green/30">
+ <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-lg border border-lawlaw-steel-blue/30">
  <div className="flex items-center justify-between mb-4">
- <h3 className="text-lg sm:text-xl font-semibold text-primary-green flex items-center gap-2">
+ <h3 className="text-lg sm:text-xl font-semibold text-lawlaw-ocean-teal flex items-center gap-2">
  <DocumentTextIcon className="w-6 h-6" />
  <span>Recent Seller Applications</span>
  </h3>
@@ -576,7 +649,7 @@ export default function AdminPage() {
  {stats.pendingSellerApplications.length ? (
  <div className="space-y-3">
  {stats.pendingSellerApplications.map((app) => (
- <div key={app.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-gradient-to-r from-soft-green/10 to-banana-leaf/10 rounded-xl border border-soft-green/30 gap-3 hover:border-primary-green/50 transition-all">
+ <div key={app.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-gradient-to-r from-lawlaw-silver/30 to-lawlaw-steel-blue/10 rounded-xl border border-lawlaw-steel-blue/30 gap-3 hover:border-lawlaw-ocean-teal/50 transition-all">
  <div className="flex-1">
  <p className="font-semibold text-gray-900">{app.businessName}</p>
  <p className="text-sm text-gray-600 mt-1">{app.businessType} • {app.user.name || app.user.email}</p>
@@ -585,7 +658,7 @@ export default function AdminPage() {
  <div className="flex gap-2 sm:flex-shrink-0">
  <button
  onClick={() => handleApplication(app.id, 'approved')}
- className="flex-1 sm:flex-none px-4 py-2 rounded-lg bg-gradient-to-r from-primary-green to-banana-leaf text-white font-medium hover:shadow-lg transition-all flex items-center justify-center gap-2"
+ className="flex-1 sm:flex-none px-4 py-2 rounded-lg bg-gradient-to-r from-lawlaw-steel-blue to-lawlaw-ocean-teal text-white font-medium hover:shadow-lg transition-all flex items-center justify-center gap-2"
  >
  <CheckCircleIcon className="w-5 h-5" />
  Approve
@@ -614,15 +687,15 @@ export default function AdminPage() {
  {/* ORDERS */}
  {activeTab === 'orders' && (
  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4 sm:space-y-6">
- <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-lg border border-soft-green/30">
+ <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-lg border border-lawlaw-steel-blue/30">
  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 sm:mb-6">
- <h3 className="text-xl sm:text-2xl font-semibold text-primary-green flex items-center gap-2">
+ <h3 className="text-xl sm:text-2xl font-semibold text-lawlaw-ocean-teal flex items-center gap-2">
  <ClipboardDocumentListIcon className="w-6 h-6" />
  <span>Order Management</span>
  </h3>
  <button
  onClick={() => fetchOrders()}
- className="px-4 py-2 rounded-lg bg-white border border-gray-200 hover:shadow-md hover:border-primary-green transition-all font-medium text-sm flex items-center gap-2"
+ className="px-4 py-2 rounded-lg bg-white border border-gray-200 hover:shadow-md hover:border-lawlaw-ocean-teal transition-all font-medium text-sm flex items-center gap-2"
  >
  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -639,12 +712,12 @@ export default function AdminPage() {
  ) : (
  <div className="space-y-4">
  {orders.map((order) => (
- <div key={order.id} className="bg-gradient-to-r from-soft-green/10 to-banana-leaf/10 rounded-xl p-4 sm:p-5 border border-soft-green/30 hover:border-primary-green/50 transition-all">
+ <div key={order.id} className="bg-gradient-to-r from-lawlaw-silver/30 to-lawlaw-steel-blue/10 rounded-xl p-4 sm:p-5 border border-lawlaw-steel-blue/30 hover:border-lawlaw-ocean-teal/50 transition-all">
  <div className="flex flex-col gap-3">
  <div className="flex items-start justify-between gap-2">
  <div className="flex-1 min-w-0">
  <div className="flex flex-wrap items-center gap-2 mb-2">
- <h4 className="font-bold text-primary-green text-lg">#{order.id.slice(-8)}</h4>
+ <h4 className="font-bold text-lawlaw-ocean-teal text-lg">#{order.id.slice(-8)}</h4>
  <span className={`px-3 py-1 rounded-full text-xs font-semibold ${statusClasses(order.status)}`}>
  {order.status.toUpperCase()}
  </span>
@@ -661,14 +734,14 @@ export default function AdminPage() {
  <p className="text-xs text-gray-500 mt-1">
  {new Date(order.createdAt).toLocaleString()}
  </p>
- <p className="text-sm font-semibold text-primary-green mt-2">
+ <p className="text-sm font-semibold text-lawlaw-ocean-teal mt-2">
  Total: ₱{order.totalAmount.toFixed(2)}
  </p>
  </div>
 
  <button
  onClick={() => toggleExpand(order.id)}
- className="p-2 rounded-lg bg-white border border-gray-200 hover:bg-primary-green hover:text-white transition-all flex-shrink-0"
+ className="p-2 rounded-lg bg-white border border-gray-200 hover:bg-lawlaw-ocean-teal hover:text-white transition-all flex-shrink-0"
  aria-expanded={!!expandedOrders[order.id]}
  title={expandedOrders[order.id] ? "Collapse" : "Expand"}
  >
@@ -705,7 +778,7 @@ export default function AdminPage() {
  </button>
  <button
  onClick={() => openConfirmModal(order)}
- className="flex-1 px-4 py-2 rounded-lg bg-white border border-gray-200 font-medium hover:bg-primary-green hover:text-white hover:border-primary-green transition-all text-sm flex items-center justify-center gap-2"
+ className="flex-1 px-4 py-2 rounded-lg bg-white border border-gray-200 font-medium hover:bg-lawlaw-ocean-teal hover:text-white hover:border-lawlaw-ocean-teal transition-all text-sm flex items-center justify-center gap-2"
  >
  <CheckCircleIcon className="w-4 h-4" />
  <span>Mark Processed</span>
@@ -726,7 +799,7 @@ export default function AdminPage() {
  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
  <div className="space-y-3">
  <h5 className="font-semibold text-gray-900 flex items-center gap-2">
- <ClipboardDocumentListIcon className="w-5 h-5 text-primary-green" />
+ <ClipboardDocumentListIcon className="w-5 h-5 text-lawlaw-ocean-teal" />
  <span>Order Details</span>
  </h5>
  <div className="p-4 bg-white rounded-xl border border-gray-200 space-y-3">
@@ -744,7 +817,7 @@ export default function AdminPage() {
  </div>
  <div className="pt-3 border-t">
  <p className="text-xs text-gray-500 uppercase tracking-wide mb-1">Total Amount</p>
- <p className="text-lg font-bold text-primary-green">₱{order.totalAmount.toFixed(2)}</p>
+ <p className="text-lg font-bold text-lawlaw-ocean-teal">₱{order.totalAmount.toFixed(2)}</p>
  </div>
  {order.cancellationReason && (
  <div className="pt-3 border-t border-red-200">
@@ -763,18 +836,18 @@ export default function AdminPage() {
 
  <div className="space-y-3">
  <h5 className="font-semibold text-gray-900 flex items-center gap-2">
- <CubeIcon className="w-5 h-5 text-primary-green" />
+ <CubeIcon className="w-5 h-5 text-lawlaw-ocean-teal" />
  <span>Order Items</span>
  </h5>
  <div className="space-y-2">
  {order.orderItems.map(item => (
- <div key={item.id} className="flex items-center gap-3 p-3 bg-white rounded-xl border border-gray-200 hover:border-primary-green/50 transition-colors">
+ <div key={item.id} className="flex items-center gap-3 p-3 bg-white rounded-xl border border-gray-200 hover:border-lawlaw-ocean-teal/50 transition-colors">
  <div className="w-16 h-16 bg-gradient-to-br from-gray-100 to-green-50 rounded-lg overflow-hidden flex items-center justify-center flex-shrink-0">
  {item.product.image ? (
  // eslint-disable-next-line @next/next/no-img-element
  <img src={item.product.image} alt={item.product.name} className="w-full h-full object-cover" />
  ) : (
- <div className="text-xl font-bold text-primary-green">{item.product.name.slice(0,1)}</div>
+ <div className="text-xl font-bold text-lawlaw-ocean-teal">{item.product.name.slice(0,1)}</div>
  )}
  </div>
 
@@ -783,7 +856,7 @@ export default function AdminPage() {
  <p className="text-sm text-gray-600 mt-1">
  Qty: <span className="font-medium">{item.quantity}</span> × ₱{item.price.toFixed(2)}
  </p>
- <p className="text-sm font-semibold text-primary-green mt-1">
+ <p className="text-sm font-semibold text-lawlaw-ocean-teal mt-1">
  Subtotal: ₱{(item.quantity * item.price).toFixed(2)}
  </p>
  </div>
@@ -806,9 +879,9 @@ export default function AdminPage() {
  {/* SELLER APPLICATIONS */}
  {activeTab === 'sellerApplications' && stats && (
  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4 sm:space-y-6">
- <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-lg border border-soft-green/30">
+ <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-lg border border-lawlaw-steel-blue/30">
  <div className="flex items-center justify-between mb-4 sm:mb-6">
- <h3 className="text-xl sm:text-2xl font-semibold text-primary-green flex items-center gap-2">
+ <h3 className="text-xl sm:text-2xl font-semibold text-lawlaw-ocean-teal flex items-center gap-2">
  <DocumentTextIcon className="w-6 h-6" />
  <span>Seller Applications</span>
  </h3>
@@ -826,7 +899,7 @@ export default function AdminPage() {
  ) : (
  <div className="space-y-3">
  {stats.pendingSellerApplications.map(app => (
- <div key={app.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-gradient-to-r from-gray-50 to-yellow-50/30 rounded-xl border border-gray-100 gap-3 hover:border-primary-green/50 transition-all">
+ <div key={app.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-gradient-to-r from-gray-50 to-yellow-50/30 rounded-xl border border-gray-100 gap-3 hover:border-lawlaw-ocean-teal/50 transition-all">
  <div className="flex-1">
  <p className="font-bold text-gray-900 text-lg">{app.businessName}</p>
  <p className="text-sm text-gray-600 mt-1">{app.businessType}</p>
@@ -837,7 +910,7 @@ export default function AdminPage() {
  <div className="flex gap-2 sm:flex-shrink-0">
  <button
  onClick={() => handleApplication(app.id, 'approved')}
- className="flex-1 sm:flex-none px-4 py-2 rounded-lg bg-gradient-to-r from-primary-green to-banana-leaf text-white font-medium hover:shadow-lg transition-all flex items-center justify-center gap-2"
+ className="flex-1 sm:flex-none px-4 py-2 rounded-lg bg-gradient-to-r from-lawlaw-steel-blue to-lawlaw-ocean-teal text-white font-medium hover:shadow-lg transition-all flex items-center justify-center gap-2"
  >
  <CheckCircleIcon className="h-5 w-5" />
  <span>Approve</span>
@@ -868,10 +941,6 @@ export default function AdminPage() {
 
  {activeTab === 'analytics' && (
  <AnalyticsTab />
- )}
-
- {activeTab === 'communications' && (
- <CommunicationsTab />
  )}
 
  {activeTab === 'messages' && (
@@ -928,7 +997,7 @@ export default function AdminPage() {
  toast.error('Failed to update order');
  }
  }}
- className="px-4 py-2 rounded-lg bg-primary-green text-white"
+ className="px-4 py-2 rounded-lg bg-lawlaw-ocean-teal text-white"
  >
  Confirm
  </button>
@@ -969,21 +1038,6 @@ function ProductsManager() {
  }
  fetchProducts();
  }, [refreshKey]);
-
- async function updateProductStatus(id: string, status: string) {
- try {
- const res = await fetch(`/api/admin/products/${id}/${status}`, {
- method: 'PATCH',
- credentials: 'include',
- });
- if (!res.ok) throw new Error('Failed to update product status');
- toast.success(`Product ${status}`);
- setRefreshKey(prev => prev + 1);
- } catch (err) {
- console.error(err);
- toast.error('Failed to update product status');
- }
- }
 
  async function toggleFeatured(id: string) {
  try {
@@ -1035,14 +1089,14 @@ function ProductsManager() {
 
  return (
  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
- <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-lg border border-soft-green/30">
+ <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-lg border border-lawlaw-steel-blue/30">
  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 sm:mb-6">
  <div className="flex items-center gap-3">
- <div className="p-2 bg-gradient-to-br from-primary-green/20 to-banana-leaf/20 rounded-xl">
- <CubeIcon className="w-6 h-6 text-primary-green" />
+ <div className="p-2 bg-gradient-to-br from-lawlaw-steel-blue/20 to-lawlaw-aqua-teal/20 rounded-xl">
+ <CubeIcon className="w-6 h-6 text-lawlaw-ocean-teal" />
  </div>
  <div>
- <h3 className="text-xl font-bold text-primary-green">Products Management</h3>
+ <h3 className="text-xl font-bold text-lawlaw-ocean-teal">Products Management</h3>
  <p className="text-sm text-gray-500">{products.length} products total</p>
  </div>
  </div>
@@ -1051,7 +1105,7 @@ function ProductsManager() {
  onClick={() => setViewMode('cards')}
  className={`px-4 py-2 rounded-lg font-medium text-sm transition-all shadow-sm ${
  viewMode === 'cards'
- ? 'bg-gradient-to-r from-primary-green to-banana-leaf text-white shadow-md'
+ ? 'bg-gradient-to-r from-lawlaw-steel-blue to-lawlaw-ocean-teal text-white shadow-md'
  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
  }`}
  >
@@ -1061,7 +1115,7 @@ function ProductsManager() {
  onClick={() => setViewMode('table')}
  className={`px-4 py-2 rounded-lg font-medium text-sm transition-all shadow-sm ${
  viewMode === 'table'
- ? 'bg-gradient-to-r from-primary-green to-banana-leaf text-white shadow-md'
+ ? 'bg-gradient-to-r from-lawlaw-steel-blue to-lawlaw-ocean-teal text-white shadow-md'
  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
  }`}
  >
@@ -1072,7 +1126,7 @@ function ProductsManager() {
 
  {loading ? (
  <div className="text-center py-12">
- <div className="animate-spin rounded-full h-12 w-12 border-b-4 border-primary-green mx-auto mb-3"></div>
+ <div className="animate-spin rounded-full h-12 w-12 border-b-4 border-lawlaw-ocean-teal mx-auto mb-3"></div>
  <p className="text-gray-500">Loading products...</p>
  </div>
  ) : products.length === 0 ? (
@@ -1090,7 +1144,7 @@ function ProductsManager() {
  initial={{ opacity: 0, y: 10 }}
  animate={{ opacity: 1, y: 0 }}
  transition={{ delay: index * 0.05 }}
- className="bg-gradient-to-br from-gray-50 to-green-50/30 rounded-xl border border-gray-200 overflow-hidden hover:border-primary-green/50 hover:shadow-lg transition-all"
+ className="bg-gradient-to-br from-gray-50 to-green-50/30 rounded-xl border border-gray-200 overflow-hidden hover:border-lawlaw-ocean-teal/50 hover:shadow-lg transition-all"
  >
  <div className="relative h-48 bg-gray-100">
  {prod.image ? (
@@ -1101,27 +1155,20 @@ function ProductsManager() {
  <CubeIcon className="w-16 h-16" />
  </div>
  )}
- <div className="absolute top-2 right-2 flex flex-col gap-2">
- <span className={`px-3 py-1.5 rounded-full text-xs font-semibold shadow-md ${
- prod.status === 'approved' ? 'bg-gradient-to-r from-green-500 to-green-600 text-white' :
- prod.status === 'pending' ? 'bg-gradient-to-r from-yellow-500 to-yellow-600 text-white' :
- 'bg-gradient-to-r from-red-500 to-red-600 text-white'
- }`}>
- {prod.status.toUpperCase()}
- </span>
  {prod.featured && (
+ <div className="absolute top-2 right-2">
  <span className="px-3 py-1.5 rounded-full text-xs font-semibold bg-gradient-to-r from-purple-500 to-purple-600 text-white flex items-center gap-1 shadow-md">
  <StarIcon className="w-3 h-3" />
  FEATURED
  </span>
- )}
  </div>
+ )}
  </div>
  <div className="p-4 space-y-3">
  <h4 className="font-bold text-gray-900 text-base truncate">{prod.name}</h4>
  <div className="flex items-center justify-between text-sm">
  <span className="text-gray-600">Price:</span>
- <span className="font-bold text-primary-green text-base">₱{prod.price.toFixed(2)}</span>
+ <span className="font-bold text-lawlaw-ocean-teal text-base">₱{prod.price.toFixed(2)}</span>
  </div>
  <div className="flex items-center justify-between text-sm">
  <span className="text-gray-600">Stock:</span>
@@ -1156,7 +1203,7 @@ function ProductsManager() {
  setEditingCategoryId(prod.id);
  setCategoryInput(prod.category || '');
  }}
- className="cursor-pointer hover:underline font-medium text-primary-green"
+ className="cursor-pointer hover:underline font-medium text-lawlaw-ocean-teal"
  >
  {prod.category || 'N/A'}
  </span>
@@ -1171,27 +1218,9 @@ function ProductsManager() {
  onChange={() => toggleFeatured(prod.id)}
  className="sr-only peer"
  />
- <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary-green/50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r peer-checked:from-primary-green peer-checked:to-green-600"></div>
+ <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-lawlaw-aqua-teal/50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gradient-to-r peer-checked:from-primary-green peer-checked:to-green-600"></div>
  </label>
  </div>
- {prod.status !== 'approved' && (
- <div className="flex gap-2 pt-2">
- <button
- onClick={() => updateProductStatus(prod.id, 'approve')}
- className="flex-1 bg-gradient-to-r from-primary-green to-green-600 hover:from-green-600 hover:to-green-700 text-white px-3 py-2.5 rounded-lg text-sm font-medium shadow-sm hover:shadow-md transition-all flex items-center justify-center gap-1.5"
- >
- <CheckCircleIcon className="w-5 h-5" />
- Approve
- </button>
- <button
- onClick={() => updateProductStatus(prod.id, 'reject')}
- className="flex-1 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-3 py-2.5 rounded-lg text-sm font-medium shadow-sm hover:shadow-md transition-all flex items-center justify-center gap-1.5"
- >
- <XCircleIcon className="w-5 h-5" />
- Reject
- </button>
- </div>
- )}
  <button
  onClick={() => {
  if (confirm('Are you sure you want to remove this product?')) {
@@ -1219,7 +1248,6 @@ function ProductsManager() {
  <th className="py-3 px-4 border-b border-gray-200 text-left text-xs font-semibold text-gray-700 uppercase">Category</th>
  <th className="py-3 px-4 border-b border-gray-200 text-left text-xs font-semibold text-gray-700 uppercase">Price</th>
  <th className="py-3 px-4 border-b border-gray-200 text-left text-xs font-semibold text-gray-700 uppercase">Stock</th>
- <th className="py-3 px-4 border-b border-gray-200 text-left text-xs font-semibold text-gray-700 uppercase">Status</th>
  <th className="py-3 px-4 border-b border-gray-200 text-center text-xs font-semibold text-gray-700 uppercase">Featured</th>
  <th className="py-3 px-4 border-b border-gray-200 text-left text-xs font-semibold text-gray-700 uppercase">Actions</th>
  </tr>
@@ -1272,51 +1300,23 @@ function ProductsManager() {
  setEditingCategoryId(prod.id);
  setCategoryInput(prod.category || '');
  }}
- className="cursor-pointer hover:underline text-primary-green"
+ className="cursor-pointer hover:underline text-lawlaw-ocean-teal"
  >
  {prod.category || 'N/A'}
  </span>
  )}
  </td>
- <td className="p-3 border-b border-gray-100 font-semibold text-primary-green">₱{prod.price.toFixed(2)}</td>
+ <td className="p-3 border-b border-gray-100 font-semibold text-lawlaw-ocean-teal">₱{prod.price.toFixed(2)}</td>
  <td className="p-3 border-b border-gray-100 text-gray-900">{prod.stock}</td>
- <td className="p-3 border-b border-gray-100">
- <span className={`rounded-full px-3 py-1 text-xs font-semibold ${
- prod.status === 'approved' ? 'bg-gradient-to-r from-green-100 to-green-200 text-green-800' :
- prod.status === 'pending' ? 'bg-gradient-to-r from-yellow-100 to-yellow-200 text-yellow-800' :
- 'bg-gradient-to-r from-red-100 to-red-200 text-red-800'
- }`}>
- {prod.status}
- </span>
- </td>
  <td className="p-3 border-b border-gray-100 text-center">
  <input
  type="checkbox"
  checked={prod.featured || false}
  onChange={() => toggleFeatured(prod.id)}
- className="w-4 h-4 text-primary-green rounded focus:ring-primary-green cursor-pointer"
+ className="w-4 h-4 text-lawlaw-ocean-teal rounded focus:ring-lawlaw-aqua-teal cursor-pointer"
  />
  </td>
  <td className="p-3 border-b border-gray-100">
- <div className="flex gap-2">
- {prod.status !== 'approved' && (
- <>
- <button
- onClick={() => updateProductStatus(prod.id, 'approve')}
- className="bg-gradient-to-r from-primary-green to-green-600 hover:from-green-600 hover:to-green-700 text-white px-3 py-1.5 rounded-lg text-xs font-medium shadow-sm hover:shadow-md transition-all flex items-center gap-1"
- >
- <CheckCircleIcon className="w-4 h-4" />
- Approve
- </button>
- <button
- onClick={() => updateProductStatus(prod.id, 'reject')}
- className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-3 py-1.5 rounded-lg text-xs font-medium shadow-sm hover:shadow-md transition-all flex items-center gap-1"
- >
- <XCircleIcon className="w-4 h-4" />
- Reject
- </button>
- </>
- )}
  <button
  onClick={() => {
  if (confirm('Are you sure you want to remove this product?')) {
@@ -1328,7 +1328,6 @@ function ProductsManager() {
  <TrashIcon className="w-4 h-4" />
  Remove
  </button>
- </div>
  </td>
  </motion.tr>
  ))}
@@ -1384,7 +1383,7 @@ function AnalyticsTab() {
  repeat: Infinity,
  ease: "easeInOut"
  }}
- className="rounded-full h-12 w-12 border-b-4 border-primary-green"
+ className="rounded-full h-12 w-12 border-b-4 border-lawlaw-ocean-teal"
  ></motion.div>
  </div>
  );
@@ -1413,7 +1412,7 @@ function AnalyticsTab() {
  className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-4 lg:p-6 shadow-lg border border-gray-100"
  >
  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
- <h3 className="text-lg sm:text-xl lg:text-2xl font-semibold text-primary-green flex items-center gap-2">
+ <h3 className="text-lg sm:text-xl lg:text-2xl font-semibold text-lawlaw-ocean-teal flex items-center gap-2">
  <ChartBarIcon className="w-5 h-5 sm:w-6 sm:h-6" />
  <span>Analytics Dashboard</span>
  </h3>
@@ -1426,7 +1425,7 @@ function AnalyticsTab() {
  onClick={() => setPeriod(p)}
  className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg font-medium transition-all text-xs sm:text-sm ${
  period === p
- ? 'bg-primary-green text-white shadow-md'
+ ? 'bg-lawlaw-ocean-teal text-white shadow-md'
  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
  }`}
  >
@@ -1444,7 +1443,7 @@ function AnalyticsTab() {
  animate={{ opacity: 1, y: 0, scale: 1 }}
  transition={{ delay: 0.1, type: "spring", stiffness: 100 }}
  whileHover={{ scale: 1.03, y: -5 }}
- className="bg-gradient-to-br from-primary-green via-leaf-green to-banana-leaf rounded-xl sm:rounded-2xl p-4 sm:p-5 lg:p-6 text-white shadow-lg hover:shadow-2xl transition-shadow duration-300"
+ className="bg-gradient-to-br from-lawlaw-steel-blue via-lawlaw-aqua-teal to-lawlaw-ocean-teal rounded-xl sm:rounded-2xl p-4 sm:p-5 lg:p-6 text-white shadow-lg hover:shadow-2xl transition-shadow duration-300"
  >
  <div className="flex items-center justify-between mb-2">
  <span className="text-xs sm:text-sm font-medium opacity-90">Total Sales</span>
@@ -1566,7 +1565,7 @@ function AnalyticsTab() {
  className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-4 lg:p-6 shadow-lg border border-gray-100"
  >
  <h4 className="text-base sm:text-lg font-semibold text-gray-800 mb-3 sm:mb-4 flex items-center gap-2">
- <ChartBarIcon className="w-5 h-5 sm:w-6 sm:h-6 text-primary-green" />
+ <ChartBarIcon className="w-5 h-5 sm:w-6 sm:h-6 text-lawlaw-ocean-teal" />
  Sales Performance
  </h4>
  <div className="space-y-2 sm:space-y-3">
@@ -1608,7 +1607,7 @@ function AnalyticsTab() {
  className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-4 lg:p-6 shadow-lg border border-gray-100"
  >
  <h4 className="text-base sm:text-lg font-semibold text-gray-800 mb-3 sm:mb-4 flex items-center gap-2">
- <CubeIcon className="w-5 h-5 sm:w-6 sm:h-6 text-primary-green" />
+ <CubeIcon className="w-5 h-5 sm:w-6 sm:h-6 text-lawlaw-ocean-teal" />
  Top Selling Products
  </h4>
  <div className="space-y-2 sm:space-y-3">
@@ -1624,7 +1623,7 @@ function AnalyticsTab() {
  <motion.div
  whileHover={{ rotate: 360 }}
  transition={{ duration: 0.5 }}
- className="flex-shrink-0 w-7 h-7 sm:w-8 sm:h-8 bg-primary-green rounded-full flex items-center justify-center text-white font-bold text-xs sm:text-sm shadow-md"
+ className="flex-shrink-0 w-7 h-7 sm:w-8 sm:h-8 bg-lawlaw-ocean-teal rounded-full flex items-center justify-center text-white font-bold text-xs sm:text-sm shadow-md"
  >
  {index + 1}
  </motion.div>
@@ -1647,7 +1646,7 @@ function AnalyticsTab() {
  className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-4 lg:p-6 shadow-lg border border-gray-100"
  >
  <h4 className="text-base sm:text-lg font-semibold text-gray-800 mb-3 sm:mb-4 flex items-center gap-2">
- <StarIcon className="w-5 h-5 sm:w-6 sm:h-6 text-primary-green" />
+ <StarIcon className="w-5 h-5 sm:w-6 sm:h-6 text-lawlaw-ocean-teal" />
  Top Performing Sellers
  </h4>
  <div className="space-y-2 sm:space-y-3">
@@ -1689,7 +1688,7 @@ function AnalyticsTab() {
  className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-4 lg:p-6 shadow-lg border border-gray-100"
  >
  <h4 className="text-base sm:text-lg font-semibold text-gray-800 mb-3 sm:mb-4 flex items-center gap-2">
- <ShoppingCartIcon className="w-5 h-5 sm:w-6 sm:h-6 text-primary-green" />
+ <ShoppingCartIcon className="w-5 h-5 sm:w-6 sm:h-6 text-lawlaw-ocean-teal" />
  Abandoned Cart Insights
  </h4>
  <div className="space-y-3 sm:space-y-4">
@@ -1755,7 +1754,7 @@ function AnalyticsTab() {
  className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-4 lg:p-6 shadow-lg border border-gray-100"
  >
  <h4 className="text-base sm:text-lg font-semibold text-gray-800 mb-3 sm:mb-4 flex items-center gap-2">
- <CubeIcon className="w-5 h-5 sm:w-6 sm:h-6 text-primary-green" />
+ <CubeIcon className="w-5 h-5 sm:w-6 sm:h-6 text-lawlaw-ocean-teal" />
  Category Performance
  </h4>
  <div className="space-y-2 sm:space-y-3">
@@ -1778,7 +1777,7 @@ function AnalyticsTab() {
  width: `${Math.min(100, (category.revenue / Math.max(...analytics.categories.map((c: any) => c.revenue))) * 100)}%`
  }}
  transition={{ duration: 1, delay: 1 + index * 0.1, ease: "easeOut" }}
- className="bg-gradient-to-r from-primary-green to-leaf-green h-full"
+ className="bg-gradient-to-r from-lawlaw-ocean-teal to-lawlaw-deep-blue h-full"
  />
  </div>
  </motion.div>
@@ -1795,7 +1794,7 @@ function AnalyticsTab() {
  className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-4 lg:p-6 shadow-lg border border-gray-100"
  >
  <h4 className="text-base sm:text-lg font-semibold text-gray-800 mb-3 sm:mb-4 flex items-center gap-2">
- <ClipboardDocumentListIcon className="w-5 h-5 sm:w-6 sm:h-6 text-primary-green" />
+ <ClipboardDocumentListIcon className="w-5 h-5 sm:w-6 sm:h-6 text-lawlaw-ocean-teal" />
  Order Status Distribution
  </h4>
  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3 lg:gap-4">
@@ -1812,7 +1811,7 @@ function AnalyticsTab() {
  initial={{ scale: 0 }}
  animate={{ scale: 1 }}
  transition={{ delay: 1.2 + index * 0.1, type: "spring" }}
- className="text-xl sm:text-2xl font-bold text-primary-green"
+ className="text-xl sm:text-2xl font-bold text-lawlaw-ocean-teal"
  >
  {count}
  </motion.div>
@@ -1830,7 +1829,7 @@ function AnalyticsTab() {
  className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-4 lg:p-6 shadow-lg border border-gray-100"
  >
  <h4 className="text-base sm:text-lg font-semibold text-gray-800 mb-3 sm:mb-4 flex items-center gap-2">
- <UserGroupIcon className="w-5 h-5 sm:w-6 sm:h-6 text-primary-green" />
+ <UserGroupIcon className="w-5 h-5 sm:w-6 sm:h-6 text-lawlaw-ocean-teal" />
  User Growth Trends
  </h4>
  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-4 sm:mb-6">
@@ -1918,450 +1917,6 @@ function AnalyticsTab() {
  );
 }
 
-// Communications Tab Component
-function CommunicationsTab() {
- const [activeSubTab, setActiveSubTab] = useState<'announcements' | 'campaigns'>('announcements');
- const [announcements, setAnnouncements] = useState<any[]>([]);
- const [campaigns, setCampaigns] = useState<any[]>([]);
- const [showNewAnnouncement, setShowNewAnnouncement] = useState(false);
- const [showNewCampaign, setShowNewCampaign] = useState(false);
-
- const [newAnnouncement, setNewAnnouncement] = useState({
- title: '',
- message: '',
- type: 'info',
- targetAudience: 'all',
- priority: 0,
- expiresAt: '',
- });
-
- const [newCampaign, setNewCampaign] = useState({
- name: '',
- subject: '',
- message: '',
- type: 'email',
- targetAudience: 'all',
- scheduledAt: '',
- });
-
- useEffect(() => {
- fetchAnnouncements();
- fetchCampaigns();
- }, []);
-
- const fetchAnnouncements = async () => {
- try {
- const res = await fetch('/api/admin/announcements');
- if (res.ok) {
- const data = await res.json();
- setAnnouncements(data);
- }
- } catch (error) {
- console.error('Error fetching announcements:', error);
- }
- };
-
- const fetchCampaigns = async () => {
- try {
- const res = await fetch('/api/admin/campaigns');
- if (res.ok) {
- const data = await res.json();
- setCampaigns(data);
- }
- } catch (error) {
- console.error('Error fetching campaigns:', error);
- }
- };
-
- const handleCreateAnnouncement = async (e: React.FormEvent) => {
- e.preventDefault();
- try {
- const res = await fetch('/api/admin/announcements', {
- method: 'POST',
- headers: { 'Content-Type': 'application/json' },
- body: JSON.stringify(newAnnouncement),
- });
-
- if (res.ok) {
- toast.success('Announcement created successfully!');
- setNewAnnouncement({ title: '', message: '', type: 'info', targetAudience: 'all', priority: 0, expiresAt: '' });
- setShowNewAnnouncement(false);
- fetchAnnouncements();
- } else {
- toast.error('Failed to create announcement');
- }
- } catch (error) {
- toast.error('Error creating announcement');
- }
- };
-
- const handleCreateCampaign = async (e: React.FormEvent) => {
- e.preventDefault();
- try {
- const res = await fetch('/api/admin/campaigns', {
- method: 'POST',
- headers: { 'Content-Type': 'application/json' },
- body: JSON.stringify(newCampaign),
- });
-
- if (res.ok) {
- toast.success('Campaign created successfully!');
- setNewCampaign({ name: '', subject: '', message: '', type: 'email', targetAudience: 'all', scheduledAt: '' });
- setShowNewCampaign(false);
- fetchCampaigns();
- } else {
- toast.error('Failed to create campaign');
- }
- } catch (error) {
- toast.error('Error creating campaign');
- }
- };
-
- const handleSendCampaign = async (campaignId: string) => {
- if (!confirm('Are you sure you want to send this campaign?')) return;
-
- try {
- const res = await fetch(`/api/admin/campaigns/${campaignId}/send`, {
- method: 'POST',
- });
-
- if (res.ok) {
- const data = await res.json();
- toast.success(`Campaign sent to ${data.stats.success} recipients!`);
- fetchCampaigns();
- } else {
- toast.error('Failed to send campaign');
- }
- } catch (error) {
- toast.error('Error sending campaign');
- }
- };
-
- const handleToggleAnnouncement = async (id: string, isActive: boolean) => {
- try {
- const res = await fetch(`/api/admin/announcements/${id}`, {
- method: 'PATCH',
- headers: { 'Content-Type': 'application/json' },
- body: JSON.stringify({ isActive: !isActive }),
- });
-
- if (res.ok) {
- toast.success('Announcement updated');
- fetchAnnouncements();
- }
- } catch (error) {
- toast.error('Error updating announcement');
- }
- };
-
- const handleDeleteAnnouncement = async (id: string) => {
- if (!confirm('Delete this announcement?')) return;
-
- try {
- const res = await fetch(`/api/admin/announcements/${id}`, {
- method: 'DELETE',
- });
-
- if (res.ok) {
- toast.success('Announcement deleted');
- fetchAnnouncements();
- }
- } catch (error) {
- toast.error('Error deleting announcement');
- }
- };
-
- return (
- <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
- <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-lg border border-gray-100">
- <h3 className="text-xl sm:text-2xl font-semibold text-primary-green mb-4 flex items-center gap-2">
- <MegaphoneIcon className="w-6 h-6" />
- <span>Communications & Campaigns</span>
- </h3>
-
- {/* Sub Tabs */}
- <div className="flex gap-2 mb-6 border-b">
- <button
- onClick={() => setActiveSubTab('announcements')}
- className={`px-4 py-2 font-medium transition-colors flex items-center gap-2 ${
- activeSubTab === 'announcements'
- ? 'border-b-2 border-primary-green text-primary-green'
- : 'text-gray-600 hover:text-primary-green'
- }`}
- >
- <BellIcon className="w-5 h-5" />
- Announcements
- </button>
- <button
- onClick={() => setActiveSubTab('campaigns')}
- className={`px-4 py-2 font-medium transition-colors flex items-center gap-2 ${
- activeSubTab === 'campaigns'
- ? 'border-b-2 border-primary-green text-primary-green'
- : 'text-gray-600 hover:text-primary-green'
- }`}
- >
- <EnvelopeIcon className="w-5 h-5" />
- Campaigns
- </button>
- </div>
-
- {/* Announcements */}
- {activeSubTab === 'announcements' && (
- <div className="space-y-4">
- <button
- onClick={() => setShowNewAnnouncement(!showNewAnnouncement)}
- className="bg-primary-green text-white px-4 py-2 rounded-lg hover:bg-banana-leaf transition-colors flex items-center gap-2"
- >
- {showNewAnnouncement ? (
- <>
- <XCircleIcon className="w-5 h-5" />
- Cancel
- </>
- ) : (
- <>
- <PlusIcon className="w-5 h-5" />
- New Announcement
- </>
- )}
- </button>
-
- {showNewAnnouncement && (
- <form onSubmit={handleCreateAnnouncement} className="bg-gray-50 p-4 rounded-xl space-y-4">
- <input
- type="text"
- placeholder="Title"
- value={newAnnouncement.title}
- onChange={(e) => setNewAnnouncement({ ...newAnnouncement, title: e.target.value })}
- className="w-full p-3 border rounded-lg"
- required
- />
- <textarea
- placeholder="Message"
- value={newAnnouncement.message}
- onChange={(e) => setNewAnnouncement({ ...newAnnouncement, message: e.target.value })}
- className="w-full p-3 border rounded-lg"
- rows={4}
- required
- />
- <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
- <select
- value={newAnnouncement.type}
- onChange={(e) => setNewAnnouncement({ ...newAnnouncement, type: e.target.value })}
- className="p-3 border rounded-lg"
- >
- <option value="info">Info</option>
- <option value="warning">Warning</option>
- <option value="success">Success</option>
- <option value="promotion">Promotion</option>
- </select>
- <select
- value={newAnnouncement.targetAudience}
- onChange={(e) => setNewAnnouncement({ ...newAnnouncement, targetAudience: e.target.value })}
- className="p-3 border rounded-lg"
- >
- <option value="all">All Users</option>
- <option value="users">Buyers Only</option>
- <option value="sellers">Sellers Only</option>
- </select>
- <select
- value={newAnnouncement.priority}
- onChange={(e) => setNewAnnouncement({ ...newAnnouncement, priority: parseInt(e.target.value) })}
- className="p-3 border rounded-lg"
- >
- <option value="0">Normal</option>
- <option value="1">High</option>
- <option value="2">Urgent</option>
- </select>
- </div>
- <input
- type="datetime-local"
- value={newAnnouncement.expiresAt}
- onChange={(e) => setNewAnnouncement({ ...newAnnouncement, expiresAt: e.target.value })}
- className="w-full p-3 border rounded-lg"
- placeholder="Expires at (optional)"
- />
- <button
- type="submit"
- className="w-full bg-primary-green text-white px-4 py-3 rounded-lg font-medium hover:bg-banana-leaf transition-colors"
- >
- Create Announcement
- </button>
- </form>
- )}
-
- <div className="space-y-3">
- {announcements.map((announcement) => (
- <div key={announcement.id} className="bg-gray-50 p-4 rounded-xl border">
- <div className="flex justify-between items-start gap-4">
- <div className="flex-1">
- <div className="flex items-center gap-2 mb-2">
- <h4 className="font-bold text-lg">{announcement.title}</h4>
- <span className={`px-2 py-1 rounded text-xs font-semibold ${
- announcement.type === 'info' ? 'bg-blue-100 text-blue-800' :
- announcement.type === 'warning' ? 'bg-yellow-100 text-yellow-800' :
- announcement.type === 'success' ? 'bg-green-100 text-green-800' :
- 'bg-purple-100 text-purple-800'
- }`}>
- {announcement.type}
- </span>
- <span className={`px-2 py-1 rounded text-xs ${
- announcement.isActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
- }`}>
- {announcement.isActive ? 'Active' : 'Inactive'}
- </span>
- </div>
- <p className="text-gray-700 mb-2">{announcement.message}</p>
- <p className="text-sm text-gray-500">
- Target: {announcement.targetAudience} | Priority: {announcement.priority} |
- Created: {new Date(announcement.createdAt).toLocaleDateString()}
- </p>
- </div>
- <div className="flex gap-2">
- <button
- onClick={() => handleToggleAnnouncement(announcement.id, announcement.isActive)}
- className="px-3 py-1 rounded-lg bg-blue-500 text-white text-sm hover:bg-blue-600"
- >
- {announcement.isActive ? 'Deactivate' : 'Activate'}
- </button>
- <button
- onClick={() => handleDeleteAnnouncement(announcement.id)}
- className="px-3 py-1 rounded-lg bg-red-500 text-white text-sm hover:bg-red-600"
- >
- Delete
- </button>
- </div>
- </div>
- </div>
- ))}
- </div>
- </div>
- )}
-
- {/* Campaigns */}
- {activeSubTab === 'campaigns' && (
- <div className="space-y-4">
- <button
- onClick={() => setShowNewCampaign(!showNewCampaign)}
- className="bg-primary-green text-white px-4 py-2 rounded-lg hover:bg-banana-leaf transition-colors flex items-center gap-2"
- >
- {showNewCampaign ? (
- <>
- <XCircleIcon className="w-5 h-5" />
- Cancel
- </>
- ) : (
- <>
- <PlusIcon className="w-5 h-5" />
- New Campaign
- </>
- )}
- </button>
-
- {showNewCampaign && (
- <form onSubmit={handleCreateCampaign} className="bg-gray-50 p-4 rounded-xl space-y-4">
- <input
- type="text"
- placeholder="Campaign Name"
- value={newCampaign.name}
- onChange={(e) => setNewCampaign({ ...newCampaign, name: e.target.value })}
- className="w-full p-3 border rounded-lg"
- required
- />
- <input
- type="text"
- placeholder="Subject Line"
- value={newCampaign.subject}
- onChange={(e) => setNewCampaign({ ...newCampaign, subject: e.target.value })}
- className="w-full p-3 border rounded-lg"
- required
- />
- <textarea
- placeholder="Message Content"
- value={newCampaign.message}
- onChange={(e) => setNewCampaign({ ...newCampaign, message: e.target.value })}
- className="w-full p-3 border rounded-lg"
- rows={6}
- required
- />
- <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
- <select
- value={newCampaign.type}
- onChange={(e) => setNewCampaign({ ...newCampaign, type: e.target.value })}
- className="p-3 border rounded-lg"
- >
- <option value="email">Email</option>
- <option value="push">Push Notification</option>
- <option value="sms">SMS</option>
- </select>
- <select
- value={newCampaign.targetAudience}
- onChange={(e) => setNewCampaign({ ...newCampaign, targetAudience: e.target.value })}
- className="p-3 border rounded-lg"
- >
- <option value="all">All Users</option>
- <option value="users">Buyers Only</option>
- <option value="sellers">Sellers Only</option>
- <option value="inactive">Inactive Users</option>
- </select>
- </div>
- <input
- type="datetime-local"
- value={newCampaign.scheduledAt}
- onChange={(e) => setNewCampaign({ ...newCampaign, scheduledAt: e.target.value })}
- className="w-full p-3 border rounded-lg"
- placeholder="Schedule for later (optional)"
- />
- <button
- type="submit"
- className="w-full bg-primary-green text-white px-4 py-3 rounded-lg font-medium hover:bg-banana-leaf transition-colors"
- >
- Create Campaign
- </button>
- </form>
- )}
-
- <div className="space-y-3">
- {campaigns.map((campaign) => (
- <div key={campaign.id} className="bg-gray-50 p-4 rounded-xl border">
- <div className="flex justify-between items-start gap-4">
- <div className="flex-1">
- <div className="flex items-center gap-2 mb-2">
- <h4 className="font-bold text-lg">{campaign.name}</h4>
- <span className={`px-2 py-1 rounded text-xs font-semibold ${
- campaign.status === 'sent' ? 'bg-green-100 text-green-800' :
- campaign.status === 'scheduled' ? 'bg-blue-100 text-blue-800' :
- campaign.status === 'failed' ? 'bg-red-100 text-red-800' :
- 'bg-gray-100 text-gray-800'
- }`}>
- {campaign.status}
- </span>
- </div>
- <p className="text-sm font-medium text-gray-700 mb-1">Subject: {campaign.subject}</p>
- <p className="text-sm text-gray-600 mb-2">{campaign.message.substring(0, 150)}...</p>
- <p className="text-xs text-gray-500">
- Type: {campaign.type} | Target: {campaign.targetAudience} |
- {campaign.recipientCount > 0 && ` Recipients: ${campaign.recipientCount}`}
- </p>
- </div>
- {campaign.status === 'draft' && (
- <button
- onClick={() => handleSendCampaign(campaign.id)}
- className="px-4 py-2 rounded-lg bg-primary-green text-white font-medium hover:bg-banana-leaf transition-colors"
- >
- Send Now
- </button>
- )}
- </div>
- </div>
- ))}
- </div>
- </div>
- )}
- </div>
- </motion.div>
- );
-}
-
 // Messages Tab Component (Oversight)
 function MessagesTab() {
  const [conversations, setConversations] = useState<any[]>([]);
@@ -2405,7 +1960,7 @@ function MessagesTab() {
  return (
  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
  <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-lg border border-gray-100">
- <h3 className="text-xl sm:text-2xl font-semibold text-primary-green mb-4 flex items-center gap-2">
+ <h3 className="text-xl sm:text-2xl font-semibold text-lawlaw-ocean-teal mb-4 flex items-center gap-2">
  <ChatBubbleLeftRightIcon className="w-6 h-6" />
  <span>Messages Oversight</span>
  </h3>
@@ -2420,7 +1975,7 @@ function MessagesTab() {
  onClick={() => setSelectedConversation(conv.id)}
  className={`w-full text-left p-3 rounded-lg border transition-colors ${
  selectedConversation === conv.id
- ? 'bg-primary-green text-white border-primary-green'
+ ? 'bg-lawlaw-ocean-teal text-white border-lawlaw-ocean-teal'
  : 'bg-gray-50 hover:bg-gray-100 border-gray-200'
  }`}
  >
@@ -2451,7 +2006,7 @@ function MessagesTab() {
  >
  <div className={`max-w-[70%] rounded-lg p-3 ${
  message.sender.role === 'seller'
- ? 'bg-primary-green text-white'
+ ? 'bg-lawlaw-ocean-teal text-white'
  : 'bg-white border border-gray-200'
  }`}>
  <p className="text-xs font-semibold mb-1">

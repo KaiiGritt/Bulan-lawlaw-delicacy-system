@@ -21,7 +21,7 @@ export async function PATCH(request: NextRequest, context: { params: Promise<{ i
     }
 
     const updatedProduct = await prisma.product.update({
-      where: { id },
+      where: { productId: parseInt(id) },
       data: { category },
     });
 

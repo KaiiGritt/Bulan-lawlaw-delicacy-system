@@ -12,11 +12,11 @@ export async function GET(
     const { id } = await params;
 
     const reviews = await prisma.comment.findMany({
-      where: { productId: id },
+      where: { productId: parseInt(id) },
       include: {
         user: {
           select: {
-            id: true,
+            userId: true,
             name: true,
             profilePicture: true
           }
@@ -51,7 +51,7 @@ export async function POST(
 
     // Check if product exists
     const product = await prisma.product.findUnique({
-      where: { id },
+      where: { productId: parseInt(id) },
     });
 
     if (!product) {
@@ -61,15 +61,15 @@ export async function POST(
     // Check if user already reviewed this product
     const existingReview = await prisma.comment.findFirst({
       where: {
-        productId: id,
-        userId: session.user.id,
+        productId: parseInt(id),
+        userId: parseInt(session.user.id),
       },
     });
 
     if (existingReview) {
       // Update existing review
       await prisma.comment.update({
-        where: { id: existingReview.id },
+        where: { commentId: existingReview.commentId },
         data: {
           rating,
           content: content || '',
@@ -79,8 +79,8 @@ export async function POST(
       // Create new review
       await prisma.comment.create({
         data: {
-          productId: id,
-          userId: session.user.id,
+          productId: parseInt(id),
+          userId: parseInt(session.user.id),
           rating,
           content: content || '',
         },
@@ -89,7 +89,7 @@ export async function POST(
 
     // Update product rating
     const allComments = await prisma.comment.findMany({
-      where: { productId: id },
+      where: { productId: parseInt(id) },
       select: { rating: true },
     });
 
@@ -98,7 +98,7 @@ const averageRating = allComments.length > 0
   : 0;
 
     await prisma.product.update({
-      where: { id },
+      where: { productId: parseInt(id) },
       data: { rating: averageRating },
     });
 
@@ -125,8 +125,8 @@ export async function DELETE(
     // Find and delete the review
     const review = await prisma.comment.findFirst({
       where: {
-        productId: id,
-        userId: session.user.id,
+        productId: parseInt(id),
+        userId: parseInt(session.user.id),
       },
     });
 
@@ -135,12 +135,12 @@ export async function DELETE(
     }
 
     await prisma.comment.delete({
-      where: { id: review.id },
+      where: { commentId: review.commentId },
     });
 
     // Update product average rating
     const allComments = await prisma.comment.findMany({
-      where: { productId: id },
+      where: { productId: parseInt(id) },
       select: { rating: true },
     });
 
@@ -149,7 +149,7 @@ export async function DELETE(
       : 0;
 
     await prisma.product.update({
-      where: { id },
+      where: { productId: parseInt(id) },
       data: { rating: averageRating },
     });
 

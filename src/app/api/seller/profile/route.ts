@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
     }
 
     const sellerApplication = await prisma.sellerApplication.findUnique({
-      where: { userId: session.user.id },
+      where: { userId: parseInt(session.user.id) },
     });
 
     if (!sellerApplication) {
@@ -39,7 +39,7 @@ export async function PATCH(req: NextRequest) {
     const { businessName, businessType, description, contactNumber, address } = body;
 
     const updatedProfile = await prisma.sellerApplication.update({
-      where: { userId: session.user.id },
+      where: { userId: parseInt(session.user.id) },
       data: {
         businessName,
         businessType,

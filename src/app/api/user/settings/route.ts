@@ -25,7 +25,6 @@ export async function GET(request: NextRequest) {
       privacySettings: {
         showProfile: true,
         showOrders: false,
-        showWishlist: false,
       },
       twoFactorEnabled: false,
     }

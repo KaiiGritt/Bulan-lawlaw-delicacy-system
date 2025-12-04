@@ -5,21 +5,21 @@
   --background: #ffffff;
   --foreground: #171717;
 
-  /* Primary Brand Colors - Greens */
-  --primary-green: #2d5a3d;
-  --leaf-green: #4a7c59;
-  --soft-green: #90a955;
-  --banana-leaf: #8fbc8f;
+  /* Primary Brand Colors - Remapped to Lawlaw Fish Theme */
+  --primary-green: #2d7a8c;    /* Lawlaw Ocean Teal - main brand color */
+  --leaf-green: #4a8b9c;       /* Lawlaw Aqua Teal */
+  --soft-green: #7a9bb8;       /* Lawlaw Steel Blue */
+  --banana-leaf: #d4dfe8;      /* Lawlaw Silver Shimmer */
 
-  /* Secondary Colors - Browns & Earth Tones */
-  --secondary-brown: #8b4513;
-  --earth-brown: #a0522d;
-  --warm-orange: #d2691e;
+  /* Secondary Colors - Ocean Tones (Lawlaw Fish Inspired) */
+  --secondary-brown: #1e5f7a;  /* Lawlaw Deep Blue */
+  --earth-brown: #0f3d54;      /* Lawlaw Navy */
+  --warm-orange: #4a8b9c;      /* Lawlaw Aqua Teal - accent */
 
-  /* Neutral & Accent */
-  --accent-cream: #f5f5dc;
-  --cream-50: #fefdf9;
-  --green-50: #f0fdf4;
+  /* Neutral & Accent - Lawlaw Silver Tones */
+  --accent-cream: #e8eef2;     /* Lawlaw Silver */
+  --cream-50: #f5f8fa;         /* Light silver white */
+  --green-50: #edf4f7;         /* Light ocean tint */
 
   /* Status Colors - Light Mode */
   --success-green: #22c55e;
@@ -30,14 +30,14 @@
   --info-blue: #3b82f6;
   --info-purple: #a855f7;
 
-  /* Gradient Stops for Consistent Gradients */
-  --gradient-green-start: #2d5a3d;
-  --gradient-green-mid: #4a7c59;
-  --gradient-green-end: #8fbc8f;
+  /* Gradient Stops - Lawlaw Fish Ocean Theme */
+  --gradient-green-start: #7a9bb8;   /* Lawlaw Steel Blue */
+  --gradient-green-mid: #4a8b9c;     /* Lawlaw Aqua Teal */
+  --gradient-green-end: #2d7a8c;     /* Lawlaw Ocean Teal */
 
-  --gradient-blue-start: #3b82f6;
-  --gradient-blue-mid: #2563eb;
-  --gradient-blue-end: #1d4ed8;
+  --gradient-blue-start: #4a8b9c;    /* Lawlaw Aqua Teal */
+  --gradient-blue-mid: #2d7a8c;      /* Lawlaw Ocean Teal */
+  --gradient-blue-end: #1e5f7a;      /* Lawlaw Deep Blue */
 
   --gradient-purple-start: #a855f7;
   --gradient-purple-mid: #9333ea;
@@ -46,6 +46,16 @@
   --gradient-orange-start: #f97316;
   --gradient-orange-mid: #ea580c;
   --gradient-orange-end: #c2410c;
+
+  /* Lawlaw Fish (Sardinella fimbriata) Gradient - Iridescent Ocean Theme */
+  --lawlaw-silver: #e8eef2;
+  --lawlaw-silver-shimmer: #d4dfe8;
+  --lawlaw-steel-blue: #7a9bb8;
+  --lawlaw-aqua-teal: #4a8b9c;
+  --lawlaw-ocean-teal: #2d7a8c;
+  --lawlaw-deep-blue: #1e5f7a;
+  --lawlaw-navy: #0f3d54;
+  --lawlaw-deep-navy: #0a2a3d;
 }
 
 @theme inline {
@@ -91,6 +101,16 @@
   --color-gradient-orange-start: var(--gradient-orange-start);
   --color-gradient-orange-mid: var(--gradient-orange-mid);
   --color-gradient-orange-end: var(--gradient-orange-end);
+
+  /* Lawlaw Fish Colors */
+  --color-lawlaw-silver: var(--lawlaw-silver);
+  --color-lawlaw-silver-shimmer: var(--lawlaw-silver-shimmer);
+  --color-lawlaw-steel-blue: var(--lawlaw-steel-blue);
+  --color-lawlaw-aqua-teal: var(--lawlaw-aqua-teal);
+  --color-lawlaw-ocean-teal: var(--lawlaw-ocean-teal);
+  --color-lawlaw-deep-blue: var(--lawlaw-deep-blue);
+  --color-lawlaw-navy: var(--lawlaw-navy);
+  --color-lawlaw-deep-navy: var(--lawlaw-deep-navy);
 
   /* Fonts */
   --font-sans: var(--font-inter);
@@ -139,6 +159,30 @@
   }
   50% {
     opacity: 1;
+  }
+}
+
+/* Lawlaw Fish Iridescent Shimmer Animation */
+@keyframes lawlawShimmer {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes scaleShimmer {
+  0%, 100% {
+    opacity: 0.6;
+    transform: translateX(-100%) skewX(-15deg);
+  }
+  50% {
+    opacity: 1;
+    transform: translateX(100%) skewX(-15deg);
   }
 }
 
@@ -283,6 +327,206 @@ body {
     rgba(160, 82, 45, 0.05) 10px,
     rgba(160, 82, 45, 0.05) 20px
   );
+}
+
+/* ============================================
+   LAWLAW FISH GRADIENT STYLES
+   Inspired by Sardinella fimbriata - silvery
+   iridescent scales with ocean blue reflections
+   ============================================ */
+
+/* Primary Lawlaw Gradient - Horizontal */
+.lawlaw-gradient {
+  background: linear-gradient(
+    135deg,
+    var(--lawlaw-silver) 0%,
+    var(--lawlaw-silver-shimmer) 15%,
+    var(--lawlaw-steel-blue) 30%,
+    var(--lawlaw-aqua-teal) 50%,
+    var(--lawlaw-ocean-teal) 65%,
+    var(--lawlaw-deep-blue) 80%,
+    var(--lawlaw-navy) 100%
+  );
+}
+
+/* Lawlaw Gradient - Vertical Flow (like fish scales) */
+.lawlaw-gradient-vertical {
+  background: linear-gradient(
+    180deg,
+    var(--lawlaw-silver) 0%,
+    var(--lawlaw-silver-shimmer) 10%,
+    var(--lawlaw-steel-blue) 25%,
+    var(--lawlaw-aqua-teal) 45%,
+    var(--lawlaw-ocean-teal) 60%,
+    var(--lawlaw-deep-blue) 75%,
+    var(--lawlaw-navy) 90%,
+    var(--lawlaw-deep-navy) 100%
+  );
+}
+
+/* Lawlaw Gradient - Radial (spotlight effect) */
+.lawlaw-gradient-radial {
+  background: radial-gradient(
+    ellipse at 30% 20%,
+    var(--lawlaw-silver) 0%,
+    var(--lawlaw-silver-shimmer) 15%,
+    var(--lawlaw-steel-blue) 30%,
+    var(--lawlaw-aqua-teal) 50%,
+    var(--lawlaw-ocean-teal) 65%,
+    var(--lawlaw-deep-blue) 80%,
+    var(--lawlaw-navy) 95%
+  );
+}
+
+/* Animated Iridescent Lawlaw Gradient */
+.lawlaw-gradient-animated {
+  background: linear-gradient(
+    -45deg,
+    var(--lawlaw-silver),
+    var(--lawlaw-silver-shimmer),
+    var(--lawlaw-steel-blue),
+    var(--lawlaw-aqua-teal),
+    var(--lawlaw-ocean-teal),
+    var(--lawlaw-deep-blue),
+    var(--lawlaw-aqua-teal),
+    var(--lawlaw-steel-blue),
+    var(--lawlaw-silver-shimmer),
+    var(--lawlaw-silver)
+  );
+  background-size: 400% 400%;
+  animation: lawlawShimmer 15s ease infinite;
+}
+
+/* Lawlaw Gradient with Shimmer Overlay */
+.lawlaw-shimmer {
+  position: relative;
+  background: linear-gradient(
+    135deg,
+    var(--lawlaw-silver) 0%,
+    var(--lawlaw-steel-blue) 25%,
+    var(--lawlaw-aqua-teal) 50%,
+    var(--lawlaw-deep-blue) 75%,
+    var(--lawlaw-navy) 100%
+  );
+  overflow: hidden;
+}
+
+.lawlaw-shimmer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    110deg,
+    transparent 20%,
+    rgba(255, 255, 255, 0.4) 40%,
+    rgba(255, 255, 255, 0.6) 50%,
+    rgba(255, 255, 255, 0.4) 60%,
+    transparent 80%
+  );
+  animation: scaleShimmer 3s ease-in-out infinite;
+}
+
+/* Subtle Lawlaw Background - for UI elements */
+.lawlaw-subtle {
+  background: linear-gradient(
+    135deg,
+    rgba(232, 238, 242, 0.9) 0%,
+    rgba(122, 155, 184, 0.3) 50%,
+    rgba(74, 139, 156, 0.2) 100%
+  );
+}
+
+/* Dark Lawlaw Gradient - for headers/footers */
+.lawlaw-dark {
+  background: linear-gradient(
+    135deg,
+    var(--lawlaw-deep-blue) 0%,
+    var(--lawlaw-navy) 40%,
+    var(--lawlaw-deep-navy) 100%
+  );
+}
+
+/* Lawlaw Text Gradient */
+.lawlaw-text-gradient {
+  background: linear-gradient(
+    90deg,
+    var(--lawlaw-steel-blue) 0%,
+    var(--lawlaw-aqua-teal) 50%,
+    var(--lawlaw-deep-blue) 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Lawlaw Border Gradient */
+.lawlaw-border {
+  border: 2px solid transparent;
+  background:
+    linear-gradient(white, white) padding-box,
+    linear-gradient(
+      135deg,
+      var(--lawlaw-silver) 0%,
+      var(--lawlaw-steel-blue) 25%,
+      var(--lawlaw-aqua-teal) 50%,
+      var(--lawlaw-deep-blue) 75%,
+      var(--lawlaw-navy) 100%
+    ) border-box;
+  border-radius: 8px;
+}
+
+/* Lawlaw Glass Effect - Frosted glass with ocean tint */
+.lawlaw-glass {
+  background: linear-gradient(
+    135deg,
+    rgba(232, 238, 242, 0.7) 0%,
+    rgba(122, 155, 184, 0.5) 50%,
+    rgba(74, 139, 156, 0.4) 100%
+  );
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Lawlaw Button Hover Effect */
+.lawlaw-button {
+  background: linear-gradient(
+    135deg,
+    var(--lawlaw-steel-blue) 0%,
+    var(--lawlaw-aqua-teal) 50%,
+    var(--lawlaw-ocean-teal) 100%
+  );
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.lawlaw-button:hover {
+  background: linear-gradient(
+    135deg,
+    var(--lawlaw-aqua-teal) 0%,
+    var(--lawlaw-ocean-teal) 50%,
+    var(--lawlaw-deep-blue) 100%
+  );
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(45, 122, 140, 0.35);
+}
+
+/* Lawlaw Card Style */
+.lawlaw-card {
+  background: linear-gradient(
+    180deg,
+    rgba(232, 238, 242, 0.95) 0%,
+    rgba(212, 223, 232, 0.9) 100%
+  );
+  border: 1px solid rgba(122, 155, 184, 0.3);
+  border-radius: 12px;
+  box-shadow:
+    0 4px 20px rgba(15, 61, 84, 0.1),
+    0 0 40px rgba(74, 139, 156, 0.05);
 }
 
 /* Custom scrollbar */

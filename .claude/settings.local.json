@@ -22,7 +22,19 @@
       "Bash(dir:*)",
       "Bash(npm ls:*)",
       "Bash(git push:*)",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "Bash(npx prisma:*)",
+      "Bash(set PRISMA_USER_CONSENT_FOR_DANGEROUS_AI_ACTION=yes)",
+      "Bash(cmd /c \"set PRISMA_USER_CONSENT_FOR_DANGEROUS_AI_ACTION=yes&& npx prisma db push --force-reset\")",
+      "Bash($env:PRISMA_USER_CONSENT_FOR_DANGEROUS_AI_ACTION=\"yes\")",
+      "Bash(PRISMA_USER_CONSENT_FOR_DANGEROUS_AI_ACTION=\"yes\" npx prisma db push:*)",
+      "Bash(if exist .next rmdir /s /q .next)",
+      "Bash(cmd /c \"taskkill /F /IM node.exe\")",
+      "Bash(if exist \".next\\dev\\lock\" rmdir /s /q \".next\")",
+      "Bash(cmd /c \"rmdir /s /q C:\\Users\\ASUS\\OneDrive\\Documents\\Bulan-lawlaw-delicacy-system\\.next\")",
+      "Bash(tasklist:*)",
+      "Bash(taskkill:*)",
+      "Bash(powershell -Command \"Stop-Process -Name node -Force -ErrorAction SilentlyContinue\")"
     ],
     "deny": [],
     "ask": []

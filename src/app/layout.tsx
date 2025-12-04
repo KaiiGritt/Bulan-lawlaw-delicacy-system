@@ -40,13 +40,14 @@ export default async function RootLayout({
       <body
         className={`${inter.variable} antialiased min-h-screen transition-colors duration-300`}
       >
-        <div className="fixed inset-0 -z-10 bg-gradient-to-br from-cream-50 to-green-50" />
+        {/* Lawlaw Fish Gradient Background */}
+        <div className="fixed inset-0 -z-10 bg-gradient-to-br from-lawlaw-silver via-lawlaw-silver-shimmer to-lawlaw-steel-blue/20" />
 
-        {/* Animated orbs */}
+        {/* Animated orbs - Lawlaw ocean theme */}
         <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
-          <div className="absolute top-20 left-10 w-64 h-64 bg-green-500/10 rounded-full blur-3xl" />
-          <div className="absolute bottom-20 right-10 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl" style={{ animationDelay: '5s' }} />
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl" />
+          <div className="floating-orb absolute top-20 left-10 w-64 h-64 bg-lawlaw-aqua-teal/10 rounded-full blur-3xl" />
+          <div className="floating-orb absolute bottom-20 right-10 w-96 h-96 bg-lawlaw-steel-blue/10 rounded-full blur-3xl" style={{ animationDelay: '5s' }} />
+          <div className="pulsing-orb absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-lawlaw-ocean-teal/5 rounded-full blur-3xl" />
         </div>
         <Providers>
           <ClientLayout session={session}>

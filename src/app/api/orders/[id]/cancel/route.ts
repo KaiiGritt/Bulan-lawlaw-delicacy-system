@@ -29,7 +29,7 @@ export async function POST(
 
     // Get the order
     const order = await prisma.order.findUnique({
-      where: { id },
+      where: { orderId: parseInt(id) },
       include: {
         user: true,
         orderItems: {
@@ -47,7 +47,7 @@ export async function POST(
       )
     }
 
-    if (order.userId !== session.user.id) {
+    if (order.userId !== parseInt(session.user.id)) {
       return NextResponse.json(
         { error: 'Unauthorized to cancel this order' },
         { status: 403 }
@@ -66,7 +66,7 @@ export async function POST(
     const requiresApproval = order.status === 'processing'
 
     const updatedOrder = await prisma.order.update({
-      where: { id },
+      where: { orderId: parseInt(id) },
       data: {
         status: requiresApproval ? 'processing' : 'cancelled',
         adminApprovalRequired: requiresApproval,
@@ -79,11 +79,11 @@ export async function POST(
     // Create notification for the user
     await prisma.notification.create({
       data: {
-        userId: session.user.id,
+        userId: parseInt(session.user.id),
         title: requiresApproval ? 'Cancellation Request Submitted' : 'Order Cancelled',
         message: requiresApproval
-          ? `Your cancellation request for order #${id.slice(-8)} has been submitted and is pending admin approval.`
-          : `Your order #${id.slice(-8)} has been cancelled.`,
+          ? `Your cancellation request for order #${id} has been submitted and is pending admin approval.`
+          : `Your order #${id} has been cancelled.`,
         type: 'order_update'
       }
     })
@@ -97,9 +97,9 @@ export async function POST(
       for (const admin of admins) {
         await prisma.notification.create({
           data: {
-            userId: admin.id,
+            userId: admin.userId,
             title: 'Order Cancellation Request',
-            message: `User ${session.user.name || session.user.email} has requested to cancel order #${id.slice(-8)}. Reason: ${reason.trim()}`,
+            message: `User ${session.user.name || session.user.email} has requested to cancel order #${id}. Reason: ${reason.trim()}`,
             type: 'admin_action_required'
           }
         })
@@ -108,7 +108,7 @@ export async function POST(
       // If no approval required, restore product stock
       for (const item of order.orderItems) {
         await prisma.product.update({
-          where: { id: item.productId },
+          where: { productId: item.productId },
           data: {
             stock: {
               increment: item.quantity

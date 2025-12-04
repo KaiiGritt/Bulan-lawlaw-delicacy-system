@@ -21,14 +21,14 @@ export async function GET(
 
     const { id } = await params
     const order = await prisma.order.findUnique({
-      where: { id },
+      where: { orderId: parseInt(id) },
       include: {
         trackingHistory: {
           orderBy: { createdAt: 'desc' }
         },
         user: {
           select: {
-            id: true,
+            userId: true,
             email: true,
             name: true
           }
@@ -44,7 +44,7 @@ export async function GET(
     }
 
     // Check if user has access to this order
-    if (session.user.role !== 'admin' && order.userId !== session.user.id) {
+    if (session.user.role !== 'admin' && order.userId !== parseInt(session.user.id)) {
       return NextResponse.json(
         { error: 'Forbidden' },
         { status: 403 }
@@ -52,7 +52,7 @@ export async function GET(
     }
 
     return NextResponse.json({
-      orderId: order.id,
+      orderId: order.orderId,
       status: order.status,
       trackingNumber: order.trackingNumber,
       courier: order.courier,
@@ -99,7 +99,7 @@ export async function POST(
     // Add tracking history entry
     const trackingEntry = await prisma.orderTrackingHistory.create({
       data: {
-        orderId: id,
+        orderId: parseInt(id),
         status,
         location,
         description
@@ -108,7 +108,7 @@ export async function POST(
 
     // Update order status and get user info
     const order = await prisma.order.update({
-      where: { id },
+      where: { orderId: parseInt(id) },
       data: { status },
       include: {
         user: {
@@ -125,7 +125,7 @@ export async function POST(
       await sendOrderTrackingEmail({
         customerEmail: order.user.email,
         customerName: order.user.name || 'Customer',
-        orderId: order.id,
+        orderId: String(order.orderId),
         status,
         trackingNumber: order.trackingNumber || undefined,
         courier: order.courier || undefined,
@@ -183,7 +183,7 @@ export async function PUT(
 
     const { id } = await params
     const order = await prisma.order.update({
-      where: { id },
+      where: { orderId: parseInt(id) },
       data: updateData,
       include: {
         trackingHistory: {
@@ -202,7 +202,7 @@ export async function PUT(
     if (status) {
       await prisma.orderTrackingHistory.create({
         data: {
-          orderId: id,
+          orderId: parseInt(id),
           status,
           description: `Order status updated to ${status}`,
           location: null
@@ -214,7 +214,7 @@ export async function PUT(
         await sendOrderTrackingEmail({
           customerEmail: order.user.email,
           customerName: order.user.name || 'Customer',
-          orderId: order.id,
+          orderId: String(order.orderId),
           status,
           trackingNumber: order.trackingNumber || undefined,
           courier: order.courier || undefined,

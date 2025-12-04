@@ -56,9 +56,10 @@ export async function POST(request: NextRequest) {
     const otpCode = generateOTP(6);
     const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
 
-    // Save OTP to database
+    // Save OTP to database (userId is optional - null for pending registrations)
     await prisma.otp.create({
       data: {
+        userId: user?.userId || null,
         email,
         code: otpCode,
         expiresAt,

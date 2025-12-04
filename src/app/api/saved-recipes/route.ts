@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
     }
 
     const savedRecipes = await prisma.savedRecipe.findMany({
-      where: { userId: session.user.id },
+      where: { userId: parseInt(session.user.id) },
       include: {
         recipe: true
       },
@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
 
     // Check if recipe exists
     const recipe = await prisma.recipe.findUnique({
-      where: { id: recipeId }
+      where: { recipeId: recipeId }
     });
 
     if (!recipe) {
@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
     const existingSaved = await prisma.savedRecipe.findUnique({
       where: {
         userId_recipeId: {
-          userId: session.user.id,
+          userId: parseInt(session.user.id),
           recipeId: recipeId
         }
       }
@@ -81,7 +81,7 @@ export async function POST(request: NextRequest) {
     // Save recipe
     const savedRecipe = await prisma.savedRecipe.create({
       data: {
-        userId: session.user.id,
+        userId: parseInt(session.user.id),
         recipeId: recipeId,
         notes: notes || null
       },
@@ -123,7 +123,7 @@ export async function PUT(request: NextRequest) {
     const existingSaved = await prisma.savedRecipe.findUnique({
       where: {
         userId_recipeId: {
-          userId: session.user.id,
+          userId: parseInt(session.user.id),
           recipeId: recipeId
         }
       }
@@ -140,7 +140,7 @@ export async function PUT(request: NextRequest) {
     const updatedSaved = await prisma.savedRecipe.update({
       where: {
         userId_recipeId: {
-          userId: session.user.id,
+          userId: parseInt(session.user.id),
           recipeId: recipeId
         }
       },
@@ -185,8 +185,8 @@ export async function DELETE(request: NextRequest) {
     const existingSaved = await prisma.savedRecipe.findUnique({
       where: {
         userId_recipeId: {
-          userId: session.user.id,
-          recipeId: recipeId
+          userId: parseInt(session.user.id),
+          recipeId: parseInt(recipeId)
         }
       }
     });
@@ -202,8 +202,8 @@ export async function DELETE(request: NextRequest) {
     await prisma.savedRecipe.delete({
       where: {
         userId_recipeId: {
-          userId: session.user.id,
-          recipeId: recipeId
+          userId: parseInt(session.user.id),
+          recipeId: parseInt(recipeId)
         }
       }
     });

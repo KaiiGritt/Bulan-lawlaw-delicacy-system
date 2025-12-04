@@ -29,8 +29,8 @@ async function updateCartItem(request: NextRequest, params: Promise<{ id: string
   // Verify the cart item belongs to the user
   const cartItem = await prisma.cartItem.findFirst({
     where: {
-      id,
-      userId: session.user.id
+      cartItemId: parseInt(id),
+      userId: parseInt(session.user.id)
     },
     include: { product: true }
   })
@@ -51,7 +51,7 @@ async function updateCartItem(request: NextRequest, params: Promise<{ id: string
   }
 
   const updatedItem = await prisma.cartItem.update({
-    where: { id },
+    where: { cartItemId: parseInt(id) },
     data: { quantity },
     include: { product: true }
   })
@@ -102,8 +102,8 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
     // Verify the cart item belongs to the user
     const cartItem = await prisma.cartItem.findFirst({
       where: {
-        id,
-        userId: session.user.id
+        cartItemId: parseInt(id),
+        userId: parseInt(session.user.id)
       }
     })
 
@@ -115,7 +115,7 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
     }
 
     await prisma.cartItem.delete({
-      where: { id }
+      where: { cartItemId: parseInt(id) }
     })
 
     return NextResponse.json({ message: 'Item removed from cart' })
