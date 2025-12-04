@@ -45,10 +45,7 @@ export async function middleware(request: NextRequest) {
   const isOTPRoute = pathname.startsWith(otpRoute);
   const isAdminRoute = pathname.startsWith('/admin');
 
-  // If user is not logged in and trying to access the home page, redirect to login
-  if (!isLoggedIn && pathname === '/') {
-    return NextResponse.redirect(new URL('/login', request.url));
-  }
+  // Home page is now accessible to everyone (removed login redirect)
 
   // If user is logged in but NOT email verified (except for OTP page and admin)
   if (isLoggedIn && !emailVerified && !isOTPRoute && userRole !== 'admin') {
