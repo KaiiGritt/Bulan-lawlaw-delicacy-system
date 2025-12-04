@@ -134,7 +134,7 @@ export async function sendOrderTrackingEmail(data: OrderTrackingEmailData) {
     <body>
       <div class="container">
         <div class="header">
-          <h1>🍤 Lawlaw Delights</h1>
+          <img src="${process.env.NEXTAUTH_URL}/lawlaw-delights-high-resolution-logo-transparent.png" alt="Lawlaw Delights" style="max-width:180px; height:auto; margin-bottom:10px;" />
           <p>Order Tracking Update</p>
         </div>
 

@@ -17,12 +17,9 @@ export const metadata: Metadata = {
   title: "Lawlaw Delights - Authentic Filipino Seafood & Cooking Guides",
   description: "Discover the finest Lawlaw delicacies from Bulan, Sorsogon. Shop fresh seafood and learn traditional Filipino cooking with our interactive DIY guides.",
   icons: {
-    icon: [
-      { url: '/fish-logo.svg', type: 'image/svg+xml' },
-      { url: '/fish-logo.svg', sizes: 'any' }
-    ],
-    apple: '/fish-logo.svg',
-    shortcut: '/fish-logo.svg',
+    icon: '/lawlaw-delights-high-resolution-logo-transparent.png',
+    apple: '/lawlaw-delights-high-resolution-logo-transparent.png',
+    shortcut: '/lawlaw-delights-high-resolution-logo-transparent.png',
   },
 };
 

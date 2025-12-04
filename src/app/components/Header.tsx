@@ -1,7 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-import Image from 'next/image';
 import { useSession } from 'next-auth/react';
 import { useState, useEffect, FormEvent, ChangeEvent } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
@@ -99,17 +98,12 @@ useEffect(() => {
  <header className="fixed top-0 left-0 right-0 z-[100] bg-gradient-to-r from-lawlaw-silver via-white to-lawlaw-steel-blue/10 backdrop-blur-md border-b border-lawlaw-steel-blue/30 shadow-lg transition-colors duration-300">
  <div className="container mx-auto px-3 sm:px-4 lg:px-6 py-3 sm:py-4 flex items-center justify-between gap-2 sm:gap-4 lg:gap-6">
  {/* Logo */}
- <Link href="/" className="flex items-center gap-3 flex-shrink-0">
- <Image
- src="/logo.png"
- alt="Logo"
- width={50}
- height={50}
- className="rounded-lg"
+ <Link href="/" className="flex items-center flex-shrink-0">
+ <img
+ src="/lawlaw-delights-high-resolution-logo-transparent.png"
+ alt="Lawlaw Delights Logo"
+ className="h-10 sm:h-12 md:h-14 w-auto"
  />
- <span className="text-2xl font-bold bg-gradient-to-r from-primary-green via-leaf-green to-soft-green bg-clip-text text-transparent">
- Lawlaw Delights
- </span>
  </Link>
 
  {/* Desktop Search */}

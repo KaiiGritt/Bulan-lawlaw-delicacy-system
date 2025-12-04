@@ -107,22 +107,8 @@ export async function sendEmail(options: EmailOptions) {
 
 // Email template wrapper for consistent styling
 function getEmailTemplate(content: string): string {
-  // Professional SVG logo for email - fish/wave design representing Lawlaw delicacy
-  const logoSvg = `
-    <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 60 60" fill="none">
-      <!-- Circular background -->
-      <circle cx="30" cy="30" r="28" fill="#2E7D32"/>
-      <!-- Fish body -->
-      <ellipse cx="28" cy="30" rx="14" ry="8" fill="white"/>
-      <!-- Fish tail -->
-      <path d="M40 30L48 24L48 36L40 30Z" fill="white"/>
-      <!-- Fish eye -->
-      <circle cx="20" cy="28" r="2.5" fill="#2E7D32"/>
-      <!-- Wave lines under fish -->
-      <path d="M12 40C16 38 20 42 24 40C28 38 32 42 36 40C40 38 44 42 48 40" stroke="white" stroke-width="2" stroke-linecap="round" fill="none"/>
-      <path d="M12 45C16 43 20 47 24 45C28 43 32 47 36 45C40 43 44 47 48 45" stroke="white" stroke-width="1.5" stroke-linecap="round" fill="none" opacity="0.7"/>
-    </svg>
-  `;
+  // Use the actual logo image from the website
+  const logoUrl = `${process.env.NEXTAUTH_URL}/lawlaw-delights-high-resolution-logo-transparent.png`;
 
   return `
   <!DOCTYPE html>
@@ -151,15 +137,7 @@ function getEmailTemplate(content: string): string {
                 <table width="100%" cellpadding="0" cellspacing="0">
                   <tr>
                     <td align="center">
-                      <div style="background:white; border-radius:50%; width:80px; height:80px; display:inline-block; text-align:center; line-height:80px; margin-bottom:15px; box-shadow:0 4px 12px rgba(0,0,0,0.15);">
-                        ${logoSvg}
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td align="center">
-                      <h1 style="color:white; margin:0; font-size:32px; font-weight:700; letter-spacing:-0.5px;">Bulan Lawlaw</h1>
-                      <p style="color:rgba(255,255,255,0.95); margin:8px 0 0 0; font-size:16px; font-weight:400;">Delicacy System</p>
+                      <img src="${logoUrl}" alt="Lawlaw Delights" style="max-width:200px; height:auto; margin-bottom:10px;" />
                     </td>
                   </tr>
                 </table>
