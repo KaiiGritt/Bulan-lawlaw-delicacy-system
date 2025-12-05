@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
   if (authError) return authError;
 
   try {
-    const products = await prisma.product.findMany({
+    const productsRaw = await prisma.product.findMany({
       orderBy: { createdAt: 'desc' },
       select: {
         productId: true,
@@ -22,6 +22,19 @@ export async function GET(request: NextRequest) {
         createdAt: true,
       }
     });
+
+    // Map productId to id for frontend compatibility
+    const products = productsRaw.map(product => ({
+      id: String(product.productId),
+      name: product.name,
+      image: product.image,
+      category: product.category,
+      price: product.price,
+      stock: product.stock,
+      featured: product.featured,
+      createdAt: product.createdAt,
+    }));
+
     return NextResponse.json(products);
   } catch (error) {
     return NextResponse.json({ error: 'Failed to fetch products' }, { status: 500 });

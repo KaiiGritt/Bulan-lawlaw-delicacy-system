@@ -44,12 +44,23 @@ export async function GET() {
     });
 
     // Pending seller applications
-    const pendingSellerApplications = await prisma.sellerApplication.findMany({
+    const pendingSellerApplicationsRaw = await prisma.sellerApplication.findMany({
       where: { status: 'pending' },
       take: 5,
       include: { user: { select: { userId: true, name: true, email: true } } },
       orderBy: { createdAt: 'desc' },
     });
+
+    // Map applicationId to id and userId to id for frontend compatibility
+    const pendingSellerApplications = pendingSellerApplicationsRaw.map(app => ({
+      ...app,
+      id: app.applicationId,
+      user: {
+        id: String(app.user.userId),
+        name: app.user.name,
+        email: app.user.email,
+      }
+    }));
 
     return NextResponse.json({
       totalUsers,

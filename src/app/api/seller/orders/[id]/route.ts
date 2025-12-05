@@ -88,7 +88,25 @@ export async function PATCH(
       }
     });
 
-    return NextResponse.json(updatedOrder);
+    // Map IDs for frontend compatibility
+    const mappedOrder = {
+      ...updatedOrder,
+      id: String(updatedOrder.orderId),
+      user: {
+        ...updatedOrder.user,
+        id: String(updatedOrder.user.userId),
+      },
+      orderItems: updatedOrder.orderItems.map(item => ({
+        ...item,
+        id: item.orderItemId,
+        product: {
+          ...item.product,
+          id: String(item.product.productId),
+        }
+      }))
+    };
+
+    return NextResponse.json(mappedOrder);
   } catch (error) {
     console.error('Error updating order status:', error);
     return NextResponse.json(
@@ -157,10 +175,26 @@ export async function GET(
       0
     );
 
-    return NextResponse.json({
+    // Map IDs for frontend compatibility
+    const mappedOrder = {
       ...order,
+      id: String(order.orderId),
+      user: {
+        ...order.user,
+        id: String(order.user.userId),
+      },
+      orderItems: order.orderItems.map(item => ({
+        ...item,
+        id: item.orderItemId,
+        product: {
+          ...item.product,
+          id: String(item.product.productId),
+        }
+      })),
       sellerTotal
-    });
+    };
+
+    return NextResponse.json(mappedOrder);
   } catch (error) {
     console.error('Error fetching order:', error);
     return NextResponse.json(

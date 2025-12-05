@@ -20,7 +20,7 @@ export async function GET(
 
     const { id } = await params
 
-    const order = await prisma.order.findUnique({
+    const orderRaw = await prisma.order.findUnique({
       where: { orderId: parseInt(id) },
       include: {
         orderItems: {
@@ -35,7 +35,7 @@ export async function GET(
       }
     })
 
-    if (!order) {
+    if (!orderRaw) {
       return NextResponse.json(
         { error: 'Order not found' },
         { status: 404 }
@@ -43,11 +43,29 @@ export async function GET(
     }
 
     // Check if user owns this order
-    if (order.userId !== parseInt(session.user.id)) {
+    if (orderRaw.userId !== parseInt(session.user.id)) {
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 403 }
       )
+    }
+
+    // Map IDs for frontend compatibility
+    const order = {
+      ...orderRaw,
+      id: String(orderRaw.orderId),
+      orderItems: orderRaw.orderItems.map(item => ({
+        ...item,
+        id: item.orderItemId,
+        product: {
+          ...item.product,
+          id: String(item.product.productId),
+          user: {
+            ...item.product.user,
+            id: String(item.product.user.userId),
+          }
+        }
+      }))
     }
 
     return NextResponse.json(order)

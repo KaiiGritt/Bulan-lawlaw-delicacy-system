@@ -79,7 +79,17 @@ export async function GET(request: NextRequest) {
       data: { isRead: true }
     })
 
-    return NextResponse.json(messages)
+    // Map IDs for frontend compatibility
+    const mappedMessages = messages.map(msg => ({
+      ...msg,
+      id: msg.messageId,
+      sender: {
+        ...msg.sender,
+        id: String(msg.sender.userId),
+      }
+    }));
+
+    return NextResponse.json(mappedMessages)
   } catch (error) {
     console.error('Error fetching messages:', error)
     return NextResponse.json(
@@ -178,7 +188,17 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    return NextResponse.json(message, { status: 201 })
+    // Map IDs for frontend compatibility
+    const mappedMessage = {
+      ...message,
+      id: message.messageId,
+      sender: {
+        ...message.sender,
+        id: String(message.sender.userId),
+      }
+    };
+
+    return NextResponse.json(mappedMessage, { status: 201 })
   } catch (error) {
     console.error('Error sending message:', error)
     return NextResponse.json(

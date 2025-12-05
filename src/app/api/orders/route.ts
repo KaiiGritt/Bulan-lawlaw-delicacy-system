@@ -15,7 +15,7 @@ export async function GET() {
       )
     }
 
-    const orders = await prisma.order.findMany({
+    const ordersRaw = await prisma.order.findMany({
       where: { userId: parseInt(session.user.id) },
       include: {
         orderItems: {
@@ -30,6 +30,24 @@ export async function GET() {
       },
       orderBy: { createdAt: 'desc' }
     })
+
+    // Map IDs for frontend compatibility
+    const orders = ordersRaw.map(order => ({
+      ...order,
+      id: String(order.orderId),
+      orderItems: order.orderItems.map(item => ({
+        ...item,
+        id: item.orderItemId,
+        product: {
+          ...item.product,
+          id: String(item.product.productId),
+          user: {
+            ...item.product.user,
+            id: String(item.product.user.userId),
+          }
+        }
+      }))
+    }))
 
     return NextResponse.json(orders)
   } catch (error) {

@@ -127,11 +127,13 @@ useEffect(() => {
  {/* Desktop Navigation */}
  <div className="hidden md:flex items-center gap-8">
  <div className="flex items-center gap-6 text-gray-700">
+ {!session && (
  <Link href="/" className="relative group p-2 rounded-lg overflow-hidden transition-all duration-300 hover:shadow-md">
  <Home className="w-6 h-6 relative z-10 group-hover:text-primary-green group-hover:scale-110 group-hover:rotate-3 transition-all duration-300" />
  <span className="absolute inset-0 bg-gradient-to-r from-primary-green/5 to-leaf-green/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
             <span className="absolute inset-x-0 bottom-0 h-0.5 bg-gradient-to-r from-primary-green to-leaf-green scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></span>
  </Link>
+ )}
 
  <Link href="/products" className="relative group p-2 rounded-lg overflow-hidden transition-all duration-300 hover:shadow-md">
  <Boxes className="w-6 h-6 relative z-10 group-hover:text-primary-green group-hover:scale-110 group-hover:rotate-3 transition-all duration-300" />
@@ -235,12 +237,14 @@ useEffect(() => {
  {/* MOBILE BOTTOM NAVIGATION */}
  <nav className="fixed bottom-0 left-0 right-0 bg-gradient-to-r from-white via-accent-cream/50 to-white border-t border-soft-green/30 shadow-lg z-[100] md:hidden">
  <div className="flex justify-around items-center h-16 text-gray-600">
+ {!session && (
  <Link href="/" className="relative group flex flex-col items-center text-xs active:scale-95 transition-all duration-200">
  <div className="p-2 rounded-xl group-hover:bg-primary-green/10 transition-all duration-200">
  <Home className="w-6 h-6 group-hover:text-primary-green group-active:scale-90 transition-all duration-200" />
  </div>
  <span className="text-[10px] group-hover:text-primary-green group-hover:font-medium transition-all duration-200">Home</span>
  </Link>
+ )}
 
  <Link href="/products" className="relative group flex flex-col items-center text-xs active:scale-95 transition-all duration-200">
  <div className="p-2 rounded-xl group-hover:bg-primary-green/10 transition-all duration-200">

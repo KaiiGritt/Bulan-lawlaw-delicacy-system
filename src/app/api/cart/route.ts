@@ -15,12 +15,22 @@ export async function GET() {
       )
     }
 
-    const cartItems = await prisma.cartItem.findMany({
+    const cartItemsRaw = await prisma.cartItem.findMany({
       where: { userId: parseInt(session.user.id) },
       include: {
         product: true
       }
     })
+
+    // Map IDs for frontend compatibility
+    const cartItems = cartItemsRaw.map(item => ({
+      ...item,
+      id: item.cartItemId,
+      product: {
+        ...item.product,
+        id: String(item.product.productId),
+      }
+    }))
 
     return NextResponse.json(cartItems)
   } catch (error) {
@@ -111,7 +121,17 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    return NextResponse.json(cartItem, { status: 201 })
+    // Map IDs for frontend compatibility
+    const mappedCartItem = {
+      ...cartItem,
+      id: cartItem.cartItemId,
+      product: {
+        ...cartItem.product,
+        id: String(cartItem.product.productId),
+      }
+    }
+
+    return NextResponse.json(mappedCartItem, { status: 201 })
   } catch (error) {
     console.error('Error adding to cart:', error)
     return NextResponse.json(

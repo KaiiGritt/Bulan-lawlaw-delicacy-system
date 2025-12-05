@@ -41,13 +41,26 @@ export async function GET(req: NextRequest) {
       orderBy: { createdAt: 'desc' },
     });
 
-    // Calculate seller-specific totals for each order
-const ordersWithSellerTotals = orders.map((order: any) => {
-      const sellerItems = order.orderItems;
+    // Calculate seller-specific totals for each order and map IDs
+    const ordersWithSellerTotals = orders.map((order: any) => {
+      const sellerItems = order.orderItems.map((item: any) => ({
+        ...item,
+        id: item.orderItemId,
+        product: {
+          ...item.product,
+          id: String(item.product.productId),
+        }
+      }));
       const sellerTotal = sellerItems.reduce((sum: number, item: { price: number; quantity: number }) => sum + (item.price * item.quantity), 0);
 
       return {
         ...order,
+        id: String(order.orderId),
+        user: {
+          ...order.user,
+          id: String(order.user.userId),
+        },
+        orderItems: sellerItems,
         sellerItems,
         sellerTotal,
       };

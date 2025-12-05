@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const addresses = await prisma.address.findMany({
+    const addressesRaw = await prisma.address.findMany({
       where: {
         userId: parseInt(session.user.id)
       },
@@ -21,6 +21,12 @@ export async function GET(req: NextRequest) {
         { createdAt: 'desc' }
       ]
     });
+
+    // Map IDs for frontend compatibility
+    const addresses = addressesRaw.map(addr => ({
+      ...addr,
+      id: addr.addressId,
+    }));
 
     return NextResponse.json(addresses);
   } catch (error) {
@@ -110,7 +116,10 @@ export async function POST(req: NextRequest) {
       }
     });
 
-    return NextResponse.json(address, { status: 201 });
+    // Map ID for frontend compatibility
+    const mappedAddress = { ...address, id: address.addressId };
+
+    return NextResponse.json(mappedAddress, { status: 201 });
   } catch (error) {
     console.error('Error creating address:', error);
     return NextResponse.json(

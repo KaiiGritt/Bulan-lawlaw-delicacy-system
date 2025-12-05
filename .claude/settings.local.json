@@ -34,7 +34,11 @@
       "Bash(cmd /c \"rmdir /s /q C:\\Users\\ASUS\\OneDrive\\Documents\\Bulan-lawlaw-delicacy-system\\.next\")",
       "Bash(tasklist:*)",
       "Bash(taskkill:*)",
-      "Bash(powershell -Command \"Stop-Process -Name node -Force -ErrorAction SilentlyContinue\")"
+      "Bash(powershell -Command \"Stop-Process -Name node -Force -ErrorAction SilentlyContinue\")",
+      "mcp__ide__getDiagnostics",
+      "Bash(npx tsx:*)",
+      "Bash(del \"C:\\Users\\ASUS\\OneDrive\\Documents\\Bulan-lawlaw-delicacy-system\\prisma\\seed-seller-data.ts\")",
+      "Bash(grep -v \"\\\\api\\\\\")"
     ],
     "deny": [],
     "ask": []

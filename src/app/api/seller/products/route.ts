@@ -10,10 +10,16 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized. Seller only.' }, { status: 401 });
     }
 
-    const products = await prisma.product.findMany({
+    const productsRaw = await prisma.product.findMany({
       where: { userId: parseInt(session.user.id) },
       orderBy: { createdAt: 'desc' },
     });
+
+    // Map productId to id for frontend compatibility
+    const products = productsRaw.map(product => ({
+      ...product,
+      id: String(product.productId),
+    }));
 
     return NextResponse.json(products);
   } catch (error) {
@@ -42,7 +48,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const product = await prisma.product.create({
+    const productRaw = await prisma.product.create({
       data: {
         name,
         description,
@@ -53,6 +59,12 @@ export async function POST(req: NextRequest) {
         userId: parseInt(session.user.id),
       },
     });
+
+    // Map productId to id for frontend compatibility
+    const product = {
+      ...productRaw,
+      id: String(productRaw.productId),
+    };
 
     return NextResponse.json(product, { status: 201 });
   } catch (error) {

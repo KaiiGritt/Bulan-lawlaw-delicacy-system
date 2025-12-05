@@ -12,13 +12,23 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const savedRecipes = await prisma.savedRecipe.findMany({
+    const savedRecipesRaw = await prisma.savedRecipe.findMany({
       where: { userId: parseInt(session.user.id) },
       include: {
         recipe: true
       },
       orderBy: { createdAt: 'desc' }
     });
+
+    // Map IDs for frontend compatibility
+    const savedRecipes = savedRecipesRaw.map(saved => ({
+      ...saved,
+      id: saved.savedRecipeId,
+      recipe: {
+        ...saved.recipe,
+        id: String(saved.recipe.recipeId),
+      }
+    }));
 
     return NextResponse.json(savedRecipes);
   } catch (error) {

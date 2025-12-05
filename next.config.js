@@ -9,6 +9,10 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'share.google',
       },
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+      },
     ],
   },
   serverExternalPackages: ['formidable'],

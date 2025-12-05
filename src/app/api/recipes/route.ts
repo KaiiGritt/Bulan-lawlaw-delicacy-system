@@ -6,13 +6,27 @@ import { prisma } from '../../lib/prisma'
 // GET /api/recipes - Get all recipes
 export async function GET() {
   try {
-    const recipes = await prisma.recipe.findMany({
+    const recipesRaw = await prisma.recipe.findMany({
       orderBy: { createdAt: 'desc' },
       include: {
         ingredients: { orderBy: { order: 'asc' } },
         instructions: { orderBy: { stepNumber: 'asc' } }
       }
     })
+
+    // Map recipeId to id for frontend compatibility
+    const recipes = recipesRaw.map(recipe => ({
+      ...recipe,
+      id: String(recipe.recipeId),
+      ingredients: recipe.ingredients.map(ing => ({
+        ...ing,
+        id: ing.ingredientId,
+      })),
+      instructions: recipe.instructions.map(inst => ({
+        ...inst,
+        id: inst.instructionId,
+      }))
+    }))
 
     return NextResponse.json(recipes)
   } catch (error) {
@@ -46,7 +60,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const recipe = await prisma.recipe.create({
+    const recipeRaw = await prisma.recipe.create({
       data: {
         title,
         description,
@@ -74,6 +88,20 @@ export async function POST(request: NextRequest) {
         instructions: { orderBy: { stepNumber: 'asc' } }
       }
     })
+
+    // Map recipeId to id for frontend compatibility
+    const recipe = {
+      ...recipeRaw,
+      id: String(recipeRaw.recipeId),
+      ingredients: recipeRaw.ingredients.map(ing => ({
+        ...ing,
+        id: ing.ingredientId,
+      })),
+      instructions: recipeRaw.instructions.map(inst => ({
+        ...inst,
+        id: inst.instructionId,
+      }))
+    }
 
     return NextResponse.json(recipe, { status: 201 })
   } catch (error) {

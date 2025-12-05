@@ -28,7 +28,8 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized to access this product' }, { status: 403 });
     }
 
-    return NextResponse.json(product);
+    // Map productId to id for frontend compatibility
+    return NextResponse.json({ ...product, id: String(product.productId) });
   } catch (error) {
     console.error('Error fetching product:', error);
     return NextResponse.json(
@@ -66,7 +67,7 @@ export async function PUT(
     const body = await req.json();
     const { name, description, price, category, image, stock } = body;
 
-    const updatedProduct = await prisma.product.update({
+    const updatedProductRaw = await prisma.product.update({
       where: { productId: parseInt(params.id) },
       data: {
         ...(name && { name }),
@@ -78,7 +79,8 @@ export async function PUT(
       },
     });
 
-    return NextResponse.json(updatedProduct);
+    // Map productId to id for frontend compatibility
+    return NextResponse.json({ ...updatedProductRaw, id: String(updatedProductRaw.productId) });
   } catch (error) {
     console.error('Error updating product:', error);
     return NextResponse.json(

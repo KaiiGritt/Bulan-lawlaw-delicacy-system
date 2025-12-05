@@ -6,7 +6,7 @@ import { prisma } from '../../lib/prisma'
 // GET /api/products - Get all products
 export async function GET() {
   try {
-    const products = await prisma.product.findMany({
+    const productsRaw = await prisma.product.findMany({
       include: {
         user: {
           select: {
@@ -34,6 +34,21 @@ export async function GET() {
       },
       orderBy: { createdAt: 'desc' }
     })
+
+    // Map productId to id for frontend compatibility
+    const products = productsRaw.map(product => ({
+      ...product,
+      id: String(product.productId),
+      user: {
+        ...product.user,
+        id: String(product.user.userId),
+      },
+      comments: product.comments.map(comment => ({
+        ...comment,
+        id: comment.commentId,
+      }))
+    }))
+
     return NextResponse.json(products)
   } catch (error) {
     console.error('Error fetching products:', error)
@@ -66,7 +81,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const product = await prisma.product.create({
+    const productRaw = await prisma.product.create({
       data: {
         name,
         description,
@@ -77,6 +92,12 @@ export async function POST(request: NextRequest) {
         userId
       }
     })
+
+    // Map productId to id for frontend compatibility
+    const product = {
+      ...productRaw,
+      id: String(productRaw.productId),
+    }
 
     return NextResponse.json(product, { status: 201 })
   } catch (error) {

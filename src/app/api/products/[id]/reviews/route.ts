@@ -11,7 +11,7 @@ export async function GET(
   try {
     const { id } = await params;
 
-    const reviews = await prisma.comment.findMany({
+    const reviewsRaw = await prisma.comment.findMany({
       where: { productId: parseInt(id) },
       include: {
         user: {
@@ -24,6 +24,16 @@ export async function GET(
       },
       orderBy: { createdAt: 'desc' }
     });
+
+    // Map IDs for frontend compatibility
+    const reviews = reviewsRaw.map(review => ({
+      ...review,
+      id: review.commentId,
+      user: {
+        ...review.user,
+        id: String(review.user.userId),
+      }
+    }));
 
     return NextResponse.json(reviews);
   } catch (error) {

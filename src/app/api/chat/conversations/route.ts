@@ -54,7 +54,33 @@ export async function GET(request: NextRequest) {
       orderBy: { updatedAt: 'desc' }
     })
 
-    return NextResponse.json(conversations)
+    // Map IDs for frontend compatibility
+    const mappedConversations = conversations.map(conv => ({
+      ...conv,
+      id: conv.conversationId,
+      seller: {
+        ...conv.seller,
+        id: String(conv.seller.userId),
+      },
+      buyer: {
+        ...conv.buyer,
+        id: String(conv.buyer.userId),
+      },
+      product: conv.product ? {
+        ...conv.product,
+        id: String(conv.product.productId),
+      } : null,
+      messages: conv.messages.map(msg => ({
+        ...msg,
+        id: msg.messageId,
+        sender: {
+          ...msg.sender,
+          id: String(msg.sender.userId),
+        }
+      }))
+    }));
+
+    return NextResponse.json(mappedConversations)
   } catch (error) {
     console.error('Error fetching conversations:', error)
     return NextResponse.json(

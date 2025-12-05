@@ -3,17 +3,27 @@ import { prisma } from '@/app/lib/prisma'
 
 export async function GET(req: NextRequest) {
   try {
-    const users = await prisma.user.findMany({
+    const usersRaw = await prisma.user.findMany({
       select: {
         userId: true,
         name: true,
         email: true,
         role: true,
+        remarks: true,
       },
       orderBy: {
         name: 'asc',
       },
     })
+
+    // Map to expected format with 'id' field and 'blocked' status for frontend compatibility
+    const users = usersRaw.map(user => ({
+      id: String(user.userId),
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      blocked: user.remarks === 'Blocked by admin',
+    }))
 
     return new Response(JSON.stringify(users), {
       status: 200,

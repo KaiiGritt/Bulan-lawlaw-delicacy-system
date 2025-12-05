@@ -10,11 +10,17 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const notifications = await prisma.notification.findMany({
+    const notificationsRaw = await prisma.notification.findMany({
       where: { userId: parseInt(session.user.id) },
       orderBy: { createdAt: 'desc' },
       take: 20, // Limit to 20 most recent notifications
     });
+
+    // Map IDs for frontend compatibility
+    const notifications = notificationsRaw.map(notif => ({
+      ...notif,
+      id: notif.notificationId,
+    }));
 
     const unreadCount = await prisma.notification.count({
       where: {

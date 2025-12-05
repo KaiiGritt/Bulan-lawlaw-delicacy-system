@@ -32,7 +32,8 @@ export async function GET(
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
-    return NextResponse.json(address);
+    // Map ID for frontend compatibility
+    return NextResponse.json({ ...address, id: address.addressId });
   } catch (error) {
     console.error('Error fetching address:', error);
     return NextResponse.json(
@@ -139,7 +140,8 @@ export async function PUT(
       }
     });
 
-    return NextResponse.json(updatedAddress);
+    // Map ID for frontend compatibility
+    return NextResponse.json({ ...updatedAddress, id: updatedAddress.addressId });
   } catch (error) {
     console.error('Error updating address:', error);
     return NextResponse.json(

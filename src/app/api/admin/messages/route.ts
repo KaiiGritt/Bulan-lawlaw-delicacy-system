@@ -16,7 +16,7 @@ export async function GET(req: NextRequest) {
 
     if (conversationId) {
       // Get messages for specific conversation
-      const messages = await prisma.message.findMany({
+      const messagesRaw = await prisma.message.findMany({
         where: { conversationId: parseInt(conversationId) },
         include: {
           sender: {
@@ -25,10 +25,23 @@ export async function GET(req: NextRequest) {
         },
         orderBy: { createdAt: 'asc' }
       });
+
+      // Map messageId to id for frontend compatibility
+      const messages = messagesRaw.map(msg => ({
+        ...msg,
+        id: msg.messageId,
+        sender: {
+          id: msg.sender.userId,
+          name: msg.sender.name,
+          email: msg.sender.email,
+          role: msg.sender.role,
+        }
+      }));
+
       return NextResponse.json(messages);
     } else {
       // Get all conversations with latest message
-      const conversations = await prisma.conversation.findMany({
+      const conversationsRaw = await prisma.conversation.findMany({
         include: {
           buyer: {
             select: { userId: true, name: true, email: true }
@@ -48,6 +61,23 @@ export async function GET(req: NextRequest) {
         },
         orderBy: { updatedAt: 'desc' }
       });
+
+      // Map conversationId to id for frontend compatibility
+      const conversations = conversationsRaw.map(conv => ({
+        ...conv,
+        id: conv.conversationId,
+        buyer: {
+          id: conv.buyer.userId,
+          name: conv.buyer.name,
+          email: conv.buyer.email,
+        },
+        seller: {
+          id: conv.seller.userId,
+          name: conv.seller.name,
+          email: conv.seller.email,
+        },
+      }));
+
       return NextResponse.json(conversations);
     }
   } catch (error) {

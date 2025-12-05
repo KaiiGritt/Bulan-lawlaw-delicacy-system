@@ -9,7 +9,7 @@ export async function GET(
 ) {
   try {
     const { id } = await params
-    const product = await prisma.product.findUnique({
+    const productRaw = await prisma.product.findUnique({
       where: { productId: parseInt(id) },
       include: {
         user: {
@@ -30,11 +30,21 @@ export async function GET(
       }
     })
 
-    if (!product) {
+    if (!productRaw) {
       return NextResponse.json(
         { error: 'Product not found' },
         { status: 404 }
       )
+    }
+
+    // Map IDs for frontend compatibility
+    const product = {
+      ...productRaw,
+      id: String(productRaw.productId),
+      user: {
+        ...productRaw.user,
+        id: String(productRaw.user.userId),
+      }
     }
 
     return NextResponse.json(product)
