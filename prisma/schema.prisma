@@ -4,7 +4,7 @@ generator client {
 
 datasource db {
   provider = "mysql"
-  url      = "mysql://root:FTavJoRuTQvmAlGmAWSXTizPznUmmFWP@shortline.proxy.rlwy.net:13005/railway"
+  url      = "mysql://root:wiHHldVUXThJRRoGOPbCLHWnnGtYpbcS@hopper.proxy.rlwy.net:33001/railway"
 }
 
 // ==================== MAIN MODELS ====================

@@ -60,9 +60,9 @@ export default function SellerApplicationPage() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Validate file size (max 2MB)
-    if (file.size > 2 * 1024 * 1024) {
-      setError('File size should be less than 2MB');
+    // Validate file size (max 10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      setError('File size should be less than 10MB');
       return;
     }
 
@@ -315,7 +315,7 @@ export default function SellerApplicationPage() {
                   <img src={logoPreview} alt="Logo Preview" className="h-24 w-24 object-cover rounded-lg border-2 border-primary-green" />
                 </div>
               )}
-              <p className="text-xs text-gray-500 mt-1">Upload your business logo (Max 2MB, JPG/PNG)</p>
+              <p className="text-xs text-gray-500 mt-1">Upload your business logo (Max 10MB, JPG/PNG)</p>
             </div>
 
             <div>

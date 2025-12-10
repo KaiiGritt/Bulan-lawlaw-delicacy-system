@@ -55,11 +55,21 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { productId, quantity = 1 } = body
+    const { productId: productIdRaw, quantity = 1 } = body
 
-    if (!productId) {
+    if (!productIdRaw) {
       return NextResponse.json(
         { error: 'Product ID is required' },
+        { status: 400 }
+      )
+    }
+
+    // Parse productId to integer (frontend may send it as string)
+    const productId = parseInt(String(productIdRaw), 10)
+
+    if (isNaN(productId)) {
+      return NextResponse.json(
+        { error: 'Invalid product ID' },
         { status: 400 }
       )
     }

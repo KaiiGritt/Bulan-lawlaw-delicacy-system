@@ -20,6 +20,7 @@ async function main() {
     }
   })
 
+
   console.log('Database seeded successfully!')
   console.log('Admin credentials: admin@lawlawdelights.com / admin123')
 }

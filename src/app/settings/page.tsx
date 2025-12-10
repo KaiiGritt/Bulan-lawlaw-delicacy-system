@@ -144,8 +144,8 @@ export default function Settings() {
   const handleProfilePictureChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      if (file.size > 2 * 1024 * 1024) {
-        toast.error('File size should be less than 2MB');
+      if (file.size > 10 * 1024 * 1024) {
+        toast.error('File size should be less than 10MB');
         return;
       }
 
@@ -176,8 +176,8 @@ export default function Settings() {
   const handleLogoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      if (file.size > 2 * 1024 * 1024) {
-        toast.error('File size should be less than 2MB');
+      if (file.size > 10 * 1024 * 1024) {
+        toast.error('File size should be less than 10MB');
         return;
       }
 
