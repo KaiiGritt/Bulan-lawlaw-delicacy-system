@@ -4,8 +4,8 @@ generator client {
 
 datasource db {
   provider = "mysql"
-  url      = "mysql://root:wiHHldVUXThJRRoGOPbCLHWnnGtYpbcS@hopper.proxy.rlwy.net:33001/railway"
 }
+
 
 // ==================== MAIN MODELS ====================
 
@@ -19,6 +19,7 @@ model User {
   remarks          String?   @db.Text
   profilePicture   String?   @db.LongText
   emailVerified    Boolean   @default(false)
+
   resetToken       String?
   resetTokenExpiry DateTime?
   createdAt        DateTime  @default(now())
