@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '@/app/lib/prisma';
 import { sendOtpEmail } from '@/app/lib/email';
-
-const prisma = new PrismaClient();
 
 // Generate a random OTP code
 function generateOTP(length: number = 6): string {

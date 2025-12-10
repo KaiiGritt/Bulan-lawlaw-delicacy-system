@@ -38,7 +38,12 @@
       "mcp__ide__getDiagnostics",
       "Bash(npx tsx:*)",
       "Bash(del \"C:\\Users\\ASUS\\OneDrive\\Documents\\Bulan-lawlaw-delicacy-system\\prisma\\seed-seller-data.ts\")",
-      "Bash(grep -v \"\\\\api\\\\\")"
+      "Bash(grep -v \"\\\\api\\\\\")",
+      "Bash(del \"C:\\Users\\ASUS\\OneDrive\\Documents\\Bulan-lawlaw-delicacy-system\\prisma\\prisma.config.ts\")",
+      "Bash(cmd /c \"del /f C:\\Users\\ASUS\\OneDrive\\Documents\\Bulan-lawlaw-delicacy-system\\prisma\\prisma.config.ts\")",
+      "WebSearch",
+      "Bash(npm install:*)",
+      "WebFetch(domain:www.prisma.io)"
     ],
     "deny": [],
     "ask": []
