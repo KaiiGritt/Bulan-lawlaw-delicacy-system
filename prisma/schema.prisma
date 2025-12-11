@@ -31,6 +31,7 @@ model User {
   orders              Order[]
   otps                Otp[]
   products            Product[]
+  recipes             Recipe[]
   recipeReviews       RecipeReview[]
   savedRecipes        SavedRecipe[]
   sellerApplication   SellerApplication?
@@ -63,6 +64,7 @@ model Product {
 
 model Recipe {
   recipeId     Int                 @id @default(autoincrement())
+  userId       Int?
   title        String
   description  String              @db.Text
   image        String              @db.LongText
@@ -73,11 +75,13 @@ model Recipe {
   rating       Float               @default(0)
   createdAt    DateTime            @default(now())
   updatedAt    DateTime            @updatedAt
+  user         User?               @relation(fields: [userId], references: [userId], onDelete: SetNull)
   ingredients  RecipeIngredient[]
   instructions RecipeInstruction[]
   reviews      RecipeReview[]
   savedRecipes SavedRecipe[]
 
+  @@index([userId], map: "recipes_userId_fkey")
   @@map("recipes")
 }
 

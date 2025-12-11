@@ -127,6 +127,7 @@ export type ProductScalarFieldEnum = (typeof ProductScalarFieldEnum)[keyof typeo
 
 export const RecipeScalarFieldEnum = {
   recipeId: 'recipeId',
+  userId: 'userId',
   title: 'title',
   description: 'description',
   image: 'image',

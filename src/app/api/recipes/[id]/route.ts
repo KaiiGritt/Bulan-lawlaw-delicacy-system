@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '../../../lib/auth';
 import { prisma } from '../../../lib/prisma';
 
 // GET /api/recipes/[id] - Get single recipe
@@ -13,7 +15,14 @@ export async function GET(
       where: { recipeId: parseInt(id) },
       include: {
         ingredients: { orderBy: { order: 'asc' } },
-        instructions: { orderBy: { stepNumber: 'asc' } }
+        instructions: { orderBy: { stepNumber: 'asc' } },
+        user: {
+          select: {
+            userId: true,
+            name: true,
+            profilePicture: true
+          }
+        }
       }
     });
 
@@ -27,6 +36,8 @@ export async function GET(
     // Transform to frontend-compatible format
     const recipe = {
       id: String(recipeRaw.recipeId),
+      userId: recipeRaw.userId,
+      user: recipeRaw.user,
       title: recipeRaw.title,
       description: recipeRaw.description,
       image: recipeRaw.image,
@@ -49,6 +60,166 @@ export async function GET(
     console.error('Error fetching recipe:', error);
     return NextResponse.json(
       { error: 'Failed to fetch recipe' },
+      { status: 500 }
+    );
+  }
+}
+
+// PUT /api/recipes/[id] - Update a recipe (owner or admin only)
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const session = await getServerSession(authOptions);
+
+    if (!session) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    const { id } = await params;
+    const recipeId = parseInt(id);
+
+    // Check if recipe exists and user is owner or admin
+    const existingRecipe = await prisma.recipe.findUnique({
+      where: { recipeId }
+    });
+
+    if (!existingRecipe) {
+      return NextResponse.json(
+        { error: 'Recipe not found' },
+        { status: 404 }
+      );
+    }
+
+    const isOwner = existingRecipe.userId === parseInt(session.user.id);
+    const isAdmin = session.user.role === 'admin';
+
+    if (!isOwner && !isAdmin) {
+      return NextResponse.json(
+        { error: 'Not authorized to edit this recipe' },
+        { status: 403 }
+      );
+    }
+
+    const body = await request.json();
+    const { title, description, ingredients, instructions, image, prepTime, cookTime, servings, difficulty } = body;
+
+    // Delete existing ingredients and instructions
+    await prisma.recipeIngredient.deleteMany({ where: { recipeId } });
+    await prisma.recipeInstruction.deleteMany({ where: { recipeId } });
+
+    // Update recipe with new data
+    const recipeRaw = await prisma.recipe.update({
+      where: { recipeId },
+      data: {
+        title,
+        description,
+        image,
+        prepTime: parseInt(prepTime),
+        cookTime: parseInt(cookTime),
+        servings: parseInt(servings),
+        difficulty,
+        ingredients: {
+          create: ingredients.map((ing: { name: string; quantity?: string } | string, index: number) => {
+            if (typeof ing === 'string') {
+              // Parse "quantity name" format
+              const parts = ing.match(/^([\d.\/]+\s*\w*)\s+(.+)$/);
+              if (parts) {
+                return { name: parts[2], quantity: parts[1], order: index };
+              }
+              return { name: ing, quantity: null, order: index };
+            }
+            return { name: ing.name, quantity: ing.quantity, order: index };
+          })
+        },
+        instructions: {
+          create: instructions.map((inst: string, index: number) => ({
+            stepNumber: index + 1,
+            instruction: inst
+          }))
+        }
+      },
+      include: {
+        ingredients: { orderBy: { order: 'asc' } },
+        instructions: { orderBy: { stepNumber: 'asc' } },
+        user: {
+          select: {
+            userId: true,
+            name: true,
+            profilePicture: true
+          }
+        }
+      }
+    });
+
+    const recipe = {
+      ...recipeRaw,
+      id: String(recipeRaw.recipeId)
+    };
+
+    return NextResponse.json(recipe);
+  } catch (error) {
+    console.error('Error updating recipe:', error);
+    return NextResponse.json(
+      { error: 'Failed to update recipe' },
+      { status: 500 }
+    );
+  }
+}
+
+// DELETE /api/recipes/[id] - Delete a recipe (owner or admin only)
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const session = await getServerSession(authOptions);
+
+    if (!session) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    const { id } = await params;
+    const recipeId = parseInt(id);
+
+    // Check if recipe exists and user is owner or admin
+    const existingRecipe = await prisma.recipe.findUnique({
+      where: { recipeId }
+    });
+
+    if (!existingRecipe) {
+      return NextResponse.json(
+        { error: 'Recipe not found' },
+        { status: 404 }
+      );
+    }
+
+    const isOwner = existingRecipe.userId === parseInt(session.user.id);
+    const isAdmin = session.user.role === 'admin';
+
+    if (!isOwner && !isAdmin) {
+      return NextResponse.json(
+        { error: 'Not authorized to delete this recipe' },
+        { status: 403 }
+      );
+    }
+
+    await prisma.recipe.delete({
+      where: { recipeId }
+    });
+
+    return NextResponse.json({ message: 'Recipe deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting recipe:', error);
+    return NextResponse.json(
+      { error: 'Failed to delete recipe' },
       { status: 500 }
     );
   }

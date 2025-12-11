@@ -290,6 +290,7 @@ export type UserWhereInput = {
   orders?: Prisma.OrderListRelationFilter
   otps?: Prisma.OtpListRelationFilter
   products?: Prisma.ProductListRelationFilter
+  recipes?: Prisma.RecipeListRelationFilter
   recipeReviews?: Prisma.RecipeReviewListRelationFilter
   savedRecipes?: Prisma.SavedRecipeListRelationFilter
   sellerApplication?: Prisma.XOR<Prisma.SellerApplicationNullableScalarRelationFilter, Prisma.SellerApplicationWhereInput> | null
@@ -319,6 +320,7 @@ export type UserOrderByWithRelationInput = {
   orders?: Prisma.OrderOrderByRelationAggregateInput
   otps?: Prisma.OtpOrderByRelationAggregateInput
   products?: Prisma.ProductOrderByRelationAggregateInput
+  recipes?: Prisma.RecipeOrderByRelationAggregateInput
   recipeReviews?: Prisma.RecipeReviewOrderByRelationAggregateInput
   savedRecipes?: Prisma.SavedRecipeOrderByRelationAggregateInput
   sellerApplication?: Prisma.SellerApplicationOrderByWithRelationInput
@@ -352,6 +354,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   orders?: Prisma.OrderListRelationFilter
   otps?: Prisma.OtpListRelationFilter
   products?: Prisma.ProductListRelationFilter
+  recipes?: Prisma.RecipeListRelationFilter
   recipeReviews?: Prisma.RecipeReviewListRelationFilter
   savedRecipes?: Prisma.SavedRecipeListRelationFilter
   sellerApplication?: Prisma.XOR<Prisma.SellerApplicationNullableScalarRelationFilter, Prisma.SellerApplicationWhereInput> | null
@@ -420,6 +423,7 @@ export type UserCreateInput = {
   orders?: Prisma.OrderCreateNestedManyWithoutUserInput
   otps?: Prisma.OtpCreateNestedManyWithoutUserInput
   products?: Prisma.ProductCreateNestedManyWithoutUserInput
+  recipes?: Prisma.RecipeCreateNestedManyWithoutUserInput
   recipeReviews?: Prisma.RecipeReviewCreateNestedManyWithoutUserInput
   savedRecipes?: Prisma.SavedRecipeCreateNestedManyWithoutUserInput
   sellerApplication?: Prisma.SellerApplicationCreateNestedOneWithoutUserInput
@@ -449,6 +453,7 @@ export type UserUncheckedCreateInput = {
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
   otps?: Prisma.OtpUncheckedCreateNestedManyWithoutUserInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutUserInput
+  recipes?: Prisma.RecipeUncheckedCreateNestedManyWithoutUserInput
   recipeReviews?: Prisma.RecipeReviewUncheckedCreateNestedManyWithoutUserInput
   savedRecipes?: Prisma.SavedRecipeUncheckedCreateNestedManyWithoutUserInput
   sellerApplication?: Prisma.SellerApplicationUncheckedCreateNestedOneWithoutUserInput
@@ -477,6 +482,7 @@ export type UserUpdateInput = {
   orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
   otps?: Prisma.OtpUpdateManyWithoutUserNestedInput
   products?: Prisma.ProductUpdateManyWithoutUserNestedInput
+  recipes?: Prisma.RecipeUpdateManyWithoutUserNestedInput
   recipeReviews?: Prisma.RecipeReviewUpdateManyWithoutUserNestedInput
   savedRecipes?: Prisma.SavedRecipeUpdateManyWithoutUserNestedInput
   sellerApplication?: Prisma.SellerApplicationUpdateOneWithoutUserNestedInput
@@ -506,6 +512,7 @@ export type UserUncheckedUpdateInput = {
   orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
   otps?: Prisma.OtpUncheckedUpdateManyWithoutUserNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutUserNestedInput
+  recipes?: Prisma.RecipeUncheckedUpdateManyWithoutUserNestedInput
   recipeReviews?: Prisma.RecipeReviewUncheckedUpdateManyWithoutUserNestedInput
   savedRecipes?: Prisma.SavedRecipeUncheckedUpdateManyWithoutUserNestedInput
   sellerApplication?: Prisma.SellerApplicationUncheckedUpdateOneWithoutUserNestedInput
@@ -670,6 +677,22 @@ export type UserUpdateOneRequiredWithoutProductsNestedInput = {
   upsert?: Prisma.UserUpsertWithoutProductsInput
   connect?: Prisma.UserWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutProductsInput, Prisma.UserUpdateWithoutProductsInput>, Prisma.UserUncheckedUpdateWithoutProductsInput>
+}
+
+export type UserCreateNestedOneWithoutRecipesInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutRecipesInput, Prisma.UserUncheckedCreateWithoutRecipesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutRecipesInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneWithoutRecipesNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutRecipesInput, Prisma.UserUncheckedCreateWithoutRecipesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutRecipesInput
+  upsert?: Prisma.UserUpsertWithoutRecipesInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutRecipesInput, Prisma.UserUpdateWithoutRecipesInput>, Prisma.UserUncheckedUpdateWithoutRecipesInput>
 }
 
 export type UserCreateNestedOneWithoutCartItemsInput = {
@@ -864,6 +887,7 @@ export type UserCreateWithoutProductsInput = {
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   orders?: Prisma.OrderCreateNestedManyWithoutUserInput
   otps?: Prisma.OtpCreateNestedManyWithoutUserInput
+  recipes?: Prisma.RecipeCreateNestedManyWithoutUserInput
   recipeReviews?: Prisma.RecipeReviewCreateNestedManyWithoutUserInput
   savedRecipes?: Prisma.SavedRecipeCreateNestedManyWithoutUserInput
   sellerApplication?: Prisma.SellerApplicationCreateNestedOneWithoutUserInput
@@ -892,6 +916,7 @@ export type UserUncheckedCreateWithoutProductsInput = {
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
   otps?: Prisma.OtpUncheckedCreateNestedManyWithoutUserInput
+  recipes?: Prisma.RecipeUncheckedCreateNestedManyWithoutUserInput
   recipeReviews?: Prisma.RecipeReviewUncheckedCreateNestedManyWithoutUserInput
   savedRecipes?: Prisma.SavedRecipeUncheckedCreateNestedManyWithoutUserInput
   sellerApplication?: Prisma.SellerApplicationUncheckedCreateNestedOneWithoutUserInput
@@ -935,6 +960,7 @@ export type UserUpdateWithoutProductsInput = {
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
   otps?: Prisma.OtpUpdateManyWithoutUserNestedInput
+  recipes?: Prisma.RecipeUpdateManyWithoutUserNestedInput
   recipeReviews?: Prisma.RecipeReviewUpdateManyWithoutUserNestedInput
   savedRecipes?: Prisma.SavedRecipeUpdateManyWithoutUserNestedInput
   sellerApplication?: Prisma.SellerApplicationUpdateOneWithoutUserNestedInput
@@ -963,6 +989,137 @@ export type UserUncheckedUpdateWithoutProductsInput = {
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
   otps?: Prisma.OtpUncheckedUpdateManyWithoutUserNestedInput
+  recipes?: Prisma.RecipeUncheckedUpdateManyWithoutUserNestedInput
+  recipeReviews?: Prisma.RecipeReviewUncheckedUpdateManyWithoutUserNestedInput
+  savedRecipes?: Prisma.SavedRecipeUncheckedUpdateManyWithoutUserNestedInput
+  sellerApplication?: Prisma.SellerApplicationUncheckedUpdateOneWithoutUserNestedInput
+}
+
+export type UserCreateWithoutRecipesInput = {
+  email: string
+  phoneNumber?: string | null
+  name?: string | null
+  password: string
+  role?: string
+  remarks?: string | null
+  profilePicture?: string | null
+  emailVerified?: boolean
+  resetToken?: string | null
+  resetTokenExpiry?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  addresses?: Prisma.AddressCreateNestedManyWithoutUserInput
+  cartItems?: Prisma.CartItemCreateNestedManyWithoutUserInput
+  comments?: Prisma.CommentCreateNestedManyWithoutUserInput
+  buyerConversations?: Prisma.ConversationCreateNestedManyWithoutBuyerInput
+  sellerConversations?: Prisma.ConversationCreateNestedManyWithoutSellerInput
+  sentMessages?: Prisma.MessageCreateNestedManyWithoutSenderInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  orders?: Prisma.OrderCreateNestedManyWithoutUserInput
+  otps?: Prisma.OtpCreateNestedManyWithoutUserInput
+  products?: Prisma.ProductCreateNestedManyWithoutUserInput
+  recipeReviews?: Prisma.RecipeReviewCreateNestedManyWithoutUserInput
+  savedRecipes?: Prisma.SavedRecipeCreateNestedManyWithoutUserInput
+  sellerApplication?: Prisma.SellerApplicationCreateNestedOneWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutRecipesInput = {
+  userId?: number
+  email: string
+  phoneNumber?: string | null
+  name?: string | null
+  password: string
+  role?: string
+  remarks?: string | null
+  profilePicture?: string | null
+  emailVerified?: boolean
+  resetToken?: string | null
+  resetTokenExpiry?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  addresses?: Prisma.AddressUncheckedCreateNestedManyWithoutUserInput
+  cartItems?: Prisma.CartItemUncheckedCreateNestedManyWithoutUserInput
+  comments?: Prisma.CommentUncheckedCreateNestedManyWithoutUserInput
+  buyerConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutBuyerInput
+  sellerConversations?: Prisma.ConversationUncheckedCreateNestedManyWithoutSellerInput
+  sentMessages?: Prisma.MessageUncheckedCreateNestedManyWithoutSenderInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
+  otps?: Prisma.OtpUncheckedCreateNestedManyWithoutUserInput
+  products?: Prisma.ProductUncheckedCreateNestedManyWithoutUserInput
+  recipeReviews?: Prisma.RecipeReviewUncheckedCreateNestedManyWithoutUserInput
+  savedRecipes?: Prisma.SavedRecipeUncheckedCreateNestedManyWithoutUserInput
+  sellerApplication?: Prisma.SellerApplicationUncheckedCreateNestedOneWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutRecipesInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutRecipesInput, Prisma.UserUncheckedCreateWithoutRecipesInput>
+}
+
+export type UserUpsertWithoutRecipesInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutRecipesInput, Prisma.UserUncheckedUpdateWithoutRecipesInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutRecipesInput, Prisma.UserUncheckedCreateWithoutRecipesInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutRecipesInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutRecipesInput, Prisma.UserUncheckedUpdateWithoutRecipesInput>
+}
+
+export type UserUpdateWithoutRecipesInput = {
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  remarks?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profilePicture?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  resetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resetTokenExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  addresses?: Prisma.AddressUpdateManyWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUpdateManyWithoutUserNestedInput
+  comments?: Prisma.CommentUpdateManyWithoutUserNestedInput
+  buyerConversations?: Prisma.ConversationUpdateManyWithoutBuyerNestedInput
+  sellerConversations?: Prisma.ConversationUpdateManyWithoutSellerNestedInput
+  sentMessages?: Prisma.MessageUpdateManyWithoutSenderNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
+  otps?: Prisma.OtpUpdateManyWithoutUserNestedInput
+  products?: Prisma.ProductUpdateManyWithoutUserNestedInput
+  recipeReviews?: Prisma.RecipeReviewUpdateManyWithoutUserNestedInput
+  savedRecipes?: Prisma.SavedRecipeUpdateManyWithoutUserNestedInput
+  sellerApplication?: Prisma.SellerApplicationUpdateOneWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutRecipesInput = {
+  userId?: Prisma.IntFieldUpdateOperationsInput | number
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  phoneNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  remarks?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  profilePicture?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  resetToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resetTokenExpiry?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  addresses?: Prisma.AddressUncheckedUpdateManyWithoutUserNestedInput
+  cartItems?: Prisma.CartItemUncheckedUpdateManyWithoutUserNestedInput
+  comments?: Prisma.CommentUncheckedUpdateManyWithoutUserNestedInput
+  buyerConversations?: Prisma.ConversationUncheckedUpdateManyWithoutBuyerNestedInput
+  sellerConversations?: Prisma.ConversationUncheckedUpdateManyWithoutSellerNestedInput
+  sentMessages?: Prisma.MessageUncheckedUpdateManyWithoutSenderNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
+  otps?: Prisma.OtpUncheckedUpdateManyWithoutUserNestedInput
+  products?: Prisma.ProductUncheckedUpdateManyWithoutUserNestedInput
   recipeReviews?: Prisma.RecipeReviewUncheckedUpdateManyWithoutUserNestedInput
   savedRecipes?: Prisma.SavedRecipeUncheckedUpdateManyWithoutUserNestedInput
   sellerApplication?: Prisma.SellerApplicationUncheckedUpdateOneWithoutUserNestedInput
@@ -990,6 +1147,7 @@ export type UserCreateWithoutCartItemsInput = {
   orders?: Prisma.OrderCreateNestedManyWithoutUserInput
   otps?: Prisma.OtpCreateNestedManyWithoutUserInput
   products?: Prisma.ProductCreateNestedManyWithoutUserInput
+  recipes?: Prisma.RecipeCreateNestedManyWithoutUserInput
   recipeReviews?: Prisma.RecipeReviewCreateNestedManyWithoutUserInput
   savedRecipes?: Prisma.SavedRecipeCreateNestedManyWithoutUserInput
   sellerApplication?: Prisma.SellerApplicationCreateNestedOneWithoutUserInput
@@ -1018,6 +1176,7 @@ export type UserUncheckedCreateWithoutCartItemsInput = {
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
   otps?: Prisma.OtpUncheckedCreateNestedManyWithoutUserInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutUserInput
+  recipes?: Prisma.RecipeUncheckedCreateNestedManyWithoutUserInput
   recipeReviews?: Prisma.RecipeReviewUncheckedCreateNestedManyWithoutUserInput
   savedRecipes?: Prisma.SavedRecipeUncheckedCreateNestedManyWithoutUserInput
   sellerApplication?: Prisma.SellerApplicationUncheckedCreateNestedOneWithoutUserInput
@@ -1061,6 +1220,7 @@ export type UserUpdateWithoutCartItemsInput = {
   orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
   otps?: Prisma.OtpUpdateManyWithoutUserNestedInput
   products?: Prisma.ProductUpdateManyWithoutUserNestedInput
+  recipes?: Prisma.RecipeUpdateManyWithoutUserNestedInput
   recipeReviews?: Prisma.RecipeReviewUpdateManyWithoutUserNestedInput
   savedRecipes?: Prisma.SavedRecipeUpdateManyWithoutUserNestedInput
   sellerApplication?: Prisma.SellerApplicationUpdateOneWithoutUserNestedInput
@@ -1089,6 +1249,7 @@ export type UserUncheckedUpdateWithoutCartItemsInput = {
   orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
   otps?: Prisma.OtpUncheckedUpdateManyWithoutUserNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutUserNestedInput
+  recipes?: Prisma.RecipeUncheckedUpdateManyWithoutUserNestedInput
   recipeReviews?: Prisma.RecipeReviewUncheckedUpdateManyWithoutUserNestedInput
   savedRecipes?: Prisma.SavedRecipeUncheckedUpdateManyWithoutUserNestedInput
   sellerApplication?: Prisma.SellerApplicationUncheckedUpdateOneWithoutUserNestedInput
@@ -1116,6 +1277,7 @@ export type UserCreateWithoutOrdersInput = {
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   otps?: Prisma.OtpCreateNestedManyWithoutUserInput
   products?: Prisma.ProductCreateNestedManyWithoutUserInput
+  recipes?: Prisma.RecipeCreateNestedManyWithoutUserInput
   recipeReviews?: Prisma.RecipeReviewCreateNestedManyWithoutUserInput
   savedRecipes?: Prisma.SavedRecipeCreateNestedManyWithoutUserInput
   sellerApplication?: Prisma.SellerApplicationCreateNestedOneWithoutUserInput
@@ -1144,6 +1306,7 @@ export type UserUncheckedCreateWithoutOrdersInput = {
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   otps?: Prisma.OtpUncheckedCreateNestedManyWithoutUserInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutUserInput
+  recipes?: Prisma.RecipeUncheckedCreateNestedManyWithoutUserInput
   recipeReviews?: Prisma.RecipeReviewUncheckedCreateNestedManyWithoutUserInput
   savedRecipes?: Prisma.SavedRecipeUncheckedCreateNestedManyWithoutUserInput
   sellerApplication?: Prisma.SellerApplicationUncheckedCreateNestedOneWithoutUserInput
@@ -1187,6 +1350,7 @@ export type UserUpdateWithoutOrdersInput = {
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   otps?: Prisma.OtpUpdateManyWithoutUserNestedInput
   products?: Prisma.ProductUpdateManyWithoutUserNestedInput
+  recipes?: Prisma.RecipeUpdateManyWithoutUserNestedInput
   recipeReviews?: Prisma.RecipeReviewUpdateManyWithoutUserNestedInput
   savedRecipes?: Prisma.SavedRecipeUpdateManyWithoutUserNestedInput
   sellerApplication?: Prisma.SellerApplicationUpdateOneWithoutUserNestedInput
@@ -1215,6 +1379,7 @@ export type UserUncheckedUpdateWithoutOrdersInput = {
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   otps?: Prisma.OtpUncheckedUpdateManyWithoutUserNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutUserNestedInput
+  recipes?: Prisma.RecipeUncheckedUpdateManyWithoutUserNestedInput
   recipeReviews?: Prisma.RecipeReviewUncheckedUpdateManyWithoutUserNestedInput
   savedRecipes?: Prisma.SavedRecipeUncheckedUpdateManyWithoutUserNestedInput
   sellerApplication?: Prisma.SellerApplicationUncheckedUpdateOneWithoutUserNestedInput
@@ -1243,6 +1408,7 @@ export type UserCreateWithoutSellerApplicationInput = {
   orders?: Prisma.OrderCreateNestedManyWithoutUserInput
   otps?: Prisma.OtpCreateNestedManyWithoutUserInput
   products?: Prisma.ProductCreateNestedManyWithoutUserInput
+  recipes?: Prisma.RecipeCreateNestedManyWithoutUserInput
   recipeReviews?: Prisma.RecipeReviewCreateNestedManyWithoutUserInput
   savedRecipes?: Prisma.SavedRecipeCreateNestedManyWithoutUserInput
 }
@@ -1271,6 +1437,7 @@ export type UserUncheckedCreateWithoutSellerApplicationInput = {
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
   otps?: Prisma.OtpUncheckedCreateNestedManyWithoutUserInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutUserInput
+  recipes?: Prisma.RecipeUncheckedCreateNestedManyWithoutUserInput
   recipeReviews?: Prisma.RecipeReviewUncheckedCreateNestedManyWithoutUserInput
   savedRecipes?: Prisma.SavedRecipeUncheckedCreateNestedManyWithoutUserInput
 }
@@ -1314,6 +1481,7 @@ export type UserUpdateWithoutSellerApplicationInput = {
   orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
   otps?: Prisma.OtpUpdateManyWithoutUserNestedInput
   products?: Prisma.ProductUpdateManyWithoutUserNestedInput
+  recipes?: Prisma.RecipeUpdateManyWithoutUserNestedInput
   recipeReviews?: Prisma.RecipeReviewUpdateManyWithoutUserNestedInput
   savedRecipes?: Prisma.SavedRecipeUpdateManyWithoutUserNestedInput
 }
@@ -1342,6 +1510,7 @@ export type UserUncheckedUpdateWithoutSellerApplicationInput = {
   orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
   otps?: Prisma.OtpUncheckedUpdateManyWithoutUserNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutUserNestedInput
+  recipes?: Prisma.RecipeUncheckedUpdateManyWithoutUserNestedInput
   recipeReviews?: Prisma.RecipeReviewUncheckedUpdateManyWithoutUserNestedInput
   savedRecipes?: Prisma.SavedRecipeUncheckedUpdateManyWithoutUserNestedInput
 }
@@ -1368,6 +1537,7 @@ export type UserCreateWithoutBuyerConversationsInput = {
   orders?: Prisma.OrderCreateNestedManyWithoutUserInput
   otps?: Prisma.OtpCreateNestedManyWithoutUserInput
   products?: Prisma.ProductCreateNestedManyWithoutUserInput
+  recipes?: Prisma.RecipeCreateNestedManyWithoutUserInput
   recipeReviews?: Prisma.RecipeReviewCreateNestedManyWithoutUserInput
   savedRecipes?: Prisma.SavedRecipeCreateNestedManyWithoutUserInput
   sellerApplication?: Prisma.SellerApplicationCreateNestedOneWithoutUserInput
@@ -1396,6 +1566,7 @@ export type UserUncheckedCreateWithoutBuyerConversationsInput = {
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
   otps?: Prisma.OtpUncheckedCreateNestedManyWithoutUserInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutUserInput
+  recipes?: Prisma.RecipeUncheckedCreateNestedManyWithoutUserInput
   recipeReviews?: Prisma.RecipeReviewUncheckedCreateNestedManyWithoutUserInput
   savedRecipes?: Prisma.SavedRecipeUncheckedCreateNestedManyWithoutUserInput
   sellerApplication?: Prisma.SellerApplicationUncheckedCreateNestedOneWithoutUserInput
@@ -1428,6 +1599,7 @@ export type UserCreateWithoutSellerConversationsInput = {
   orders?: Prisma.OrderCreateNestedManyWithoutUserInput
   otps?: Prisma.OtpCreateNestedManyWithoutUserInput
   products?: Prisma.ProductCreateNestedManyWithoutUserInput
+  recipes?: Prisma.RecipeCreateNestedManyWithoutUserInput
   recipeReviews?: Prisma.RecipeReviewCreateNestedManyWithoutUserInput
   savedRecipes?: Prisma.SavedRecipeCreateNestedManyWithoutUserInput
   sellerApplication?: Prisma.SellerApplicationCreateNestedOneWithoutUserInput
@@ -1456,6 +1628,7 @@ export type UserUncheckedCreateWithoutSellerConversationsInput = {
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
   otps?: Prisma.OtpUncheckedCreateNestedManyWithoutUserInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutUserInput
+  recipes?: Prisma.RecipeUncheckedCreateNestedManyWithoutUserInput
   recipeReviews?: Prisma.RecipeReviewUncheckedCreateNestedManyWithoutUserInput
   savedRecipes?: Prisma.SavedRecipeUncheckedCreateNestedManyWithoutUserInput
   sellerApplication?: Prisma.SellerApplicationUncheckedCreateNestedOneWithoutUserInput
@@ -1499,6 +1672,7 @@ export type UserUpdateWithoutBuyerConversationsInput = {
   orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
   otps?: Prisma.OtpUpdateManyWithoutUserNestedInput
   products?: Prisma.ProductUpdateManyWithoutUserNestedInput
+  recipes?: Prisma.RecipeUpdateManyWithoutUserNestedInput
   recipeReviews?: Prisma.RecipeReviewUpdateManyWithoutUserNestedInput
   savedRecipes?: Prisma.SavedRecipeUpdateManyWithoutUserNestedInput
   sellerApplication?: Prisma.SellerApplicationUpdateOneWithoutUserNestedInput
@@ -1527,6 +1701,7 @@ export type UserUncheckedUpdateWithoutBuyerConversationsInput = {
   orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
   otps?: Prisma.OtpUncheckedUpdateManyWithoutUserNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutUserNestedInput
+  recipes?: Prisma.RecipeUncheckedUpdateManyWithoutUserNestedInput
   recipeReviews?: Prisma.RecipeReviewUncheckedUpdateManyWithoutUserNestedInput
   savedRecipes?: Prisma.SavedRecipeUncheckedUpdateManyWithoutUserNestedInput
   sellerApplication?: Prisma.SellerApplicationUncheckedUpdateOneWithoutUserNestedInput
@@ -1565,6 +1740,7 @@ export type UserUpdateWithoutSellerConversationsInput = {
   orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
   otps?: Prisma.OtpUpdateManyWithoutUserNestedInput
   products?: Prisma.ProductUpdateManyWithoutUserNestedInput
+  recipes?: Prisma.RecipeUpdateManyWithoutUserNestedInput
   recipeReviews?: Prisma.RecipeReviewUpdateManyWithoutUserNestedInput
   savedRecipes?: Prisma.SavedRecipeUpdateManyWithoutUserNestedInput
   sellerApplication?: Prisma.SellerApplicationUpdateOneWithoutUserNestedInput
@@ -1593,6 +1769,7 @@ export type UserUncheckedUpdateWithoutSellerConversationsInput = {
   orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
   otps?: Prisma.OtpUncheckedUpdateManyWithoutUserNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutUserNestedInput
+  recipes?: Prisma.RecipeUncheckedUpdateManyWithoutUserNestedInput
   recipeReviews?: Prisma.RecipeReviewUncheckedUpdateManyWithoutUserNestedInput
   savedRecipes?: Prisma.SavedRecipeUncheckedUpdateManyWithoutUserNestedInput
   sellerApplication?: Prisma.SellerApplicationUncheckedUpdateOneWithoutUserNestedInput
@@ -1620,6 +1797,7 @@ export type UserCreateWithoutSentMessagesInput = {
   orders?: Prisma.OrderCreateNestedManyWithoutUserInput
   otps?: Prisma.OtpCreateNestedManyWithoutUserInput
   products?: Prisma.ProductCreateNestedManyWithoutUserInput
+  recipes?: Prisma.RecipeCreateNestedManyWithoutUserInput
   recipeReviews?: Prisma.RecipeReviewCreateNestedManyWithoutUserInput
   savedRecipes?: Prisma.SavedRecipeCreateNestedManyWithoutUserInput
   sellerApplication?: Prisma.SellerApplicationCreateNestedOneWithoutUserInput
@@ -1648,6 +1826,7 @@ export type UserUncheckedCreateWithoutSentMessagesInput = {
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
   otps?: Prisma.OtpUncheckedCreateNestedManyWithoutUserInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutUserInput
+  recipes?: Prisma.RecipeUncheckedCreateNestedManyWithoutUserInput
   recipeReviews?: Prisma.RecipeReviewUncheckedCreateNestedManyWithoutUserInput
   savedRecipes?: Prisma.SavedRecipeUncheckedCreateNestedManyWithoutUserInput
   sellerApplication?: Prisma.SellerApplicationUncheckedCreateNestedOneWithoutUserInput
@@ -1691,6 +1870,7 @@ export type UserUpdateWithoutSentMessagesInput = {
   orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
   otps?: Prisma.OtpUpdateManyWithoutUserNestedInput
   products?: Prisma.ProductUpdateManyWithoutUserNestedInput
+  recipes?: Prisma.RecipeUpdateManyWithoutUserNestedInput
   recipeReviews?: Prisma.RecipeReviewUpdateManyWithoutUserNestedInput
   savedRecipes?: Prisma.SavedRecipeUpdateManyWithoutUserNestedInput
   sellerApplication?: Prisma.SellerApplicationUpdateOneWithoutUserNestedInput
@@ -1719,6 +1899,7 @@ export type UserUncheckedUpdateWithoutSentMessagesInput = {
   orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
   otps?: Prisma.OtpUncheckedUpdateManyWithoutUserNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutUserNestedInput
+  recipes?: Prisma.RecipeUncheckedUpdateManyWithoutUserNestedInput
   recipeReviews?: Prisma.RecipeReviewUncheckedUpdateManyWithoutUserNestedInput
   savedRecipes?: Prisma.SavedRecipeUncheckedUpdateManyWithoutUserNestedInput
   sellerApplication?: Prisma.SellerApplicationUncheckedUpdateOneWithoutUserNestedInput
@@ -1746,6 +1927,7 @@ export type UserCreateWithoutNotificationsInput = {
   orders?: Prisma.OrderCreateNestedManyWithoutUserInput
   otps?: Prisma.OtpCreateNestedManyWithoutUserInput
   products?: Prisma.ProductCreateNestedManyWithoutUserInput
+  recipes?: Prisma.RecipeCreateNestedManyWithoutUserInput
   recipeReviews?: Prisma.RecipeReviewCreateNestedManyWithoutUserInput
   savedRecipes?: Prisma.SavedRecipeCreateNestedManyWithoutUserInput
   sellerApplication?: Prisma.SellerApplicationCreateNestedOneWithoutUserInput
@@ -1774,6 +1956,7 @@ export type UserUncheckedCreateWithoutNotificationsInput = {
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
   otps?: Prisma.OtpUncheckedCreateNestedManyWithoutUserInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutUserInput
+  recipes?: Prisma.RecipeUncheckedCreateNestedManyWithoutUserInput
   recipeReviews?: Prisma.RecipeReviewUncheckedCreateNestedManyWithoutUserInput
   savedRecipes?: Prisma.SavedRecipeUncheckedCreateNestedManyWithoutUserInput
   sellerApplication?: Prisma.SellerApplicationUncheckedCreateNestedOneWithoutUserInput
@@ -1817,6 +2000,7 @@ export type UserUpdateWithoutNotificationsInput = {
   orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
   otps?: Prisma.OtpUpdateManyWithoutUserNestedInput
   products?: Prisma.ProductUpdateManyWithoutUserNestedInput
+  recipes?: Prisma.RecipeUpdateManyWithoutUserNestedInput
   recipeReviews?: Prisma.RecipeReviewUpdateManyWithoutUserNestedInput
   savedRecipes?: Prisma.SavedRecipeUpdateManyWithoutUserNestedInput
   sellerApplication?: Prisma.SellerApplicationUpdateOneWithoutUserNestedInput
@@ -1845,6 +2029,7 @@ export type UserUncheckedUpdateWithoutNotificationsInput = {
   orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
   otps?: Prisma.OtpUncheckedUpdateManyWithoutUserNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutUserNestedInput
+  recipes?: Prisma.RecipeUncheckedUpdateManyWithoutUserNestedInput
   recipeReviews?: Prisma.RecipeReviewUncheckedUpdateManyWithoutUserNestedInput
   savedRecipes?: Prisma.SavedRecipeUncheckedUpdateManyWithoutUserNestedInput
   sellerApplication?: Prisma.SellerApplicationUncheckedUpdateOneWithoutUserNestedInput
@@ -1872,6 +2057,7 @@ export type UserCreateWithoutCommentsInput = {
   orders?: Prisma.OrderCreateNestedManyWithoutUserInput
   otps?: Prisma.OtpCreateNestedManyWithoutUserInput
   products?: Prisma.ProductCreateNestedManyWithoutUserInput
+  recipes?: Prisma.RecipeCreateNestedManyWithoutUserInput
   recipeReviews?: Prisma.RecipeReviewCreateNestedManyWithoutUserInput
   savedRecipes?: Prisma.SavedRecipeCreateNestedManyWithoutUserInput
   sellerApplication?: Prisma.SellerApplicationCreateNestedOneWithoutUserInput
@@ -1900,6 +2086,7 @@ export type UserUncheckedCreateWithoutCommentsInput = {
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
   otps?: Prisma.OtpUncheckedCreateNestedManyWithoutUserInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutUserInput
+  recipes?: Prisma.RecipeUncheckedCreateNestedManyWithoutUserInput
   recipeReviews?: Prisma.RecipeReviewUncheckedCreateNestedManyWithoutUserInput
   savedRecipes?: Prisma.SavedRecipeUncheckedCreateNestedManyWithoutUserInput
   sellerApplication?: Prisma.SellerApplicationUncheckedCreateNestedOneWithoutUserInput
@@ -1943,6 +2130,7 @@ export type UserUpdateWithoutCommentsInput = {
   orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
   otps?: Prisma.OtpUpdateManyWithoutUserNestedInput
   products?: Prisma.ProductUpdateManyWithoutUserNestedInput
+  recipes?: Prisma.RecipeUpdateManyWithoutUserNestedInput
   recipeReviews?: Prisma.RecipeReviewUpdateManyWithoutUserNestedInput
   savedRecipes?: Prisma.SavedRecipeUpdateManyWithoutUserNestedInput
   sellerApplication?: Prisma.SellerApplicationUpdateOneWithoutUserNestedInput
@@ -1971,6 +2159,7 @@ export type UserUncheckedUpdateWithoutCommentsInput = {
   orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
   otps?: Prisma.OtpUncheckedUpdateManyWithoutUserNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutUserNestedInput
+  recipes?: Prisma.RecipeUncheckedUpdateManyWithoutUserNestedInput
   recipeReviews?: Prisma.RecipeReviewUncheckedUpdateManyWithoutUserNestedInput
   savedRecipes?: Prisma.SavedRecipeUncheckedUpdateManyWithoutUserNestedInput
   sellerApplication?: Prisma.SellerApplicationUncheckedUpdateOneWithoutUserNestedInput
@@ -1999,6 +2188,7 @@ export type UserCreateWithoutRecipeReviewsInput = {
   orders?: Prisma.OrderCreateNestedManyWithoutUserInput
   otps?: Prisma.OtpCreateNestedManyWithoutUserInput
   products?: Prisma.ProductCreateNestedManyWithoutUserInput
+  recipes?: Prisma.RecipeCreateNestedManyWithoutUserInput
   savedRecipes?: Prisma.SavedRecipeCreateNestedManyWithoutUserInput
   sellerApplication?: Prisma.SellerApplicationCreateNestedOneWithoutUserInput
 }
@@ -2027,6 +2217,7 @@ export type UserUncheckedCreateWithoutRecipeReviewsInput = {
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
   otps?: Prisma.OtpUncheckedCreateNestedManyWithoutUserInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutUserInput
+  recipes?: Prisma.RecipeUncheckedCreateNestedManyWithoutUserInput
   savedRecipes?: Prisma.SavedRecipeUncheckedCreateNestedManyWithoutUserInput
   sellerApplication?: Prisma.SellerApplicationUncheckedCreateNestedOneWithoutUserInput
 }
@@ -2070,6 +2261,7 @@ export type UserUpdateWithoutRecipeReviewsInput = {
   orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
   otps?: Prisma.OtpUpdateManyWithoutUserNestedInput
   products?: Prisma.ProductUpdateManyWithoutUserNestedInput
+  recipes?: Prisma.RecipeUpdateManyWithoutUserNestedInput
   savedRecipes?: Prisma.SavedRecipeUpdateManyWithoutUserNestedInput
   sellerApplication?: Prisma.SellerApplicationUpdateOneWithoutUserNestedInput
 }
@@ -2098,6 +2290,7 @@ export type UserUncheckedUpdateWithoutRecipeReviewsInput = {
   orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
   otps?: Prisma.OtpUncheckedUpdateManyWithoutUserNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutUserNestedInput
+  recipes?: Prisma.RecipeUncheckedUpdateManyWithoutUserNestedInput
   savedRecipes?: Prisma.SavedRecipeUncheckedUpdateManyWithoutUserNestedInput
   sellerApplication?: Prisma.SellerApplicationUncheckedUpdateOneWithoutUserNestedInput
 }
@@ -2125,6 +2318,7 @@ export type UserCreateWithoutSavedRecipesInput = {
   orders?: Prisma.OrderCreateNestedManyWithoutUserInput
   otps?: Prisma.OtpCreateNestedManyWithoutUserInput
   products?: Prisma.ProductCreateNestedManyWithoutUserInput
+  recipes?: Prisma.RecipeCreateNestedManyWithoutUserInput
   recipeReviews?: Prisma.RecipeReviewCreateNestedManyWithoutUserInput
   sellerApplication?: Prisma.SellerApplicationCreateNestedOneWithoutUserInput
 }
@@ -2153,6 +2347,7 @@ export type UserUncheckedCreateWithoutSavedRecipesInput = {
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
   otps?: Prisma.OtpUncheckedCreateNestedManyWithoutUserInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutUserInput
+  recipes?: Prisma.RecipeUncheckedCreateNestedManyWithoutUserInput
   recipeReviews?: Prisma.RecipeReviewUncheckedCreateNestedManyWithoutUserInput
   sellerApplication?: Prisma.SellerApplicationUncheckedCreateNestedOneWithoutUserInput
 }
@@ -2196,6 +2391,7 @@ export type UserUpdateWithoutSavedRecipesInput = {
   orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
   otps?: Prisma.OtpUpdateManyWithoutUserNestedInput
   products?: Prisma.ProductUpdateManyWithoutUserNestedInput
+  recipes?: Prisma.RecipeUpdateManyWithoutUserNestedInput
   recipeReviews?: Prisma.RecipeReviewUpdateManyWithoutUserNestedInput
   sellerApplication?: Prisma.SellerApplicationUpdateOneWithoutUserNestedInput
 }
@@ -2224,6 +2420,7 @@ export type UserUncheckedUpdateWithoutSavedRecipesInput = {
   orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
   otps?: Prisma.OtpUncheckedUpdateManyWithoutUserNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutUserNestedInput
+  recipes?: Prisma.RecipeUncheckedUpdateManyWithoutUserNestedInput
   recipeReviews?: Prisma.RecipeReviewUncheckedUpdateManyWithoutUserNestedInput
   sellerApplication?: Prisma.SellerApplicationUncheckedUpdateOneWithoutUserNestedInput
 }
@@ -2250,6 +2447,7 @@ export type UserCreateWithoutOtpsInput = {
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   orders?: Prisma.OrderCreateNestedManyWithoutUserInput
   products?: Prisma.ProductCreateNestedManyWithoutUserInput
+  recipes?: Prisma.RecipeCreateNestedManyWithoutUserInput
   recipeReviews?: Prisma.RecipeReviewCreateNestedManyWithoutUserInput
   savedRecipes?: Prisma.SavedRecipeCreateNestedManyWithoutUserInput
   sellerApplication?: Prisma.SellerApplicationCreateNestedOneWithoutUserInput
@@ -2278,6 +2476,7 @@ export type UserUncheckedCreateWithoutOtpsInput = {
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutUserInput
+  recipes?: Prisma.RecipeUncheckedCreateNestedManyWithoutUserInput
   recipeReviews?: Prisma.RecipeReviewUncheckedCreateNestedManyWithoutUserInput
   savedRecipes?: Prisma.SavedRecipeUncheckedCreateNestedManyWithoutUserInput
   sellerApplication?: Prisma.SellerApplicationUncheckedCreateNestedOneWithoutUserInput
@@ -2321,6 +2520,7 @@ export type UserUpdateWithoutOtpsInput = {
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
   products?: Prisma.ProductUpdateManyWithoutUserNestedInput
+  recipes?: Prisma.RecipeUpdateManyWithoutUserNestedInput
   recipeReviews?: Prisma.RecipeReviewUpdateManyWithoutUserNestedInput
   savedRecipes?: Prisma.SavedRecipeUpdateManyWithoutUserNestedInput
   sellerApplication?: Prisma.SellerApplicationUpdateOneWithoutUserNestedInput
@@ -2349,6 +2549,7 @@ export type UserUncheckedUpdateWithoutOtpsInput = {
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutUserNestedInput
+  recipes?: Prisma.RecipeUncheckedUpdateManyWithoutUserNestedInput
   recipeReviews?: Prisma.RecipeReviewUncheckedUpdateManyWithoutUserNestedInput
   savedRecipes?: Prisma.SavedRecipeUncheckedUpdateManyWithoutUserNestedInput
   sellerApplication?: Prisma.SellerApplicationUncheckedUpdateOneWithoutUserNestedInput
@@ -2376,6 +2577,7 @@ export type UserCreateWithoutAddressesInput = {
   orders?: Prisma.OrderCreateNestedManyWithoutUserInput
   otps?: Prisma.OtpCreateNestedManyWithoutUserInput
   products?: Prisma.ProductCreateNestedManyWithoutUserInput
+  recipes?: Prisma.RecipeCreateNestedManyWithoutUserInput
   recipeReviews?: Prisma.RecipeReviewCreateNestedManyWithoutUserInput
   savedRecipes?: Prisma.SavedRecipeCreateNestedManyWithoutUserInput
   sellerApplication?: Prisma.SellerApplicationCreateNestedOneWithoutUserInput
@@ -2404,6 +2606,7 @@ export type UserUncheckedCreateWithoutAddressesInput = {
   orders?: Prisma.OrderUncheckedCreateNestedManyWithoutUserInput
   otps?: Prisma.OtpUncheckedCreateNestedManyWithoutUserInput
   products?: Prisma.ProductUncheckedCreateNestedManyWithoutUserInput
+  recipes?: Prisma.RecipeUncheckedCreateNestedManyWithoutUserInput
   recipeReviews?: Prisma.RecipeReviewUncheckedCreateNestedManyWithoutUserInput
   savedRecipes?: Prisma.SavedRecipeUncheckedCreateNestedManyWithoutUserInput
   sellerApplication?: Prisma.SellerApplicationUncheckedCreateNestedOneWithoutUserInput
@@ -2447,6 +2650,7 @@ export type UserUpdateWithoutAddressesInput = {
   orders?: Prisma.OrderUpdateManyWithoutUserNestedInput
   otps?: Prisma.OtpUpdateManyWithoutUserNestedInput
   products?: Prisma.ProductUpdateManyWithoutUserNestedInput
+  recipes?: Prisma.RecipeUpdateManyWithoutUserNestedInput
   recipeReviews?: Prisma.RecipeReviewUpdateManyWithoutUserNestedInput
   savedRecipes?: Prisma.SavedRecipeUpdateManyWithoutUserNestedInput
   sellerApplication?: Prisma.SellerApplicationUpdateOneWithoutUserNestedInput
@@ -2475,6 +2679,7 @@ export type UserUncheckedUpdateWithoutAddressesInput = {
   orders?: Prisma.OrderUncheckedUpdateManyWithoutUserNestedInput
   otps?: Prisma.OtpUncheckedUpdateManyWithoutUserNestedInput
   products?: Prisma.ProductUncheckedUpdateManyWithoutUserNestedInput
+  recipes?: Prisma.RecipeUncheckedUpdateManyWithoutUserNestedInput
   recipeReviews?: Prisma.RecipeReviewUncheckedUpdateManyWithoutUserNestedInput
   savedRecipes?: Prisma.SavedRecipeUncheckedUpdateManyWithoutUserNestedInput
   sellerApplication?: Prisma.SellerApplicationUncheckedUpdateOneWithoutUserNestedInput
@@ -2496,6 +2701,7 @@ export type UserCountOutputType = {
   orders: number
   otps: number
   products: number
+  recipes: number
   recipeReviews: number
   savedRecipes: number
 }
@@ -2511,6 +2717,7 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   orders?: boolean | UserCountOutputTypeCountOrdersArgs
   otps?: boolean | UserCountOutputTypeCountOtpsArgs
   products?: boolean | UserCountOutputTypeCountProductsArgs
+  recipes?: boolean | UserCountOutputTypeCountRecipesArgs
   recipeReviews?: boolean | UserCountOutputTypeCountRecipeReviewsArgs
   savedRecipes?: boolean | UserCountOutputTypeCountSavedRecipesArgs
 }
@@ -2598,6 +2805,13 @@ export type UserCountOutputTypeCountProductsArgs<ExtArgs extends runtime.Types.E
 /**
  * UserCountOutputType without action
  */
+export type UserCountOutputTypeCountRecipesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.RecipeWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
 export type UserCountOutputTypeCountRecipeReviewsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.RecipeReviewWhereInput
 }
@@ -2634,6 +2848,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   orders?: boolean | Prisma.User$ordersArgs<ExtArgs>
   otps?: boolean | Prisma.User$otpsArgs<ExtArgs>
   products?: boolean | Prisma.User$productsArgs<ExtArgs>
+  recipes?: boolean | Prisma.User$recipesArgs<ExtArgs>
   recipeReviews?: boolean | Prisma.User$recipeReviewsArgs<ExtArgs>
   savedRecipes?: boolean | Prisma.User$savedRecipesArgs<ExtArgs>
   sellerApplication?: boolean | Prisma.User$sellerApplicationArgs<ExtArgs>
@@ -2670,6 +2885,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   orders?: boolean | Prisma.User$ordersArgs<ExtArgs>
   otps?: boolean | Prisma.User$otpsArgs<ExtArgs>
   products?: boolean | Prisma.User$productsArgs<ExtArgs>
+  recipes?: boolean | Prisma.User$recipesArgs<ExtArgs>
   recipeReviews?: boolean | Prisma.User$recipeReviewsArgs<ExtArgs>
   savedRecipes?: boolean | Prisma.User$savedRecipesArgs<ExtArgs>
   sellerApplication?: boolean | Prisma.User$sellerApplicationArgs<ExtArgs>
@@ -2689,6 +2905,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     orders: Prisma.$OrderPayload<ExtArgs>[]
     otps: Prisma.$OtpPayload<ExtArgs>[]
     products: Prisma.$ProductPayload<ExtArgs>[]
+    recipes: Prisma.$RecipePayload<ExtArgs>[]
     recipeReviews: Prisma.$RecipeReviewPayload<ExtArgs>[]
     savedRecipes: Prisma.$SavedRecipePayload<ExtArgs>[]
     sellerApplication: Prisma.$SellerApplicationPayload<ExtArgs> | null
@@ -3057,6 +3274,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   orders<T extends Prisma.User$ordersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$ordersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   otps<T extends Prisma.User$otpsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$otpsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OtpPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   products<T extends Prisma.User$productsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$productsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProductPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  recipes<T extends Prisma.User$recipesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$recipesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RecipePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   recipeReviews<T extends Prisma.User$recipeReviewsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$recipeReviewsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RecipeReviewPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   savedRecipes<T extends Prisma.User$savedRecipesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$savedRecipesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SavedRecipePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   sellerApplication<T extends Prisma.User$sellerApplicationArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$sellerApplicationArgs<ExtArgs>>): Prisma.Prisma__SellerApplicationClient<runtime.Types.Result.GetResult<Prisma.$SellerApplicationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
@@ -3682,6 +3900,30 @@ export type User$productsArgs<ExtArgs extends runtime.Types.Extensions.InternalA
   take?: number
   skip?: number
   distinct?: Prisma.ProductScalarFieldEnum | Prisma.ProductScalarFieldEnum[]
+}
+
+/**
+ * User.recipes
+ */
+export type User$recipesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Recipe
+   */
+  select?: Prisma.RecipeSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Recipe
+   */
+  omit?: Prisma.RecipeOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RecipeInclude<ExtArgs> | null
+  where?: Prisma.RecipeWhereInput
+  orderBy?: Prisma.RecipeOrderByWithRelationInput | Prisma.RecipeOrderByWithRelationInput[]
+  cursor?: Prisma.RecipeWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.RecipeScalarFieldEnum | Prisma.RecipeScalarFieldEnum[]
 }
 
 /**

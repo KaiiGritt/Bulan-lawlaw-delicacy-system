@@ -485,14 +485,6 @@ export type OtpUncheckedUpdateManyWithoutUserNestedInput = {
   deleteMany?: Prisma.OtpScalarWhereInput | Prisma.OtpScalarWhereInput[]
 }
 
-export type NullableIntFieldUpdateOperationsInput = {
-  set?: number | null
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
-}
-
 export type OtpCreateWithoutUserInput = {
   email: string
   code: string

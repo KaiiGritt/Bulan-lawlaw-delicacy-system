@@ -8,6 +8,7 @@ import toast, { Toaster } from 'react-hot-toast';
 
 interface Recipe {
  id: string;
+ userId: number | null;
  title: string;
  description: string;
  ingredients: string[];
@@ -18,6 +19,11 @@ interface Recipe {
  servings: number;
  difficulty: string;
  createdAt: string;
+ user?: {
+   userId: number;
+   name: string | null;
+   profilePicture: string | null;
+ } | null;
 }
 
 export default function RecipesPage() {
@@ -287,9 +293,22 @@ export default function RecipesPage() {
  </span>
  </div>
 
- {/* Favorite & Save Buttons - Mobile Optimized */}
+ {/* Action Buttons - Favorite, Save, Edit */}
  {session && (
  <div className="absolute top-1 sm:top-2 right-1 sm:right-2 flex gap-1 sm:gap-1.5">
+ {/* Edit Button - Only for owner or admin */}
+ {(recipe.userId === parseInt(session.user?.id || '0') || session.user?.role === 'admin') && (
+ <Link
+ href={`/edit-recipe/${recipe.id}`}
+ onClick={(e) => e.stopPropagation()}
+ className="p-1 sm:p-1.5 rounded-full backdrop-blur-sm transition-all shadow-sm bg-blue-500 text-white hover:bg-blue-600"
+ title="Edit Recipe"
+ >
+ <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+ <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+ </svg>
+ </Link>
+ )}
  <button
  onClick={(e) => toggleFavorite(recipe.id, e)}
  className={`p-1 sm:p-1.5 rounded-full backdrop-blur-sm transition-all shadow-sm ${

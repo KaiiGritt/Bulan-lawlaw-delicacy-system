@@ -10,7 +10,14 @@ export async function GET() {
       orderBy: { createdAt: 'desc' },
       include: {
         ingredients: { orderBy: { order: 'asc' } },
-        instructions: { orderBy: { stepNumber: 'asc' } }
+        instructions: { orderBy: { stepNumber: 'asc' } },
+        user: {
+          select: {
+            userId: true,
+            name: true,
+            profilePicture: true
+          }
+        }
       }
     })
 
@@ -69,6 +76,7 @@ export async function POST(request: NextRequest) {
         cookTime: parseInt(cookTime),
         servings: parseInt(servings),
         difficulty,
+        userId: parseInt(session.user.id),
         ingredients: {
           create: ingredients.map((ing: { name: string; quantity?: string }, index: number) => ({
             name: ing.name,
@@ -85,7 +93,14 @@ export async function POST(request: NextRequest) {
       },
       include: {
         ingredients: { orderBy: { order: 'asc' } },
-        instructions: { orderBy: { stepNumber: 'asc' } }
+        instructions: { orderBy: { stepNumber: 'asc' } },
+        user: {
+          select: {
+            userId: true,
+            name: true,
+            profilePicture: true
+          }
+        }
       }
     })
 
