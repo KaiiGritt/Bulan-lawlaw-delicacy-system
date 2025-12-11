@@ -43,7 +43,9 @@
       "Bash(cmd /c \"del /f C:\\Users\\ASUS\\OneDrive\\Documents\\Bulan-lawlaw-delicacy-system\\prisma\\prisma.config.ts\")",
       "WebSearch",
       "Bash(npm install:*)",
-      "WebFetch(domain:www.prisma.io)"
+      "WebFetch(domain:www.prisma.io)",
+      "Bash(cmd /c \"rmdir /s /q .next 2>nul\")",
+      "Bash(cmd /c \"del C:\\Users\\ASUS\\OneDrive\\Documents\\Bulan-lawlaw-delicacy-system\\prisma\\prisma.config.ts\")"
     ],
     "deny": [],
     "ask": []

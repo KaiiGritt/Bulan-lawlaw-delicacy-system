@@ -354,7 +354,7 @@ npm run build
 - Verify database credentials and port (default: 5432)
 
 ### Image Upload Issues
-- Images must be under 2MB
+- Images must be under 5MB
 - Supported formats: JPG, PNG, WebP
 - Images are stored as Base64 in database
 
