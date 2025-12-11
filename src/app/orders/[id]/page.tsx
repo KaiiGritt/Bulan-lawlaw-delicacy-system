@@ -524,10 +524,10 @@ export default function OrderDetailsPage() {
  </p>
  </div>
  <div className="text-right flex-shrink-0">
- <p className="text-sm sm:text-base font-bold text-primary-green">${item.price.toFixed(2)}</p>
+ <p className="text-sm sm:text-base font-bold text-primary-green">₱{item.price.toFixed(2)}</p>
  <p className="text-xs text-gray-500 mt-1">per item</p>
  <p className="text-xs sm:text-sm font-semibold text-gray-700 mt-2">
- ${(item.price * item.quantity).toFixed(2)}
+ ₱{(item.price * item.quantity).toFixed(2)}
  </p>
  </div>
  </div>
@@ -538,7 +538,7 @@ export default function OrderDetailsPage() {
  <div className="mt-6 pt-6 border-t border-gray-200">
  <div className="flex justify-between items-center">
  <span className="text-base sm:text-lg font-bold text-gray-900">Order Total</span>
- <span className="text-xl sm:text-2xl font-bold text-primary-green">${order.totalAmount.toFixed(2)}</span>
+ <span className="text-xl sm:text-2xl font-bold text-primary-green">₱{order.totalAmount.toFixed(2)}</span>
  </div>
  </div>
  </motion.div>

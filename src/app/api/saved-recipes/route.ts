@@ -23,7 +23,8 @@ export async function GET(request: NextRequest) {
     // Map IDs for frontend compatibility
     const savedRecipes = savedRecipesRaw.map(saved => ({
       ...saved,
-      id: saved.savedRecipeId,
+      id: String(saved.savedRecipeId),
+      recipeId: String(saved.recipeId),
       recipe: {
         ...saved.recipe,
         id: String(saved.recipe.recipeId),
@@ -59,9 +60,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const recipeIdInt = parseInt(recipeId);
+
     // Check if recipe exists
     const recipe = await prisma.recipe.findUnique({
-      where: { recipeId: recipeId }
+      where: { recipeId: recipeIdInt }
     });
 
     if (!recipe) {
@@ -76,7 +79,7 @@ export async function POST(request: NextRequest) {
       where: {
         userId_recipeId: {
           userId: parseInt(session.user.id),
-          recipeId: recipeId
+          recipeId: recipeIdInt
         }
       }
     });
@@ -92,7 +95,7 @@ export async function POST(request: NextRequest) {
     const savedRecipe = await prisma.savedRecipe.create({
       data: {
         userId: parseInt(session.user.id),
-        recipeId: recipeId,
+        recipeId: recipeIdInt,
         notes: notes || null
       },
       include: {
@@ -129,12 +132,14 @@ export async function PUT(request: NextRequest) {
       );
     }
 
+    const recipeIdInt = parseInt(recipeId);
+
     // Check if saved recipe exists
     const existingSaved = await prisma.savedRecipe.findUnique({
       where: {
         userId_recipeId: {
           userId: parseInt(session.user.id),
-          recipeId: recipeId
+          recipeId: recipeIdInt
         }
       }
     });
@@ -151,7 +156,7 @@ export async function PUT(request: NextRequest) {
       where: {
         userId_recipeId: {
           userId: parseInt(session.user.id),
-          recipeId: recipeId
+          recipeId: recipeIdInt
         }
       },
       data: {

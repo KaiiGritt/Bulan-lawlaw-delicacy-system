@@ -125,7 +125,7 @@ export default function SellerDashboardPage() {
               />
               <StatCard
                 label="Total Revenue"
-                value={`$${stats.totalRevenue.toFixed(2)}`}
+                value={`₱${stats.totalRevenue.toFixed(2)}`}
                 color="yellow"
                 icon={
                   <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -186,7 +186,7 @@ export default function SellerDashboardPage() {
                     </div>
                     <div className="text-right">
                       <p className="font-semibold text-lg text-primary-green">
-                        ${order.totalAmount.toFixed(2)}
+                        ₱{order.totalAmount.toFixed(2)}
                       </p>
                       <span
                         className={`px-2 py-1 rounded-full text-xs font-medium ${

@@ -70,7 +70,7 @@ export async function GET(request: NextRequest) {
       totalRevenue,
       pendingProducts,
       recentOrders: orders.map((order: any) => ({
-        id: order.orderId,
+        id: String(order.orderId),
         totalAmount: order.totalAmount,
         status: order.status,
         createdAt: order.createdAt.toISOString(),

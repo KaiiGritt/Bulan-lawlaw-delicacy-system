@@ -324,12 +324,12 @@ export default function OrdersPage() {
                             </Link>
                             <p className="text-sm text-gray-600 mt-1">Quantity: {item.quantity}</p>
                             <p className="text-sm font-semibold text-primary-green mt-1">
-                              ${item.price.toFixed(2)} each
+                              ₱{item.price.toFixed(2)} each
                             </p>
                           </div>
                           <div className="text-right">
                             <p className="font-semibold text-gray-900">
-                              ${(item.price * item.quantity).toFixed(2)}
+                              ₱{(item.price * item.quantity).toFixed(2)}
                             </p>
                           </div>
                         </div>
@@ -341,7 +341,7 @@ export default function OrdersPage() {
                       <div>
                         <p className="text-sm text-gray-600 mb-1">Order Total</p>
                         <p className="text-2xl font-bold text-primary-green">
-                          ${order.totalAmount.toFixed(2)}
+                          ₱{order.totalAmount.toFixed(2)}
                         </p>
                         <p className="text-xs text-gray-500 mt-1">
                           Payment: {order.paymentMethod}

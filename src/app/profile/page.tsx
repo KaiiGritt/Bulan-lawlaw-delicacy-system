@@ -127,6 +127,18 @@ interface SavedRecipe {
  };
 }
 
+interface MyRecipe {
+ id: string;
+ title: string;
+ description: string;
+ image: string;
+ prepTime: number;
+ cookTime: number;
+ servings: number;
+ difficulty: string;
+ createdAt: string;
+}
+
 export default function ProfilePage() {
  const { data: session, status } = useSession();
  const router = useRouter();
@@ -145,6 +157,7 @@ export default function ProfilePage() {
  const [orderFilter, setOrderFilter] = useState<string>('all');
  const [recipeFavorites, setRecipeFavorites] = useState<RecipeFavorite[]>([]);
  const [savedRecipes, setSavedRecipes] = useState<SavedRecipe[]>([]);
+ const [myRecipes, setMyRecipes] = useState<MyRecipe[]>([]);
 
  const [newProduct, setNewProduct] = useState({
  name: '',
@@ -186,10 +199,11 @@ export default function ProfilePage() {
  }, [profile]);
 
  useEffect(() => {
- if (profile && profile.role !== 'seller') {
+ if (profile) {
  fetchUserOrders();
  fetchRecipeFavorites();
  fetchSavedRecipes();
+ fetchMyRecipes();
  }
  }, [profile]);
 
@@ -301,6 +315,20 @@ export default function ProfilePage() {
  const res = await fetch('/api/saved-recipes', { credentials: 'include' });
  const data = await res.json();
  setSavedRecipes(data);
+ } catch (err) {
+ console.error(err);
+ }
+ };
+
+ const fetchMyRecipes = async () => {
+ try {
+ const res = await fetch('/api/recipes', { credentials: 'include' });
+ const data = await res.json();
+ // Filter recipes that belong to the current user
+ const userRecipes = data.filter((recipe: any) =>
+   recipe.userId === parseInt(session?.user?.id || '0')
+ );
+ setMyRecipes(userRecipes);
  } catch (err) {
  console.error(err);
  }
@@ -1061,6 +1089,34 @@ export default function ProfilePage() {
  </Link>
  </div>
 
+ {/* My Recipes Card - Full Width with Badge */}
+ <Link
+ href="/my-recipes"
+ className="group block p-3 sm:p-4 rounded-xl bg-gradient-to-r from-orange-50 via-amber-50 to-yellow-50 hover:from-orange-100 hover:via-amber-100 hover:to-yellow-100 border border-orange-200/50 transition-all duration-300 hover:shadow-md"
+ >
+ <div className="flex items-center justify-between">
+ <div className="flex items-center gap-3">
+ <div className="p-2.5 bg-gradient-to-br from-orange-500 to-amber-500 rounded-xl shadow-sm group-hover:shadow-md transition-shadow">
+ <svg className="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+ <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+ </svg>
+ </div>
+ <div>
+ <span className="text-sm sm:text-base font-bold text-gray-800 group-hover:text-orange-600 transition-colors">My Recipes</span>
+ <p className="text-[10px] sm:text-xs text-gray-500">Edit or delete your recipes</p>
+ </div>
+ </div>
+ <div className="flex items-center gap-1.5">
+ <span className="px-2.5 py-1 bg-orange-500/20 text-orange-700 rounded-full text-[10px] sm:text-xs font-bold border border-orange-300/50">
+ {myRecipes.length}
+ </span>
+ <svg className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400 group-hover:text-orange-500 group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+ <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+ </svg>
+ </div>
+ </div>
+ </Link>
+
  {/* Collections Card - Full Width with Badges */}
  <Link
  href="/collections"
@@ -1167,6 +1223,34 @@ export default function ProfilePage() {
  </Link>
  </div>
 
+ {/* My Recipes Card - Full Width with Badge */}
+ <Link
+ href="/my-recipes"
+ className="group block p-3 sm:p-4 rounded-xl bg-gradient-to-r from-orange-50 via-amber-50 to-yellow-50 hover:from-orange-100 hover:via-amber-100 hover:to-yellow-100 border border-orange-200/50 transition-all duration-300 hover:shadow-md"
+ >
+ <div className="flex items-center justify-between">
+ <div className="flex items-center gap-3">
+ <div className="p-2.5 bg-gradient-to-br from-orange-500 to-amber-500 rounded-xl shadow-sm group-hover:shadow-md transition-shadow">
+ <svg className="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+ <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+ </svg>
+ </div>
+ <div>
+ <span className="text-sm sm:text-base font-bold text-gray-800 group-hover:text-orange-600 transition-colors">My Recipes</span>
+ <p className="text-[10px] sm:text-xs text-gray-500">Edit or delete your recipes</p>
+ </div>
+ </div>
+ <div className="flex items-center gap-1.5">
+ <span className="px-2.5 py-1 bg-orange-500/20 text-orange-700 rounded-full text-[10px] sm:text-xs font-bold border border-orange-300/50">
+ {myRecipes.length}
+ </span>
+ <svg className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400 group-hover:text-orange-500 group-hover:translate-x-1 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+ <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+ </svg>
+ </div>
+ </div>
+ </Link>
+
  {/* Collections Card - Full Width with Badges */}
  <Link
  href="/collections"
@@ -1200,7 +1284,7 @@ export default function ProfilePage() {
 
  {/* Add Recipe Button - Full Width */}
  <Link
- href="/seller-shop?action=add"
+ href="/add-recipe"
  className="group flex items-center justify-center gap-2 p-3 sm:p-4 rounded-xl bg-gradient-to-r from-lawlaw-silver to-lawlaw-aqua-teal/20 hover:from-lawlaw-silver-shimmer hover:to-lawlaw-aqua-teal/30 border border-lawlaw-aqua-teal/50 transition-all duration-300 hover:shadow-md"
  >
  <div className="p-2 bg-gradient-to-br from-lawlaw-aqua-teal to-lawlaw-ocean-teal rounded-lg shadow-sm group-hover:shadow-md transition-shadow">
@@ -1208,7 +1292,7 @@ export default function ProfilePage() {
  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
  </svg>
  </div>
- <span className="text-sm sm:text-base font-bold text-lawlaw-ocean-teal">Add New Recipe</span>
+ <span className="text-sm sm:text-base font-bold text-lawlaw-ocean-teal">Share Your Recipe</span>
  </Link>
  </div>
  )}
@@ -1336,7 +1420,7 @@ export default function ProfilePage() {
  <div className="flex-1">
  <p className="text-sm font-semibold text-gray-900">Order Placed</p>
  <p className="text-xs text-gray-600 mt-1">
- You placed an order worth ${userOrders[0]?.totalAmount.toFixed(2)}
+ You placed an order worth ₱{userOrders[0]?.totalAmount.toFixed(2)}
  </p>
  <p className="text-xs text-gray-400 mt-1">
  {new Date(userOrders[0]?.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
@@ -1441,7 +1525,7 @@ export default function ProfilePage() {
  <span className="text-xs font-medium text-blue-700">Total Spent</span>
  </div>
  <p className="text-2xl font-bold text-blue-900">
- ${userOrders.reduce((sum, order) => sum + order.totalAmount, 0).toFixed(2)}
+ ₱{userOrders.reduce((sum, order) => sum + order.totalAmount, 0).toFixed(2)}
  </p>
  </div>
 
@@ -1526,7 +1610,7 @@ export default function ProfilePage() {
  </svg>
  <span className="text-xs font-semibold text-yellow-700">Revenue</span>
  </div>
- <p className="text-3xl font-bold text-yellow-900">${stats.totalRevenue.toFixed(0)}</p>
+ <p className="text-3xl font-bold text-yellow-900">₱{stats.totalRevenue.toFixed(0)}</p>
  <p className="text-xs text-yellow-600 mt-1">Total earned</p>
  </div>
 
@@ -1538,7 +1622,7 @@ export default function ProfilePage() {
  <span className="text-xs font-semibold text-purple-700">Avg Order</span>
  </div>
  <p className="text-3xl font-bold text-purple-900">
- ${stats.totalOrders > 0 ? (stats.totalRevenue / stats.totalOrders).toFixed(0) : '0'}
+ ₱{stats.totalOrders > 0 ? (stats.totalRevenue / stats.totalOrders).toFixed(0) : '0'}
  </p>
  <p className="text-xs text-purple-600 mt-1">Per order</p>
  </div>
@@ -1561,7 +1645,7 @@ export default function ProfilePage() {
  <p className="text-xs text-gray-500">{new Date(order.createdAt).toLocaleDateString()}</p>
  </div>
  <div className="text-right">
- <p className="font-semibold text-lawlaw-ocean-teal">${order.totalAmount.toFixed(2)}</p>
+ <p className="font-semibold text-lawlaw-ocean-teal">₱{order.totalAmount.toFixed(2)}</p>
  <span className={`text-xs px-2 py-0.5 rounded-full ${
  order.status === 'delivered' ? 'bg-green-100 text-green-700' :
  order.status === 'shipped' ? 'bg-blue-100 text-blue-700' :

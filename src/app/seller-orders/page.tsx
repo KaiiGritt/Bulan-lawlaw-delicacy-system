@@ -290,7 +290,7 @@ export default function SellerOrdersPage() {
                   <div>
                     <p className="text-sm text-gray-600 mb-1">Order Total</p>
                     <p className="text-2xl font-bold text-primary-green">
-                      ${order.totalAmount.toFixed(2)}
+                      ₱{order.totalAmount.toFixed(2)}
                     </p>
                   </div>
                   <div className="flex items-center gap-3">

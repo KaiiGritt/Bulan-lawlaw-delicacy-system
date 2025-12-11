@@ -293,14 +293,24 @@ export default function SellerProductsPage() {
 
   if (loading || status === 'loading') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-lawlaw-silver via-lawlaw-silver-shimmer to-lawlaw-steel-blue/20 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen bg-gradient-to-br from-lawlaw-silver via-lawlaw-silver-shimmer to-lawlaw-steel-blue/20 py-6 sm:py-12 px-3 sm:px-6 lg:px-8">
         <Toaster position="top-right" />
         <div className="max-w-7xl mx-auto">
-          <div className="animate-pulse space-y-6">
-            <div className="h-12 bg-gray-200 rounded w-64"></div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="animate-pulse space-y-4 sm:space-y-6">
+            <div className="h-8 sm:h-12 bg-gray-200 rounded w-48 sm:w-64"></div>
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
               {[1, 2, 3, 4, 5, 6].map((i) => (
-                <div key={i} className="bg-white p-6 rounded-xl shadow h-80"></div>
+                <div key={i} className="bg-white rounded-xl shadow overflow-hidden">
+                  <div className="aspect-square bg-gray-200"></div>
+                  <div className="p-3 sm:p-4 space-y-2">
+                    <div className="h-4 sm:h-5 bg-gray-200 rounded w-3/4"></div>
+                    <div className="h-3 sm:h-4 bg-gray-200 rounded w-1/2"></div>
+                    <div className="flex gap-2">
+                      <div className="h-8 sm:h-10 bg-gray-200 rounded flex-1"></div>
+                      <div className="h-8 sm:h-10 bg-gray-200 rounded flex-1"></div>
+                    </div>
+                  </div>
+                </div>
               ))}
             </div>
           </div>
@@ -310,29 +320,30 @@ export default function SellerProductsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-lawlaw-silver via-lawlaw-silver-shimmer to-lawlaw-steel-blue/20 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-lawlaw-silver via-lawlaw-silver-shimmer to-lawlaw-steel-blue/20 py-6 sm:py-12 px-3 sm:px-6 lg:px-8">
       <Toaster position="top-right" />
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-8">
+        <div className="mb-6 sm:mb-8">
           <Link
             href="/profile"
-            className="inline-flex items-center gap-2 text-lawlaw-ocean-teal hover:text-lawlaw-deep-blue mb-4 transition-colors"
+            className="inline-flex items-center gap-1.5 sm:gap-2 text-lawlaw-ocean-teal hover:text-lawlaw-deep-blue mb-3 sm:mb-4 transition-colors text-sm sm:text-base"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
             Back to Profile
           </Link>
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-4">
             <div>
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-lawlaw-steel-blue to-lawlaw-ocean-teal bg-clip-text text-transparent flex items-center gap-3">
-                <svg className="w-10 h-10 text-lawlaw-ocean-teal" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-lawlaw-steel-blue to-lawlaw-ocean-teal bg-clip-text text-transparent flex items-center gap-2 sm:gap-3">
+                <svg className="w-7 h-7 sm:w-8 sm:h-8 lg:w-10 lg:h-10 text-lawlaw-ocean-teal" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                 </svg>
-                Product Management
+                <span className="hidden sm:inline">Product Management</span>
+                <span className="sm:hidden">Products</span>
               </h1>
-              <p className="text-gray-600 mt-2">Manage your product inventory</p>
+              <p className="text-gray-600 mt-1 sm:mt-2 text-sm sm:text-base">Manage your product inventory</p>
             </div>
             <button
               onClick={() => {
@@ -343,21 +354,22 @@ export default function SellerProductsPage() {
                   setImagePreview('');
                 }
               }}
-              className="w-full sm:w-auto bg-gradient-to-r from-lawlaw-steel-blue to-lawlaw-ocean-teal text-white px-6 py-3 rounded-xl hover:shadow-lg transition-all flex items-center justify-center gap-2 font-medium"
+              className="w-full sm:w-auto bg-gradient-to-r from-lawlaw-steel-blue to-lawlaw-ocean-teal text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg sm:rounded-xl hover:shadow-lg transition-all flex items-center justify-center gap-2 font-medium text-sm sm:text-base"
             >
               {showAddProductForm ? (
                 <>
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                   </svg>
                   Cancel
                 </>
               ) : (
                 <>
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                   </svg>
-                  Add New Product
+                  <span className="hidden sm:inline">Add New Product</span>
+                  <span className="sm:hidden">Add Product</span>
                 </>
               )}
             </button>
@@ -370,16 +382,16 @@ export default function SellerProductsPage() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             onSubmit={handleAddProduct}
-            className="bg-white rounded-2xl shadow-lg border border-lawlaw-steel-blue/20 p-6 mb-8"
+            className="bg-white rounded-xl sm:rounded-2xl shadow-lg border border-lawlaw-steel-blue/20 p-4 sm:p-6 mb-6 sm:mb-8"
           >
-            <h2 className="text-2xl font-bold text-gray-900 mb-6">Add New Product</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <h2 className="text-lg sm:text-2xl font-bold text-gray-900 mb-4 sm:mb-6">Add New Product</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <input
                 type="text"
                 placeholder="Product Name"
                 value={newProduct.name}
                 onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}
-                className="p-3 rounded-lg border border-gray-300 bg-white focus:ring-2 focus:ring-lawlaw-ocean-teal focus:border-transparent"
+                className="p-2.5 sm:p-3 rounded-lg border border-gray-300 bg-white focus:ring-2 focus:ring-lawlaw-ocean-teal focus:border-transparent text-sm sm:text-base"
                 required
               />
               <input
@@ -388,13 +400,13 @@ export default function SellerProductsPage() {
                 placeholder="Price (₱)"
                 value={newProduct.price}
                 onChange={(e) => setNewProduct({ ...newProduct, price: e.target.value })}
-                className="p-3 rounded-lg border border-gray-300 bg-white focus:ring-2 focus:ring-lawlaw-ocean-teal focus:border-transparent"
+                className="p-2.5 sm:p-3 rounded-lg border border-gray-300 bg-white focus:ring-2 focus:ring-lawlaw-ocean-teal focus:border-transparent text-sm sm:text-base"
                 required
               />
               <select
                 value={newProduct.category}
                 onChange={(e) => setNewProduct({ ...newProduct, category: e.target.value })}
-                className="p-3 rounded-lg border border-gray-300 bg-white focus:ring-2 focus:ring-lawlaw-ocean-teal focus:border-transparent"
+                className="p-2.5 sm:p-3 rounded-lg border border-gray-300 bg-white focus:ring-2 focus:ring-lawlaw-ocean-teal focus:border-transparent text-sm sm:text-base"
                 required
               >
                 <option value="">Select Category</option>
@@ -407,32 +419,32 @@ export default function SellerProductsPage() {
                 placeholder="Stock Quantity"
                 value={newProduct.stock}
                 onChange={(e) => setNewProduct({ ...newProduct, stock: e.target.value })}
-                className="p-3 rounded-lg border border-gray-300 bg-white focus:ring-2 focus:ring-lawlaw-ocean-teal focus:border-transparent"
+                className="p-2.5 sm:p-3 rounded-lg border border-gray-300 bg-white focus:ring-2 focus:ring-lawlaw-ocean-teal focus:border-transparent text-sm sm:text-base"
               />
-              <div className="md:col-span-2">
-                <label className="block text-sm font-medium mb-2 text-gray-700">
+              <div className="sm:col-span-2">
+                <label className="block text-xs sm:text-sm font-medium mb-1.5 sm:mb-2 text-gray-700">
                   Product Image (Max 5MB)
                 </label>
                 <input
                   type="file"
                   accept="image/*"
                   onChange={handleImageChange}
-                  className="block w-full text-sm text-gray-500
-                    file:mr-4 file:py-2 file:px-4
+                  className="block w-full text-xs sm:text-sm text-gray-500
+                    file:mr-2 sm:file:mr-4 file:py-1.5 sm:file:py-2 file:px-3 sm:file:px-4
                     file:rounded-lg file:border-0
-                    file:text-sm file:font-semibold
+                    file:text-xs sm:file:text-sm file:font-semibold
                     file:bg-lawlaw-ocean-teal file:text-white
                     hover:file:bg-lawlaw-deep-blue
                     file:cursor-pointer cursor-pointer"
                   required
                 />
                 {imagePreview && (
-                  <div className="mt-4">
-                    <p className="text-sm text-gray-600 mb-2">Preview:</p>
+                  <div className="mt-3 sm:mt-4">
+                    <p className="text-xs sm:text-sm text-gray-600 mb-2">Preview:</p>
                     <img
                       src={imagePreview}
                       alt="Preview"
-                      className="w-32 h-32 object-cover rounded-lg border-2 border-gray-200 shadow-sm"
+                      className="w-24 h-24 sm:w-32 sm:h-32 object-cover rounded-lg border-2 border-gray-200 shadow-sm"
                     />
                   </div>
                 )}
@@ -441,15 +453,15 @@ export default function SellerProductsPage() {
                 placeholder="Product Description"
                 value={newProduct.description}
                 onChange={(e) => setNewProduct({ ...newProduct, description: e.target.value })}
-                className="p-3 rounded-lg border border-gray-300 bg-white md:col-span-2 focus:ring-2 focus:ring-lawlaw-ocean-teal focus:border-transparent"
+                className="p-2.5 sm:p-3 rounded-lg border border-gray-300 bg-white sm:col-span-2 focus:ring-2 focus:ring-lawlaw-ocean-teal focus:border-transparent text-sm sm:text-base"
                 rows={3}
                 required
               />
               <button
                 type="submit"
-                className="bg-gradient-to-r from-lawlaw-steel-blue to-lawlaw-ocean-teal text-white px-6 py-3 rounded-lg hover:shadow-lg transition-all col-span-full font-medium flex items-center justify-center gap-2"
+                className="bg-gradient-to-r from-lawlaw-steel-blue to-lawlaw-ocean-teal text-white px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg hover:shadow-lg transition-all col-span-full font-medium flex items-center justify-center gap-2 text-sm sm:text-base"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
                 Add Product
@@ -459,57 +471,57 @@ export default function SellerProductsPage() {
         )}
 
         {/* Products Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
           {products.map((p) => (
             <motion.div
               key={p.id}
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 border border-lawlaw-steel-blue/20"
+              className="bg-white rounded-lg sm:rounded-xl shadow-md sm:shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 border border-lawlaw-steel-blue/20"
             >
-              <div className="relative">
+              <div className="relative aspect-square">
                 <img
                   src={p.image || '/placeholder.png'}
                   alt={p.name}
-                  className="w-full h-56 object-cover"
+                  className="w-full h-full object-cover"
                 />
               </div>
-              <div className="p-5">
-                <h4 className="font-bold text-xl text-lawlaw-ocean-teal mb-2 line-clamp-1">{p.name}</h4>
-                <p className="text-gray-600 text-sm line-clamp-2 mb-4">{p.description}</p>
-                <div className="flex justify-between items-center mb-4">
+              <div className="p-3 sm:p-5">
+                <h4 className="font-bold text-sm sm:text-lg lg:text-xl text-lawlaw-ocean-teal mb-1 sm:mb-2 line-clamp-1">{p.name}</h4>
+                <p className="text-gray-600 text-xs sm:text-sm line-clamp-2 mb-2 sm:mb-4 hidden sm:block">{p.description}</p>
+                <div className="flex justify-between items-center mb-3 sm:mb-4">
                   <div>
-                    <p className="text-2xl font-bold text-gray-900">₱{p.price.toFixed(2)}</p>
-                    <p className="text-xs text-gray-500 flex items-center gap-1 mt-1">
-                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <p className="text-lg sm:text-2xl font-bold text-gray-900">₱{p.price.toFixed(2)}</p>
+                    <p className="text-[10px] sm:text-xs text-gray-500 flex items-center gap-0.5 sm:gap-1 mt-0.5 sm:mt-1">
+                      <svg className="w-2.5 h-2.5 sm:w-3 sm:h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                       </svg>
                       Stock: {p.stock}
                     </p>
                   </div>
-                  <div className="text-right">
+                  <div className="text-right hidden sm:block">
                     <p className="text-xs text-gray-500">Category</p>
                     <p className="text-sm font-medium text-gray-700 capitalize">{p.category}</p>
                   </div>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-1.5 sm:gap-2">
                   <button
                     onClick={() => setEditingProduct(p)}
-                    className="flex-1 bg-gradient-to-r from-lawlaw-steel-blue to-lawlaw-ocean-teal text-white px-3 py-2 rounded-lg hover:shadow-md transition-all flex items-center justify-center gap-2 text-sm font-medium"
+                    className="flex-1 bg-gradient-to-r from-lawlaw-steel-blue to-lawlaw-ocean-teal text-white px-2 sm:px-3 py-1.5 sm:py-2 rounded-md sm:rounded-lg hover:shadow-md transition-all flex items-center justify-center gap-1 sm:gap-2 text-xs sm:text-sm font-medium"
                   >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                     </svg>
-                    Edit
+                    <span className="hidden sm:inline">Edit</span>
                   </button>
                   <button
                     onClick={() => setShowDeleteConfirm(p.id)}
-                    className="flex-1 bg-red-500 text-white px-3 py-2 rounded-lg hover:bg-red-600 transition-colors flex items-center justify-center gap-2 text-sm font-medium shadow-sm"
+                    className="flex-1 bg-red-500 text-white px-2 sm:px-3 py-1.5 sm:py-2 rounded-md sm:rounded-lg hover:bg-red-600 transition-colors flex items-center justify-center gap-1 sm:gap-2 text-xs sm:text-sm font-medium shadow-sm"
                   >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                     </svg>
-                    Delete
+                    <span className="hidden sm:inline">Delete</span>
                   </button>
                 </div>
 
@@ -518,21 +530,21 @@ export default function SellerProductsPage() {
                   <motion.div
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="mt-4 p-3 bg-red-50 rounded-lg text-sm text-red-800 border border-red-200"
+                    className="mt-3 sm:mt-4 p-2 sm:p-3 bg-red-50 rounded-lg text-xs sm:text-sm text-red-800 border border-red-200"
                   >
-                    <p className="font-medium mb-2">Delete this product?</p>
-                    <div className="flex gap-2">
+                    <p className="font-medium mb-2">Delete?</p>
+                    <div className="flex gap-1.5 sm:gap-2">
                       <button
                         onClick={() => handleDeleteProduct(p.id)}
-                        className="flex-1 bg-red-600 text-white px-3 py-1.5 rounded-md hover:bg-red-700 font-medium"
+                        className="flex-1 bg-red-600 text-white px-2 sm:px-3 py-1 sm:py-1.5 rounded-md hover:bg-red-700 font-medium text-xs sm:text-sm"
                       >
-                        Yes, Delete
+                        Yes
                       </button>
                       <button
                         onClick={() => setShowDeleteConfirm(null)}
-                        className="flex-1 bg-gray-200 text-gray-700 px-3 py-1.5 rounded-md hover:bg-gray-300 font-medium"
+                        className="flex-1 bg-gray-200 text-gray-700 px-2 sm:px-3 py-1 sm:py-1.5 rounded-md hover:bg-gray-300 font-medium text-xs sm:text-sm"
                       >
-                        Cancel
+                        No
                       </button>
                     </div>
                   </motion.div>
@@ -544,9 +556,9 @@ export default function SellerProductsPage() {
 
         {/* Empty State */}
         {products.length === 0 && (
-          <div className="bg-white rounded-2xl shadow-lg border border-lawlaw-steel-blue/20 p-12 text-center">
+          <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg border border-lawlaw-steel-blue/20 p-8 sm:p-12 text-center">
             <svg
-              className="w-24 h-24 mx-auto text-gray-300 mb-4"
+              className="w-16 h-16 sm:w-24 sm:h-24 mx-auto text-gray-300 mb-3 sm:mb-4"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -558,14 +570,14 @@ export default function SellerProductsPage() {
                 d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
               />
             </svg>
-            <h3 className="text-2xl font-bold text-gray-700 mb-2">No products found</h3>
-            <p className="text-gray-500 mb-6">You haven&apos;t added any products yet</p>
+            <h3 className="text-lg sm:text-2xl font-bold text-gray-700 mb-2">No products found</h3>
+            <p className="text-sm sm:text-base text-gray-500 mb-4 sm:mb-6">You haven&apos;t added any products yet</p>
             {!showAddProductForm && (
               <button
                 onClick={() => setShowAddProductForm(true)}
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-lawlaw-steel-blue to-lawlaw-ocean-teal text-white font-medium hover:shadow-lg transition-all"
+                className="inline-flex items-center gap-2 px-5 sm:px-6 py-2.5 sm:py-3 rounded-lg sm:rounded-xl bg-gradient-to-r from-lawlaw-steel-blue to-lawlaw-ocean-teal text-white font-medium hover:shadow-lg transition-all text-sm sm:text-base"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                 </svg>
                 Add Your First Product

@@ -132,7 +132,7 @@ export default function SellerAnalyticsPage() {
                   <div>
                     <p className="text-sm text-gray-600 font-medium">Total Revenue</p>
                     <p className="text-3xl font-bold text-green-600 mt-2">
-                      ${stats.totalRevenue.toFixed(2)}
+                      ₱{stats.totalRevenue.toFixed(2)}
                     </p>
                   </div>
                   <div className="bg-green-100 p-3 rounded-full">
@@ -191,7 +191,7 @@ export default function SellerAnalyticsPage() {
                   <div>
                     <p className="text-sm text-gray-600 font-medium">Avg Order Value</p>
                     <p className="text-3xl font-bold text-orange-600 mt-2">
-                      ${stats.totalOrders > 0 ? (stats.totalRevenue / stats.totalOrders).toFixed(2) : '0.00'}
+                      ₱{stats.totalOrders > 0 ? (stats.totalRevenue / stats.totalOrders).toFixed(2) : '0.00'}
                     </p>
                   </div>
                   <div className="bg-orange-100 p-3 rounded-full">
@@ -224,7 +224,7 @@ export default function SellerAnalyticsPage() {
                       <div className="flex justify-between text-sm">
                         <span className="font-medium text-gray-700">{data.month}</span>
                         <span className="text-primary-green font-semibold">
-                          ${data.revenue.toFixed(2)}
+                          ₱{data.revenue.toFixed(2)}
                         </span>
                       </div>
                       <div className="w-full bg-gray-200 rounded-full h-3">
