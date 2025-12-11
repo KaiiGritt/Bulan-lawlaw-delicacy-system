@@ -86,6 +86,7 @@ export default function Settings() {
   useEffect(() => {
     if (session) {
       loadUserProfile();
+      loadUserSettings();
       loadActiveSessions();
       if (session.user.role === 'seller') {
         loadBusinessInfo();
@@ -103,6 +104,58 @@ export default function Settings() {
       }
     } catch (error) {
       console.error('Error loading profile:', error);
+    }
+  };
+
+  const loadUserSettings = async () => {
+    try {
+      const response = await fetch('/api/user/settings');
+      if (response.ok) {
+        const data = await response.json();
+        // Profile settings
+        if (data.displayName) setDisplayName(data.displayName);
+        if (data.bio) setBio(data.bio);
+        if (data.themeColor) setThemeColor(data.themeColor);
+
+        // Notification settings
+        setNotifications(data.notifications ?? true);
+        setEmailUpdates(data.emailUpdates ?? true);
+        setOrderUpdates(data.orderUpdates ?? true);
+        setPromotionalEmails(data.promotionalEmails ?? false);
+        setSmsNotifications(data.smsNotifications ?? false);
+        setInAppNotifications(data.inAppNotifications ?? true);
+
+        // Privacy settings
+        setPrivacySettings({
+          showProfile: data.showProfile ?? true,
+          showOrders: data.showOrders ?? false,
+        });
+
+        // Accessibility settings
+        setAccessibility({
+          fontSize: data.fontSize ?? 'medium',
+          highContrast: data.highContrast ?? false,
+          reducedMotion: data.reducedMotion ?? false,
+        });
+
+        // Shipping preferences (for buyers)
+        setShippingPreferences({
+          defaultAddress: data.defaultAddress || '',
+          preferredTimeSlot: data.preferredTimeSlot || 'anytime',
+          specialInstructions: data.specialInstructions || '',
+        });
+
+        // Store settings (for sellers)
+        setStoreSettings({
+          storeHours: data.storeHours || '9:00 AM - 6:00 PM',
+          shippingTime: data.shippingTime || '1-3 business days',
+          returnPolicy: data.returnPolicy || '7 days return policy',
+          minimumOrder: data.minimumOrder?.toString() || '',
+          freeShippingThreshold: data.freeShippingThreshold?.toString() || '',
+        });
+      }
+    } catch (error) {
+      console.error('Error loading settings:', error);
     }
   };
 
@@ -198,18 +251,25 @@ export default function Settings() {
   const handleSave = async () => {
     try {
       const settings = {
+        // Profile settings
+        displayName,
+        bio,
+        themeColor,
+        // Notification settings
         notifications,
         emailUpdates,
         orderUpdates,
         promotionalEmails,
         smsNotifications,
         inAppNotifications,
-        currency,
+        // Privacy settings
         privacySettings,
+        // Accessibility settings
         accessibility,
-        displayName,
-        bio,
-        themeColor,
+        // Shipping preferences (for buyers)
+        shippingPreferences,
+        // Store settings (for sellers)
+        storeSettings,
       };
 
       const response = await fetch('/api/user/settings', {
@@ -609,7 +669,19 @@ export default function Settings() {
                 />
 
                 <button
-                  onClick={() => toast.success('Store settings saved!')}
+                  onClick={async () => {
+                    try {
+                      const response = await fetch('/api/user/settings', {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ storeSettings }),
+                      });
+                      if (!response.ok) throw new Error('Failed to save');
+                      toast.success('Store settings saved!');
+                    } catch (error) {
+                      toast.error('Failed to save store settings');
+                    }
+                  }}
                   className="w-full bg-gradient-to-r from-primary-green to-leaf-green text-white font-semibold py-3 px-4 rounded-lg shadow-md hover:shadow-lg transition-all"
                 >
                   Save Store Settings
@@ -660,7 +732,19 @@ export default function Settings() {
                 </div>
 
                 <button
-                  onClick={() => toast.success('Shipping preferences saved!')}
+                  onClick={async () => {
+                    try {
+                      const response = await fetch('/api/user/settings', {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ shippingPreferences }),
+                      });
+                      if (!response.ok) throw new Error('Failed to save');
+                      toast.success('Shipping preferences saved!');
+                    } catch (error) {
+                      toast.error('Failed to save shipping preferences');
+                    }
+                  }}
                   className="w-full bg-gradient-to-r from-primary-green to-leaf-green text-white font-semibold py-3 px-4 rounded-lg shadow-md hover:shadow-lg transition-all"
                 >
                   Save Shipping Preferences

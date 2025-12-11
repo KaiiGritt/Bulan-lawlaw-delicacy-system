@@ -8,7 +8,6 @@ Comprehensive order tracking system with real-time status updates, email notific
 ### 1. Database Schema Updates
 - **Order Model**: Added tracking fields
   - `trackingNumber`: Courier tracking number
-  - `courier`: Shipping company name (J&T, LBC, etc.)
   - `estimatedDeliveryDate`: Expected delivery date
   - `shippedAt`: Timestamp when order was shipped
   - `deliveredAt`: Timestamp when order was delivered

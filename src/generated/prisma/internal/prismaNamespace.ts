@@ -402,7 +402,8 @@ export const ModelName = {
   SavedRecipe: 'SavedRecipe',
   Otp: 'Otp',
   PendingRegistration: 'PendingRegistration',
-  Address: 'Address'
+  Address: 'Address',
+  UserSettings: 'UserSettings'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -418,7 +419,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "product" | "recipe" | "recipeIngredient" | "recipeInstruction" | "cartItem" | "order" | "orderItem" | "orderTrackingHistory" | "sellerApplication" | "conversation" | "message" | "notification" | "comment" | "recipeReview" | "savedRecipe" | "otp" | "pendingRegistration" | "address"
+    modelProps: "user" | "product" | "recipe" | "recipeIngredient" | "recipeInstruction" | "cartItem" | "order" | "orderItem" | "orderTrackingHistory" | "sellerApplication" | "conversation" | "message" | "notification" | "comment" | "recipeReview" | "savedRecipe" | "otp" | "pendingRegistration" | "address" | "userSettings"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1676,6 +1677,72 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    UserSettings: {
+      payload: Prisma.$UserSettingsPayload<ExtArgs>
+      fields: Prisma.UserSettingsFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.UserSettingsFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserSettingsPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.UserSettingsFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserSettingsPayload>
+        }
+        findFirst: {
+          args: Prisma.UserSettingsFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserSettingsPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.UserSettingsFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserSettingsPayload>
+        }
+        findMany: {
+          args: Prisma.UserSettingsFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserSettingsPayload>[]
+        }
+        create: {
+          args: Prisma.UserSettingsCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserSettingsPayload>
+        }
+        createMany: {
+          args: Prisma.UserSettingsCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        delete: {
+          args: Prisma.UserSettingsDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserSettingsPayload>
+        }
+        update: {
+          args: Prisma.UserSettingsUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserSettingsPayload>
+        }
+        deleteMany: {
+          args: Prisma.UserSettingsDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.UserSettingsUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        upsert: {
+          args: Prisma.UserSettingsUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UserSettingsPayload>
+        }
+        aggregate: {
+          args: Prisma.UserSettingsAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateUserSettings>
+        }
+        groupBy: {
+          args: Prisma.UserSettingsGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.UserSettingsGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.UserSettingsCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.UserSettingsCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -1996,6 +2063,38 @@ export const AddressScalarFieldEnum = {
 export type AddressScalarFieldEnum = (typeof AddressScalarFieldEnum)[keyof typeof AddressScalarFieldEnum]
 
 
+export const UserSettingsScalarFieldEnum = {
+  settingsId: 'settingsId',
+  userId: 'userId',
+  displayName: 'displayName',
+  bio: 'bio',
+  themeColor: 'themeColor',
+  notifications: 'notifications',
+  emailUpdates: 'emailUpdates',
+  orderUpdates: 'orderUpdates',
+  promotionalEmails: 'promotionalEmails',
+  smsNotifications: 'smsNotifications',
+  inAppNotifications: 'inAppNotifications',
+  showProfile: 'showProfile',
+  showOrders: 'showOrders',
+  fontSize: 'fontSize',
+  highContrast: 'highContrast',
+  reducedMotion: 'reducedMotion',
+  defaultAddress: 'defaultAddress',
+  preferredTimeSlot: 'preferredTimeSlot',
+  specialInstructions: 'specialInstructions',
+  storeHours: 'storeHours',
+  shippingTime: 'shippingTime',
+  returnPolicy: 'returnPolicy',
+  minimumOrder: 'minimumOrder',
+  freeShippingThreshold: 'freeShippingThreshold',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type UserSettingsScalarFieldEnum = (typeof UserSettingsScalarFieldEnum)[keyof typeof UserSettingsScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -2177,6 +2276,22 @@ export const AddressOrderByRelevanceFieldEnum = {
 export type AddressOrderByRelevanceFieldEnum = (typeof AddressOrderByRelevanceFieldEnum)[keyof typeof AddressOrderByRelevanceFieldEnum]
 
 
+export const UserSettingsOrderByRelevanceFieldEnum = {
+  displayName: 'displayName',
+  bio: 'bio',
+  themeColor: 'themeColor',
+  fontSize: 'fontSize',
+  defaultAddress: 'defaultAddress',
+  preferredTimeSlot: 'preferredTimeSlot',
+  specialInstructions: 'specialInstructions',
+  storeHours: 'storeHours',
+  shippingTime: 'shippingTime',
+  returnPolicy: 'returnPolicy'
+} as const
+
+export type UserSettingsOrderByRelevanceFieldEnum = (typeof UserSettingsOrderByRelevanceFieldEnum)[keyof typeof UserSettingsOrderByRelevanceFieldEnum]
+
+
 
 /**
  * Field references
@@ -2331,6 +2446,7 @@ export type GlobalOmitConfig = {
   otp?: Prisma.OtpOmit
   pendingRegistration?: Prisma.PendingRegistrationOmit
   address?: Prisma.AddressOmit
+  userSettings?: Prisma.UserSettingsOmit
 }
 
 /* Types for Logging */

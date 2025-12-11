@@ -112,3 +112,8 @@ export type PendingRegistration = Prisma.PendingRegistrationModel
  * 
  */
 export type Address = Prisma.AddressModel
+/**
+ * Model UserSettings
+ * 
+ */
+export type UserSettings = Prisma.UserSettingsModel

@@ -69,7 +69,8 @@ export const ModelName = {
   SavedRecipe: 'SavedRecipe',
   Otp: 'Otp',
   PendingRegistration: 'PendingRegistration',
-  Address: 'Address'
+  Address: 'Address',
+  UserSettings: 'UserSettings'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -369,6 +370,38 @@ export const AddressScalarFieldEnum = {
 export type AddressScalarFieldEnum = (typeof AddressScalarFieldEnum)[keyof typeof AddressScalarFieldEnum]
 
 
+export const UserSettingsScalarFieldEnum = {
+  settingsId: 'settingsId',
+  userId: 'userId',
+  displayName: 'displayName',
+  bio: 'bio',
+  themeColor: 'themeColor',
+  notifications: 'notifications',
+  emailUpdates: 'emailUpdates',
+  orderUpdates: 'orderUpdates',
+  promotionalEmails: 'promotionalEmails',
+  smsNotifications: 'smsNotifications',
+  inAppNotifications: 'inAppNotifications',
+  showProfile: 'showProfile',
+  showOrders: 'showOrders',
+  fontSize: 'fontSize',
+  highContrast: 'highContrast',
+  reducedMotion: 'reducedMotion',
+  defaultAddress: 'defaultAddress',
+  preferredTimeSlot: 'preferredTimeSlot',
+  specialInstructions: 'specialInstructions',
+  storeHours: 'storeHours',
+  shippingTime: 'shippingTime',
+  returnPolicy: 'returnPolicy',
+  minimumOrder: 'minimumOrder',
+  freeShippingThreshold: 'freeShippingThreshold',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type UserSettingsScalarFieldEnum = (typeof UserSettingsScalarFieldEnum)[keyof typeof UserSettingsScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -548,4 +581,20 @@ export const AddressOrderByRelevanceFieldEnum = {
 } as const
 
 export type AddressOrderByRelevanceFieldEnum = (typeof AddressOrderByRelevanceFieldEnum)[keyof typeof AddressOrderByRelevanceFieldEnum]
+
+
+export const UserSettingsOrderByRelevanceFieldEnum = {
+  displayName: 'displayName',
+  bio: 'bio',
+  themeColor: 'themeColor',
+  fontSize: 'fontSize',
+  defaultAddress: 'defaultAddress',
+  preferredTimeSlot: 'preferredTimeSlot',
+  specialInstructions: 'specialInstructions',
+  storeHours: 'storeHours',
+  shippingTime: 'shippingTime',
+  returnPolicy: 'returnPolicy'
+} as const
+
+export type UserSettingsOrderByRelevanceFieldEnum = (typeof UserSettingsOrderByRelevanceFieldEnum)[keyof typeof UserSettingsOrderByRelevanceFieldEnum]
 
