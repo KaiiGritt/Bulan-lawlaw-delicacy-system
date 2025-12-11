@@ -7,82 +7,76 @@ datasource db {
   provider = "mysql"
 }
 
-
-// ==================== MAIN MODELS ====================
-
 model User {
-  userId           Int       @id @default(autoincrement())
-  email            String    @unique
-  phoneNumber      String?   @unique
-  name             String?
-  password         String
-  role             String    @default("user") // user, admin, seller
-  remarks          String?   @db.Text
-  profilePicture   String?   @db.LongText
-  emailVerified    Boolean   @default(false)
-
-  resetToken       String?
-  resetTokenExpiry DateTime?
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
-
-  cartItems           CartItem[]
-  orders              Order[]
-  products            Product[]
+  userId              Int                @id @default(autoincrement())
+  email               String             @unique
+  phoneNumber         String?            @unique
+  name                String?
+  password            String
+  role                String             @default("user")
+  remarks             String?            @db.Text
+  profilePicture      String?            @db.LongText
+  emailVerified       Boolean            @default(false)
+  resetToken          String?
+  resetTokenExpiry    DateTime?
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
   addresses           Address[]
-  sellerApplication   SellerApplication?
-  sentMessages        Message[]
-  sellerConversations Conversation[]     @relation("SellerConversations")
-  buyerConversations  Conversation[]     @relation("BuyerConversations")
-  notifications       Notification[]
+  cartItems           CartItem[]
   comments            Comment[]
-  savedRecipes        SavedRecipe[]
-  recipeReviews       RecipeReview[]
+  buyerConversations  Conversation[]     @relation("BuyerConversations")
+  sellerConversations Conversation[]     @relation("SellerConversations")
+  sentMessages        Message[]
+  notifications       Notification[]
+  orders              Order[]
   otps                Otp[]
+  products            Product[]
+  recipeReviews       RecipeReview[]
+  savedRecipes        SavedRecipe[]
+  sellerApplication   SellerApplication?
 
   @@map("users")
 }
 
 model Product {
-  productId   Int      @id @default(autoincrement())
-  name        String
-  description String   @db.Text
-  price       Float
-  category    String   // fresh, dried, processed
-  image       String   @db.LongText
-  stock       Int      @default(0)
-  userId      Int
-  featured    Boolean  @default(false)
-  rating      Float    @default(0)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  user          User           @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  productId     Int            @id @default(autoincrement())
+  name          String
+  description   String         @db.Text
+  price         Float
+  category      String
+  image         String         @db.LongText
+  stock         Int            @default(0)
+  userId        Int
+  featured      Boolean        @default(false)
+  rating        Float          @default(0)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
   cartItems     CartItem[]
-  orderItems    OrderItem[]
-  conversations Conversation[]
   comments      Comment[]
+  conversations Conversation[]
+  orderItems    OrderItem[]
+  user          User           @relation(fields: [userId], references: [userId], onDelete: Cascade)
 
+  @@index([userId], map: "products_userId_fkey")
   @@map("products")
 }
 
 model Recipe {
-  recipeId    Int      @id @default(autoincrement())
-  title       String
-  description String   @db.Text
-  image       String   @db.LongText
-  prepTime    Int
-  cookTime    Int
-  servings    Int
-  difficulty  String   // Beginner, Intermediate, Advanced
-  rating      Float    @default(0)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
+  recipeId     Int                 @id @default(autoincrement())
+  title        String
+  description  String              @db.Text
+  image        String              @db.LongText
+  prepTime     Int
+  cookTime     Int
+  servings     Int
+  difficulty   String
+  rating       Float               @default(0)
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
   ingredients  RecipeIngredient[]
   instructions RecipeInstruction[]
-  savedRecipes SavedRecipe[]
   reviews      RecipeReview[]
+  savedRecipes SavedRecipe[]
 
   @@map("recipes")
 }
@@ -95,6 +89,7 @@ model RecipeIngredient {
   order        Int
   recipe       Recipe  @relation(fields: [recipeId], references: [recipeId], onDelete: Cascade)
 
+  @@index([recipeId], map: "recipe_ingredients_recipeId_fkey")
   @@map("recipe_ingredients")
 }
 
@@ -105,6 +100,7 @@ model RecipeInstruction {
   instruction   String @db.Text
   recipe        Recipe @relation(fields: [recipeId], references: [recipeId], onDelete: Cascade)
 
+  @@index([recipeId], map: "recipe_instructions_recipeId_fkey")
   @@map("recipe_instructions")
 }
 
@@ -115,37 +111,37 @@ model CartItem {
   quantity   Int      @default(1)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
-
-  user    User    @relation(fields: [userId], references: [userId], onDelete: Cascade)
-  product Product @relation(fields: [productId], references: [productId], onDelete: Cascade)
+  product    Product  @relation(fields: [productId], references: [productId], onDelete: Cascade)
+  user       User     @relation(fields: [userId], references: [userId], onDelete: Cascade)
 
   @@unique([userId, productId])
+  @@index([productId], map: "cart_items_productId_fkey")
   @@map("cart_items")
 }
 
 model Order {
-  orderId               Int       @id @default(autoincrement())
+  orderId               Int                    @id @default(autoincrement())
   userId                Int
-  status                String    @default("pending") // pending, processing, shipped, delivered, cancelled
+  status                String                 @default("pending")
   totalAmount           Float
-  shippingAddress       String    @db.Text
-  billingAddress        String    @db.Text
-  paymentMethod         String    // COD, GCash, Bank Transfer, etc.
-  adminApprovalRequired Boolean   @default(false)
+  shippingAddress       String                 @db.Text
+  billingAddress        String                 @db.Text
+  paymentMethod         String
+  adminApprovalRequired Boolean                @default(false)
   cancellationReason    String?
   cancelledAt           DateTime?
   trackingNumber        String?
-  courier               String?   // J&T, LBC, Lalamove, etc.
+  courier               String?
   estimatedDeliveryDate DateTime?
   shippedAt             DateTime?
   deliveredAt           DateTime?
-  createdAt             DateTime  @default(now())
-  updatedAt             DateTime  @updatedAt
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+  orderItems            OrderItem[]
+  trackingHistory       OrderTrackingHistory[]
+  user                  User                   @relation(fields: [userId], references: [userId], onDelete: Cascade)
 
-  user            User                   @relation(fields: [userId], references: [userId], onDelete: Cascade)
-  orderItems      OrderItem[]
-  trackingHistory OrderTrackingHistory[]
-
+  @@index([userId], map: "orders_userId_fkey")
   @@map("orders")
 }
 
@@ -156,10 +152,11 @@ model OrderItem {
   quantity    Int
   price       Float
   createdAt   DateTime @default(now())
+  order       Order    @relation(fields: [orderId], references: [orderId], onDelete: Cascade)
+  product     Product  @relation(fields: [productId], references: [productId], onDelete: Cascade)
 
-  order   Order   @relation(fields: [orderId], references: [orderId], onDelete: Cascade)
-  product Product @relation(fields: [productId], references: [productId], onDelete: Cascade)
-
+  @@index([orderId], map: "order_items_orderId_fkey")
+  @@index([productId], map: "order_items_productId_fkey")
   @@map("order_items")
 }
 
@@ -170,9 +167,9 @@ model OrderTrackingHistory {
   location          String?
   description       String
   createdAt         DateTime @default(now())
+  order             Order    @relation(fields: [orderId], references: [orderId], onDelete: Cascade)
 
-  order Order @relation(fields: [orderId], references: [orderId], onDelete: Cascade)
-
+  @@index([orderId], map: "order_tracking_history_orderId_fkey")
   @@map("order_tracking_history")
 }
 
@@ -187,44 +184,45 @@ model SellerApplication {
   businessLogo  String?  @db.LongText
   primaryId     String?  @db.LongText
   secondaryId   String?  @db.LongText
-  status        String   @default("pending") // pending, approved, rejected
+  status        String   @default("pending")
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
-
-  user User @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  user          User     @relation(fields: [userId], references: [userId], onDelete: Cascade)
 
   @@map("seller_applications")
 }
 
 model Conversation {
-  conversationId Int      @id @default(autoincrement())
+  conversationId Int       @id @default(autoincrement())
   sellerId       Int
   buyerId        Int
   productId      Int
-  status         String   @default("active")
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-
-  seller   User      @relation("SellerConversations", fields: [sellerId], references: [userId], onDelete: Cascade)
-  buyer    User      @relation("BuyerConversations", fields: [buyerId], references: [userId], onDelete: Cascade)
-  product  Product   @relation(fields: [productId], references: [productId], onDelete: Cascade)
-  messages Message[]
+  status         String    @default("active")
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  buyer          User      @relation("BuyerConversations", fields: [buyerId], references: [userId], onDelete: Cascade)
+  product        Product   @relation(fields: [productId], references: [productId], onDelete: Cascade)
+  seller         User      @relation("SellerConversations", fields: [sellerId], references: [userId], onDelete: Cascade)
+  messages       Message[]
 
   @@unique([sellerId, buyerId, productId])
+  @@index([buyerId], map: "conversations_buyerId_fkey")
+  @@index([productId], map: "conversations_productId_fkey")
   @@map("conversations")
 }
 
 model Message {
-  messageId      Int      @id @default(autoincrement())
+  messageId      Int          @id @default(autoincrement())
   conversationId Int
   senderId       Int
   content        String
-  isRead         Boolean  @default(false)
-  createdAt      DateTime @default(now())
+  isRead         Boolean      @default(false)
+  createdAt      DateTime     @default(now())
+  conversation   Conversation @relation(fields: [conversationId], references: [conversationId], onDelete: Cascade)
+  sender         User         @relation(fields: [senderId], references: [userId], onDelete: Cascade)
 
-  conversation Conversation @relation(fields: [conversationId], references: [conversationId], onDelete: Cascade)
-  sender       User         @relation(fields: [senderId], references: [userId], onDelete: Cascade)
-
+  @@index([conversationId], map: "messages_conversationId_fkey")
+  @@index([senderId], map: "messages_senderId_fkey")
   @@map("messages")
 }
 
@@ -233,12 +231,12 @@ model Notification {
   userId         Int
   title          String
   message        String
-  type           String   // order, message, announcement, etc.
+  type           String
   isRead         Boolean  @default(false)
   createdAt      DateTime @default(now())
+  user           User     @relation(fields: [userId], references: [userId], onDelete: Cascade)
 
-  user User @relation(fields: [userId], references: [userId], onDelete: Cascade)
-
+  @@index([userId], map: "notifications_userId_fkey")
   @@map("notifications")
 }
 
@@ -252,11 +250,11 @@ model Comment {
   sellerReplyAt DateTime?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
-
-  product Product @relation(fields: [productId], references: [productId], onDelete: Cascade)
-  user    User    @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  product       Product   @relation(fields: [productId], references: [productId], onDelete: Cascade)
+  user          User      @relation(fields: [userId], references: [userId], onDelete: Cascade)
 
   @@unique([productId, userId])
+  @@index([userId], map: "comments_userId_fkey")
   @@map("comments")
 }
 
@@ -268,11 +266,11 @@ model RecipeReview {
   content   String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  recipe Recipe @relation(fields: [recipeId], references: [recipeId], onDelete: Cascade)
-  user   User   @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  recipe    Recipe   @relation(fields: [recipeId], references: [recipeId], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [userId], onDelete: Cascade)
 
   @@unique([recipeId, userId])
+  @@index([userId], map: "recipe_reviews_userId_fkey")
   @@map("recipe_reviews")
 }
 
@@ -283,11 +281,11 @@ model SavedRecipe {
   notes         String?  @db.Text
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
-
-  user   User   @relation(fields: [userId], references: [userId], onDelete: Cascade)
-  recipe Recipe @relation(fields: [recipeId], references: [recipeId], onDelete: Cascade)
+  recipe        Recipe   @relation(fields: [recipeId], references: [recipeId], onDelete: Cascade)
+  user          User     @relation(fields: [userId], references: [userId], onDelete: Cascade)
 
   @@unique([userId, recipeId])
+  @@index([recipeId], map: "saved_recipes_recipeId_fkey")
   @@map("saved_recipes")
 }
 
@@ -300,10 +298,10 @@ model Otp {
   attempts  Int      @default(0)
   expiresAt DateTime
   createdAt DateTime @default(now())
-
-  user User? @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  user      User?    @relation(fields: [userId], references: [userId], onDelete: Cascade)
 
   @@index([email])
+  @@index([userId], map: "otps_userId_fkey")
   @@map("otps")
 }
 
@@ -336,9 +334,8 @@ model Address {
   isDefault     Boolean  @default(false)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+  user          User     @relation(fields: [userId], references: [userId], onDelete: Cascade)
 
-  user User @relation(fields: [userId], references: [userId], onDelete: Cascade)
-
+  @@index([userId], map: "addresses_userId_fkey")
   @@map("addresses")
 }
-
