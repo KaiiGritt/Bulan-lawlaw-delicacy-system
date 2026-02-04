@@ -96,7 +96,7 @@ export async function PATCH(
         ...updatedOrder.users,
         id: String(updatedOrder.users.userId),
       },
-      order_items: updatedOrder.order_items.map(item => ({
+      order_items: updatedOrder.order_items.map((item: typeof updatedOrder.order_items[number]) => ({
         ...item,
         id: item.orderItemId,
         products: {
@@ -183,7 +183,7 @@ export async function GET(
         ...order.users,
         id: String(order.users.userId),
       },
-      order_items: order.order_items.map(item => ({
+      order_items: order.order_items.map((item: typeof order.order_items[number]) => ({
         ...item,
         id: item.orderItemId,
         products: {

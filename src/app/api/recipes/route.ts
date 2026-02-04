@@ -22,14 +22,17 @@ export async function GET() {
     })
 
     // Map recipeId to id for frontend compatibility
-    const recipes = recipesRaw.map(recipe => ({
+    type RecipeType = typeof recipesRaw[number];
+    type IngType = RecipeType['recipe_ingredients'][number];
+    type InstType = RecipeType['recipe_instructions'][number];
+    const recipes = recipesRaw.map((recipe: RecipeType) => ({
       ...recipe,
       id: String(recipe.recipeId),
-      recipe_ingredients: recipe.recipe_ingredients.map(ing => ({
+      recipe_ingredients: recipe.recipe_ingredients.map((ing: IngType) => ({
         ...ing,
         id: ing.ingredientId,
       })),
-      recipe_instructions: recipe.recipe_instructions.map(inst => ({
+      recipe_instructions: recipe.recipe_instructions.map((inst: InstType) => ({
         ...inst,
         id: inst.instructionId,
       }))

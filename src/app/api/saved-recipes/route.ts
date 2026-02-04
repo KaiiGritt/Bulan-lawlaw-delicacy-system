@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
     });
 
     // Map IDs for frontend compatibility
-    const savedRecipes = savedRecipesRaw.map(saved => ({
+    const savedRecipes = savedRecipesRaw.map((saved: typeof savedRecipesRaw[number]) => ({
       ...saved,
       id: String(saved.savedRecipeId),
       recipeId: String(saved.recipeId),

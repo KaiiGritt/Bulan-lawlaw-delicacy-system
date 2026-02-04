@@ -41,7 +41,9 @@ export async function GET(request: NextRequest) {
     })
 
     // Map to expected format with 'id' fields for frontend compatibility
-    const orders = ordersRaw.map(order => ({
+    type OrderType = typeof ordersRaw[number];
+    type OrderItemType = OrderType['order_items'][number];
+    const orders = ordersRaw.map((order: OrderType) => ({
       ...order,
       id: String(order.orderId),
       users: {
@@ -49,7 +51,7 @@ export async function GET(request: NextRequest) {
         name: order.users.name,
         email: order.users.email,
       },
-      order_items: order.order_items.map(item => ({
+      order_items: order.order_items.map((item: OrderItemType) => ({
         ...item,
         id: item.orderItemId,
         products: {

@@ -26,7 +26,7 @@ export async function GET(
     });
 
     // Map IDs for frontend compatibility
-    const reviews = reviewsRaw.map(review => ({
+    const reviews = reviewsRaw.map((review: typeof reviewsRaw[number]) => ({
       ...review,
       id: review.commentId,
       users: {

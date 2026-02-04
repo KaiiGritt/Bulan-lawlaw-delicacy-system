@@ -55,7 +55,9 @@ export async function GET(request: NextRequest) {
     })
 
     // Map IDs for frontend compatibility
-    const mappedConversations = conversations.map(conv => ({
+    type ConvType = typeof conversations[number];
+    type MsgType = ConvType['messages'][number];
+    const mappedConversations = conversations.map((conv: ConvType) => ({
       ...conv,
       id: conv.conversationId,
       seller: {
@@ -70,7 +72,7 @@ export async function GET(request: NextRequest) {
         ...conv.products,
         id: String(conv.products.productId),
       } : null,
-      messages: conv.messages.map(msg => ({
+      messages: conv.messages.map((msg: MsgType) => ({
         ...msg,
         id: msg.messageId,
         sender: {

@@ -27,7 +27,7 @@ export async function GET(req: NextRequest) {
       });
 
       // Map messageId to id for frontend compatibility
-      const messages = messagesRaw.map(msg => ({
+      const messages = messagesRaw.map((msg: typeof messagesRaw[number]) => ({
         ...msg,
         id: msg.messageId,
         sender: {
@@ -63,7 +63,7 @@ export async function GET(req: NextRequest) {
       });
 
       // Map conversationId to id for frontend compatibility
-      const conversations = conversationsRaw.map(conv => ({
+      const conversations = conversationsRaw.map((conv: typeof conversationsRaw[number]) => ({
         ...conv,
         id: conv.conversationId,
         buyer: {

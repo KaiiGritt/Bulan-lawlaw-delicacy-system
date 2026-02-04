@@ -32,10 +32,12 @@ export async function GET() {
     })
 
     // Map IDs for frontend compatibility
-    const orders = ordersRaw.map(order => ({
+    type OrderType = typeof ordersRaw[number];
+    type ItemType = OrderType['order_items'][number];
+    const orders = ordersRaw.map((order: OrderType) => ({
       ...order,
       id: String(order.orderId),
-      order_items: order.order_items.map(item => ({
+      order_items: order.order_items.map((item: ItemType) => ({
         ...item,
         id: item.orderItemId,
         products: {

@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
     })
 
     // Map to expected format with 'id' field and 'blocked' status for frontend compatibility
-    const users = usersRaw.map(user => ({
+    const users = usersRaw.map((user: typeof usersRaw[number]) => ({
       id: String(user.userId),
       name: user.name,
       email: user.email,

@@ -51,10 +51,11 @@ export async function GET(
     }
 
     // Map IDs for frontend compatibility
+    type ItemType = typeof orderRaw.order_items[number];
     const order = {
       ...orderRaw,
       id: String(orderRaw.orderId),
-      order_items: orderRaw.order_items.map(item => ({
+      order_items: orderRaw.order_items.map((item: ItemType) => ({
         ...item,
         id: item.orderItemId,
         products: {

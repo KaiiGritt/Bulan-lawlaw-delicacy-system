@@ -17,7 +17,7 @@ export async function GET(req: NextRequest) {
     });
 
     // Map IDs for frontend compatibility
-    const notifications = notificationsRaw.map(notif => ({
+    const notifications = notificationsRaw.map((notif: typeof notificationsRaw[number]) => ({
       ...notif,
       id: notif.notificationId,
     }));

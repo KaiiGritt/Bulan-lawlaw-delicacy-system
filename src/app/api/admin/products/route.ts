@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
     });
 
     // Map productId to id for frontend compatibility
-    const products = productsRaw.map(product => ({
+    const products = productsRaw.map((product: typeof productsRaw[number]) => ({
       id: String(product.productId),
       name: product.name,
       image: product.image,

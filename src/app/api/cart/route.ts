@@ -23,7 +23,7 @@ export async function GET() {
     })
 
     // Map IDs for frontend compatibility
-    const cartItems = cartItemsRaw.map(item => ({
+    const cartItems = cartItemsRaw.map((item: typeof cartItemsRaw[number]) => ({
       ...item,
       id: item.cartItemId,
       products: {

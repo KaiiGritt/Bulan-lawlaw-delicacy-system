@@ -80,7 +80,7 @@ export async function GET(request: NextRequest) {
     })
 
     // Map IDs for frontend compatibility
-    const mappedMessages = messages.map(msg => ({
+    const mappedMessages = messages.map((msg: typeof messages[number]) => ({
       ...msg,
       id: msg.messageId,
       sender: {

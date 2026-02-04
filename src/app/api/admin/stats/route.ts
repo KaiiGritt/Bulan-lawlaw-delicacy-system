@@ -52,7 +52,7 @@ export async function GET() {
     });
 
     // Map applicationId to id and userId to id for frontend compatibility
-    const pendingSellerApplications = pendingSellerApplicationsRaw.map(app => ({
+    const pendingSellerApplications = pendingSellerApplicationsRaw.map((app: typeof pendingSellerApplicationsRaw[number]) => ({
       ...app,
       id: app.applicationId,
       users: {

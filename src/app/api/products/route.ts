@@ -36,14 +36,16 @@ export async function GET() {
     })
 
     // Map productId to id for frontend compatibility
-    const products = productsRaw.map(product => ({
+    type ProductType = typeof productsRaw[number];
+    type CommentType = ProductType['comments'][number];
+    const products = productsRaw.map((product: ProductType) => ({
       ...product,
       id: String(product.productId),
       users: {
         ...product.users,
         id: String(product.users.userId),
       },
-      comments: product.comments.map(comment => ({
+      comments: product.comments.map((comment: CommentType) => ({
         ...comment,
         id: comment.commentId,
       }))

@@ -35,7 +35,7 @@ export async function GET() {
     })
 
     // Transform to match expected format
-    const transformed = favorites.map(fav => ({
+    const transformed = favorites.map((fav: typeof favorites[number]) => ({
       id: fav.savedRecipeId.toString(),
       recipeId: fav.recipeId.toString(),
       createdAt: fav.createdAt.toISOString(),

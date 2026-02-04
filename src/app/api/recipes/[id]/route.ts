@@ -48,11 +48,11 @@ export async function GET(
       rating: recipeRaw.rating,
       createdAt: recipeRaw.createdAt,
       // Transform ingredients to strings: "quantity name" or just "name"
-      recipe_ingredients: recipeRaw.recipe_ingredients.map(ing =>
+      recipe_ingredients: recipeRaw.recipe_ingredients.map((ing: typeof recipeRaw.recipe_ingredients[number]) =>
         ing.quantity ? `${ing.quantity} ${ing.name}` : ing.name
       ),
       // Transform instructions to strings: just the instruction text
-      recipe_instructions: recipeRaw.recipe_instructions.map(inst => inst.instruction)
+      recipe_instructions: recipeRaw.recipe_instructions.map((inst: typeof recipeRaw.recipe_instructions[number]) => inst.instruction)
     };
 
     return NextResponse.json(recipe);
