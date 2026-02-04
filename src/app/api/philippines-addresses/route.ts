@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import philippinesData from '../../../data/philippines-addresses.json';
 
+type RegionType = typeof philippinesData.regions[number];
+type ProvinceType = RegionType['provinces'][number];
+type CityType = ProvinceType['cities'][number];
+
 // GET /api/philippines-addresses - Get Philippines address data
 export async function GET(req: NextRequest) {
   try {
@@ -12,7 +16,7 @@ export async function GET(req: NextRequest) {
 
     // Return all regions
     if (!type || type === 'regions') {
-      const regions = philippinesData.regions.map(region => ({
+      const regions = philippinesData.regions.map((region: RegionType) => ({
         id: region.id,
         name: region.name
       }));
@@ -21,11 +25,11 @@ export async function GET(req: NextRequest) {
 
     // Return provinces for a region
     if (type === 'provinces' && regionId) {
-      const region = philippinesData.regions.find(r => r.id === regionId);
+      const region = philippinesData.regions.find((r: RegionType) => r.id === regionId);
       if (!region) {
         return NextResponse.json({ error: 'Region not found' }, { status: 404 });
       }
-      const provinces = region.provinces.map(province => ({
+      const provinces = region.provinces.map((province: ProvinceType) => ({
         id: province.id,
         name: province.name
       }));
@@ -34,15 +38,15 @@ export async function GET(req: NextRequest) {
 
     // Return cities for a province
     if (type === 'cities' && regionId && provinceId) {
-      const region = philippinesData.regions.find(r => r.id === regionId);
+      const region = philippinesData.regions.find((r: RegionType) => r.id === regionId);
       if (!region) {
         return NextResponse.json({ error: 'Region not found' }, { status: 404 });
       }
-      const province = region.provinces.find(p => p.id === provinceId);
+      const province = region.provinces.find((p: ProvinceType) => p.id === provinceId);
       if (!province) {
         return NextResponse.json({ error: 'Province not found' }, { status: 404 });
       }
-      const cities = province.cities.map(city => ({
+      const cities = province.cities.map((city: CityType) => ({
         id: city.id,
         name: city.name,
         postalCode: city.postalCode
@@ -52,15 +56,15 @@ export async function GET(req: NextRequest) {
 
     // Return barangays for a city
     if (type === 'barangays' && regionId && provinceId && cityId) {
-      const region = philippinesData.regions.find(r => r.id === regionId);
+      const region = philippinesData.regions.find((r: RegionType) => r.id === regionId);
       if (!region) {
         return NextResponse.json({ error: 'Region not found' }, { status: 404 });
       }
-      const province = region.provinces.find(p => p.id === provinceId);
+      const province = region.provinces.find((p: ProvinceType) => p.id === provinceId);
       if (!province) {
         return NextResponse.json({ error: 'Province not found' }, { status: 404 });
       }
-      const city = province.cities.find(c => c.id === cityId);
+      const city = province.cities.find((c: CityType) => c.id === cityId);
       if (!city) {
         return NextResponse.json({ error: 'City not found' }, { status: 404 });
       }

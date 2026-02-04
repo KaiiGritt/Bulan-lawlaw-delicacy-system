@@ -111,11 +111,11 @@ export async function POST(request: NextRequest) {
     const recipe = {
       ...recipeRaw,
       id: String(recipeRaw.recipeId),
-      recipe_ingredients: recipeRaw.recipe_ingredients.map(ing => ({
+      recipe_ingredients: recipeRaw.recipe_ingredients.map((ing: typeof recipeRaw.recipe_ingredients[number]) => ({
         ...ing,
         id: ing.ingredientId,
       })),
-      recipe_instructions: recipeRaw.recipe_instructions.map(inst => ({
+      recipe_instructions: recipeRaw.recipe_instructions.map((inst: typeof recipeRaw.recipe_instructions[number]) => ({
         ...inst,
         id: inst.instructionId,
       }))
