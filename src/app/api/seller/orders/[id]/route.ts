@@ -60,7 +60,7 @@ export async function PATCH(
 
     // Check if the seller owns at least one product in the order
     const sellerOwnsProduct = order.order_items.some(
-      item => item.products.userId === parseInt(session.user.id)
+      (item: typeof order.order_items[number]) => item.products.userId === parseInt(session.user.id)
     );
 
     if (!sellerOwnsProduct) {
@@ -171,7 +171,7 @@ export async function GET(
 
     // Calculate seller-specific total
     const sellerTotal = order.order_items.reduce(
-      (sum, item) => sum + (item.price * item.quantity),
+      (sum: number, item: typeof order.order_items[number]) => sum + (item.price * item.quantity),
       0
     );
 
