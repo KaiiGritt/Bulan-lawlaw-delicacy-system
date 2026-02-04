@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
 
     // Step 3: Update product stock in parallel
     await Promise.all(
-      cartItems.map((item) =>
+      cartItems.map((item: { productId: number; quantity: number; products: { price: number } }) =>
         prisma.products.update({
           where: { productId: item.productId },
           data: { stock: { decrement: item.quantity } }
