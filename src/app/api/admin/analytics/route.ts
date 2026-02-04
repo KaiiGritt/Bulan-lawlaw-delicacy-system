@@ -134,15 +134,16 @@ export async function GET(req: NextRequest) {
       }
     });
 
-    users.forEach(user => {
+    type UserType = typeof users[number];
+    users.forEach((user: UserType) => {
       const date = user.createdAt.toISOString().split('T')[0];
       usersByDate[date] = (usersByDate[date] || 0) + 1;
     });
 
     const totalUsers = await prisma.users.count();
     const newUsers = users.length;
-    const buyersCount = users.filter(u => u.role === 'buyer').length;
-    const sellersCount = users.filter(u => u.role === 'seller').length;
+    const buyersCount = users.filter((u: UserType) => u.role === 'buyer').length;
+    const sellersCount = users.filter((u: UserType) => u.role === 'seller').length;
 
     // Abandoned Cart Statistics
     const allCartItems = await prisma.cart_items.findMany({
@@ -156,8 +157,9 @@ export async function GET(req: NextRequest) {
     });
 
     // Group cart items by user to get unique carts
+    type CartItemType = typeof allCartItems[number];
     const cartsByUser: { [userId: string]: typeof allCartItems } = {};
-    allCartItems.forEach(item => {
+    allCartItems.forEach((item: CartItemType) => {
       if (!cartsByUser[item.userId]) {
         cartsByUser[item.userId] = [];
       }
@@ -165,11 +167,11 @@ export async function GET(req: NextRequest) {
     });
 
     const totalCarts = Object.keys(cartsByUser).length;
-    const cartsWithItems = Object.values(cartsByUser).filter(items => items.length > 0).length;
+    const cartsWithItems = Object.values(cartsByUser).filter((items: typeof allCartItems) => items.length > 0).length;
 
     // Calculate potential revenue from abandoned carts
-    const abandonedCartValue = Object.values(cartsByUser).reduce((sum, items) => {
-      const cartValue = items.reduce((itemSum, item) =>
+    const abandonedCartValue = Object.values(cartsByUser).reduce((sum: number, items: typeof allCartItems) => {
+      const cartValue = items.reduce((itemSum: number, item: CartItemType) =>
         itemSum + (item.products.price * item.quantity), 0
       );
       return sum + cartValue;
@@ -210,7 +212,8 @@ export async function GET(req: NextRequest) {
       _count: true
     });
 
-    const statusDistribution = ordersByStatus.reduce((acc, item) => {
+    type StatusType = typeof ordersByStatus[number];
+    const statusDistribution = ordersByStatus.reduce((acc: { [key: string]: number }, item: StatusType) => {
       acc[item.status] = item._count;
       return acc;
     }, {} as { [key: string]: number });
