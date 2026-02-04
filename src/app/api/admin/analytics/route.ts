@@ -47,8 +47,9 @@ export async function GET(req: NextRequest) {
     const averageOrderValue = totalOrders > 0 ? totalSales / totalOrders : 0;
 
     // Sales by date
+    type OrderType = typeof orders[number];
     const salesByDate: { [key: string]: number } = {};
-    orders.forEach(order => {
+    orders.forEach((order: OrderType) => {
       const date = order.createdAt.toISOString().split('T')[0];
       salesByDate[date] = (salesByDate[date] || 0) + order.totalAmount;
     });
@@ -108,8 +109,8 @@ export async function GET(req: NextRequest) {
 
     // Count orders per seller
     for (const sellerId in sellerSales) {
-      const sellerOrders = orders.filter(order =>
-        order.order_items.some(item => {
+      const sellerOrders = orders.filter((order: OrderType) =>
+        order.order_items.some((item: OrderType['order_items'][number]) => {
           const product = productSales[item.productId];
           return product !== undefined;
         })
