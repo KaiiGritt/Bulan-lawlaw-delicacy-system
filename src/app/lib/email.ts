@@ -1,12 +1,10 @@
 // Email service with improved deliverability and professional templates
 
-import sgMail from '@sendgrid/mail'
+import { Resend } from 'resend'
 import { sendEmailFallback, sendOtpEmailFallback } from './email-fallback'
 
-// Only set API key if it exists
-if (process.env.SENDGRID_API_KEY) {
-  sgMail.setApiKey(process.env.SENDGRID_API_KEY)
-}
+// Initialize Resend client
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null
 
 export interface EmailOptions {
   to: string
@@ -24,7 +22,7 @@ export interface ShippingAddress {
 }
 
 export interface OrderItem {
-  product: {
+  products: {
     name: string
   }
   quantity: number
@@ -33,12 +31,12 @@ export interface OrderItem {
 
 // Generic send email function with improved deliverability
 export async function sendEmail(options: EmailOptions) {
-  const senderEmail = process.env.SENDGRID_SENDER_EMAIL || '';
+  const senderEmail = process.env.RESEND_SENDER_EMAIL || 'onboarding@resend.dev';
   const senderName = 'Bulan Lawlaw Delicacy System';
 
-  // Check if SendGrid is properly configured
-  if (!senderEmail || !process.env.SENDGRID_API_KEY) {
-    console.warn('⚠️ SendGrid not configured, using fallback email logging');
+  // Check if Resend is properly configured
+  if (!resend || !process.env.RESEND_API_KEY) {
+    console.warn('⚠️ Resend not configured, using fallback email logging');
     await sendEmailFallback(options);
     return;
   }
@@ -46,58 +44,22 @@ export async function sendEmail(options: EmailOptions) {
   try {
     console.log(`Attempting to send email to: ${options.to} from: ${senderEmail}`);
 
-    await sgMail.send({
+    const { data, error } = await resend.emails.send({
+      from: `${senderName} <${senderEmail}>`,
       to: options.to,
-      from: {
-        email: senderEmail,
-        name: senderName
-      },
-      replyTo: {
-        email: senderEmail,
-        name: senderName
-      },
       subject: options.subject,
       html: options.html,
       text: options.text || options.subject,
-      // Remove high priority headers - they can trigger spam filters
-      headers: {
-        'X-Entity-Ref-ID': `blds-${Date.now()}`,
-        'List-Unsubscribe': `<mailto:${senderEmail}?subject=unsubscribe>`,
-      },
-      // Disable click/open tracking - tracking links can trigger spam filters
-      trackingSettings: {
-        clickTracking: {
-          enable: false,
-          enableText: false
-        },
-        openTracking: {
-          enable: false
-        },
-        subscriptionTracking: {
-          enable: false
-        }
-      },
-      // Mail settings
-      mailSettings: {
-        sandboxMode: {
-          enable: false
-        },
-        bypassListManagement: {
-          enable: false
-        }
-      },
-      // Category for better analytics
-      categories: ['transactional'],
     });
 
-    console.log(`✅ Email sent successfully to ${options.to}`);
-  } catch (error: any) {
-    console.error('❌ Error sending email via SendGrid:');
-    if (error.response && error.response.body) {
-      console.error('SendGrid Error Response:', JSON.stringify(error.response.body, null, 2));
-    } else {
-      console.error('Error details:', error.message || error);
+    if (error) {
+      throw error;
     }
+
+    console.log(`✅ Email sent successfully to ${options.to}`, data);
+  } catch (error: any) {
+    console.error('❌ Error sending email via Resend:');
+    console.error('Error details:', error.message || error);
 
     // Use fallback instead of throwing error
     console.warn('⚠️ Falling back to console logging');
@@ -185,7 +147,7 @@ function getEmailTemplate(content: string): string {
               <td align="center" style="padding:10px;">
                 <p style="font-size:11px; color:#9ca3af; margin:0; line-height:1.4;">
                   You received this email because you have an account with Bulan Lawlaw Delicacy System.<br>
-                  If you believe this was sent in error, please contact us at ${process.env.SENDGRID_SENDER_EMAIL}
+                  If you believe this was sent in error, please contact us at ${process.env.RESEND_SENDER_EMAIL || 'support@bulanlawlaw.com'}
                 </p>
               </td>
             </tr>
@@ -200,9 +162,9 @@ function getEmailTemplate(content: string): string {
 
 // OTP verification email with improved template
 export async function sendOtpEmail(email: string, name: string, otpCode: string) {
-  // Check if SendGrid is configured, otherwise use fallback
-  if (!process.env.SENDGRID_API_KEY || !process.env.SENDGRID_SENDER_EMAIL) {
-    console.warn('⚠️ SendGrid not configured, using fallback OTP logging');
+  // Check if Resend is configured, otherwise use fallback
+  if (!resend || !process.env.RESEND_API_KEY) {
+    console.warn('⚠️ Resend not configured, using fallback OTP logging');
     await sendOtpEmailFallback(email, name, otpCode);
     return;
   }
@@ -298,14 +260,14 @@ export async function sendOrderConfirmation(email: string, orderDetails: {
   orderId: string
   totalAmount: number
   shippingAddress: ShippingAddress
-  orderItems: OrderItem[]
+  order_items: OrderItem[]
 }) {
-  const { orderId, totalAmount, shippingAddress, orderItems } = orderDetails
+  const { orderId, totalAmount, shippingAddress, order_items } = orderDetails
 
-  const itemsHtml = orderItems.map(item => `
+  const itemsHtml = order_items.map(item => `
     <tr style="border-bottom:1px solid #e5e7eb;">
       <td style="padding:15px 10px; font-size:14px; color:#374151;">
-        <strong>${item.product.name}</strong>
+        <strong>${item.products.name}</strong>
       </td>
       <td style="padding:15px 10px; text-align:center; font-size:14px; color:#6b7280;">
         ${item.quantity}
