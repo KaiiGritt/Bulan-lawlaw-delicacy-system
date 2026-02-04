@@ -14,7 +14,7 @@ export async function PATCH(
 
   try {
     // Delete the product
-    const product = await prisma.product.delete({
+    const product = await prisma.products.delete({
       where: { productId: parseInt(id) },
     });
     return NextResponse.json(product);

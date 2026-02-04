@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Find the OTP record
-    const otpRecord = await prisma.otp.findFirst({
+    const otpRecord = await prisma.otps.findFirst({
       where: {
         email,
         verified: false,
@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
 
     // Check if OTP has expired
     if (new Date() > otpRecord.expiresAt) {
-      await prisma.otp.delete({ where: { otpId: otpRecord.otpId } });
+      await prisma.otps.delete({ where: { otpId: otpRecord.otpId } });
       return NextResponse.json(
         { error: 'OTP has expired. Please request a new one.' },
         { status: 400 }
@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
 
     // Check max attempts
     if (otpRecord.attempts >= MAX_ATTEMPTS) {
-      await prisma.otp.delete({ where: { otpId: otpRecord.otpId } });
+      await prisma.otps.delete({ where: { otpId: otpRecord.otpId } });
       return NextResponse.json(
         { error: 'Maximum attempts exceeded. Please request a new OTP.' },
         { status: 429 }
@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
     // Verify the OTP code
     if (otpRecord.code !== code) {
       // Increment attempts
-      await prisma.otp.update({
+      await prisma.otps.update({
         where: { otpId: otpRecord.otpId },
         data: { attempts: otpRecord.attempts + 1 },
       });
@@ -70,13 +70,13 @@ export async function POST(request: NextRequest) {
     }
 
     // OTP is correct - mark as verified
-    await prisma.otp.update({
+    await prisma.otps.update({
       where: { otpId: otpRecord.otpId },
       data: { verified: true },
     });
 
     // Check if this is a new registration (pending registration exists)
-    const pendingRegistration = await prisma.pendingRegistration.findUnique({
+    const pendingRegistration = await prisma.pending_registrations.findUnique({
       where: { email },
     });
 
@@ -84,8 +84,8 @@ export async function POST(request: NextRequest) {
       // Check if pending registration has expired
       if (new Date() > pendingRegistration.expiresAt) {
         // Clean up expired pending registration
-        await prisma.pendingRegistration.delete({ where: { email } });
-        await prisma.otp.deleteMany({ where: { email } });
+        await prisma.pending_registrations.delete({ where: { email } });
+        await prisma.otps.deleteMany({ where: { email } });
 
         return NextResponse.json(
           { error: 'Registration has expired. Please register again.' },
@@ -94,22 +94,22 @@ export async function POST(request: NextRequest) {
       }
 
       // Create the actual user from pending registration
-      const user = await prisma.user.create({
+      const user = await prisma.users.create({
         data: {
           name: pendingRegistration.name,
           email: pendingRegistration.email,
           phoneNumber: pendingRegistration.phoneNumber,
           password: pendingRegistration.password,
           role: pendingRegistration.role,
-          emailVerified: true, // Already verified via OTP
+          emailVerified: true // Already verified via OTP
         },
       });
 
       // Delete the pending registration
-      await prisma.pendingRegistration.delete({ where: { email } });
+      await prisma.pending_registrations.delete({ where: { email } });
 
       // Clean up all OTPs for this email
-      await prisma.otp.deleteMany({ where: { email } });
+      await prisma.otps.deleteMany({ where: { email } });
 
       console.log('User created successfully after OTP verification:', user.email);
 
@@ -122,17 +122,17 @@ export async function POST(request: NextRequest) {
 
     // If no pending registration, this might be for an existing user (e.g., resend verification)
     // Update user's email verification status if user exists
-    const existingUser = await prisma.user.findUnique({ where: { email } });
+    const existingUser = await prisma.users.findUnique({ where: { email } });
 
     if (existingUser) {
-      await prisma.user.update({
+      await prisma.users.update({
         where: { email },
         data: { emailVerified: true },
       });
     }
 
     // Clean up old OTPs for this email
-    await prisma.otp.deleteMany({
+    await prisma.otps.deleteMany({
       where: {
         email,
         otpId: { not: otpRecord.otpId },

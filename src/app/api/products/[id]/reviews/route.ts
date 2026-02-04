@@ -11,10 +11,10 @@ export async function GET(
   try {
     const { id } = await params;
 
-    const reviewsRaw = await prisma.comment.findMany({
+    const reviewsRaw = await prisma.comments.findMany({
       where: { productId: parseInt(id) },
       include: {
-        user: {
+        users: {
           select: {
             userId: true,
             name: true,
@@ -29,9 +29,9 @@ export async function GET(
     const reviews = reviewsRaw.map(review => ({
       ...review,
       id: review.commentId,
-      user: {
-        ...review.user,
-        id: String(review.user.userId),
+      users: {
+        ...review.users,
+        id: String(review.users.userId),
       }
     }));
 
@@ -60,7 +60,7 @@ export async function POST(
     }
 
     // Check if product exists
-    const product = await prisma.product.findUnique({
+    const product = await prisma.products.findUnique({
       where: { productId: parseInt(id) },
     });
 
@@ -69,7 +69,7 @@ export async function POST(
     }
 
     // Check if user already reviewed this product
-    const existingReview = await prisma.comment.findFirst({
+    const existingReview = await prisma.comments.findFirst({
       where: {
         productId: parseInt(id),
         userId: parseInt(session.user.id),
@@ -78,7 +78,7 @@ export async function POST(
 
     if (existingReview) {
       // Update existing review
-      await prisma.comment.update({
+      await prisma.comments.update({
         where: { commentId: existingReview.commentId },
         data: {
           rating,
@@ -87,7 +87,7 @@ export async function POST(
       });
     } else {
       // Create new review
-      await prisma.comment.create({
+      await prisma.comments.create({
         data: {
           productId: parseInt(id),
           userId: parseInt(session.user.id),
@@ -98,7 +98,7 @@ export async function POST(
     }
 
     // Update product rating
-    const allComments = await prisma.comment.findMany({
+    const allComments = await prisma.comments.findMany({
       where: { productId: parseInt(id) },
       select: { rating: true },
     });
@@ -107,7 +107,7 @@ const averageRating = allComments.length > 0
   ? allComments.reduce((sum: number, comment: { rating: number }) => sum + comment.rating, 0) / allComments.length
   : 0;
 
-    await prisma.product.update({
+    await prisma.products.update({
       where: { productId: parseInt(id) },
       data: { rating: averageRating },
     });
@@ -133,7 +133,7 @@ export async function DELETE(
     const { id } = await params;
 
     // Find and delete the review
-    const review = await prisma.comment.findFirst({
+    const review = await prisma.comments.findFirst({
       where: {
         productId: parseInt(id),
         userId: parseInt(session.user.id),
@@ -144,12 +144,12 @@ export async function DELETE(
       return NextResponse.json({ error: 'Review not found' }, { status: 404 });
     }
 
-    await prisma.comment.delete({
+    await prisma.comments.delete({
       where: { commentId: review.commentId },
     });
 
     // Update product average rating
-    const allComments = await prisma.comment.findMany({
+    const allComments = await prisma.comments.findMany({
       where: { productId: parseInt(id) },
       select: { rating: true },
     });
@@ -158,7 +158,7 @@ export async function DELETE(
       ? allComments.reduce((sum: number, comment: { rating: number }) => sum + comment.rating, 0) / allComments.length
       : 0;
 
-    await prisma.product.update({
+    await prisma.products.update({
       where: { productId: parseInt(id) },
       data: { rating: averageRating },
     });

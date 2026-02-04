@@ -29,7 +29,7 @@ export async function PATCH(
 
     const { id } = await params
 
-    const user = await prisma.user.update({
+    const user = await prisma.users.update({
       where: { userId: parseInt(id) },
       data: { remarks: blocked ? 'Blocked by admin' : null },
       select: {

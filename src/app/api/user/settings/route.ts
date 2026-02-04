@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Try to get existing settings
-    let settings = await prisma.userSettings.findUnique({
+    let settings = await prisma.user_settings.findUnique({
       where: { userId: parseInt(session.user.id) }
     })
 
@@ -92,7 +92,7 @@ export async function PUT(request: NextRequest) {
     }
 
     // Upsert the settings (create if not exists, update if exists)
-    const settings = await prisma.userSettings.upsert({
+    const settings = await prisma.user_settings.upsert({
       where: { userId },
       create: {
         userId,
@@ -103,7 +103,7 @@ export async function PUT(request: NextRequest) {
 
     // Also update user's name if displayName changed
     if (body.displayName) {
-      await prisma.user.update({
+      await prisma.users.update({
         where: { userId },
         data: { name: body.displayName }
       })

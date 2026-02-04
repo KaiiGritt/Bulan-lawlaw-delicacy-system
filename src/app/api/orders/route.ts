@@ -15,14 +15,14 @@ export async function GET() {
       )
     }
 
-    const ordersRaw = await prisma.order.findMany({
+    const ordersRaw = await prisma.orders.findMany({
       where: { userId: parseInt(session.user.id) },
       include: {
-        orderItems: {
+        order_items: {
           include: {
-            product: {
+            products: {
               include: {
-                user: true
+                users: true
               }
             }
           }
@@ -35,15 +35,15 @@ export async function GET() {
     const orders = ordersRaw.map(order => ({
       ...order,
       id: String(order.orderId),
-      orderItems: order.orderItems.map(item => ({
+      order_items: order.order_items.map(item => ({
         ...item,
         id: item.orderItemId,
-        product: {
-          ...item.product,
-          id: String(item.product.productId),
-          user: {
-            ...item.product.user,
-            id: String(item.product.user.userId),
+        products: {
+          ...item.products,
+          id: String(item.products.productId),
+          users: {
+            ...item.products.users,
+            id: String(item.products.users.userId),
           }
         }
       }))

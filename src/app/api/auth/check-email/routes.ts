@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ exists: false })
     }
 
-    const existingUser = await prisma.user.findUnique({
+    const existingUser = await prisma.users.findUnique({
       where: { email }
     })
 

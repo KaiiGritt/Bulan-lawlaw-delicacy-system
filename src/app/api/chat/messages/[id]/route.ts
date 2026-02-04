@@ -14,13 +14,13 @@ export async function DELETE(
   const messageId = (await context.params).id;
 
   try {
-    const message = await prisma.message.findUnique({
+    const message = await prisma.messages.findUnique({
       where: { messageId: parseInt(messageId) },
       include: {
-        conversation: {
+        conversations: {
           include: {
-            seller: true,
-            buyer: true,
+            users_conversations_sellerIdTousers: true,
+            users_conversations_buyerIdTousers: true,
           },
         },
       },
@@ -33,11 +33,11 @@ export async function DELETE(
     const userId = parseInt(session.user.id);
 
     // Check if user is sender of message or seller in conversation
-    if (message.senderId !== userId && message.conversation.seller.userId !== userId) {
+    if (message.senderId !== userId && message.conversations.users_conversations_sellerIdTousers.userId !== userId) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
-    await prisma.message.delete({ where: { messageId: parseInt(messageId) } });
+    await prisma.messages.delete({ where: { messageId: parseInt(messageId) } });
 
     return NextResponse.json({ success: true });
 

@@ -14,18 +14,18 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    const ordersRaw = await prisma.order.findMany({
+    const ordersRaw = await prisma.orders.findMany({
       include: {
-        user: {
+        users: {
           select: {
             userId: true,
             name: true,
             email: true
           }
         },
-        orderItems: {
+        order_items: {
           include: {
-            product: {
+            products: {
               select: {
                 productId: true,
                 name: true,
@@ -44,18 +44,18 @@ export async function GET(request: NextRequest) {
     const orders = ordersRaw.map(order => ({
       ...order,
       id: String(order.orderId),
-      user: {
-        id: String(order.user.userId),
-        name: order.user.name,
-        email: order.user.email,
+      users: {
+        id: String(order.users.userId),
+        name: order.users.name,
+        email: order.users.email,
       },
-      orderItems: order.orderItems.map(item => ({
+      order_items: order.order_items.map(item => ({
         ...item,
         id: item.orderItemId,
-        product: {
-          id: String(item.product.productId),
-          name: item.product.name,
-          image: item.product.image,
+        products: {
+          id: String(item.products.productId),
+          name: item.products.name,
+          image: item.products.image,
         }
       }))
     }))

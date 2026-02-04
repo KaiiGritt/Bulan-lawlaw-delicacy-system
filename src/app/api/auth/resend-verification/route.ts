@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Find user by email
-    const user = await prisma.user.findUnique({
+    const user = await prisma.users.findUnique({
       where: { email }
     })
 
@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Delete any existing OTPs for this user
-    await prisma.otp.deleteMany({
+    await prisma.otps.deleteMany({
       where: { email },
     });
 
@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
     const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
 
     // Save OTP to database
-    await prisma.otp.create({
+    await prisma.otps.create({
       data: {
         userId: user.userId,
         email,

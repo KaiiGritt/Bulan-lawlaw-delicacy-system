@@ -11,10 +11,10 @@ export async function GET(
   try {
     const { id } = await params;
 
-    const reviewsRaw = await prisma.recipeReview.findMany({
+    const reviewsRaw = await prisma.recipe_reviews.findMany({
       where: { recipeId: parseInt(id) },
       include: {
-        user: {
+        users: {
           select: {
             userId: true,
             name: true,
@@ -29,9 +29,9 @@ export async function GET(
     const reviews = reviewsRaw.map(review => ({
       ...review,
       id: review.reviewId,
-      user: {
-        ...review.user,
-        id: String(review.user.userId),
+      users: {
+        ...review.users,
+        id: String(review.users.userId),
       }
     }));
 
@@ -61,7 +61,7 @@ export async function POST(
     }
 
     // Check if recipe exists
-    const recipe = await prisma.recipe.findUnique({
+    const recipe = await prisma.recipes.findUnique({
       where: { recipeId: parseInt(id) },
     });
 
@@ -70,7 +70,7 @@ export async function POST(
     }
 
     // Check if user already reviewed this recipe
-    const existingReview = await prisma.recipeReview.findUnique({
+    const existingReview = await prisma.recipe_reviews.findUnique({
       where: {
         recipeId_userId: {
           recipeId: parseInt(id),
@@ -81,7 +81,7 @@ export async function POST(
 
     if (existingReview) {
       // Update existing review
-      await prisma.recipeReview.update({
+      await prisma.recipe_reviews.update({
         where: { reviewId: existingReview.reviewId },
         data: {
           rating,
@@ -90,7 +90,7 @@ export async function POST(
       });
     } else {
       // Create new review
-      await prisma.recipeReview.create({
+      await prisma.recipe_reviews.create({
         data: {
           recipeId: parseInt(id),
           userId: parseInt(session.user.id),
@@ -101,7 +101,7 @@ export async function POST(
     }
 
     // Update recipe average rating
-    const allReviews = await prisma.recipeReview.findMany({
+    const allReviews = await prisma.recipe_reviews.findMany({
       where: { recipeId: parseInt(id) },
       select: { rating: true },
     });
@@ -110,7 +110,7 @@ export async function POST(
       ? allReviews.reduce((sum, review) => sum + review.rating, 0) / allReviews.length
       : 0;
 
-    await prisma.recipe.update({
+    await prisma.recipes.update({
       where: { recipeId: parseInt(id) },
       data: { rating: averageRating },
     });
@@ -136,7 +136,7 @@ export async function DELETE(
     const { id } = await params;
 
     // Find and delete the review
-    const review = await prisma.recipeReview.findUnique({
+    const review = await prisma.recipe_reviews.findUnique({
       where: {
         recipeId_userId: {
           recipeId: parseInt(id),
@@ -149,12 +149,12 @@ export async function DELETE(
       return NextResponse.json({ error: 'Review not found' }, { status: 404 });
     }
 
-    await prisma.recipeReview.delete({
+    await prisma.recipe_reviews.delete({
       where: { reviewId: review.reviewId },
     });
 
     // Update recipe average rating
-    const allReviews = await prisma.recipeReview.findMany({
+    const allReviews = await prisma.recipe_reviews.findMany({
       where: { recipeId: parseInt(id) },
       select: { rating: true },
     });
@@ -163,7 +163,7 @@ export async function DELETE(
       ? allReviews.reduce((sum, review) => sum + review.rating, 0) / allReviews.length
       : 0;
 
-    await prisma.recipe.update({
+    await prisma.recipes.update({
       where: { recipeId: parseInt(id) },
       data: { rating: averageRating },
     });

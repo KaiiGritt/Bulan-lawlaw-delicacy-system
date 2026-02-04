@@ -28,13 +28,13 @@ export async function POST(
     }
 
     // Get the order
-    const order = await prisma.order.findUnique({
+    const order = await prisma.orders.findUnique({
       where: { orderId: parseInt(id) },
       include: {
-        user: true,
-        orderItems: {
+        users: true,
+        order_items: {
           include: {
-            product: true
+            products: true
           }
         }
       }
@@ -61,20 +61,20 @@ export async function POST(
       )
     }
 
-    const updatedOrder = await prisma.order.update({
+    const updatedOrder = await prisma.orders.update({
       where: { orderId: parseInt(id) },
       data: {
         status: 'cancelled',
         adminApprovalRequired: false,
         cancellationReason: reason.trim(),
         cancelledAt: new Date(),
-        updatedAt: new Date()
+        
       }
     })
 
     // Restore product stock
-    for (const item of order.orderItems) {
-      await prisma.product.update({
+    for (const item of order.order_items) {
+      await prisma.products.update({
         where: { productId: item.productId },
         data: {
           stock: {
@@ -85,7 +85,7 @@ export async function POST(
     }
 
     // Create notification for the user
-    await prisma.notification.create({
+    await prisma.notifications.create({
       data: {
         userId: order.userId,
         title: 'Order Cancelled by Admin',

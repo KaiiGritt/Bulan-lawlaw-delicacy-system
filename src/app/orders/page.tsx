@@ -39,7 +39,7 @@ export default function OrdersPage() {
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [cancellationReason, setCancellationReason] = useState('');
-  const [activeTab, setActiveTab] = useState<'all' | 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled'>('all');
+  const [activeTab, setActiveTab] = useState<'all' | 'pending' | 'preparing' | 'ready' | 'cancelled'>('all');
 
   useEffect(() => {
     if (status === 'loading') return;
@@ -94,7 +94,7 @@ export default function OrdersPage() {
   };
 
   const canCancelOrder = (order: Order) => {
-    return ['pending', 'processing'].includes(order.status);
+    return ['pending', 'preparing'].includes(order.status);
   };
 
   const filteredOrders = activeTab === 'all'
@@ -153,7 +153,7 @@ export default function OrdersPage() {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
           {[
             {
               key: 'all',
@@ -164,38 +164,31 @@ export default function OrdersPage() {
             },
             {
               key: 'pending',
-              label: 'To Pay',
+              label: 'Order Placed',
               count: orders.filter(o => o.status === 'pending').length,
               color: 'bg-orange-100 text-orange-800 border-orange-200',
-              iconPath: 'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z'
-            },
-            {
-              key: 'processing',
-              label: 'To Ship',
-              count: orders.filter(o => o.status === 'processing').length,
-              color: 'bg-yellow-100 text-yellow-800 border-yellow-200',
               iconPath: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4'
             },
             {
-              key: 'shipped',
-              label: 'To Receive',
-              count: orders.filter(o => o.status === 'shipped').length,
-              color: 'bg-blue-100 text-blue-800 border-blue-200',
-              iconPath: 'M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4'
+              key: 'preparing',
+              label: 'Preparing',
+              count: orders.filter(o => o.status === 'preparing').length,
+              color: 'bg-yellow-100 text-yellow-800 border-yellow-200',
+              iconPath: 'M12 6v6m0 0v6m0-6h6m-6 0H6'
             },
             {
-              key: 'delivered',
-              label: 'Completed',
-              count: orders.filter(o => o.status === 'delivered').length,
+              key: 'ready',
+              label: 'Ready for Pickup',
+              count: orders.filter(o => o.status === 'ready').length,
               color: 'bg-green-100 text-green-800 border-green-200',
-              iconPath: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'
+              iconPath: 'M5 13l4 4L19 7'
             },
             {
               key: 'cancelled',
               label: 'Cancelled',
               count: orders.filter(o => o.status === 'cancelled').length,
               color: 'bg-red-100 text-red-800 border-red-200',
-              iconPath: 'M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z'
+              iconPath: 'M6 18L18 6M6 6l12 12'
             },
           ].map((stat) => (
             <motion.button
@@ -275,18 +268,19 @@ export default function OrdersPage() {
                     </div>
                     <span
                       className={`px-4 py-2 rounded-full text-sm font-semibold ${
-                        order.status === 'delivered'
+                        order.status === 'ready'
                           ? 'bg-green-100 text-green-700'
-                          : order.status === 'shipped'
-                          ? 'bg-blue-100 text-blue-700'
-                          : order.status === 'processing'
+                          : order.status === 'preparing'
                           ? 'bg-yellow-100 text-yellow-700'
                           : order.status === 'cancelled'
                           ? 'bg-red-100 text-red-700'
                           : 'bg-orange-100 text-orange-700'
                       }`}
                     >
-                      {order.status.toUpperCase()}
+                      {order.status === 'pending' ? 'ORDER PLACED' :
+                       order.status === 'preparing' ? 'PREPARING' :
+                       order.status === 'ready' ? 'READY FOR PICKUP' :
+                       order.status.toUpperCase()}
                     </span>
                   </div>
 

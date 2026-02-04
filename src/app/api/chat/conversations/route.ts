@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    const conversations = await prisma.conversation.findMany({
+    const conversations = await prisma.conversations.findMany({
       where: {
         OR: [
           { sellerId: parseInt(session.user.id) },
@@ -23,12 +23,12 @@ export async function GET(request: NextRequest) {
         ]
       },
       include: {
-        seller: {
+        users_conversations_sellerIdTousers: {
           select: {
             userId: true,
             name: true,
             email: true,
-            sellerApplication: {
+            seller_applications: {
               select: {
                 businessName: true,
                 businessLogo: true
@@ -36,15 +36,15 @@ export async function GET(request: NextRequest) {
             }
           }
         },
-        buyer: {
+        users_conversations_buyerIdTousers: {
           select: { userId: true, name: true, email: true }
         },
-        product: {
+        products: {
           select: { productId: true, name: true, image: true }
         },
         messages: {
           include: {
-            sender: {
+            users: {
               select: { userId: true, name: true, email: true }
             }
           },
@@ -59,23 +59,23 @@ export async function GET(request: NextRequest) {
       ...conv,
       id: conv.conversationId,
       seller: {
-        ...conv.seller,
-        id: String(conv.seller.userId),
+        ...conv.users_conversations_sellerIdTousers,
+        id: String(conv.users_conversations_sellerIdTousers.userId),
       },
       buyer: {
-        ...conv.buyer,
-        id: String(conv.buyer.userId),
+        ...conv.users_conversations_buyerIdTousers,
+        id: String(conv.users_conversations_buyerIdTousers.userId),
       },
-      product: conv.product ? {
-        ...conv.product,
-        id: String(conv.product.productId),
+      product: conv.products ? {
+        ...conv.products,
+        id: String(conv.products.productId),
       } : null,
       messages: conv.messages.map(msg => ({
         ...msg,
         id: msg.messageId,
         sender: {
-          ...msg.sender,
-          id: String(msg.sender.userId),
+          ...msg.users,
+          id: String(msg.users.userId),
         }
       }))
     }));
@@ -112,7 +112,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Get the product to find the seller
-    const product = await prisma.product.findUnique({
+    const product = await prisma.products.findUnique({
       where: { productId: productId },
       select: { userId: true }
     })
@@ -125,7 +125,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if conversation already exists
-    const existingConversation = await prisma.conversation.findFirst({
+    const existingConversation = await prisma.conversations.findFirst({
       where: {
         sellerId: product.userId,
         buyerId: parseInt(session.user.id),
@@ -138,7 +138,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Create new conversation and first message
-    const conversation = await prisma.conversation.create({
+    const conversation = await prisma.conversations.create({
       data: {
         sellerId: product.userId,
         buyerId: parseInt(session.user.id),
@@ -151,12 +151,12 @@ export async function POST(request: NextRequest) {
         }
       },
       include: {
-        seller: {
+        users_conversations_sellerIdTousers: {
           select: {
             userId: true,
             name: true,
             email: true,
-            sellerApplication: {
+            seller_applications: {
               select: {
                 businessName: true,
                 businessLogo: true
@@ -164,15 +164,15 @@ export async function POST(request: NextRequest) {
             }
           }
         },
-        buyer: {
+        users_conversations_buyerIdTousers: {
           select: { userId: true, name: true, email: true }
         },
-        product: {
+        products: {
           select: { productId: true, name: true, image: true }
         },
         messages: {
           include: {
-            sender: {
+            users: {
               select: { userId: true, name: true, email: true }
             }
           },

@@ -17,7 +17,7 @@ export async function GET(
 
     const { id } = await params;
 
-    const address = await prisma.address.findUnique({
+    const address = await prisma.addresses.findUnique({
       where: {
         addressId: parseInt(id)
       }
@@ -57,7 +57,7 @@ export async function PUT(
 
     const { id } = await params;
 
-    const existingAddress = await prisma.address.findUnique({
+    const existingAddress = await prisma.addresses.findUnique({
       where: { addressId: parseInt(id) }
     });
 
@@ -112,7 +112,7 @@ export async function PUT(
 
     // If setting as default, remove default from other addresses
     if (isDefault && !existingAddress.isDefault) {
-      await prisma.address.updateMany({
+      await prisma.addresses.updateMany({
         where: {
           userId: parseInt(session.user.id),
           isDefault: true,
@@ -124,7 +124,7 @@ export async function PUT(
       });
     }
 
-    const updatedAddress = await prisma.address.update({
+    const updatedAddress = await prisma.addresses.update({
       where: { addressId: parseInt(id) },
       data: {
         fullName,
@@ -165,7 +165,7 @@ export async function DELETE(
 
     const { id } = await params;
 
-    const address = await prisma.address.findUnique({
+    const address = await prisma.addresses.findUnique({
       where: { addressId: parseInt(id) }
     });
 
@@ -178,7 +178,7 @@ export async function DELETE(
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
-    await prisma.address.delete({
+    await prisma.addresses.delete({
       where: { addressId: parseInt(id) }
     });
 

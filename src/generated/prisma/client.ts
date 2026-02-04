@@ -29,8 +29,8 @@ export * from "./enums"
  * @example
  * ```
  * const prisma = new PrismaClient()
- * // Fetch zero or more Users
- * const users = await prisma.user.findMany()
+ * // Fetch zero or more Addresses
+ * const addresses = await prisma.addresses.findMany()
  * ```
  * 
  * Read more in our [docs](https://pris.ly/d/client).
@@ -40,102 +40,102 @@ export type PrismaClient<LogOpts extends Prisma.LogLevel = never, OmitOpts exten
 export { Prisma }
 
 /**
- * Model User
+ * Model addresses
  * 
  */
-export type User = Prisma.UserModel
+export type addresses = Prisma.addressesModel
 /**
- * Model Product
+ * Model cart_items
  * 
  */
-export type Product = Prisma.ProductModel
+export type cart_items = Prisma.cart_itemsModel
 /**
- * Model Recipe
+ * Model comments
  * 
  */
-export type Recipe = Prisma.RecipeModel
+export type comments = Prisma.commentsModel
 /**
- * Model RecipeIngredient
+ * Model conversations
  * 
  */
-export type RecipeIngredient = Prisma.RecipeIngredientModel
+export type conversations = Prisma.conversationsModel
 /**
- * Model RecipeInstruction
+ * Model messages
  * 
  */
-export type RecipeInstruction = Prisma.RecipeInstructionModel
+export type messages = Prisma.messagesModel
 /**
- * Model CartItem
+ * Model notifications
  * 
  */
-export type CartItem = Prisma.CartItemModel
+export type notifications = Prisma.notificationsModel
 /**
- * Model Order
+ * Model order_items
  * 
  */
-export type Order = Prisma.OrderModel
+export type order_items = Prisma.order_itemsModel
 /**
- * Model OrderItem
+ * Model order_tracking_history
  * 
  */
-export type OrderItem = Prisma.OrderItemModel
+export type order_tracking_history = Prisma.order_tracking_historyModel
 /**
- * Model OrderTrackingHistory
+ * Model orders
  * 
  */
-export type OrderTrackingHistory = Prisma.OrderTrackingHistoryModel
+export type orders = Prisma.ordersModel
 /**
- * Model SellerApplication
+ * Model otps
  * 
  */
-export type SellerApplication = Prisma.SellerApplicationModel
+export type otps = Prisma.otpsModel
 /**
- * Model Conversation
+ * Model pending_registrations
  * 
  */
-export type Conversation = Prisma.ConversationModel
+export type pending_registrations = Prisma.pending_registrationsModel
 /**
- * Model Message
+ * Model products
  * 
  */
-export type Message = Prisma.MessageModel
+export type products = Prisma.productsModel
 /**
- * Model Notification
+ * Model recipe_ingredients
  * 
  */
-export type Notification = Prisma.NotificationModel
+export type recipe_ingredients = Prisma.recipe_ingredientsModel
 /**
- * Model Comment
+ * Model recipe_instructions
  * 
  */
-export type Comment = Prisma.CommentModel
+export type recipe_instructions = Prisma.recipe_instructionsModel
 /**
- * Model RecipeReview
+ * Model recipe_reviews
  * 
  */
-export type RecipeReview = Prisma.RecipeReviewModel
+export type recipe_reviews = Prisma.recipe_reviewsModel
 /**
- * Model SavedRecipe
+ * Model recipes
  * 
  */
-export type SavedRecipe = Prisma.SavedRecipeModel
+export type recipes = Prisma.recipesModel
 /**
- * Model Otp
+ * Model saved_recipes
  * 
  */
-export type Otp = Prisma.OtpModel
+export type saved_recipes = Prisma.saved_recipesModel
 /**
- * Model PendingRegistration
+ * Model seller_applications
  * 
  */
-export type PendingRegistration = Prisma.PendingRegistrationModel
+export type seller_applications = Prisma.seller_applicationsModel
 /**
- * Model Address
+ * Model user_settings
  * 
  */
-export type Address = Prisma.AddressModel
+export type user_settings = Prisma.user_settingsModel
 /**
- * Model UserSettings
+ * Model users
  * 
  */
-export type UserSettings = Prisma.UserSettingsModel
+export type users = Prisma.usersModel

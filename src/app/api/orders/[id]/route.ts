@@ -20,14 +20,14 @@ export async function GET(
 
     const { id } = await params
 
-    const orderRaw = await prisma.order.findUnique({
+    const orderRaw = await prisma.orders.findUnique({
       where: { orderId: parseInt(id) },
       include: {
-        orderItems: {
+        order_items: {
           include: {
-            product: {
+            products: {
               include: {
-                user: true
+                users: true
               }
             }
           }
@@ -54,15 +54,15 @@ export async function GET(
     const order = {
       ...orderRaw,
       id: String(orderRaw.orderId),
-      orderItems: orderRaw.orderItems.map(item => ({
+      order_items: orderRaw.order_items.map(item => ({
         ...item,
         id: item.orderItemId,
-        product: {
-          ...item.product,
-          id: String(item.product.productId),
-          user: {
-            ...item.product.user,
-            id: String(item.product.user.userId),
+        products: {
+          ...item.products,
+          id: String(item.products.productId),
+          users: {
+            ...item.products.users,
+            id: String(item.products.users.userId),
           }
         }
       }))

@@ -17,7 +17,7 @@ export async function POST(
 
     const { id } = await params;
 
-    const address = await prisma.address.findUnique({
+    const address = await prisma.addresses.findUnique({
       where: { addressId: parseInt(id) }
     });
 
@@ -31,7 +31,7 @@ export async function POST(
     }
 
     // Remove default from all other addresses
-    await prisma.address.updateMany({
+    await prisma.addresses.updateMany({
       where: {
         userId: parseInt(session.user.id),
         isDefault: true
@@ -42,7 +42,7 @@ export async function POST(
     });
 
     // Set this address as default
-    const updatedAddress = await prisma.address.update({
+    const updatedAddress = await prisma.addresses.update({
       where: { addressId: parseInt(id) },
       data: {
         isDefault: true

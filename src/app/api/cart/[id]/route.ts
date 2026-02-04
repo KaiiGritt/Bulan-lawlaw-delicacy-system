@@ -27,12 +27,12 @@ async function updateCartItem(request: NextRequest, params: Promise<{ id: string
   const { id } = await params
 
   // Verify the cart item belongs to the user
-  const cartItem = await prisma.cartItem.findFirst({
+  const cartItem = await prisma.cart_items.findFirst({
     where: {
       cartItemId: parseInt(id),
       userId: parseInt(session.user.id)
     },
-    include: { product: true }
+    include: { products: true }
   })
 
   if (!cartItem) {
@@ -43,17 +43,17 @@ async function updateCartItem(request: NextRequest, params: Promise<{ id: string
   }
 
   // Check stock availability
-  if (cartItem.product.stock < quantity) {
+  if (cartItem.products.stock < quantity) {
     return NextResponse.json(
       { error: 'Insufficient stock' },
       { status: 400 }
     )
   }
 
-  const updatedItem = await prisma.cartItem.update({
+  const updatedItem = await prisma.cart_items.update({
     where: { cartItemId: parseInt(id) },
     data: { quantity },
-    include: { product: true }
+    include: { products: true }
   })
 
   return NextResponse.json(updatedItem)
@@ -100,7 +100,7 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
     const { id } = await params
 
     // Verify the cart item belongs to the user
-    const cartItem = await prisma.cartItem.findFirst({
+    const cartItem = await prisma.cart_items.findFirst({
       where: {
         cartItemId: parseInt(id),
         userId: parseInt(session.user.id)
@@ -114,7 +114,7 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
       )
     }
 
-    await prisma.cartItem.delete({
+    await prisma.cart_items.delete({
       where: { cartItemId: parseInt(id) }
     })
 

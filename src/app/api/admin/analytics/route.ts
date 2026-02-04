@@ -32,13 +32,13 @@ export async function GET(req: NextRequest) {
     }
 
     // Sales Performance
-    const orders = await prisma.order.findMany({
+    const orders = await prisma.orders.findMany({
       where: {
         createdAt: dateFilter,
         status: { not: 'cancelled' }
       },
       include: {
-        orderItems: true
+        order_items: true
       }
     });
 
@@ -57,8 +57,8 @@ export async function GET(req: NextRequest) {
     const productSales: { [key: number]: { name: string; quantity: number; revenue: number; productId: number } } = {};
 
     for (const order of orders) {
-      for (const item of order.orderItems) {
-        const product = await prisma.product.findUnique({
+      for (const item of order.order_items) {
+        const product = await prisma.products.findUnique({
           where: { productId: item.productId },
           select: { name: true }
         });
@@ -86,17 +86,17 @@ export async function GET(req: NextRequest) {
     const sellerSales: { [key: number]: { name: string; revenue: number; orders: number; sellerId: number } } = {};
 
     for (const order of orders) {
-      for (const item of order.orderItems) {
-        const product = await prisma.product.findUnique({
+      for (const item of order.order_items) {
+        const product = await prisma.products.findUnique({
           where: { productId: item.productId },
-          include: { user: true }
+          include: { users: true }
         });
 
-        if (product && product.user) {
+        if (product && product.users) {
           if (!sellerSales[product.userId]) {
             sellerSales[product.userId] = {
               sellerId: product.userId,
-              name: product.user.name || 'Unknown',
+              name: product.users.name || 'Unknown',
               revenue: 0,
               orders: 0
             };
@@ -109,7 +109,7 @@ export async function GET(req: NextRequest) {
     // Count orders per seller
     for (const sellerId in sellerSales) {
       const sellerOrders = orders.filter(order =>
-        order.orderItems.some(item => {
+        order.order_items.some(item => {
           const product = productSales[item.productId];
           return product !== undefined;
         })
@@ -123,7 +123,7 @@ export async function GET(req: NextRequest) {
 
     // User Growth Trends
     const usersByDate: { [key: string]: number } = {};
-    const users = await prisma.user.findMany({
+    const users = await prisma.users.findMany({
       where: {
         createdAt: dateFilter
       },
@@ -138,19 +138,19 @@ export async function GET(req: NextRequest) {
       usersByDate[date] = (usersByDate[date] || 0) + 1;
     });
 
-    const totalUsers = await prisma.user.count();
+    const totalUsers = await prisma.users.count();
     const newUsers = users.length;
     const buyersCount = users.filter(u => u.role === 'buyer').length;
     const sellersCount = users.filter(u => u.role === 'seller').length;
 
     // Abandoned Cart Statistics
-    const allCartItems = await prisma.cartItem.findMany({
+    const allCartItems = await prisma.cart_items.findMany({
       where: {
         updatedAt: dateFilter
       },
       include: {
-        product: true,
-        user: true
+        products: true,
+        users: true
       }
     });
 
@@ -169,13 +169,13 @@ export async function GET(req: NextRequest) {
     // Calculate potential revenue from abandoned carts
     const abandonedCartValue = Object.values(cartsByUser).reduce((sum, items) => {
       const cartValue = items.reduce((itemSum, item) =>
-        itemSum + (item.product.price * item.quantity), 0
+        itemSum + (item.products.price * item.quantity), 0
       );
       return sum + cartValue;
     }, 0);
 
     // Conversion Rates
-    const totalVisitors = await prisma.user.count(); // Simplified - in real scenario, track actual visits
+    const totalVisitors = await prisma.users.count(); // Simplified - in real scenario, track actual visits
     const conversionRate = totalVisitors > 0 ? (totalOrders / totalVisitors) * 100 : 0;
     const cartConversionRate = cartsWithItems > 0 ? ((totalOrders / cartsWithItems) * 100) : 0;
 
@@ -183,8 +183,8 @@ export async function GET(req: NextRequest) {
     const categoryPerformance: { [key: string]: { revenue: number; orders: number } } = {};
 
     for (const order of orders) {
-      for (const item of order.orderItems) {
-        const product = await prisma.product.findUnique({
+      for (const item of order.order_items) {
+        const product = await prisma.products.findUnique({
           where: { productId: item.productId },
           select: { category: true }
         });
@@ -201,7 +201,7 @@ export async function GET(req: NextRequest) {
     }
 
     // Order Status Distribution
-    const ordersByStatus = await prisma.order.groupBy({
+    const ordersByStatus = await prisma.orders.groupBy({
       by: ['status'],
       where: {
         createdAt: dateFilter

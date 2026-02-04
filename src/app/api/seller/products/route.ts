@@ -10,7 +10,7 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized. Seller only.' }, { status: 401 });
     }
 
-    const productsRaw = await prisma.product.findMany({
+    const productsRaw = await prisma.products.findMany({
       where: { userId: parseInt(session.user.id) },
       orderBy: { createdAt: 'desc' },
     });
@@ -48,7 +48,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const productRaw = await prisma.product.create({
+    const productRaw = await prisma.products.create({
       data: {
         name,
         description,

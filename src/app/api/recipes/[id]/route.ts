@@ -11,12 +11,12 @@ export async function GET(
   try {
     const { id } = await params;
 
-    const recipeRaw = await prisma.recipe.findUnique({
+    const recipeRaw = await prisma.recipes.findUnique({
       where: { recipeId: parseInt(id) },
       include: {
-        ingredients: { orderBy: { order: 'asc' } },
-        instructions: { orderBy: { stepNumber: 'asc' } },
-        user: {
+        recipe_ingredients: { orderBy: { order: 'asc' } },
+        recipe_instructions: { orderBy: { stepNumber: 'asc' } },
+        users: {
           select: {
             userId: true,
             name: true,
@@ -37,7 +37,7 @@ export async function GET(
     const recipe = {
       id: String(recipeRaw.recipeId),
       userId: recipeRaw.userId,
-      user: recipeRaw.user,
+      user: recipeRaw.users,
       title: recipeRaw.title,
       description: recipeRaw.description,
       image: recipeRaw.image,
@@ -48,16 +48,16 @@ export async function GET(
       rating: recipeRaw.rating,
       createdAt: recipeRaw.createdAt,
       // Transform ingredients to strings: "quantity name" or just "name"
-      ingredients: recipeRaw.ingredients.map(ing =>
+      recipe_ingredients: recipeRaw.recipe_ingredients.map(ing =>
         ing.quantity ? `${ing.quantity} ${ing.name}` : ing.name
       ),
       // Transform instructions to strings: just the instruction text
-      instructions: recipeRaw.instructions.map(inst => inst.instruction)
+      recipe_instructions: recipeRaw.recipe_instructions.map(inst => inst.instruction)
     };
 
     return NextResponse.json(recipe);
   } catch (error) {
-    console.error('Error fetching recipe:', error);
+    console.error('Error fetching recipes:', error);
     return NextResponse.json(
       { error: 'Failed to fetch recipe' },
       { status: 500 }
@@ -84,7 +84,7 @@ export async function PUT(
     const recipeId = parseInt(id);
 
     // Check if recipe exists and user is owner or admin
-    const existingRecipe = await prisma.recipe.findUnique({
+    const existingRecipe = await prisma.recipes.findUnique({
       where: { recipeId }
     });
 
@@ -109,11 +109,11 @@ export async function PUT(
     const { title, description, ingredients, instructions, image, prepTime, cookTime, servings, difficulty } = body;
 
     // Delete existing ingredients and instructions
-    await prisma.recipeIngredient.deleteMany({ where: { recipeId } });
-    await prisma.recipeInstruction.deleteMany({ where: { recipeId } });
+    await prisma.recipe_ingredients.deleteMany({ where: { recipeId } });
+    await prisma.recipe_instructions.deleteMany({ where: { recipeId } });
 
     // Update recipe with new data
-    const recipeRaw = await prisma.recipe.update({
+    const recipeRaw = await prisma.recipes.update({
       where: { recipeId },
       data: {
         title,
@@ -123,7 +123,7 @@ export async function PUT(
         cookTime: parseInt(cookTime),
         servings: parseInt(servings),
         difficulty,
-        ingredients: {
+        recipe_ingredients: {
           create: ingredients.map((ing: { name: string; quantity?: string } | string, index: number) => {
             if (typeof ing === 'string') {
               // Parse "quantity name" format
@@ -136,7 +136,7 @@ export async function PUT(
             return { name: ing.name, quantity: ing.quantity, order: index };
           })
         },
-        instructions: {
+        recipe_instructions: {
           create: instructions.map((inst: string, index: number) => ({
             stepNumber: index + 1,
             instruction: inst
@@ -144,9 +144,9 @@ export async function PUT(
         }
       },
       include: {
-        ingredients: { orderBy: { order: 'asc' } },
-        instructions: { orderBy: { stepNumber: 'asc' } },
-        user: {
+        recipe_ingredients: { orderBy: { order: 'asc' } },
+        recipe_instructions: { orderBy: { stepNumber: 'asc' } },
+        users: {
           select: {
             userId: true,
             name: true,
@@ -163,7 +163,7 @@ export async function PUT(
 
     return NextResponse.json(recipe);
   } catch (error) {
-    console.error('Error updating recipe:', error);
+    console.error('Error updating recipes:', error);
     return NextResponse.json(
       { error: 'Failed to update recipe' },
       { status: 500 }
@@ -190,7 +190,7 @@ export async function DELETE(
     const recipeId = parseInt(id);
 
     // Check if recipe exists and user is owner or admin
-    const existingRecipe = await prisma.recipe.findUnique({
+    const existingRecipe = await prisma.recipes.findUnique({
       where: { recipeId }
     });
 
@@ -211,13 +211,13 @@ export async function DELETE(
       );
     }
 
-    await prisma.recipe.delete({
+    await prisma.recipes.delete({
       where: { recipeId }
     });
 
     return NextResponse.json({ message: 'Recipe deleted successfully' });
   } catch (error) {
-    console.error('Error deleting recipe:', error);
+    console.error('Error deleting recipes:', error);
     return NextResponse.json(
       { error: 'Failed to delete recipe' },
       { status: 500 }

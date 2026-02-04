@@ -34,9 +34,9 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     }
 
     // Check if the application exists
-    const application = await prisma.sellerApplication.findUnique({
+    const application = await prisma.seller_applications.findUnique({
       where: { applicationId: parseInt(id) },
-      include: { user: { select: { userId: true, name: true, email: true, role: true } } },
+      include: { users: { select: { userId: true, name: true, email: true, role: true } } },
     });
 
     if (!application) {
@@ -47,17 +47,17 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     console.log('Application found:', application);
 
     // Update the application status
-    const updatedApplication = await prisma.sellerApplication.update({
+    const updatedApplication = await prisma.seller_applications.update({
       where: { applicationId: parseInt(id) },
       data: { status },
-      include: { user: { select: { userId: true, name: true, email: true, role: true } } },
+      include: { users: { select: { userId: true, name: true, email: true, role: true } } },
     });
 
     console.log('Application updated:', updatedApplication);
 
     // Update user role if approved
     if (status === 'approved') {
-      if (!updatedApplication.user) {
+      if (!updatedApplication.users) {
         console.warn('No user associated with this application:', id);
         return NextResponse.json(
           { error: 'Cannot approve application: no user linked.' },
@@ -65,18 +65,18 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
         );
       }
 
-      console.log('Updating user role to seller for user id:', updatedApplication.user.userId);
+      console.log('Updating user role to seller for user id:', updatedApplication.users.userId);
 
       try {
-        await prisma.user.update({
-          where: { userId: updatedApplication.user.userId },
+        await prisma.users.update({
+          where: { userId: updatedApplication.users.userId },
           data: { role: 'seller' },
         });
 
         // Create in-app notification
-        await prisma.notification.create({
+        await prisma.notifications.create({
           data: {
-            userId: updatedApplication.user.userId,
+            userId: updatedApplication.users.userId,
             title: 'Seller Application Approved!',
             message: `Congratulations! Your seller application for "${updatedApplication.businessName}" has been approved. You can now start selling your products.`,
             type: 'seller_approval',
@@ -86,8 +86,8 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
         // Send approval notification email
         try {
           await sendSellerApprovalNotification(
-            updatedApplication.user.email,
-            updatedApplication.user.name || 'Seller',
+            updatedApplication.users.email,
+            updatedApplication.users.name || 'Seller',
             updatedApplication.businessName
           );
         } catch (emailError) {
@@ -105,8 +105,8 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       // Send rejection notification email
       try {
         await sendSellerRejectionNotification(
-          updatedApplication.user.email,
-          updatedApplication.user.name || 'Applicant',
+          updatedApplication.users.email,
+          updatedApplication.users.name || 'Applicant',
           updatedApplication.businessName
         );
       } catch (emailError) {

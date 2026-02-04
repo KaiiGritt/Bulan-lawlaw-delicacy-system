@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
   if (authError) return authError;
 
   try {
-    const productsRaw = await prisma.product.findMany({
+    const productsRaw = await prisma.products.findMany({
       orderBy: { createdAt: 'desc' },
       select: {
         productId: true,

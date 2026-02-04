@@ -13,26 +13,26 @@ export async function GET(request: NextRequest) {
     }
 
     // Get all user data
-    const user = await prisma.user.findUnique({
+    const user = await prisma.users.findUnique({
       where: { userId: parseInt(session.user.id) },
       include: {
         orders: {
           include: {
-            orderItems: {
+            order_items: {
               include: {
-                product: true
+                products: true
               }
             }
           }
         },
-        cartItems: {
+        cart_items: {
           include: {
-            product: true
+            products: true
           }
         },
         products: true,
-        sellerApplication: true,
-        sentMessages: true,
+        seller_applications: true,
+        messages: true,
         notifications: true,
         comments: true
       }

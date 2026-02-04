@@ -6,12 +6,12 @@ import { prisma } from '../../lib/prisma'
 // GET /api/recipes - Get all recipes
 export async function GET() {
   try {
-    const recipesRaw = await prisma.recipe.findMany({
+    const recipesRaw = await prisma.recipes.findMany({
       orderBy: { createdAt: 'desc' },
       include: {
-        ingredients: { orderBy: { order: 'asc' } },
-        instructions: { orderBy: { stepNumber: 'asc' } },
-        user: {
+        recipe_ingredients: { orderBy: { order: 'asc' } },
+        recipe_instructions: { orderBy: { stepNumber: 'asc' } },
+        users: {
           select: {
             userId: true,
             name: true,
@@ -25,11 +25,11 @@ export async function GET() {
     const recipes = recipesRaw.map(recipe => ({
       ...recipe,
       id: String(recipe.recipeId),
-      ingredients: recipe.ingredients.map(ing => ({
+      recipe_ingredients: recipe.recipe_ingredients.map(ing => ({
         ...ing,
         id: ing.ingredientId,
       })),
-      instructions: recipe.instructions.map(inst => ({
+      recipe_instructions: recipe.recipe_instructions.map(inst => ({
         ...inst,
         id: inst.instructionId,
       }))
@@ -67,7 +67,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const recipeRaw = await prisma.recipe.create({
+    const recipeRaw = await prisma.recipes.create({
       data: {
         title,
         description,
@@ -77,14 +77,14 @@ export async function POST(request: NextRequest) {
         servings: parseInt(servings),
         difficulty,
         userId: parseInt(session.user.id),
-        ingredients: {
+        recipe_ingredients: {
           create: ingredients.map((ing: { name: string; quantity?: string }, index: number) => ({
             name: ing.name,
             quantity: ing.quantity,
             order: index
           }))
         },
-        instructions: {
+        recipe_instructions: {
           create: instructions.map((inst: string, index: number) => ({
             stepNumber: index + 1,
             instruction: inst
@@ -92,9 +92,9 @@ export async function POST(request: NextRequest) {
         }
       },
       include: {
-        ingredients: { orderBy: { order: 'asc' } },
-        instructions: { orderBy: { stepNumber: 'asc' } },
-        user: {
+        recipe_ingredients: { orderBy: { order: 'asc' } },
+        recipe_instructions: { orderBy: { stepNumber: 'asc' } },
+        users: {
           select: {
             userId: true,
             name: true,
@@ -108,11 +108,11 @@ export async function POST(request: NextRequest) {
     const recipe = {
       ...recipeRaw,
       id: String(recipeRaw.recipeId),
-      ingredients: recipeRaw.ingredients.map(ing => ({
+      recipe_ingredients: recipeRaw.recipe_ingredients.map(ing => ({
         ...ing,
         id: ing.ingredientId,
       })),
-      instructions: recipeRaw.instructions.map(inst => ({
+      recipe_instructions: recipeRaw.recipe_instructions.map(inst => ({
         ...inst,
         id: inst.instructionId,
       }))
@@ -120,7 +120,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(recipe, { status: 201 })
   } catch (error) {
-    console.error('Error creating recipe:', error)
+    console.error('Error creating recipes:', error)
     return NextResponse.json(
       { error: 'Failed to create recipe' },
       { status: 500 }

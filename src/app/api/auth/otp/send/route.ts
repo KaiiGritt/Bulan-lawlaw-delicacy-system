@@ -21,11 +21,11 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if user exists OR if there's a pending registration
-    const user = await prisma.user.findUnique({
+    const user = await prisma.users.findUnique({
       where: { email },
     });
 
-    const pendingRegistration = await prisma.pendingRegistration.findUnique({
+    const pendingRegistration = await prisma.pending_registrations.findUnique({
       where: { email },
     });
 
@@ -37,8 +37,8 @@ export async function POST(request: NextRequest) {
     // Check if pending registration has expired
     if (pendingRegistration && new Date() > pendingRegistration.expiresAt) {
       // Clean up expired pending registration
-      await prisma.pendingRegistration.delete({ where: { email } });
-      await prisma.otp.deleteMany({ where: { email } });
+      await prisma.pending_registrations.delete({ where: { email } });
+      await prisma.otps.deleteMany({ where: { email } });
       return NextResponse.json({ error: 'Registration has expired. Please register again.' }, { status: 400 });
     }
 
@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
     const name = user?.name || pendingRegistration?.name || 'User';
 
     // Delete any existing OTPs for this email
-    await prisma.otp.deleteMany({
+    await prisma.otps.deleteMany({
       where: { email },
     });
 
@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
     const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
 
     // Save OTP to database (userId is optional - null for pending registrations)
-    await prisma.otp.create({
+    await prisma.otps.create({
       data: {
         userId: user?.userId || null,
         email,

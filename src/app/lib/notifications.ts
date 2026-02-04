@@ -11,35 +11,38 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-interface OrderTrackingEmailData {
+interface OrderStatusEmailData {
   customerEmail: string;
   customerName: string;
   orderId: string;
   status: string;
-  trackingNumber?: string;
-  courier?: string;
-  estimatedDeliveryDate?: string;
   description?: string;
 }
 
-export async function sendOrderTrackingEmail(data: OrderTrackingEmailData) {
+// Helper function to get status label
+function getStatusLabel(status: string): string {
+  const labels: Record<string, string> = {
+    pending: 'Order Placed',
+    preparing: 'Preparing',
+    ready: 'Ready for Pickup',
+    cancelled: 'Cancelled',
+  }
+  return labels[status] || status
+}
+
+export async function sendOrderStatusEmail(data: OrderStatusEmailData) {
   const {
     customerEmail,
     customerName,
     orderId,
     status,
-    trackingNumber,
-    courier,
-    estimatedDeliveryDate,
     description
   } = data;
 
   const statusMessages: Record<string, string> = {
-    pending: 'Your order has been received and is being processed.',
-    processing: 'Your order is currently being prepared for shipment.',
-    shipped: 'Great news! Your order has been shipped and is on its way to you.',
-    out_for_delivery: 'Your order is out for delivery and should arrive soon!',
-    delivered: 'Your order has been successfully delivered. Enjoy your Lawlaw delicacies!',
+    pending: 'Your order has been received and placed successfully.',
+    preparing: 'Great news! Your order is now being prepared.',
+    ready: 'Your order is ready for pickup! Please come to the store to collect your order.',
     cancelled: 'Your order has been cancelled.'
   };
 
@@ -51,7 +54,7 @@ export async function sendOrderTrackingEmail(data: OrderTrackingEmailData) {
     <head>
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Order ${status.charAt(0).toUpperCase() + status.slice(1)}</title>
+      <title>Order ${getStatusLabel(status)}</title>
       <style>
         body {
           font-family: 'Arial', sans-serif;
@@ -87,11 +90,9 @@ export async function sendOrderTrackingEmail(data: OrderTrackingEmailData) {
           text-transform: uppercase;
           letter-spacing: 1px;
         }
-        .status-pending { background-color: #fef3c7; color: #92400e; }
-        .status-processing { background-color: #dbeafe; color: #1e40af; }
-        .status-shipped { background-color: #e9d5ff; color: #6b21a8; }
-        .status-out_for_delivery { background-color: #fce7f3; color: #9f1239; }
-        .status-delivered { background-color: #d1fae5; color: #065f46; }
+        .status-pending { background-color: #fed7aa; color: #c2410c; }
+        .status-preparing { background-color: #fef3c7; color: #92400e; }
+        .status-ready { background-color: #d1fae5; color: #065f46; }
         .status-cancelled { background-color: #fee2e2; color: #991b1b; }
         .info-box {
           background-color: #f9fafb;
@@ -105,11 +106,12 @@ export async function sendOrderTrackingEmail(data: OrderTrackingEmailData) {
         .info-box strong {
           color: #22c55e;
         }
-        .tracking-info {
+        .pickup-info {
           background-color: #f0fdf4;
           padding: 20px;
           border-radius: 8px;
           margin: 20px 0;
+          text-align: center;
         }
         .button {
           display: inline-block;
@@ -135,7 +137,7 @@ export async function sendOrderTrackingEmail(data: OrderTrackingEmailData) {
       <div class="container">
         <div class="header">
           <img src="${process.env.NEXTAUTH_URL}/lawlaw-delights-high-resolution-logo-transparent.png" alt="Lawlaw Delights" style="max-width:180px; height:auto; margin-bottom:10px;" />
-          <p>Order Tracking Update</p>
+          <p>Order Status Update</p>
         </div>
 
         <p>Hello ${customerName},</p>
@@ -144,24 +146,21 @@ export async function sendOrderTrackingEmail(data: OrderTrackingEmailData) {
 
         <div style="text-align: center;">
           <span class="status-badge status-${status}">
-            ${status.replace('_', ' ')}
+            ${getStatusLabel(status)}
           </span>
         </div>
 
         ${description ? `<p><em>${description}</em></p>` : ''}
 
         <div class="info-box">
-          <p><strong>Order ID:</strong> ${orderId}</p>
-          ${trackingNumber ? `<p><strong>Tracking Number:</strong> ${trackingNumber}</p>` : ''}
-          ${courier ? `<p><strong>Courier:</strong> ${courier}</p>` : ''}
+          <p><strong>Order ID:</strong> #${orderId}</p>
         </div>
 
-        ${trackingNumber && courier ? `
-          <div class="tracking-info">
-            <h3 style="margin-top: 0; color: #22c55e;">📦 Tracking Information</h3>
-            <p><strong>Tracking Number:</strong> ${trackingNumber}</p>
-            <p><strong>Courier Service:</strong> ${courier}</p>
-            ${estimatedDeliveryDate ? `<p><strong>Estimated Delivery:</strong> ${new Date(estimatedDeliveryDate).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>` : ''}
+        ${status === 'ready' ? `
+          <div class="pickup-info">
+            <h3 style="margin-top: 0; color: #22c55e;">🎉 Ready for Pickup!</h3>
+            <p>Your order is waiting for you at our store.</p>
+            <p>Please bring your order confirmation when picking up.</p>
           </div>
         ` : ''}
 
@@ -182,19 +181,21 @@ export async function sendOrderTrackingEmail(data: OrderTrackingEmailData) {
   `;
 
   const textContent = `
-    Lawlaw Delights - Order Tracking Update
+    Lawlaw Delights - Order Status Update
 
     Hello ${customerName},
 
     ${statusMessage}
 
-    Order Status: ${status.toUpperCase().replace('_', ' ')}
+    Order Status: ${getStatusLabel(status).toUpperCase()}
     ${description ? `\n${description}\n` : ''}
 
-    Order ID: ${orderId}
-    ${trackingNumber ? `Tracking Number: ${trackingNumber}` : ''}
-    ${courier ? `Courier: ${courier}` : ''}
-    ${estimatedDeliveryDate ? `Estimated Delivery: ${new Date(estimatedDeliveryDate).toLocaleDateString()}` : ''}
+    Order ID: #${orderId}
+
+    ${status === 'ready' ? `
+    Your order is ready for pickup!
+    Please bring your order confirmation when picking up.
+    ` : ''}
 
     View your order details: ${process.env.NEXTAUTH_URL}/orders/${orderId}
 
@@ -213,26 +214,35 @@ export async function sendOrderTrackingEmail(data: OrderTrackingEmailData) {
     await transporter.sendMail({
       from: `"Lawlaw Delights" <${process.env.EMAIL_USER}>`,
       to: customerEmail,
-      subject: `Order ${status.charAt(0).toUpperCase() + status.slice(1)} - Order #${orderId.slice(0, 8)}`,
+      subject: `Order ${getStatusLabel(status)} - Order #${orderId.slice(0, 8)}`,
       text: textContent,
       html: htmlContent,
     });
 
-    console.log(`Tracking email sent to ${customerEmail} for order ${orderId}`);
+    console.log(`Status email sent to ${customerEmail} for order ${orderId}`);
     return { success: true, message: 'Email sent successfully' };
   } catch (error) {
-    console.error('Error sending tracking email:', error);
+    console.error('Error sending status email:', error);
     return { success: false, message: 'Failed to send email', error };
   }
 }
 
 // SMS notification placeholder (can be integrated with services like Twilio, Semaphore, etc.)
-export async function sendOrderTrackingSMS(phoneNumber: string, orderId: string, status: string, trackingNumber?: string) {
+export async function sendOrderStatusSMS(phoneNumber: string, orderId: string, status: string) {
   // TODO: Integrate with SMS service provider
   console.log(`SMS notification would be sent to ${phoneNumber} for order ${orderId} with status ${status}`);
 
+  const statusLabels: Record<string, string> = {
+    pending: 'Order Placed',
+    preparing: 'Preparing',
+    ready: 'Ready for Pickup',
+    cancelled: 'Cancelled',
+  };
+
+  const statusLabel = statusLabels[status] || status;
+
   // Example SMS message
-  const message = `Lawlaw Delights: Your order #${orderId.slice(0, 8)} is now ${status.toUpperCase()}. ${trackingNumber ? `Tracking: ${trackingNumber}` : ''}`;
+  const message = `Lawlaw Delights: Your order #${orderId.slice(0, 8)} is now ${statusLabel}.${status === 'ready' ? ' Please pick up your order at the store.' : ''}`;
 
   return { success: true, message: 'SMS notification logged (not sent - integration pending)' };
 }

@@ -9,15 +9,15 @@ export async function GET(
 ) {
   try {
     const { id } = await params
-    const productRaw = await prisma.product.findUnique({
+    const productRaw = await prisma.products.findUnique({
       where: { productId: parseInt(id) },
       include: {
-        user: {
+        users: {
           select: {
             userId: true,
             name: true,
             email: true,
-            sellerApplication: {
+            seller_applications: {
               select: {
                 businessName: true,
                 businessLogo: true,
@@ -41,9 +41,9 @@ export async function GET(
     const product = {
       ...productRaw,
       id: String(productRaw.productId),
-      user: {
-        ...productRaw.user,
-        id: String(productRaw.user.userId),
+      users: {
+        ...productRaw.users,
+        id: String(productRaw.users.userId),
       }
     }
 

@@ -27,9 +27,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Get user's cart items
-    const cartItems = await prisma.cartItem.findMany({
+    const cartItems = await prisma.cart_items.findMany({
       where: { userId: parseInt(session.user.id) },
-      include: { product: true }
+      include: { products: true }
     })
 
     if (cartItems.length === 0) {
@@ -42,18 +42,18 @@ export async function POST(request: NextRequest) {
     // Calculate total amount and check stock
     let totalAmount = 0
     for (const item of cartItems) {
-      if (item.product.stock < item.quantity) {
+      if (item.products.stock < item.quantity) {
         return NextResponse.json(
-          { error: `Insufficient stock for ${item.product.name}` },
+          { error: `Insufficient stock for ${item.products.name}` },
           { status: 400 }
         )
       }
-      totalAmount += item.product.price * item.quantity
+      totalAmount += item.products.price * item.quantity
     }
 
     // Create order without transaction for faster processing on slow DB connections
     // Step 1: Create the order
-    const order = await prisma.order.create({
+    const order = await prisma.orders.create({
       data: {
         userId: parseInt(session.user.id),
         totalAmount,
@@ -65,21 +65,21 @@ export async function POST(request: NextRequest) {
     })
 
     // Step 2: Create order items
-    const orderItemsData = cartItems.map((item: { productId: any; quantity: any; product: { price: any } }) => ({
+    const orderItemsData = cartItems.map((item: { productId: any; quantity: any; products: { price: any } }) => ({
       orderId: order.orderId,
       productId: item.productId,
       quantity: item.quantity,
-      price: item.product.price
+      price: item.products.price
     }))
 
-    await prisma.orderItem.createMany({
+    await prisma.order_items.createMany({
       data: orderItemsData
     })
 
     // Step 3: Update product stock in parallel
     await Promise.all(
       cartItems.map((item) =>
-        prisma.product.update({
+        prisma.products.update({
           where: { productId: item.productId },
           data: { stock: { decrement: item.quantity } }
         })
@@ -87,7 +87,7 @@ export async function POST(request: NextRequest) {
     )
 
     // Step 4: Clear the cart
-    await prisma.cartItem.deleteMany({
+    await prisma.cart_items.deleteMany({
       where: { userId: parseInt(session.user.id) }
     })
 
@@ -98,16 +98,16 @@ export async function POST(request: NextRequest) {
     const backgroundTasks = async () => {
       // Send order confirmation email to buyer
       try {
-        const orderItems = cartItems.map((item: { product: { name: string; price: any }; quantity: any }) => ({
-          product: { name: item.product.name, price: item.product.price },
+        const orderItems = cartItems.map((item: { products: { name: string; price: any }; quantity: any }) => ({
+          products: { name: item.products.name, price: item.products.price },
           quantity: item.quantity,
-          price: item.product.price
+          price: item.products.price
         }))
         await sendOrderConfirmation(session.user.email!, {
           orderId: String(result.orderId),
           totalAmount,
           shippingAddress,
-          orderItems
+          order_items: orderItems
         })
       } catch (e) {
         console.error('Failed to send order confirmation email:', e)
@@ -115,7 +115,7 @@ export async function POST(request: NextRequest) {
 
       // Create notification for the user
       try {
-        await prisma.notification.create({
+        await prisma.notifications.create({
           data: {
             userId: parseInt(session.user.id),
             title: 'Order Placed Successfully',
@@ -129,7 +129,7 @@ export async function POST(request: NextRequest) {
 
       // Send admin notifications
       try {
-        const admins = await prisma.user.findMany({ where: { role: 'admin' } })
+        const admins = await prisma.users.findMany({ where: { role: 'admin' } })
         for (const admin of admins) {
           sendAdminOrderNotification(admin.email, {
             orderId: String(result.orderId),
@@ -146,61 +146,61 @@ export async function POST(request: NextRequest) {
       // Send seller notifications and create conversations
       for (const item of cartItems) {
         try {
-          const seller = await prisma.user.findUnique({
-            where: { userId: item.product.userId },
-            include: { sellerApplication: true }
+          const seller = await prisma.users.findUnique({
+            where: { userId: item.products.userId },
+            include: { seller_applications: true }
           })
 
           if (seller?.email) {
             sendSellerOrderNotification(seller.email, {
               orderId: String(result.orderId),
               buyerName: session.user.name || 'Customer',
-              productName: item.product.name,
+              productName: item.products.name,
               quantity: item.quantity,
-              totalAmount: item.product.price * item.quantity
+              totalAmount: item.products.price * item.quantity
             }).catch(e => console.error(`Seller notification error:`, e))
           }
 
           // Create or update conversation
-          const existingConversation = await prisma.conversation.findUnique({
+          const existingConversation = await prisma.conversations.findUnique({
             where: {
               sellerId_buyerId_productId: {
-                sellerId: item.product.userId,
+                sellerId: item.products.userId,
                 buyerId: parseInt(session.user.id),
                 productId: item.productId
               }
             }
           })
 
-          const businessName = seller?.sellerApplication?.businessName || seller?.name || 'Seller'
+          const businessName = seller?.seller_applications?.businessName || seller?.name || 'Seller'
 
           if (!existingConversation) {
-            const conversation = await prisma.conversation.create({
+            const conversation = await prisma.conversations.create({
               data: {
-                sellerId: item.product.userId,
+                sellerId: item.products.userId,
                 buyerId: parseInt(session.user.id),
                 productId: item.productId,
                 status: 'active'
               }
             })
-            await prisma.message.create({
+            await prisma.messages.create({
               data: {
                 conversationId: conversation.conversationId,
-                senderId: item.product.userId,
-                content: `Hello! Thank you for ordering ${item.quantity}x ${item.product.name} from ${businessName}. Your order #${result.orderId} is now being processed.`
+                senderId: item.products.userId,
+                content: `Hello! Thank you for ordering ${item.quantity}x ${item.products.name} from ${businessName}. Your order #${result.orderId} is now being processed.`
               }
             })
           } else {
-            await prisma.message.create({
+            await prisma.messages.create({
               data: {
                 conversationId: existingConversation.conversationId,
-                senderId: item.product.userId,
-                content: `Thank you for your new order! You've ordered ${item.quantity}x ${item.product.name} (Order #${result.orderId}).`
+                senderId: item.products.userId,
+                content: `Thank you for your new order! You've ordered ${item.quantity}x ${item.products.name} (Order #${result.orderId}).`
               }
             })
           }
         } catch (e) {
-          console.error(`Seller/conversation error for ${item.product.name}:`, e)
+          console.error(`Seller/conversation error for ${item.products.name}:`, e)
         }
       }
     }

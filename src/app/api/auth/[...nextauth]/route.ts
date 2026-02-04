@@ -7,30 +7,7 @@ import { prisma } from "../../../lib/prisma"; // adjust to your DB setup
 import bcrypt from "bcryptjs"; // if passwords are hashed
 import { sendOtpEmail } from "../../../lib/email";
 
-// Extend the User type to include role
-declare module "next-auth" {
-  interface User {
-    role?: string;
-    emailVerified?: boolean;
-  }
-  interface Session {
-    user: {
-      id: string;
-      role?: string;
-      email?: string | null;
-      name?: string | null;
-      image?: string | null;
-      emailVerified?: boolean;
-    };
-  }
-}
-
-declare module "next-auth/jwt" {
-  interface JWT {
-    role?: string;
-    emailVerified?: boolean;
-  }
-}
+// Type extensions are in src/types/next-auth.d.ts
 
 export const authOptions = {
   secret: process.env.NEXTAUTH_SECRET,
@@ -61,7 +38,7 @@ export const authOptions = {
         const { email, password } = credentials;
         console.log('Attempting to authorize user:', email);
         // 1. Find user in DB
-        const user = await prisma.user.findUnique({
+        const user = await prisma.users.findUnique({
           where: { email },
         });
         if (!user) {
@@ -86,14 +63,14 @@ export const authOptions = {
       if (account?.provider === "google") {
         try {
           // Check if user exists
-          const existingUser = await prisma.user.findUnique({
+          const existingUser = await prisma.users.findUnique({
             where: { email: user.email },
           });
 
           let dbUser;
           if (existingUser) {
             // Update existing user name but keep emailVerified status
-            dbUser = await prisma.user.update({
+            dbUser = await prisma.users.update({
               where: { email: user.email },
               data: {
                 name: user.name,
@@ -101,13 +78,13 @@ export const authOptions = {
             });
           } else {
             // Create new user with Google OAuth - NOT verified yet (needs OTP)
-            dbUser = await prisma.user.create({
+            dbUser = await prisma.users.create({
               data: {
                 email: user.email,
                 name: user.name,
                 password: "", // No password for OAuth users
                 role: "user",
-                emailVerified: false, // Requires OTP verification
+                emailVerified: false // Requires OTP verification
               },
             });
           }
@@ -117,12 +94,12 @@ export const authOptions = {
           const otpExpiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
 
           // Delete any existing OTPs for this user
-          await prisma.otp.deleteMany({
+          await prisma.otps.deleteMany({
             where: { userId: dbUser.userId },
           });
 
           // Save OTP to database
-          await prisma.otp.create({
+          await prisma.otps.create({
             data: {
               userId: dbUser.userId,
               email: user.email,
@@ -133,11 +110,23 @@ export const authOptions = {
 
           // Send OTP email
           console.log('Sending OTP to Google user:', user.email);
-          await sendOtpEmail(user.email, user.name || 'User', otpCode);
+          try {
+            await sendOtpEmail(user.email, user.name || 'User', otpCode);
+          } catch (emailError) {
+            console.error("Failed to send OTP email (continuing anyway):", emailError);
+            // Don't fail the sign-in just because email failed
+            // OTP is saved in DB, user can request resend
+          }
 
           return true;
         } catch (error) {
           console.error("Error in Google sign-in:", error);
+          // Log more details about the error
+          if (error instanceof Error) {
+            console.error("Error name:", error.name);
+            console.error("Error message:", error.message);
+            console.error("Error stack:", error.stack);
+          }
           return false;
         }
       }
@@ -150,7 +139,7 @@ export const authOptions = {
       }
       // Always fetch latest user data from database (including the actual DB id)
       if (token.email) {
-        const dbUser = await prisma.user.findUnique({
+        const dbUser = await prisma.users.findUnique({
           where: { email: token.email },
           select: { userId: true, role: true, emailVerified: true },
         });

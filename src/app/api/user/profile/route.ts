@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
 
     console.log('Profile API - User ID:', session.user.id)
 
-    const user = await prisma.user.findUnique({
+    const user = await prisma.users.findUnique({
       where: { userId: parseInt(session.user.id) },
       select: {
         userId: true,
@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
         profilePicture: true,
         createdAt: true,
         emailVerified: true,
-        sellerApplication: {
+        seller_applications: {
           select: {
             applicationId: true,
             businessName: true,
@@ -60,9 +60,9 @@ export async function GET(request: NextRequest) {
     const response = {
       ...user,
       phone: user.phoneNumber,
-      sellerApplication: user.sellerApplication ? {
-        ...user.sellerApplication,
-        submittedAt: user.sellerApplication.createdAt
+      seller_applications: user.seller_applications ? {
+        ...user.seller_applications,
+        submittedAt: user.seller_applications.createdAt
       } : undefined
     }
 
@@ -100,7 +100,7 @@ export async function PUT(request: NextRequest) {
         )
       }
 
-      const user = await prisma.user.findUnique({
+      const user = await prisma.users.findUnique({
         where: { userId: parseInt(session.user.id) }
       })
 
@@ -127,7 +127,7 @@ export async function PUT(request: NextRequest) {
       updateData.password = await bcrypt.hash(newPassword, 12)
     }
 
-    const updatedUser = await prisma.user.update({
+    const updatedUser = await prisma.users.update({
       where: { userId: parseInt(session.user.id) },
       data: updateData,
       select: {
@@ -196,7 +196,7 @@ export async function POST(request: NextRequest) {
     const base64Image = `data:${file.type};base64,${buffer.toString('base64')}`
 
     // Update user profile with base64 image
-    const updatedUser = await prisma.user.update({
+    const updatedUser = await prisma.users.update({
       where: { userId: parseInt(session.user.id) },
       data: { profilePicture: base64Image },
       select: {

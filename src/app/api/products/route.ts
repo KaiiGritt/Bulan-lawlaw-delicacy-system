@@ -6,14 +6,14 @@ import { prisma } from '../../lib/prisma'
 // GET /api/products - Get all products
 export async function GET() {
   try {
-    const productsRaw = await prisma.product.findMany({
+    const productsRaw = await prisma.products.findMany({
       include: {
-        user: {
+        users: {
           select: {
             userId: true,
             name: true,
             email: true,
-            sellerApplication: {
+            seller_applications: {
               select: {
                 businessName: true,
                 businessLogo: true,
@@ -39,9 +39,9 @@ export async function GET() {
     const products = productsRaw.map(product => ({
       ...product,
       id: String(product.productId),
-      user: {
-        ...product.user,
-        id: String(product.user.userId),
+      users: {
+        ...product.users,
+        id: String(product.users.userId),
       },
       comments: product.comments.map(comment => ({
         ...comment,
@@ -81,7 +81,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const productRaw = await prisma.product.create({
+    const productRaw = await prisma.products.create({
       data: {
         name,
         description,

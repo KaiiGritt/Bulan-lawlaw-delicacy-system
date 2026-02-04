@@ -22,7 +22,7 @@ export async function POST(
     }
 
     // Check if product exists and belongs to the seller
-    const product = await prisma.product.findUnique({
+    const product = await prisma.products.findUnique({
       where: { productId: parseInt(productId) },
       select: { userId: true },
     });
@@ -37,7 +37,7 @@ export async function POST(
     }
 
     // Check if review exists
-    const review = await prisma.comment.findUnique({
+    const review = await prisma.comments.findUnique({
       where: { commentId: parseInt(reviewId) },
     });
 
@@ -46,14 +46,14 @@ export async function POST(
     }
 
     // Update the review with seller's reply
-    const updatedReview = await prisma.comment.update({
+    const updatedReview = await prisma.comments.update({
       where: { commentId: parseInt(reviewId) },
       data: {
         sellerReply: reply.trim(),
         sellerReplyAt: new Date(),
       },
       include: {
-        user: {
+        users: {
           select: {
             userId: true,
             name: true,
@@ -84,7 +84,7 @@ export async function DELETE(
     const { id: productId, reviewId } = await params;
 
     // Check if product exists and belongs to the seller
-    const product = await prisma.product.findUnique({
+    const product = await prisma.products.findUnique({
       where: { productId: parseInt(productId) },
       select: { userId: true },
     });
@@ -99,7 +99,7 @@ export async function DELETE(
     }
 
     // Remove the reply
-    await prisma.comment.update({
+    await prisma.comments.update({
       where: { commentId: parseInt(reviewId) },
       data: {
         sellerReply: null,

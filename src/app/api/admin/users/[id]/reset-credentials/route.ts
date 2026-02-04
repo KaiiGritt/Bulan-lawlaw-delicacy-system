@@ -17,7 +17,7 @@ export async function POST(
     const { id } = await context.params
 
     // Find user
-    const user = await prisma.user.findUnique({ where: { userId: parseInt(id) } })
+    const user = await prisma.users.findUnique({ where: { userId: parseInt(id) } })
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
@@ -27,7 +27,7 @@ export async function POST(
     const resetTokenExpiry = new Date(Date.now() + 3600 * 1000) // 1 hour from now
 
     // Update user with reset token and expiry
-    await prisma.user.update({
+    await prisma.users.update({
       where: { userId: parseInt(id) },
       data: {
         resetToken,

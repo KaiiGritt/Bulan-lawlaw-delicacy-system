@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const addressesRaw = await prisma.address.findMany({
+    const addressesRaw = await prisma.addresses.findMany({
       where: {
         userId: parseInt(session.user.id)
       },
@@ -89,18 +89,19 @@ export async function POST(req: NextRequest) {
 
     // If setting as default, remove default from other addresses
     if (isDefault) {
-      await prisma.address.updateMany({
+      await prisma.addresses.updateMany({
         where: {
           userId: parseInt(session.user.id),
           isDefault: true
         },
         data: {
-          isDefault: false
+          isDefault: false,
+          
         }
       });
     }
 
-    const address = await prisma.address.create({
+    const address = await prisma.addresses.create({
       data: {
         userId: parseInt(session.user.id),
         fullName,
@@ -112,7 +113,8 @@ export async function POST(req: NextRequest) {
         streetAddress,
         postalCode,
         landmark: landmark || null,
-        isDefault: isDefault || false
+        isDefault: isDefault || false,
+        
       }
     });
 

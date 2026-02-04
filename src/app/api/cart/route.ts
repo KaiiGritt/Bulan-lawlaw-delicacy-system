@@ -15,10 +15,10 @@ export async function GET() {
       )
     }
 
-    const cartItemsRaw = await prisma.cartItem.findMany({
+    const cartItemsRaw = await prisma.cart_items.findMany({
       where: { userId: parseInt(session.user.id) },
       include: {
-        product: true
+        products: true
       }
     })
 
@@ -26,9 +26,9 @@ export async function GET() {
     const cartItems = cartItemsRaw.map(item => ({
       ...item,
       id: item.cartItemId,
-      product: {
-        ...item.product,
-        id: String(item.product.productId),
+      products: {
+        ...item.products,
+        id: String(item.products.productId),
       }
     }))
 
@@ -75,7 +75,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if product exists and has stock
-    const product = await prisma.product.findUnique({
+    const product = await prisma.products.findUnique({
       where: { productId: productId }
     })
 
@@ -102,7 +102,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if item already exists in cart
-    const existingItem = await prisma.cartItem.findUnique({
+    const existingItem = await prisma.cart_items.findUnique({
       where: {
         userId_productId: {
           userId: parseInt(session.user.id),
@@ -114,20 +114,21 @@ export async function POST(request: NextRequest) {
     let cartItem
     if (existingItem) {
       // Update quantity
-      cartItem = await prisma.cartItem.update({
+      cartItem = await prisma.cart_items.update({
         where: { cartItemId: existingItem.cartItemId },
         data: { quantity: existingItem.quantity + quantity },
-        include: { product: true }
+        include: { products: true }
       })
     } else {
       // Create new cart item
-      cartItem = await prisma.cartItem.create({
+      cartItem = await prisma.cart_items.create({
         data: {
           userId: parseInt(session.user.id),
           productId,
-          quantity
+          quantity,
+          
         },
-        include: { product: true }
+        include: { products: true }
       })
     }
 
@@ -135,9 +136,9 @@ export async function POST(request: NextRequest) {
     const mappedCartItem = {
       ...cartItem,
       id: cartItem.cartItemId,
-      product: {
-        ...cartItem.product,
-        id: String(cartItem.product.productId),
+      products: {
+        ...cartItem.products,
+        id: String(cartItem.products.productId),
       }
     }
 
@@ -163,7 +164,7 @@ export async function DELETE() {
       )
     }
 
-    await prisma.cartItem.deleteMany({
+    await prisma.cart_items.deleteMany({
       where: { userId: parseInt(session.user.id) }
     })
 

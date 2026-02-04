@@ -10,7 +10,7 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized. Seller only.' }, { status: 401 });
     }
 
-    const sellerApplication = await prisma.sellerApplication.findUnique({
+    const sellerApplication = await prisma.seller_applications.findUnique({
       where: { userId: parseInt(session.user.id) },
     });
 
@@ -38,7 +38,7 @@ export async function PATCH(req: NextRequest) {
     const body = await req.json();
     const { businessName, businessType, description, contactNumber, address } = body;
 
-    const updatedProfile = await prisma.sellerApplication.update({
+    const updatedProfile = await prisma.seller_applications.update({
       where: { userId: parseInt(session.user.id) },
       data: {
         businessName,
@@ -46,7 +46,7 @@ export async function PATCH(req: NextRequest) {
         description,
         contactNumber,
         address,
-        updatedAt: new Date(),
+        
       },
     });
 

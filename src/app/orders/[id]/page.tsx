@@ -22,7 +22,6 @@ interface OrderItem {
 interface TrackingHistoryItem {
  id: string;
  status: string;
- location?: string;
  description: string;
  createdAt: string;
 }
@@ -30,11 +29,6 @@ interface TrackingHistoryItem {
 interface TrackingInfo {
  orderId: string;
  status: string;
- trackingNumber?: string;
- courier?: string;
- estimatedDeliveryDate?: string;
- shippedAt?: string;
- deliveredAt?: string;
  trackingHistory: TrackingHistoryItem[];
 }
 
@@ -116,9 +110,8 @@ export default function OrderDetailsPage() {
  const getStatusSteps = () => {
  const steps = [
  { key: 'pending', label: 'Order Placed' },
- { key: 'processing', label: 'Processing' },
- { key: 'shipped', label: 'Shipped' },
- { key: 'delivered', label: 'Delivered' },
+ { key: 'preparing', label: 'Preparing' },
+ { key: 'ready', label: 'Ready for Pickup' },
  ];
 
  if (order?.status === 'cancelled') {
@@ -132,7 +125,7 @@ export default function OrderDetailsPage() {
  };
 
  const getCurrentStepIndex = () => {
- const statusOrder = ['pending', 'processing', 'shipped', 'delivered'];
+ const statusOrder = ['pending', 'preparing', 'ready'];
  if (order?.status === 'cancelled') return 1;
  return statusOrder.indexOf(order?.status || 'pending');
  };
@@ -262,13 +255,15 @@ export default function OrderDetailsPage() {
  </p>
  </div>
  <div className={`px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap w-fit ${
- order.status === 'delivered' ? 'bg-green-100 text-green-700' :
- order.status === 'shipped' ? 'bg-blue-100 text-blue-700' :
- order.status === 'processing' ? 'bg-yellow-100 text-yellow-700' :
+ order.status === 'ready' ? 'bg-green-100 text-green-700' :
+ order.status === 'preparing' ? 'bg-yellow-100 text-yellow-700' :
  order.status === 'cancelled' ? 'bg-red-100 text-red-700' :
  'bg-orange-100 text-orange-700'
  }`}>
- {order.status.toUpperCase()}
+ {order.status === 'pending' ? 'ORDER PLACED' :
+ order.status === 'preparing' ? 'PREPARING' :
+ order.status === 'ready' ? 'READY FOR PICKUP' :
+ order.status.toUpperCase()}
  </div>
  </div>
  </motion.div>
@@ -355,8 +350,8 @@ export default function OrderDetailsPage() {
  )}
  </motion.div>
 
- {/* Order Tracking Information */}
- {trackingInfo && (order.status === 'shipped' || order.status === 'delivered') && (
+ {/* Order Status History */}
+ {trackingInfo && trackingInfo.trackingHistory && trackingInfo.trackingHistory.length > 0 && (
  <motion.div
  initial={{ opacity: 0, y: 20 }}
  animate={{ opacity: 1, y: 0 }}
@@ -365,50 +360,10 @@ export default function OrderDetailsPage() {
  >
  <div className="flex items-center gap-2 mb-6">
  <svg className="w-6 h-6 text-primary-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
- <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+ <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
  </svg>
- <h2 className="text-lg sm:text-xl font-bold text-gray-900">Tracking Information</h2>
+ <h2 className="text-lg sm:text-xl font-bold text-gray-900">Status History</h2>
  </div>
-
- {/* Tracking Details Grid */}
- <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
- {trackingInfo.trackingNumber && (
- <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-xl border-2 border-blue-200">
- <p className="text-xs font-medium text-blue-700 mb-1">Tracking Number</p>
- <p className="text-lg font-bold text-blue-900 font-mono">{trackingInfo.trackingNumber}</p>
- </div>
- )}
-
- {trackingInfo.courier && (
- <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-4 rounded-xl border-2 border-purple-200">
- <p className="text-xs font-medium text-purple-700 mb-1">Courier</p>
- <p className="text-lg font-bold text-purple-900">{trackingInfo.courier}</p>
- </div>
- )}
-
- {trackingInfo.estimatedDeliveryDate && (
- <div className="bg-gradient-to-br from-green-50 to-green-100 p-4 rounded-xl border-2 border-green-200">
- <p className="text-xs font-medium text-green-700 mb-1">Estimated Delivery</p>
- <p className="text-lg font-bold text-green-900">
- {new Date(trackingInfo.estimatedDeliveryDate).toLocaleDateString('en-US', {
- month: 'short',
- day: 'numeric',
- year: 'numeric'
- })}
- </p>
- </div>
- )}
- </div>
-
- {/* Tracking History */}
- {trackingInfo.trackingHistory && trackingInfo.trackingHistory.length > 0 && (
- <div>
- <h3 className="text-base font-bold text-gray-900 mb-4 flex items-center gap-2">
- <svg className="w-5 h-5 text-primary-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
- <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
- </svg>
- Tracking History
- </h3>
 
  <div className="relative">
  {/* Vertical Timeline Line */}
@@ -416,7 +371,18 @@ export default function OrderDetailsPage() {
 
  {/* Timeline Items */}
  <div className="space-y-6">
- {trackingInfo.trackingHistory.map((item, index) => (
+ {trackingInfo.trackingHistory.map((item, index) => {
+ const getStatusLabel = (status: string) => {
+ const labels: Record<string, string> = {
+ pending: 'Order Placed',
+ preparing: 'Preparing',
+ ready: 'Ready for Pickup',
+ cancelled: 'Cancelled',
+ };
+ return labels[status] || status;
+ };
+
+ return (
  <motion.div
  key={item.id}
  initial={{ opacity: 0, x: -20 }}
@@ -450,23 +416,14 @@ export default function OrderDetailsPage() {
  <p className={`font-bold ${index === 0 ? 'text-primary-green' : 'text-gray-900'}`}>
  {item.description}
  </p>
- {item.location && (
- <p className="text-sm text-gray-600 mt-1 flex items-center gap-1">
- <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
- <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
- <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
- </svg>
- {item.location}
- </p>
- )}
  </div>
  <span className={`px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap ${
- item.status === 'delivered' ? 'bg-green-100 text-green-700' :
- item.status === 'shipped' ? 'bg-blue-100 text-blue-700' :
- item.status === 'processing' ? 'bg-yellow-100 text-yellow-700' :
- 'bg-gray-100 text-gray-700'
+ item.status === 'ready' ? 'bg-green-100 text-green-700' :
+ item.status === 'preparing' ? 'bg-yellow-100 text-yellow-700' :
+ item.status === 'cancelled' ? 'bg-red-100 text-red-700' :
+ 'bg-orange-100 text-orange-700'
  }`}>
- {item.status}
+ {getStatusLabel(item.status)}
  </span>
  </div>
  <p className="text-xs text-gray-500 flex items-center gap-1">
@@ -484,11 +441,10 @@ export default function OrderDetailsPage() {
  </p>
  </div>
  </motion.div>
- ))}
+ );
+ })}
  </div>
  </div>
- </div>
- )}
  </motion.div>
  )}
 

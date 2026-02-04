@@ -129,27 +129,27 @@ export default function SellerOrdersPage() {
             },
             {
               key: 'pending',
-              label: 'Pending',
+              label: 'Order Placed',
               count: orders.filter((o) => o.status === 'pending').length,
               color: 'bg-orange-100 text-orange-800 border-orange-200',
             },
             {
-              key: 'processing',
-              label: 'Processing',
-              count: orders.filter((o) => o.status === 'processing').length,
+              key: 'preparing',
+              label: 'Preparing',
+              count: orders.filter((o) => o.status === 'preparing').length,
               color: 'bg-yellow-100 text-yellow-800 border-yellow-200',
             },
             {
-              key: 'shipped',
-              label: 'Shipped',
-              count: orders.filter((o) => o.status === 'shipped').length,
-              color: 'bg-blue-100 text-blue-800 border-blue-200',
+              key: 'ready',
+              label: 'Ready for Pickup',
+              count: orders.filter((o) => o.status === 'ready').length,
+              color: 'bg-green-100 text-green-800 border-green-200',
             },
             {
-              key: 'delivered',
-              label: 'Delivered',
-              count: orders.filter((o) => o.status === 'delivered').length,
-              color: 'bg-green-100 text-green-800 border-green-200',
+              key: 'cancelled',
+              label: 'Cancelled',
+              count: orders.filter((o) => o.status === 'cancelled').length,
+              color: 'bg-red-100 text-red-800 border-red-200',
             },
           ].map((stat) => (
             <motion.button
@@ -209,18 +209,19 @@ export default function SellerOrdersPage() {
                 </div>
                 <span
                   className={`px-4 py-2 rounded-full text-sm font-semibold ${
-                    order.status === 'delivered'
+                    order.status === 'ready'
                       ? 'bg-green-100 text-green-700'
-                      : order.status === 'shipped'
-                      ? 'bg-blue-100 text-blue-700'
-                      : order.status === 'processing'
+                      : order.status === 'preparing'
                       ? 'bg-yellow-100 text-yellow-700'
                       : order.status === 'cancelled'
                       ? 'bg-red-100 text-red-700'
                       : 'bg-orange-100 text-orange-700'
                   }`}
                 >
-                  {order.status.toUpperCase()}
+                  {order.status === 'pending' ? 'ORDER PLACED' :
+                   order.status === 'preparing' ? 'PREPARING' :
+                   order.status === 'ready' ? 'READY FOR PICKUP' :
+                   order.status.toUpperCase()}
                 </span>
               </div>
 
@@ -300,9 +301,14 @@ export default function SellerOrdersPage() {
                       onChange={(e) => handleUpdateOrderStatus(order.id, e.target.value)}
                       className="px-4 py-2 rounded-lg border border-gray-300 bg-white focus:ring-2 focus:ring-primary-green focus:border-transparent text-sm font-medium"
                     >
-                      {['pending', 'processing', 'shipped', 'delivered', 'cancelled'].map((s) => (
-                        <option key={s} value={s}>
-                          {s.charAt(0).toUpperCase() + s.slice(1)}
+                      {[
+                        { value: 'pending', label: 'Order Placed' },
+                        { value: 'preparing', label: 'Preparing' },
+                        { value: 'ready', label: 'Ready for Pickup' },
+                        { value: 'cancelled', label: 'Cancelled' },
+                      ].map((s) => (
+                        <option key={s.value} value={s.value}>
+                          {s.label}
                         </option>
                       ))}
                     </select>

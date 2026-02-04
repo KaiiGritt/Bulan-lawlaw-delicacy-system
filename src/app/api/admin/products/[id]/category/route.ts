@@ -20,7 +20,7 @@ export async function PATCH(request: NextRequest, context: { params: Promise<{ i
       return NextResponse.json({ error: 'Invalid category' }, { status: 400 });
     }
 
-    const updatedProduct = await prisma.product.update({
+    const updatedProduct = await prisma.products.update({
       where: { productId: parseInt(id) },
       data: { category },
     });

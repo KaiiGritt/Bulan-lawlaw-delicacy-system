@@ -14,8 +14,8 @@ export interface Recipe {
   id: string;
   title: string;
   description: string;
-  ingredients: string[];
-  instructions: string[];
+  recipe_ingredients: string[];
+  recipe_instructions: string[];
   image: string;
   prepTime: number;
   cookTime: number;
@@ -58,14 +58,14 @@ export const mockRecipes: Recipe[] = [
     id: '1',
     title: 'Fried Lawlaw',
     description: 'A simple and delicious way to enjoy fresh Lawlaw.',
-    ingredients: [
+    recipe_ingredients: [
       '1 kg fresh Lawlaw',
       '2 cups flour',
       '2 eggs',
       'Salt and pepper to taste',
       'Oil for frying',
     ],
-    instructions: [
+    recipe_instructions: [
       'Clean and prepare the Lawlaw by removing scales and guts.',
       'Mix flour, salt, and pepper in a bowl.',
       'Beat eggs in a separate bowl.',
@@ -83,7 +83,7 @@ export const mockRecipes: Recipe[] = [
     id: '2',
     title: 'Lawlaw Patties',
     description: 'Crispy patties made from ground Lawlaw.',
-    ingredients: [
+    recipe_ingredients: [
       '500g ground Lawlaw',
       '1 onion, finely chopped',
       '2 cloves garlic, minced',
@@ -92,7 +92,7 @@ export const mockRecipes: Recipe[] = [
       'Salt and pepper to taste',
       'Oil for frying',
     ],
-    instructions: [
+    recipe_instructions: [
       'Mix all ingredients in a bowl until well combined.',
       'Form mixture into patties.',
       'Heat oil in a pan over medium heat.',
@@ -109,7 +109,7 @@ export const mockRecipes: Recipe[] = [
     id: '3',
     title: 'Crispy Lawlaw Rolls',
     description: 'Delicious spring rolls filled with Lawlaw.',
-    ingredients: [
+    recipe_ingredients: [
       '300g cooked Lawlaw, shredded',
       '1 carrot, julienned',
       '1 cup cabbage, shredded',
@@ -117,7 +117,7 @@ export const mockRecipes: Recipe[] = [
       'Oil for frying',
       'Soy sauce for dipping',
     ],
-    instructions: [
+    recipe_instructions: [
       'Mix Lawlaw, carrot, and cabbage in a bowl.',
       'Place mixture on spring roll wrappers and roll tightly.',
       'Seal edges with water.',

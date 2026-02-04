@@ -28,13 +28,13 @@ export async function POST(
     }
 
     // Get the order
-    const order = await prisma.order.findUnique({
+    const order = await prisma.orders.findUnique({
       where: { orderId: parseInt(id) },
       include: {
-        user: true,
-        orderItems: {
+        users: true,
+        order_items: {
           include: {
-            product: true
+            products: true
           }
         }
       }
@@ -65,19 +65,19 @@ export async function POST(
     // Require approval if order is in processing stage
     const requiresApproval = order.status === 'processing'
 
-    const updatedOrder = await prisma.order.update({
+    const updatedOrder = await prisma.orders.update({
       where: { orderId: parseInt(id) },
       data: {
         status: requiresApproval ? 'processing' : 'cancelled',
         adminApprovalRequired: requiresApproval,
         cancellationReason: reason.trim(),
         cancelledAt: requiresApproval ? undefined : new Date(),
-        updatedAt: new Date()
+        
       }
     })
 
     // Create notification for the user
-    await prisma.notification.create({
+    await prisma.notifications.create({
       data: {
         userId: parseInt(session.user.id),
         title: requiresApproval ? 'Cancellation Request Submitted' : 'Order Cancelled',
@@ -90,12 +90,12 @@ export async function POST(
 
     // If admin approval is required, notify admins
     if (requiresApproval) {
-      const admins = await prisma.user.findMany({
+      const admins = await prisma.users.findMany({
         where: { role: 'admin' }
       })
 
       for (const admin of admins) {
-        await prisma.notification.create({
+        await prisma.notifications.create({
           data: {
             userId: admin.userId,
             title: 'Order Cancellation Request',
@@ -106,8 +106,8 @@ export async function POST(
       }
     } else {
       // If no approval required, restore product stock
-      for (const item of order.orderItems) {
-        await prisma.product.update({
+      for (const item of order.order_items) {
+        await prisma.products.update({
           where: { productId: item.productId },
           data: {
             stock: {

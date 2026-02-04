@@ -12,42 +12,42 @@ export async function GET() {
     }
 
     // Total users
-    const totalUsers = await prisma.user.count();
+    const totalUsers = await prisma.users.count();
 
     // Total products
-    const totalProducts = await prisma.product.count();
+    const totalProducts = await prisma.products.count();
 
     // Total orders
-    const totalOrders = await prisma.order.count();
+    const totalOrders = await prisma.orders.count();
 
     // Total revenue
-    const revenueResult = await prisma.order.aggregate({
+    const revenueResult = await prisma.orders.aggregate({
       _sum: { totalAmount: true },
     });
     const totalRevenue = revenueResult._sum.totalAmount || 0;
 
     // Recent orders (last 5)
-    const recentOrders = await prisma.order.findMany({
+    const recentOrders = await prisma.orders.findMany({
       take: 5,
       include: {
-        user: { select: { name: true, email: true } },
-        orderItems: { include: { product: { select: { name: true } } } },
+        users: { select: { name: true, email: true } },
+        order_items: { include: { products: { select: { name: true } } } },
       },
       orderBy: { createdAt: 'desc' },
     });
 
     // Get some recently added products
-    const pendingProducts = await prisma.product.findMany({
+    const pendingProducts = await prisma.products.findMany({
       take: 5,
-      include: { user: { select: { name: true } } },
+      include: { users: { select: { name: true } } },
       orderBy: { createdAt: 'desc' },
     });
 
     // Pending seller applications
-    const pendingSellerApplicationsRaw = await prisma.sellerApplication.findMany({
+    const pendingSellerApplicationsRaw = await prisma.seller_applications.findMany({
       where: { status: 'pending' },
       take: 5,
-      include: { user: { select: { userId: true, name: true, email: true } } },
+      include: { users: { select: { userId: true, name: true, email: true } } },
       orderBy: { createdAt: 'desc' },
     });
 
@@ -55,10 +55,10 @@ export async function GET() {
     const pendingSellerApplications = pendingSellerApplicationsRaw.map(app => ({
       ...app,
       id: app.applicationId,
-      user: {
-        id: String(app.user.userId),
-        name: app.user.name,
-        email: app.user.email,
+      users: {
+        id: String(app.users.userId),
+        name: app.users.name,
+        email: app.users.email,
       }
     }));
 

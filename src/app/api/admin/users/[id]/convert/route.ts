@@ -16,7 +16,7 @@ export async function POST(
     const { id } = await context.params
 
     // Find user
-    const user = await prisma.user.findUnique({ where: { userId: parseInt(id) } })
+    const user = await prisma.users.findUnique({ where: { userId: parseInt(id) } })
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
@@ -37,7 +37,7 @@ export async function POST(
     if (user.role === 'user') {
       newRole = 'seller'
       // Create a blank SellerApplication for the user if not exists
-      const existingApp = await prisma.sellerApplication.findUnique({
+      const existingApp = await prisma.seller_applications.findUnique({
         where: { userId: parseInt(id) },
       })
       if (!existingApp) {
@@ -48,12 +48,12 @@ export async function POST(
             description: 'Converted by admin',
             contactNumber: '',
             address: '',
-            status: 'approved',
+            status: 'approved'
           },
         }
       } else {
         // If exists, update status to approved
-        await prisma.sellerApplication.update({
+        await prisma.seller_applications.update({
           where: { userId: parseInt(id) },
           data: { status: 'approved' }
         })
@@ -61,7 +61,7 @@ export async function POST(
     } else if (user.role === 'seller') {
       newRole = 'user'
       // Delete seller application if any
-      await prisma.sellerApplication.deleteMany({ where: { userId: parseInt(id) } })
+      await prisma.seller_applications.deleteMany({ where: { userId: parseInt(id) } })
     } else {
       return NextResponse.json(
         { error: 'Cannot convert admin role' },
@@ -70,11 +70,11 @@ export async function POST(
     }
 
     // Update user role and create seller application if needed
-    const updatedUser = await prisma.user.update({
+    const updatedUser = await prisma.users.update({
       where: { userId: parseInt(id) },
       data: {
         role: newRole,
-        sellerApplication: sellerApplicationData,
+        seller_applications: sellerApplicationData,
       },
       select: {
         userId: true,

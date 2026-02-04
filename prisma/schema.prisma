@@ -1,330 +1,12 @@
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "mysql"
 }
 
-model User {
-  userId              Int                @id @default(autoincrement())
-  email               String             @unique
-  phoneNumber         String?            @unique
-  name                String?
-  password            String
-  role                String             @default("user")
-  remarks             String?            @db.Text
-  profilePicture      String?            @db.LongText
-  emailVerified       Boolean            @default(false)
-  resetToken          String?
-  resetTokenExpiry    DateTime?
-  createdAt           DateTime           @default(now())
-  updatedAt           DateTime           @updatedAt
-  addresses           Address[]
-  cartItems           CartItem[]
-  comments            Comment[]
-  buyerConversations  Conversation[]     @relation("BuyerConversations")
-  sellerConversations Conversation[]     @relation("SellerConversations")
-  sentMessages        Message[]
-  notifications       Notification[]
-  orders              Order[]
-  otps                Otp[]
-  products            Product[]
-  recipes             Recipe[]
-  recipeReviews       RecipeReview[]
-  savedRecipes        SavedRecipe[]
-  sellerApplication   SellerApplication?
-  settings            UserSettings?
-
-  @@map("users")
-}
-
-model Product {
-  productId     Int            @id @default(autoincrement())
-  name          String
-  description   String         @db.Text
-  price         Float
-  category      String
-  image         String         @db.LongText
-  stock         Int            @default(0)
-  userId        Int
-  featured      Boolean        @default(false)
-  rating        Float          @default(0)
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  cartItems     CartItem[]
-  comments      Comment[]
-  conversations Conversation[]
-  orderItems    OrderItem[]
-  user          User           @relation(fields: [userId], references: [userId], onDelete: Cascade)
-
-  @@index([userId], map: "products_userId_fkey")
-  @@map("products")
-}
-
-model Recipe {
-  recipeId     Int                 @id @default(autoincrement())
-  userId       Int?
-  title        String
-  description  String              @db.Text
-  image        String              @db.LongText
-  prepTime     Int
-  cookTime     Int
-  servings     Int
-  difficulty   String
-  rating       Float               @default(0)
-  createdAt    DateTime            @default(now())
-  updatedAt    DateTime            @updatedAt
-  user         User?               @relation(fields: [userId], references: [userId], onDelete: SetNull)
-  ingredients  RecipeIngredient[]
-  instructions RecipeInstruction[]
-  reviews      RecipeReview[]
-  savedRecipes SavedRecipe[]
-
-  @@index([userId], map: "recipes_userId_fkey")
-  @@map("recipes")
-}
-
-model RecipeIngredient {
-  ingredientId Int     @id @default(autoincrement())
-  recipeId     Int
-  name         String
-  quantity     String?
-  order        Int
-  recipe       Recipe  @relation(fields: [recipeId], references: [recipeId], onDelete: Cascade)
-
-  @@index([recipeId], map: "recipe_ingredients_recipeId_fkey")
-  @@map("recipe_ingredients")
-}
-
-model RecipeInstruction {
-  instructionId Int    @id @default(autoincrement())
-  recipeId      Int
-  stepNumber    Int
-  instruction   String @db.Text
-  recipe        Recipe @relation(fields: [recipeId], references: [recipeId], onDelete: Cascade)
-
-  @@index([recipeId], map: "recipe_instructions_recipeId_fkey")
-  @@map("recipe_instructions")
-}
-
-model CartItem {
-  cartItemId Int      @id @default(autoincrement())
-  userId     Int
-  productId  Int
-  quantity   Int      @default(1)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  product    Product  @relation(fields: [productId], references: [productId], onDelete: Cascade)
-  user       User     @relation(fields: [userId], references: [userId], onDelete: Cascade)
-
-  @@unique([userId, productId])
-  @@index([productId], map: "cart_items_productId_fkey")
-  @@map("cart_items")
-}
-
-model Order {
-  orderId               Int                    @id @default(autoincrement())
-  userId                Int
-  status                String                 @default("pending")
-  totalAmount           Float
-  shippingAddress       String                 @db.Text
-  billingAddress        String                 @db.Text
-  paymentMethod         String
-  adminApprovalRequired Boolean                @default(false)
-  cancellationReason    String?
-  cancelledAt           DateTime?
-  trackingNumber        String?
-  courier               String?
-  estimatedDeliveryDate DateTime?
-  shippedAt             DateTime?
-  deliveredAt           DateTime?
-  createdAt             DateTime               @default(now())
-  updatedAt             DateTime               @updatedAt
-  orderItems            OrderItem[]
-  trackingHistory       OrderTrackingHistory[]
-  user                  User                   @relation(fields: [userId], references: [userId], onDelete: Cascade)
-
-  @@index([userId], map: "orders_userId_fkey")
-  @@map("orders")
-}
-
-model OrderItem {
-  orderItemId Int      @id @default(autoincrement())
-  orderId     Int
-  productId   Int
-  quantity    Int
-  price       Float
-  createdAt   DateTime @default(now())
-  order       Order    @relation(fields: [orderId], references: [orderId], onDelete: Cascade)
-  product     Product  @relation(fields: [productId], references: [productId], onDelete: Cascade)
-
-  @@index([orderId], map: "order_items_orderId_fkey")
-  @@index([productId], map: "order_items_productId_fkey")
-  @@map("order_items")
-}
-
-model OrderTrackingHistory {
-  trackingHistoryId Int      @id @default(autoincrement())
-  orderId           Int
-  status            String
-  location          String?
-  description       String
-  createdAt         DateTime @default(now())
-  order             Order    @relation(fields: [orderId], references: [orderId], onDelete: Cascade)
-
-  @@index([orderId], map: "order_tracking_history_orderId_fkey")
-  @@map("order_tracking_history")
-}
-
-model SellerApplication {
-  applicationId Int      @id @default(autoincrement())
-  userId        Int      @unique
-  businessName  String
-  businessType  String
-  description   String
-  contactNumber String
-  address       String
-  businessLogo  String?  @db.LongText
-  primaryId     String?  @db.LongText
-  secondaryId   String?  @db.LongText
-  status        String   @default("pending")
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  user          User     @relation(fields: [userId], references: [userId], onDelete: Cascade)
-
-  @@map("seller_applications")
-}
-
-model Conversation {
-  conversationId Int       @id @default(autoincrement())
-  sellerId       Int
-  buyerId        Int
-  productId      Int
-  status         String    @default("active")
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
-  buyer          User      @relation("BuyerConversations", fields: [buyerId], references: [userId], onDelete: Cascade)
-  product        Product   @relation(fields: [productId], references: [productId], onDelete: Cascade)
-  seller         User      @relation("SellerConversations", fields: [sellerId], references: [userId], onDelete: Cascade)
-  messages       Message[]
-
-  @@unique([sellerId, buyerId, productId])
-  @@index([buyerId], map: "conversations_buyerId_fkey")
-  @@index([productId], map: "conversations_productId_fkey")
-  @@map("conversations")
-}
-
-model Message {
-  messageId      Int          @id @default(autoincrement())
-  conversationId Int
-  senderId       Int
-  content        String
-  isRead         Boolean      @default(false)
-  createdAt      DateTime     @default(now())
-  conversation   Conversation @relation(fields: [conversationId], references: [conversationId], onDelete: Cascade)
-  sender         User         @relation(fields: [senderId], references: [userId], onDelete: Cascade)
-
-  @@index([conversationId], map: "messages_conversationId_fkey")
-  @@index([senderId], map: "messages_senderId_fkey")
-  @@map("messages")
-}
-
-model Notification {
-  notificationId Int      @id @default(autoincrement())
-  userId         Int
-  title          String
-  message        String
-  type           String
-  isRead         Boolean  @default(false)
-  createdAt      DateTime @default(now())
-  user           User     @relation(fields: [userId], references: [userId], onDelete: Cascade)
-
-  @@index([userId], map: "notifications_userId_fkey")
-  @@map("notifications")
-}
-
-model Comment {
-  commentId     Int       @id @default(autoincrement())
-  productId     Int
-  userId        Int
-  rating        Int
-  content       String
-  sellerReply   String?
-  sellerReplyAt DateTime?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  product       Product   @relation(fields: [productId], references: [productId], onDelete: Cascade)
-  user          User      @relation(fields: [userId], references: [userId], onDelete: Cascade)
-
-  @@unique([productId, userId])
-  @@index([userId], map: "comments_userId_fkey")
-  @@map("comments")
-}
-
-model RecipeReview {
-  reviewId  Int      @id @default(autoincrement())
-  recipeId  Int
-  userId    Int
-  rating    Int
-  content   String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  recipe    Recipe   @relation(fields: [recipeId], references: [recipeId], onDelete: Cascade)
-  user      User     @relation(fields: [userId], references: [userId], onDelete: Cascade)
-
-  @@unique([recipeId, userId])
-  @@index([userId], map: "recipe_reviews_userId_fkey")
-  @@map("recipe_reviews")
-}
-
-model SavedRecipe {
-  savedRecipeId Int      @id @default(autoincrement())
-  userId        Int
-  recipeId      Int
-  notes         String?  @db.Text
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  recipe        Recipe   @relation(fields: [recipeId], references: [recipeId], onDelete: Cascade)
-  user          User     @relation(fields: [userId], references: [userId], onDelete: Cascade)
-
-  @@unique([userId, recipeId])
-  @@index([recipeId], map: "saved_recipes_recipeId_fkey")
-  @@map("saved_recipes")
-}
-
-model Otp {
-  otpId     Int      @id @default(autoincrement())
-  userId    Int?
-  email     String
-  code      String
-  verified  Boolean  @default(false)
-  attempts  Int      @default(0)
-  expiresAt DateTime
-  createdAt DateTime @default(now())
-  user      User?    @relation(fields: [userId], references: [userId], onDelete: Cascade)
-
-  @@index([email])
-  @@index([userId], map: "otps_userId_fkey")
-  @@map("otps")
-}
-
-model PendingRegistration {
-  registrationId Int      @id @default(autoincrement())
-  email          String   @unique
-  name           String
-  password       String
-  phoneNumber    String?
-  role           String   @default("user")
-  expiresAt      DateTime
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-
-  @@map("pending_registrations")
-}
-
-model Address {
+model addresses {
   addressId     Int      @id @default(autoincrement())
   userId        Int
   fullName      String
@@ -339,51 +21,332 @@ model Address {
   isDefault     Boolean  @default(false)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
-  user          User     @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  users         users    @relation(fields: [userId], references: [userId], onDelete: Cascade)
 
   @@index([userId], map: "addresses_userId_fkey")
-  @@map("addresses")
 }
 
-model UserSettings {
-  settingsId         Int      @id @default(autoincrement())
-  userId             Int      @unique
-  displayName        String?
-  bio                String?  @db.Text
-  themeColor         String   @default("green")
+model cart_items {
+  cartItemId Int      @id @default(autoincrement())
+  userId     Int
+  productId  Int
+  quantity   Int      @default(1)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  products   products @relation(fields: [productId], references: [productId], onDelete: Cascade)
+  users      users    @relation(fields: [userId], references: [userId], onDelete: Cascade)
 
-  // Notification preferences
-  notifications      Boolean  @default(true)
-  emailUpdates       Boolean  @default(true)
-  orderUpdates       Boolean  @default(true)
-  promotionalEmails  Boolean  @default(false)
-  smsNotifications   Boolean  @default(false)
-  inAppNotifications Boolean  @default(true)
+  @@unique([userId, productId])
+  @@index([productId], map: "cart_items_productId_fkey")
+}
 
-  // Privacy settings
-  showProfile        Boolean  @default(true)
-  showOrders         Boolean  @default(false)
+model comments {
+  commentId     Int       @id @default(autoincrement())
+  productId     Int
+  userId        Int
+  rating        Int
+  content       String
+  sellerReply   String?
+  sellerReplyAt DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  products      products  @relation(fields: [productId], references: [productId], onDelete: Cascade)
+  users         users     @relation(fields: [userId], references: [userId], onDelete: Cascade)
 
-  // Accessibility
-  fontSize           String   @default("medium")
-  highContrast       Boolean  @default(false)
-  reducedMotion      Boolean  @default(false)
+  @@unique([productId, userId])
+  @@index([userId], map: "comments_userId_fkey")
+}
 
-  // Shipping preferences (for buyers)
-  defaultAddress     String?  @db.Text
-  preferredTimeSlot  String   @default("anytime")
-  specialInstructions String? @db.Text
+model conversations {
+  conversationId                      Int        @id @default(autoincrement())
+  sellerId                            Int
+  buyerId                             Int
+  productId                           Int
+  status                              String     @default("active")
+  createdAt                           DateTime   @default(now())
+  updatedAt                           DateTime   @updatedAt
+  users_conversations_buyerIdTousers  users      @relation("conversations_buyerIdTousers", fields: [buyerId], references: [userId], onDelete: Cascade)
+  products                            products   @relation(fields: [productId], references: [productId], onDelete: Cascade)
+  users_conversations_sellerIdTousers users      @relation("conversations_sellerIdTousers", fields: [sellerId], references: [userId], onDelete: Cascade)
+  messages                            messages[]
 
-  // Store settings (for sellers)
-  storeHours         String?
-  shippingTime       String?
-  returnPolicy       String?  @db.Text
-  minimumOrder       Float?
+  @@unique([sellerId, buyerId, productId])
+  @@index([buyerId], map: "conversations_buyerId_fkey")
+  @@index([productId], map: "conversations_productId_fkey")
+}
+
+model messages {
+  messageId      Int           @id @default(autoincrement())
+  conversationId Int
+  senderId       Int
+  content        String
+  isRead         Boolean       @default(false)
+  createdAt      DateTime      @default(now())
+  conversations  conversations @relation(fields: [conversationId], references: [conversationId], onDelete: Cascade)
+  users          users         @relation(fields: [senderId], references: [userId], onDelete: Cascade)
+
+  @@index([conversationId], map: "messages_conversationId_fkey")
+  @@index([senderId], map: "messages_senderId_fkey")
+}
+
+model notifications {
+  notificationId Int      @id @default(autoincrement())
+  userId         Int
+  title          String
+  message        String
+  type           String
+  isRead         Boolean  @default(false)
+  createdAt      DateTime @default(now())
+  users          users    @relation(fields: [userId], references: [userId], onDelete: Cascade)
+
+  @@index([userId], map: "notifications_userId_fkey")
+}
+
+model order_items {
+  orderItemId Int      @id @default(autoincrement())
+  orderId     Int
+  productId   Int
+  quantity    Int
+  price       Float
+  createdAt   DateTime @default(now())
+  orders      orders   @relation(fields: [orderId], references: [orderId], onDelete: Cascade)
+  products    products @relation(fields: [productId], references: [productId], onDelete: Cascade)
+
+  @@index([orderId], map: "order_items_orderId_fkey")
+  @@index([productId], map: "order_items_productId_fkey")
+}
+
+model order_tracking_history {
+  trackingHistoryId Int      @id @default(autoincrement())
+  orderId           Int
+  status            String
+  location          String?
+  description       String
+  createdAt         DateTime @default(now())
+  orders            orders   @relation(fields: [orderId], references: [orderId], onDelete: Cascade)
+
+  @@index([orderId], map: "order_tracking_history_orderId_fkey")
+}
+
+model orders {
+  orderId                Int                      @id @default(autoincrement())
+  userId                 Int
+  status                 String                   @default("pending")
+  totalAmount            Float
+  shippingAddress        String                   @db.Text
+  billingAddress         String                   @db.Text
+  paymentMethod          String
+  adminApprovalRequired  Boolean                  @default(false)
+  cancellationReason     String?
+  cancelledAt            DateTime?
+  trackingNumber         String?                  @unique
+  estimatedDeliveryDate  DateTime?
+  shippedAt              DateTime?
+  deliveredAt            DateTime?
+  createdAt              DateTime                 @default(now())
+  updatedAt              DateTime                 @updatedAt
+  order_items            order_items[]
+  order_tracking_history order_tracking_history[]
+  users                  users                    @relation(fields: [userId], references: [userId], onDelete: Cascade)
+
+  @@index([userId], map: "orders_userId_fkey")
+}
+
+model otps {
+  otpId     Int      @id @default(autoincrement())
+  userId    Int?
+  email     String
+  code      String
+  verified  Boolean  @default(false)
+  attempts  Int      @default(0)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  users     users?   @relation(fields: [userId], references: [userId], onDelete: Cascade)
+
+  @@index([email])
+  @@index([userId], map: "otps_userId_fkey")
+}
+
+model pending_registrations {
+  registrationId Int      @id @default(autoincrement())
+  email          String   @unique
+  name           String
+  password       String
+  phoneNumber    String?
+  role           String   @default("user")
+  expiresAt      DateTime
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model products {
+  productId     Int             @id @default(autoincrement())
+  name          String
+  description   String          @db.Text
+  price         Float
+  category      String
+  image         String          @db.LongText
+  stock         Int             @default(0)
+  userId        Int
+  featured      Boolean         @default(false)
+  rating        Float           @default(0)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  cart_items    cart_items[]
+  comments      comments[]
+  conversations conversations[]
+  order_items   order_items[]
+  users         users           @relation(fields: [userId], references: [userId], onDelete: Cascade)
+
+  @@index([userId], map: "products_userId_fkey")
+}
+
+model recipe_ingredients {
+  ingredientId Int     @id @default(autoincrement())
+  recipeId     Int
+  name         String
+  quantity     String?
+  order        Int
+  recipes      recipes @relation(fields: [recipeId], references: [recipeId], onDelete: Cascade)
+
+  @@index([recipeId], map: "recipe_ingredients_recipeId_fkey")
+}
+
+model recipe_instructions {
+  instructionId Int     @id @default(autoincrement())
+  recipeId      Int
+  stepNumber    Int
+  instruction   String  @db.Text
+  recipes       recipes @relation(fields: [recipeId], references: [recipeId], onDelete: Cascade)
+
+  @@index([recipeId], map: "recipe_instructions_recipeId_fkey")
+}
+
+model recipe_reviews {
+  reviewId  Int      @id @default(autoincrement())
+  recipeId  Int
+  userId    Int
+  rating    Int
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  recipes   recipes  @relation(fields: [recipeId], references: [recipeId], onDelete: Cascade)
+  users     users    @relation(fields: [userId], references: [userId], onDelete: Cascade)
+
+  @@unique([recipeId, userId])
+  @@index([userId], map: "recipe_reviews_userId_fkey")
+}
+
+model recipes {
+  recipeId            Int                   @id @default(autoincrement())
+  title               String
+  description         String                @db.Text
+  image               String                @db.LongText
+  prepTime            Int
+  cookTime            Int
+  servings            Int
+  difficulty          String
+  rating              Float                 @default(0)
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime              @updatedAt
+  userId              Int?
+  recipe_ingredients  recipe_ingredients[]
+  recipe_instructions recipe_instructions[]
+  recipe_reviews      recipe_reviews[]
+  users               users?                @relation(fields: [userId], references: [userId])
+  saved_recipes       saved_recipes[]
+
+  @@index([userId], map: "recipes_userId_fkey")
+}
+
+model saved_recipes {
+  savedRecipeId Int      @id @default(autoincrement())
+  userId        Int
+  recipeId      Int
+  notes         String?  @db.Text
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  recipes       recipes  @relation(fields: [recipeId], references: [recipeId], onDelete: Cascade)
+  users         users    @relation(fields: [userId], references: [userId], onDelete: Cascade)
+
+  @@unique([userId, recipeId])
+  @@index([recipeId], map: "saved_recipes_recipeId_fkey")
+}
+
+model seller_applications {
+  applicationId Int      @id @default(autoincrement())
+  userId        Int      @unique
+  businessName  String
+  businessType  String
+  description   String
+  contactNumber String
+  address       String
+  businessLogo  String?  @db.LongText
+  primaryId     String?  @db.LongText
+  secondaryId   String?  @db.LongText
+  status        String   @default("pending")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  users         users    @relation(fields: [userId], references: [userId], onDelete: Cascade)
+}
+
+model user_settings {
+  settingsId            Int      @id @default(autoincrement())
+  userId                Int      @unique
+  displayName           String?
+  bio                   String?  @db.Text
+  themeColor            String   @default("green")
+  notifications         Boolean  @default(true)
+  emailUpdates          Boolean  @default(true)
+  orderUpdates          Boolean  @default(true)
+  promotionalEmails     Boolean  @default(false)
+  smsNotifications      Boolean  @default(false)
+  inAppNotifications    Boolean  @default(true)
+  showProfile           Boolean  @default(true)
+  showOrders            Boolean  @default(false)
+  fontSize              String   @default("medium")
+  highContrast          Boolean  @default(false)
+  reducedMotion         Boolean  @default(false)
+  defaultAddress        String?  @db.Text
+  preferredTimeSlot     String   @default("anytime")
+  specialInstructions   String?  @db.Text
+  storeHours            String?
+  shippingTime          String?
+  returnPolicy          String?  @db.Text
+  minimumOrder          Float?
   freeShippingThreshold Float?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  users                 users    @relation(fields: [userId], references: [userId], onDelete: Cascade)
+}
 
-  createdAt          DateTime @default(now())
-  updatedAt          DateTime @updatedAt
-  user               User     @relation(fields: [userId], references: [userId], onDelete: Cascade)
-
-  @@map("user_settings")
+model users {
+  userId                                      Int                  @id @default(autoincrement())
+  email                                       String               @unique
+  phoneNumber                                 String?              @unique
+  name                                        String?
+  password                                    String
+  role                                        String               @default("user")
+  remarks                                     String?              @db.Text
+  profilePicture                              String?              @db.LongText
+  emailVerified                               Boolean              @default(false)
+  resetToken                                  String?
+  resetTokenExpiry                            DateTime?
+  createdAt                                   DateTime             @default(now())
+  updatedAt                                   DateTime             @updatedAt
+  addresses                                   addresses[]
+  cart_items                                  cart_items[]
+  comments                                    comments[]
+  conversations_conversations_buyerIdTousers  conversations[]      @relation("conversations_buyerIdTousers")
+  conversations_conversations_sellerIdTousers conversations[]      @relation("conversations_sellerIdTousers")
+  messages                                    messages[]
+  notifications                               notifications[]
+  orders                                      orders[]
+  otps                                        otps[]
+  products                                    products[]
+  recipe_reviews                              recipe_reviews[]
+  recipes                                     recipes[]
+  saved_recipes                               saved_recipes[]
+  seller_applications                         seller_applications?
+  user_settings                               user_settings?
 }

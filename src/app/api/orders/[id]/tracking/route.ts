@@ -2,9 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '../../../../lib/auth'
 import { prisma } from '../../../../lib/prisma'
-import { sendOrderTrackingEmail } from '../../../../lib/notifications'
+import { sendOrderStatusEmail } from '../../../../lib/notifications'
 
-// GET /api/orders/[id]/tracking - Get order tracking information
+// GET /api/orders/[id]/tracking - Get order status information
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -20,13 +20,13 @@ export async function GET(
     }
 
     const { id } = await params
-    const order = await prisma.order.findUnique({
+    const order = await prisma.orders.findUnique({
       where: { orderId: parseInt(id) },
       include: {
-        trackingHistory: {
+        order_tracking_history: {
           orderBy: { createdAt: 'desc' }
         },
-        user: {
+        users: {
           select: {
             userId: true,
             email: true,
@@ -54,12 +54,7 @@ export async function GET(
     return NextResponse.json({
       orderId: order.orderId,
       status: order.status,
-      trackingNumber: order.trackingNumber,
-      courier: order.courier,
-      estimatedDeliveryDate: order.estimatedDeliveryDate,
-      shippedAt: order.shippedAt,
-      deliveredAt: order.deliveredAt,
-      trackingHistory: order.trackingHistory
+      order_tracking_history: order.order_tracking_history
     })
   } catch (error) {
     console.error('Error fetching tracking info:', error)
@@ -70,7 +65,18 @@ export async function GET(
   }
 }
 
-// POST /api/orders/[id]/tracking - Add tracking update (Seller/Admin only)
+// Helper function to get status label
+function getStatusLabel(status: string): string {
+  const labels: Record<string, string> = {
+    pending: 'Order Placed',
+    preparing: 'Preparing',
+    ready: 'Ready for Pickup',
+    cancelled: 'Cancelled',
+  }
+  return labels[status] || status
+}
+
+// POST /api/orders/[id]/tracking - Update order status (Seller/Admin only)
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -86,32 +92,34 @@ export async function POST(
     }
 
     const body = await request.json()
-    const { status, location, description } = body
+    const { status, description } = body
 
-    if (!status || !description) {
+    // Validate status
+    const validStatuses = ['pending', 'preparing', 'ready', 'cancelled']
+    if (!status || !validStatuses.includes(status)) {
       return NextResponse.json(
-        { error: 'Status and description are required' },
+        { error: 'Invalid status. Must be: pending, preparing, ready, or cancelled' },
         { status: 400 }
       )
     }
 
     const { id } = await params
-    // Add tracking history entry
-    const trackingEntry = await prisma.orderTrackingHistory.create({
+
+    // Add status history entry
+    const trackingEntry = await prisma.order_tracking_history.create({
       data: {
         orderId: parseInt(id),
         status,
-        location,
-        description
+        description: description || `Order status updated to ${getStatusLabel(status)}`
       }
     })
 
     // Update order status and get user info
-    const order = await prisma.order.update({
+    const order = await prisma.orders.update({
       where: { orderId: parseInt(id) },
       data: { status },
       include: {
-        user: {
+        users: {
           select: {
             email: true,
             name: true
@@ -122,15 +130,12 @@ export async function POST(
 
     // Send email notification
     try {
-      await sendOrderTrackingEmail({
-        customerEmail: order.user.email,
-        customerName: order.user.name || 'Customer',
+      await sendOrderStatusEmail({
+        customerEmail: order.users.email,
+        customerName: order.users.name || 'Customer',
         orderId: String(order.orderId),
         status,
-        trackingNumber: order.trackingNumber || undefined,
-        courier: order.courier || undefined,
-        estimatedDeliveryDate: order.estimatedDeliveryDate?.toISOString(),
-        description
+        description: description || `Order status updated to ${getStatusLabel(status)}`
       })
     } catch (emailError) {
       console.error('Failed to send email notification:', emailError)
@@ -139,99 +144,9 @@ export async function POST(
 
     return NextResponse.json(trackingEntry, { status: 201 })
   } catch (error) {
-    console.error('Error adding tracking update:', error)
+    console.error('Error updating order status:', error)
     return NextResponse.json(
-      { error: 'Failed to add tracking update' },
-      { status: 500 }
-    )
-  }
-}
-
-// PUT /api/orders/[id]/tracking - Update tracking info (Seller/Admin only)
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
-  try {
-    const session = await getServerSession(authOptions)
-
-    if (!session || !['admin', 'seller'].includes(session.user.role)) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      )
-    }
-
-    const body = await request.json()
-    const { trackingNumber, courier, estimatedDeliveryDate, status } = body
-
-    const updateData: any = {}
-    if (trackingNumber !== undefined) updateData.trackingNumber = trackingNumber
-    if (courier !== undefined) updateData.courier = courier
-    if (estimatedDeliveryDate !== undefined) updateData.estimatedDeliveryDate = new Date(estimatedDeliveryDate)
-    if (status !== undefined) {
-      updateData.status = status
-
-      // Auto-set shipped/delivered dates based on status
-      if (status === 'shipped' && !updateData.shippedAt) {
-        updateData.shippedAt = new Date()
-      }
-      if (status === 'delivered' && !updateData.deliveredAt) {
-        updateData.deliveredAt = new Date()
-      }
-    }
-
-    const { id } = await params
-    const order = await prisma.order.update({
-      where: { orderId: parseInt(id) },
-      data: updateData,
-      include: {
-        trackingHistory: {
-          orderBy: { createdAt: 'desc' }
-        },
-        user: {
-          select: {
-            email: true,
-            name: true
-          }
-        }
-      }
-    })
-
-    // Create tracking history entry for status changes
-    if (status) {
-      await prisma.orderTrackingHistory.create({
-        data: {
-          orderId: parseInt(id),
-          status,
-          description: `Order status updated to ${status}`,
-          location: null
-        }
-      })
-
-      // Send email notification
-      try {
-        await sendOrderTrackingEmail({
-          customerEmail: order.user.email,
-          customerName: order.user.name || 'Customer',
-          orderId: String(order.orderId),
-          status,
-          trackingNumber: order.trackingNumber || undefined,
-          courier: order.courier || undefined,
-          estimatedDeliveryDate: order.estimatedDeliveryDate?.toISOString(),
-          description: `Order status updated to ${status}`
-        })
-      } catch (emailError) {
-        console.error('Failed to send email notification:', emailError)
-        // Don't fail the request if email fails
-      }
-    }
-
-    return NextResponse.json(order)
-  } catch (error) {
-    console.error('Error updating tracking info:', error)
-    return NextResponse.json(
-      { error: 'Failed to update tracking information' },
+      { error: 'Failed to update order status' },
       { status: 500 }
     )
   }

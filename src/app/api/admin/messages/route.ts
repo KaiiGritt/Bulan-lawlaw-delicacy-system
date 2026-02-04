@@ -16,10 +16,10 @@ export async function GET(req: NextRequest) {
 
     if (conversationId) {
       // Get messages for specific conversation
-      const messagesRaw = await prisma.message.findMany({
+      const messagesRaw = await prisma.messages.findMany({
         where: { conversationId: parseInt(conversationId) },
         include: {
-          sender: {
+          users: {
             select: { userId: true, name: true, email: true, role: true }
           }
         },
@@ -31,29 +31,29 @@ export async function GET(req: NextRequest) {
         ...msg,
         id: msg.messageId,
         sender: {
-          id: msg.sender.userId,
-          name: msg.sender.name,
-          email: msg.sender.email,
-          role: msg.sender.role,
+          id: msg.users.userId,
+          name: msg.users.name,
+          email: msg.users.email,
+          role: msg.users.role,
         }
       }));
 
       return NextResponse.json(messages);
     } else {
       // Get all conversations with latest message
-      const conversationsRaw = await prisma.conversation.findMany({
+      const conversationsRaw = await prisma.conversations.findMany({
         include: {
-          buyer: {
+          users_conversations_buyerIdTousers: {
             select: { userId: true, name: true, email: true }
           },
-          seller: {
+          users_conversations_sellerIdTousers: {
             select: { userId: true, name: true, email: true }
           },
           messages: {
             take: 1,
             orderBy: { createdAt: 'desc' },
             include: {
-              sender: {
+              users: {
                 select: { name: true }
               }
             }
@@ -67,14 +67,14 @@ export async function GET(req: NextRequest) {
         ...conv,
         id: conv.conversationId,
         buyer: {
-          id: conv.buyer.userId,
-          name: conv.buyer.name,
-          email: conv.buyer.email,
+          id: conv.users_conversations_buyerIdTousers.userId,
+          name: conv.users_conversations_buyerIdTousers.name,
+          email: conv.users_conversations_buyerIdTousers.email,
         },
         seller: {
-          id: conv.seller.userId,
-          name: conv.seller.name,
-          email: conv.seller.email,
+          id: conv.users_conversations_sellerIdTousers.userId,
+          name: conv.users_conversations_sellerIdTousers.name,
+          email: conv.users_conversations_sellerIdTousers.email,
         },
       }));
 

@@ -29,7 +29,7 @@ export async function PATCH(
     }
 
     // Validate status
-    const validStatuses = ['pending', 'processing', 'shipped', 'delivered', 'cancelled'];
+    const validStatuses = ['pending', 'preparing', 'ready', 'cancelled'];
     if (!validStatuses.includes(status)) {
       return NextResponse.json(
         { error: 'Invalid status. Must be one of: ' + validStatuses.join(', ') },
@@ -38,12 +38,12 @@ export async function PATCH(
     }
 
     // Check if the order exists and if it contains the seller's products
-    const order = await prisma.order.findUnique({
+    const order = await prisma.orders.findUnique({
       where: { orderId: parseInt(id) },
       include: {
-        orderItems: {
+        order_items: {
           include: {
-            product: {
+            products: {
               select: { userId: true }
             }
           }
@@ -59,8 +59,8 @@ export async function PATCH(
     }
 
     // Check if the seller owns at least one product in the order
-    const sellerOwnsProduct = order.orderItems.some(
-      item => item.product.userId === parseInt(session.user.id)
+    const sellerOwnsProduct = order.order_items.some(
+      item => item.products.userId === parseInt(session.user.id)
     );
 
     if (!sellerOwnsProduct) {
@@ -71,16 +71,16 @@ export async function PATCH(
     }
 
     // Update the order status
-    const updatedOrder = await prisma.order.update({
+    const updatedOrder = await prisma.orders.update({
       where: { orderId: parseInt(id) },
       data: { status },
       include: {
-        user: {
+        users: {
           select: { userId: true, name: true, email: true }
         },
-        orderItems: {
+        order_items: {
           include: {
-            product: {
+            products: {
               select: { productId: true, name: true, price: true }
             }
           }
@@ -92,16 +92,16 @@ export async function PATCH(
     const mappedOrder = {
       ...updatedOrder,
       id: String(updatedOrder.orderId),
-      user: {
-        ...updatedOrder.user,
-        id: String(updatedOrder.user.userId),
+      users: {
+        ...updatedOrder.users,
+        id: String(updatedOrder.users.userId),
       },
-      orderItems: updatedOrder.orderItems.map(item => ({
+      order_items: updatedOrder.order_items.map(item => ({
         ...item,
         id: item.orderItemId,
-        product: {
-          ...item.product,
-          id: String(item.product.productId),
+        products: {
+          ...item.products,
+          id: String(item.products.productId),
         }
       }))
     };
@@ -133,20 +133,20 @@ export async function GET(
 
     const { id } = await params;
 
-    const order = await prisma.order.findUnique({
+    const order = await prisma.orders.findUnique({
       where: { orderId: parseInt(id) },
       include: {
-        user: {
+        users: {
           select: { userId: true, name: true, email: true }
         },
-        orderItems: {
+        order_items: {
           where: {
-            product: {
+            products: {
               userId: parseInt(session.user.id)
             }
           },
           include: {
-            product: {
+            products: {
               select: { productId: true, name: true, price: true, image: true }
             }
           }
@@ -162,7 +162,7 @@ export async function GET(
     }
 
     // Check if the seller owns at least one product in the order
-    if (order.orderItems.length === 0) {
+    if (order.order_items.length === 0) {
       return NextResponse.json(
         { error: 'You do not have permission to view this order' },
         { status: 403 }
@@ -170,7 +170,7 @@ export async function GET(
     }
 
     // Calculate seller-specific total
-    const sellerTotal = order.orderItems.reduce(
+    const sellerTotal = order.order_items.reduce(
       (sum, item) => sum + (item.price * item.quantity),
       0
     );
@@ -179,16 +179,16 @@ export async function GET(
     const mappedOrder = {
       ...order,
       id: String(order.orderId),
-      user: {
-        ...order.user,
-        id: String(order.user.userId),
+      users: {
+        ...order.users,
+        id: String(order.users.userId),
       },
-      orderItems: order.orderItems.map(item => ({
+      order_items: order.order_items.map(item => ({
         ...item,
         id: item.orderItemId,
-        product: {
-          ...item.product,
-          id: String(item.product.productId),
+        products: {
+          ...item.products,
+          id: String(item.products.productId),
         }
       })),
       sellerTotal

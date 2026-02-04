@@ -20,7 +20,7 @@ const config: runtime.GetPrismaClientConfig = {
   "clientVersion": "7.1.0",
   "engineVersion": "ab635e6b9d606fa5c8fb8b1a7f909c3c3c1c98ba",
   "activeProvider": "mysql",
-  "inlineSchema": "generator client {\n  provider = \"prisma-client\"\n  output   = \"../src/generated/prisma\"\n}\n\ndatasource db {\n  provider = \"mysql\"\n}\n\nmodel User {\n  userId              Int                @id @default(autoincrement())\n  email               String             @unique\n  phoneNumber         String?            @unique\n  name                String?\n  password            String\n  role                String             @default(\"user\")\n  remarks             String?            @db.Text\n  profilePicture      String?            @db.LongText\n  emailVerified       Boolean            @default(false)\n  resetToken          String?\n  resetTokenExpiry    DateTime?\n  createdAt           DateTime           @default(now())\n  updatedAt           DateTime           @updatedAt\n  addresses           Address[]\n  cartItems           CartItem[]\n  comments            Comment[]\n  buyerConversations  Conversation[]     @relation(\"BuyerConversations\")\n  sellerConversations Conversation[]     @relation(\"SellerConversations\")\n  sentMessages        Message[]\n  notifications       Notification[]\n  orders              Order[]\n  otps                Otp[]\n  products            Product[]\n  recipes             Recipe[]\n  recipeReviews       RecipeReview[]\n  savedRecipes        SavedRecipe[]\n  sellerApplication   SellerApplication?\n  settings            UserSettings?\n\n  @@map(\"users\")\n}\n\nmodel Product {\n  productId     Int            @id @default(autoincrement())\n  name          String\n  description   String         @db.Text\n  price         Float\n  category      String\n  image         String         @db.LongText\n  stock         Int            @default(0)\n  userId        Int\n  featured      Boolean        @default(false)\n  rating        Float          @default(0)\n  createdAt     DateTime       @default(now())\n  updatedAt     DateTime       @updatedAt\n  cartItems     CartItem[]\n  comments      Comment[]\n  conversations Conversation[]\n  orderItems    OrderItem[]\n  user          User           @relation(fields: [userId], references: [userId], onDelete: Cascade)\n\n  @@index([userId], map: \"products_userId_fkey\")\n  @@map(\"products\")\n}\n\nmodel Recipe {\n  recipeId     Int                 @id @default(autoincrement())\n  userId       Int?\n  title        String\n  description  String              @db.Text\n  image        String              @db.LongText\n  prepTime     Int\n  cookTime     Int\n  servings     Int\n  difficulty   String\n  rating       Float               @default(0)\n  createdAt    DateTime            @default(now())\n  updatedAt    DateTime            @updatedAt\n  user         User?               @relation(fields: [userId], references: [userId], onDelete: SetNull)\n  ingredients  RecipeIngredient[]\n  instructions RecipeInstruction[]\n  reviews      RecipeReview[]\n  savedRecipes SavedRecipe[]\n\n  @@index([userId], map: \"recipes_userId_fkey\")\n  @@map(\"recipes\")\n}\n\nmodel RecipeIngredient {\n  ingredientId Int     @id @default(autoincrement())\n  recipeId     Int\n  name         String\n  quantity     String?\n  order        Int\n  recipe       Recipe  @relation(fields: [recipeId], references: [recipeId], onDelete: Cascade)\n\n  @@index([recipeId], map: \"recipe_ingredients_recipeId_fkey\")\n  @@map(\"recipe_ingredients\")\n}\n\nmodel RecipeInstruction {\n  instructionId Int    @id @default(autoincrement())\n  recipeId      Int\n  stepNumber    Int\n  instruction   String @db.Text\n  recipe        Recipe @relation(fields: [recipeId], references: [recipeId], onDelete: Cascade)\n\n  @@index([recipeId], map: \"recipe_instructions_recipeId_fkey\")\n  @@map(\"recipe_instructions\")\n}\n\nmodel CartItem {\n  cartItemId Int      @id @default(autoincrement())\n  userId     Int\n  productId  Int\n  quantity   Int      @default(1)\n  createdAt  DateTime @default(now())\n  updatedAt  DateTime @updatedAt\n  product    Product  @relation(fields: [productId], references: [productId], onDelete: Cascade)\n  user       User     @relation(fields: [userId], references: [userId], onDelete: Cascade)\n\n  @@unique([userId, productId])\n  @@index([productId], map: \"cart_items_productId_fkey\")\n  @@map(\"cart_items\")\n}\n\nmodel Order {\n  orderId               Int                    @id @default(autoincrement())\n  userId                Int\n  status                String                 @default(\"pending\")\n  totalAmount           Float\n  shippingAddress       String                 @db.Text\n  billingAddress        String                 @db.Text\n  paymentMethod         String\n  adminApprovalRequired Boolean                @default(false)\n  cancellationReason    String?\n  cancelledAt           DateTime?\n  trackingNumber        String?\n  courier               String?\n  estimatedDeliveryDate DateTime?\n  shippedAt             DateTime?\n  deliveredAt           DateTime?\n  createdAt             DateTime               @default(now())\n  updatedAt             DateTime               @updatedAt\n  orderItems            OrderItem[]\n  trackingHistory       OrderTrackingHistory[]\n  user                  User                   @relation(fields: [userId], references: [userId], onDelete: Cascade)\n\n  @@index([userId], map: \"orders_userId_fkey\")\n  @@map(\"orders\")\n}\n\nmodel OrderItem {\n  orderItemId Int      @id @default(autoincrement())\n  orderId     Int\n  productId   Int\n  quantity    Int\n  price       Float\n  createdAt   DateTime @default(now())\n  order       Order    @relation(fields: [orderId], references: [orderId], onDelete: Cascade)\n  product     Product  @relation(fields: [productId], references: [productId], onDelete: Cascade)\n\n  @@index([orderId], map: \"order_items_orderId_fkey\")\n  @@index([productId], map: \"order_items_productId_fkey\")\n  @@map(\"order_items\")\n}\n\nmodel OrderTrackingHistory {\n  trackingHistoryId Int      @id @default(autoincrement())\n  orderId           Int\n  status            String\n  location          String?\n  description       String\n  createdAt         DateTime @default(now())\n  order             Order    @relation(fields: [orderId], references: [orderId], onDelete: Cascade)\n\n  @@index([orderId], map: \"order_tracking_history_orderId_fkey\")\n  @@map(\"order_tracking_history\")\n}\n\nmodel SellerApplication {\n  applicationId Int      @id @default(autoincrement())\n  userId        Int      @unique\n  businessName  String\n  businessType  String\n  description   String\n  contactNumber String\n  address       String\n  businessLogo  String?  @db.LongText\n  primaryId     String?  @db.LongText\n  secondaryId   String?  @db.LongText\n  status        String   @default(\"pending\")\n  createdAt     DateTime @default(now())\n  updatedAt     DateTime @updatedAt\n  user          User     @relation(fields: [userId], references: [userId], onDelete: Cascade)\n\n  @@map(\"seller_applications\")\n}\n\nmodel Conversation {\n  conversationId Int       @id @default(autoincrement())\n  sellerId       Int\n  buyerId        Int\n  productId      Int\n  status         String    @default(\"active\")\n  createdAt      DateTime  @default(now())\n  updatedAt      DateTime  @updatedAt\n  buyer          User      @relation(\"BuyerConversations\", fields: [buyerId], references: [userId], onDelete: Cascade)\n  product        Product   @relation(fields: [productId], references: [productId], onDelete: Cascade)\n  seller         User      @relation(\"SellerConversations\", fields: [sellerId], references: [userId], onDelete: Cascade)\n  messages       Message[]\n\n  @@unique([sellerId, buyerId, productId])\n  @@index([buyerId], map: \"conversations_buyerId_fkey\")\n  @@index([productId], map: \"conversations_productId_fkey\")\n  @@map(\"conversations\")\n}\n\nmodel Message {\n  messageId      Int          @id @default(autoincrement())\n  conversationId Int\n  senderId       Int\n  content        String\n  isRead         Boolean      @default(false)\n  createdAt      DateTime     @default(now())\n  conversation   Conversation @relation(fields: [conversationId], references: [conversationId], onDelete: Cascade)\n  sender         User         @relation(fields: [senderId], references: [userId], onDelete: Cascade)\n\n  @@index([conversationId], map: \"messages_conversationId_fkey\")\n  @@index([senderId], map: \"messages_senderId_fkey\")\n  @@map(\"messages\")\n}\n\nmodel Notification {\n  notificationId Int      @id @default(autoincrement())\n  userId         Int\n  title          String\n  message        String\n  type           String\n  isRead         Boolean  @default(false)\n  createdAt      DateTime @default(now())\n  user           User     @relation(fields: [userId], references: [userId], onDelete: Cascade)\n\n  @@index([userId], map: \"notifications_userId_fkey\")\n  @@map(\"notifications\")\n}\n\nmodel Comment {\n  commentId     Int       @id @default(autoincrement())\n  productId     Int\n  userId        Int\n  rating        Int\n  content       String\n  sellerReply   String?\n  sellerReplyAt DateTime?\n  createdAt     DateTime  @default(now())\n  updatedAt     DateTime  @updatedAt\n  product       Product   @relation(fields: [productId], references: [productId], onDelete: Cascade)\n  user          User      @relation(fields: [userId], references: [userId], onDelete: Cascade)\n\n  @@unique([productId, userId])\n  @@index([userId], map: \"comments_userId_fkey\")\n  @@map(\"comments\")\n}\n\nmodel RecipeReview {\n  reviewId  Int      @id @default(autoincrement())\n  recipeId  Int\n  userId    Int\n  rating    Int\n  content   String\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n  recipe    Recipe   @relation(fields: [recipeId], references: [recipeId], onDelete: Cascade)\n  user      User     @relation(fields: [userId], references: [userId], onDelete: Cascade)\n\n  @@unique([recipeId, userId])\n  @@index([userId], map: \"recipe_reviews_userId_fkey\")\n  @@map(\"recipe_reviews\")\n}\n\nmodel SavedRecipe {\n  savedRecipeId Int      @id @default(autoincrement())\n  userId        Int\n  recipeId      Int\n  notes         String?  @db.Text\n  createdAt     DateTime @default(now())\n  updatedAt     DateTime @updatedAt\n  recipe        Recipe   @relation(fields: [recipeId], references: [recipeId], onDelete: Cascade)\n  user          User     @relation(fields: [userId], references: [userId], onDelete: Cascade)\n\n  @@unique([userId, recipeId])\n  @@index([recipeId], map: \"saved_recipes_recipeId_fkey\")\n  @@map(\"saved_recipes\")\n}\n\nmodel Otp {\n  otpId     Int      @id @default(autoincrement())\n  userId    Int?\n  email     String\n  code      String\n  verified  Boolean  @default(false)\n  attempts  Int      @default(0)\n  expiresAt DateTime\n  createdAt DateTime @default(now())\n  user      User?    @relation(fields: [userId], references: [userId], onDelete: Cascade)\n\n  @@index([email])\n  @@index([userId], map: \"otps_userId_fkey\")\n  @@map(\"otps\")\n}\n\nmodel PendingRegistration {\n  registrationId Int      @id @default(autoincrement())\n  email          String   @unique\n  name           String\n  password       String\n  phoneNumber    String?\n  role           String   @default(\"user\")\n  expiresAt      DateTime\n  createdAt      DateTime @default(now())\n  updatedAt      DateTime @updatedAt\n\n  @@map(\"pending_registrations\")\n}\n\nmodel Address {\n  addressId     Int      @id @default(autoincrement())\n  userId        Int\n  fullName      String\n  phoneNumber   String\n  region        String\n  province      String\n  city          String\n  barangay      String\n  streetAddress String\n  postalCode    String\n  landmark      String?\n  isDefault     Boolean  @default(false)\n  createdAt     DateTime @default(now())\n  updatedAt     DateTime @updatedAt\n  user          User     @relation(fields: [userId], references: [userId], onDelete: Cascade)\n\n  @@index([userId], map: \"addresses_userId_fkey\")\n  @@map(\"addresses\")\n}\n\nmodel UserSettings {\n  settingsId  Int     @id @default(autoincrement())\n  userId      Int     @unique\n  displayName String?\n  bio         String? @db.Text\n  themeColor  String  @default(\"green\")\n\n  // Notification preferences\n  notifications      Boolean @default(true)\n  emailUpdates       Boolean @default(true)\n  orderUpdates       Boolean @default(true)\n  promotionalEmails  Boolean @default(false)\n  smsNotifications   Boolean @default(false)\n  inAppNotifications Boolean @default(true)\n\n  // Privacy settings\n  showProfile Boolean @default(true)\n  showOrders  Boolean @default(false)\n\n  // Accessibility\n  fontSize      String  @default(\"medium\")\n  highContrast  Boolean @default(false)\n  reducedMotion Boolean @default(false)\n\n  // Shipping preferences (for buyers)\n  defaultAddress      String? @db.Text\n  preferredTimeSlot   String  @default(\"anytime\")\n  specialInstructions String? @db.Text\n\n  // Store settings (for sellers)\n  storeHours            String?\n  shippingTime          String?\n  returnPolicy          String? @db.Text\n  minimumOrder          Float?\n  freeShippingThreshold Float?\n\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n  user      User     @relation(fields: [userId], references: [userId], onDelete: Cascade)\n\n  @@map(\"user_settings\")\n}\n",
+  "inlineSchema": "generator client {\n  provider = \"prisma-client\"\n  output   = \"../src/generated/prisma\"\n}\n\ndatasource db {\n  provider = \"mysql\"\n}\n\nmodel addresses {\n  addressId     Int      @id @default(autoincrement())\n  userId        Int\n  fullName      String\n  phoneNumber   String\n  region        String\n  province      String\n  city          String\n  barangay      String\n  streetAddress String\n  postalCode    String\n  landmark      String?\n  isDefault     Boolean  @default(false)\n  createdAt     DateTime @default(now())\n  updatedAt     DateTime @updatedAt\n  users         users    @relation(fields: [userId], references: [userId], onDelete: Cascade)\n\n  @@index([userId], map: \"addresses_userId_fkey\")\n}\n\nmodel cart_items {\n  cartItemId Int      @id @default(autoincrement())\n  userId     Int\n  productId  Int\n  quantity   Int      @default(1)\n  createdAt  DateTime @default(now())\n  updatedAt  DateTime @updatedAt\n  products   products @relation(fields: [productId], references: [productId], onDelete: Cascade)\n  users      users    @relation(fields: [userId], references: [userId], onDelete: Cascade)\n\n  @@unique([userId, productId])\n  @@index([productId], map: \"cart_items_productId_fkey\")\n}\n\nmodel comments {\n  commentId     Int       @id @default(autoincrement())\n  productId     Int\n  userId        Int\n  rating        Int\n  content       String\n  sellerReply   String?\n  sellerReplyAt DateTime?\n  createdAt     DateTime  @default(now())\n  updatedAt     DateTime  @updatedAt\n  products      products  @relation(fields: [productId], references: [productId], onDelete: Cascade)\n  users         users     @relation(fields: [userId], references: [userId], onDelete: Cascade)\n\n  @@unique([productId, userId])\n  @@index([userId], map: \"comments_userId_fkey\")\n}\n\nmodel conversations {\n  conversationId                      Int        @id @default(autoincrement())\n  sellerId                            Int\n  buyerId                             Int\n  productId                           Int\n  status                              String     @default(\"active\")\n  createdAt                           DateTime   @default(now())\n  updatedAt                           DateTime   @updatedAt\n  users_conversations_buyerIdTousers  users      @relation(\"conversations_buyerIdTousers\", fields: [buyerId], references: [userId], onDelete: Cascade)\n  products                            products   @relation(fields: [productId], references: [productId], onDelete: Cascade)\n  users_conversations_sellerIdTousers users      @relation(\"conversations_sellerIdTousers\", fields: [sellerId], references: [userId], onDelete: Cascade)\n  messages                            messages[]\n\n  @@unique([sellerId, buyerId, productId])\n  @@index([buyerId], map: \"conversations_buyerId_fkey\")\n  @@index([productId], map: \"conversations_productId_fkey\")\n}\n\nmodel messages {\n  messageId      Int           @id @default(autoincrement())\n  conversationId Int\n  senderId       Int\n  content        String\n  isRead         Boolean       @default(false)\n  createdAt      DateTime      @default(now())\n  conversations  conversations @relation(fields: [conversationId], references: [conversationId], onDelete: Cascade)\n  users          users         @relation(fields: [senderId], references: [userId], onDelete: Cascade)\n\n  @@index([conversationId], map: \"messages_conversationId_fkey\")\n  @@index([senderId], map: \"messages_senderId_fkey\")\n}\n\nmodel notifications {\n  notificationId Int      @id @default(autoincrement())\n  userId         Int\n  title          String\n  message        String\n  type           String\n  isRead         Boolean  @default(false)\n  createdAt      DateTime @default(now())\n  users          users    @relation(fields: [userId], references: [userId], onDelete: Cascade)\n\n  @@index([userId], map: \"notifications_userId_fkey\")\n}\n\nmodel order_items {\n  orderItemId Int      @id @default(autoincrement())\n  orderId     Int\n  productId   Int\n  quantity    Int\n  price       Float\n  createdAt   DateTime @default(now())\n  orders      orders   @relation(fields: [orderId], references: [orderId], onDelete: Cascade)\n  products    products @relation(fields: [productId], references: [productId], onDelete: Cascade)\n\n  @@index([orderId], map: \"order_items_orderId_fkey\")\n  @@index([productId], map: \"order_items_productId_fkey\")\n}\n\nmodel order_tracking_history {\n  trackingHistoryId Int      @id @default(autoincrement())\n  orderId           Int\n  status            String\n  location          String?\n  description       String\n  createdAt         DateTime @default(now())\n  orders            orders   @relation(fields: [orderId], references: [orderId], onDelete: Cascade)\n\n  @@index([orderId], map: \"order_tracking_history_orderId_fkey\")\n}\n\nmodel orders {\n  orderId                Int                      @id @default(autoincrement())\n  userId                 Int\n  status                 String                   @default(\"pending\")\n  totalAmount            Float\n  shippingAddress        String                   @db.Text\n  billingAddress         String                   @db.Text\n  paymentMethod          String\n  adminApprovalRequired  Boolean                  @default(false)\n  cancellationReason     String?\n  cancelledAt            DateTime?\n  trackingNumber         String?                  @unique\n  estimatedDeliveryDate  DateTime?\n  shippedAt              DateTime?\n  deliveredAt            DateTime?\n  createdAt              DateTime                 @default(now())\n  updatedAt              DateTime                 @updatedAt\n  order_items            order_items[]\n  order_tracking_history order_tracking_history[]\n  users                  users                    @relation(fields: [userId], references: [userId], onDelete: Cascade)\n\n  @@index([userId], map: \"orders_userId_fkey\")\n}\n\nmodel otps {\n  otpId     Int      @id @default(autoincrement())\n  userId    Int?\n  email     String\n  code      String\n  verified  Boolean  @default(false)\n  attempts  Int      @default(0)\n  expiresAt DateTime\n  createdAt DateTime @default(now())\n  users     users?   @relation(fields: [userId], references: [userId], onDelete: Cascade)\n\n  @@index([email])\n  @@index([userId], map: \"otps_userId_fkey\")\n}\n\nmodel pending_registrations {\n  registrationId Int      @id @default(autoincrement())\n  email          String   @unique\n  name           String\n  password       String\n  phoneNumber    String?\n  role           String   @default(\"user\")\n  expiresAt      DateTime\n  createdAt      DateTime @default(now())\n  updatedAt      DateTime @updatedAt\n}\n\nmodel products {\n  productId     Int             @id @default(autoincrement())\n  name          String\n  description   String          @db.Text\n  price         Float\n  category      String\n  image         String          @db.LongText\n  stock         Int             @default(0)\n  userId        Int\n  featured      Boolean         @default(false)\n  rating        Float           @default(0)\n  createdAt     DateTime        @default(now())\n  updatedAt     DateTime        @updatedAt\n  cart_items    cart_items[]\n  comments      comments[]\n  conversations conversations[]\n  order_items   order_items[]\n  users         users           @relation(fields: [userId], references: [userId], onDelete: Cascade)\n\n  @@index([userId], map: \"products_userId_fkey\")\n}\n\nmodel recipe_ingredients {\n  ingredientId Int     @id @default(autoincrement())\n  recipeId     Int\n  name         String\n  quantity     String?\n  order        Int\n  recipes      recipes @relation(fields: [recipeId], references: [recipeId], onDelete: Cascade)\n\n  @@index([recipeId], map: \"recipe_ingredients_recipeId_fkey\")\n}\n\nmodel recipe_instructions {\n  instructionId Int     @id @default(autoincrement())\n  recipeId      Int\n  stepNumber    Int\n  instruction   String  @db.Text\n  recipes       recipes @relation(fields: [recipeId], references: [recipeId], onDelete: Cascade)\n\n  @@index([recipeId], map: \"recipe_instructions_recipeId_fkey\")\n}\n\nmodel recipe_reviews {\n  reviewId  Int      @id @default(autoincrement())\n  recipeId  Int\n  userId    Int\n  rating    Int\n  content   String\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n  recipes   recipes  @relation(fields: [recipeId], references: [recipeId], onDelete: Cascade)\n  users     users    @relation(fields: [userId], references: [userId], onDelete: Cascade)\n\n  @@unique([recipeId, userId])\n  @@index([userId], map: \"recipe_reviews_userId_fkey\")\n}\n\nmodel recipes {\n  recipeId            Int                   @id @default(autoincrement())\n  title               String\n  description         String                @db.Text\n  image               String                @db.LongText\n  prepTime            Int\n  cookTime            Int\n  servings            Int\n  difficulty          String\n  rating              Float                 @default(0)\n  createdAt           DateTime              @default(now())\n  updatedAt           DateTime              @updatedAt\n  userId              Int?\n  recipe_ingredients  recipe_ingredients[]\n  recipe_instructions recipe_instructions[]\n  recipe_reviews      recipe_reviews[]\n  users               users?                @relation(fields: [userId], references: [userId])\n  saved_recipes       saved_recipes[]\n\n  @@index([userId], map: \"recipes_userId_fkey\")\n}\n\nmodel saved_recipes {\n  savedRecipeId Int      @id @default(autoincrement())\n  userId        Int\n  recipeId      Int\n  notes         String?  @db.Text\n  createdAt     DateTime @default(now())\n  updatedAt     DateTime @updatedAt\n  recipes       recipes  @relation(fields: [recipeId], references: [recipeId], onDelete: Cascade)\n  users         users    @relation(fields: [userId], references: [userId], onDelete: Cascade)\n\n  @@unique([userId, recipeId])\n  @@index([recipeId], map: \"saved_recipes_recipeId_fkey\")\n}\n\nmodel seller_applications {\n  applicationId Int      @id @default(autoincrement())\n  userId        Int      @unique\n  businessName  String\n  businessType  String\n  description   String\n  contactNumber String\n  address       String\n  businessLogo  String?  @db.LongText\n  primaryId     String?  @db.LongText\n  secondaryId   String?  @db.LongText\n  status        String   @default(\"pending\")\n  createdAt     DateTime @default(now())\n  updatedAt     DateTime @updatedAt\n  users         users    @relation(fields: [userId], references: [userId], onDelete: Cascade)\n}\n\nmodel user_settings {\n  settingsId            Int      @id @default(autoincrement())\n  userId                Int      @unique\n  displayName           String?\n  bio                   String?  @db.Text\n  themeColor            String   @default(\"green\")\n  notifications         Boolean  @default(true)\n  emailUpdates          Boolean  @default(true)\n  orderUpdates          Boolean  @default(true)\n  promotionalEmails     Boolean  @default(false)\n  smsNotifications      Boolean  @default(false)\n  inAppNotifications    Boolean  @default(true)\n  showProfile           Boolean  @default(true)\n  showOrders            Boolean  @default(false)\n  fontSize              String   @default(\"medium\")\n  highContrast          Boolean  @default(false)\n  reducedMotion         Boolean  @default(false)\n  defaultAddress        String?  @db.Text\n  preferredTimeSlot     String   @default(\"anytime\")\n  specialInstructions   String?  @db.Text\n  storeHours            String?\n  shippingTime          String?\n  returnPolicy          String?  @db.Text\n  minimumOrder          Float?\n  freeShippingThreshold Float?\n  createdAt             DateTime @default(now())\n  updatedAt             DateTime @updatedAt\n  users                 users    @relation(fields: [userId], references: [userId], onDelete: Cascade)\n}\n\nmodel users {\n  userId                                      Int                  @id @default(autoincrement())\n  email                                       String               @unique\n  phoneNumber                                 String?              @unique\n  name                                        String?\n  password                                    String\n  role                                        String               @default(\"user\")\n  remarks                                     String?              @db.Text\n  profilePicture                              String?              @db.LongText\n  emailVerified                               Boolean              @default(false)\n  resetToken                                  String?\n  resetTokenExpiry                            DateTime?\n  createdAt                                   DateTime             @default(now())\n  updatedAt                                   DateTime             @updatedAt\n  addresses                                   addresses[]\n  cart_items                                  cart_items[]\n  comments                                    comments[]\n  conversations_conversations_buyerIdTousers  conversations[]      @relation(\"conversations_buyerIdTousers\")\n  conversations_conversations_sellerIdTousers conversations[]      @relation(\"conversations_sellerIdTousers\")\n  messages                                    messages[]\n  notifications                               notifications[]\n  orders                                      orders[]\n  otps                                        otps[]\n  products                                    products[]\n  recipe_reviews                              recipe_reviews[]\n  recipes                                     recipes[]\n  saved_recipes                               saved_recipes[]\n  seller_applications                         seller_applications?\n  user_settings                               user_settings?\n}\n",
   "runtimeDataModel": {
     "models": {},
     "enums": {},
@@ -28,7 +28,7 @@ const config: runtime.GetPrismaClientConfig = {
   }
 }
 
-config.runtimeDataModel = JSON.parse("{\"models\":{\"User\":{\"fields\":[{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"email\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"phoneNumber\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"password\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"role\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"remarks\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"profilePicture\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"emailVerified\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"resetToken\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"resetTokenExpiry\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"addresses\",\"kind\":\"object\",\"type\":\"Address\",\"relationName\":\"AddressToUser\"},{\"name\":\"cartItems\",\"kind\":\"object\",\"type\":\"CartItem\",\"relationName\":\"CartItemToUser\"},{\"name\":\"comments\",\"kind\":\"object\",\"type\":\"Comment\",\"relationName\":\"CommentToUser\"},{\"name\":\"buyerConversations\",\"kind\":\"object\",\"type\":\"Conversation\",\"relationName\":\"BuyerConversations\"},{\"name\":\"sellerConversations\",\"kind\":\"object\",\"type\":\"Conversation\",\"relationName\":\"SellerConversations\"},{\"name\":\"sentMessages\",\"kind\":\"object\",\"type\":\"Message\",\"relationName\":\"MessageToUser\"},{\"name\":\"notifications\",\"kind\":\"object\",\"type\":\"Notification\",\"relationName\":\"NotificationToUser\"},{\"name\":\"orders\",\"kind\":\"object\",\"type\":\"Order\",\"relationName\":\"OrderToUser\"},{\"name\":\"otps\",\"kind\":\"object\",\"type\":\"Otp\",\"relationName\":\"OtpToUser\"},{\"name\":\"products\",\"kind\":\"object\",\"type\":\"Product\",\"relationName\":\"ProductToUser\"},{\"name\":\"recipes\",\"kind\":\"object\",\"type\":\"Recipe\",\"relationName\":\"RecipeToUser\"},{\"name\":\"recipeReviews\",\"kind\":\"object\",\"type\":\"RecipeReview\",\"relationName\":\"RecipeReviewToUser\"},{\"name\":\"savedRecipes\",\"kind\":\"object\",\"type\":\"SavedRecipe\",\"relationName\":\"SavedRecipeToUser\"},{\"name\":\"sellerApplication\",\"kind\":\"object\",\"type\":\"SellerApplication\",\"relationName\":\"SellerApplicationToUser\"},{\"name\":\"settings\",\"kind\":\"object\",\"type\":\"UserSettings\",\"relationName\":\"UserToUserSettings\"}],\"dbName\":\"users\"},\"Product\":{\"fields\":[{\"name\":\"productId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"description\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"price\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"category\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"image\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"stock\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"featured\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"rating\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"cartItems\",\"kind\":\"object\",\"type\":\"CartItem\",\"relationName\":\"CartItemToProduct\"},{\"name\":\"comments\",\"kind\":\"object\",\"type\":\"Comment\",\"relationName\":\"CommentToProduct\"},{\"name\":\"conversations\",\"kind\":\"object\",\"type\":\"Conversation\",\"relationName\":\"ConversationToProduct\"},{\"name\":\"orderItems\",\"kind\":\"object\",\"type\":\"OrderItem\",\"relationName\":\"OrderItemToProduct\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"ProductToUser\"}],\"dbName\":\"products\"},\"Recipe\":{\"fields\":[{\"name\":\"recipeId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"title\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"description\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"image\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"prepTime\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"cookTime\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"servings\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"difficulty\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"rating\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"RecipeToUser\"},{\"name\":\"ingredients\",\"kind\":\"object\",\"type\":\"RecipeIngredient\",\"relationName\":\"RecipeToRecipeIngredient\"},{\"name\":\"instructions\",\"kind\":\"object\",\"type\":\"RecipeInstruction\",\"relationName\":\"RecipeToRecipeInstruction\"},{\"name\":\"reviews\",\"kind\":\"object\",\"type\":\"RecipeReview\",\"relationName\":\"RecipeToRecipeReview\"},{\"name\":\"savedRecipes\",\"kind\":\"object\",\"type\":\"SavedRecipe\",\"relationName\":\"RecipeToSavedRecipe\"}],\"dbName\":\"recipes\"},\"RecipeIngredient\":{\"fields\":[{\"name\":\"ingredientId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"recipeId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"quantity\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"order\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"recipe\",\"kind\":\"object\",\"type\":\"Recipe\",\"relationName\":\"RecipeToRecipeIngredient\"}],\"dbName\":\"recipe_ingredients\"},\"RecipeInstruction\":{\"fields\":[{\"name\":\"instructionId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"recipeId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"stepNumber\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"instruction\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"recipe\",\"kind\":\"object\",\"type\":\"Recipe\",\"relationName\":\"RecipeToRecipeInstruction\"}],\"dbName\":\"recipe_instructions\"},\"CartItem\":{\"fields\":[{\"name\":\"cartItemId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"productId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"quantity\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"product\",\"kind\":\"object\",\"type\":\"Product\",\"relationName\":\"CartItemToProduct\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"CartItemToUser\"}],\"dbName\":\"cart_items\"},\"Order\":{\"fields\":[{\"name\":\"orderId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"status\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"totalAmount\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"shippingAddress\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"billingAddress\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"paymentMethod\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"adminApprovalRequired\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"cancellationReason\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"cancelledAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"trackingNumber\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"courier\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"estimatedDeliveryDate\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"shippedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"deliveredAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"orderItems\",\"kind\":\"object\",\"type\":\"OrderItem\",\"relationName\":\"OrderToOrderItem\"},{\"name\":\"trackingHistory\",\"kind\":\"object\",\"type\":\"OrderTrackingHistory\",\"relationName\":\"OrderToOrderTrackingHistory\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"OrderToUser\"}],\"dbName\":\"orders\"},\"OrderItem\":{\"fields\":[{\"name\":\"orderItemId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"orderId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"productId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"quantity\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"price\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"order\",\"kind\":\"object\",\"type\":\"Order\",\"relationName\":\"OrderToOrderItem\"},{\"name\":\"product\",\"kind\":\"object\",\"type\":\"Product\",\"relationName\":\"OrderItemToProduct\"}],\"dbName\":\"order_items\"},\"OrderTrackingHistory\":{\"fields\":[{\"name\":\"trackingHistoryId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"orderId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"status\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"location\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"description\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"order\",\"kind\":\"object\",\"type\":\"Order\",\"relationName\":\"OrderToOrderTrackingHistory\"}],\"dbName\":\"order_tracking_history\"},\"SellerApplication\":{\"fields\":[{\"name\":\"applicationId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"businessName\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"businessType\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"description\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"contactNumber\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"address\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"businessLogo\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"primaryId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"secondaryId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"status\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"SellerApplicationToUser\"}],\"dbName\":\"seller_applications\"},\"Conversation\":{\"fields\":[{\"name\":\"conversationId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"sellerId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"buyerId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"productId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"status\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"buyer\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"BuyerConversations\"},{\"name\":\"product\",\"kind\":\"object\",\"type\":\"Product\",\"relationName\":\"ConversationToProduct\"},{\"name\":\"seller\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"SellerConversations\"},{\"name\":\"messages\",\"kind\":\"object\",\"type\":\"Message\",\"relationName\":\"ConversationToMessage\"}],\"dbName\":\"conversations\"},\"Message\":{\"fields\":[{\"name\":\"messageId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"conversationId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"senderId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"content\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"isRead\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"conversation\",\"kind\":\"object\",\"type\":\"Conversation\",\"relationName\":\"ConversationToMessage\"},{\"name\":\"sender\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"MessageToUser\"}],\"dbName\":\"messages\"},\"Notification\":{\"fields\":[{\"name\":\"notificationId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"title\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"message\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"type\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"isRead\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"NotificationToUser\"}],\"dbName\":\"notifications\"},\"Comment\":{\"fields\":[{\"name\":\"commentId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"productId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"rating\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"content\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"sellerReply\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"sellerReplyAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"product\",\"kind\":\"object\",\"type\":\"Product\",\"relationName\":\"CommentToProduct\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"CommentToUser\"}],\"dbName\":\"comments\"},\"RecipeReview\":{\"fields\":[{\"name\":\"reviewId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"recipeId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"rating\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"content\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"recipe\",\"kind\":\"object\",\"type\":\"Recipe\",\"relationName\":\"RecipeToRecipeReview\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"RecipeReviewToUser\"}],\"dbName\":\"recipe_reviews\"},\"SavedRecipe\":{\"fields\":[{\"name\":\"savedRecipeId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"recipeId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"notes\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"recipe\",\"kind\":\"object\",\"type\":\"Recipe\",\"relationName\":\"RecipeToSavedRecipe\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"SavedRecipeToUser\"}],\"dbName\":\"saved_recipes\"},\"Otp\":{\"fields\":[{\"name\":\"otpId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"email\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"code\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"verified\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"attempts\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"expiresAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"OtpToUser\"}],\"dbName\":\"otps\"},\"PendingRegistration\":{\"fields\":[{\"name\":\"registrationId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"email\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"password\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"phoneNumber\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"role\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"expiresAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":\"pending_registrations\"},\"Address\":{\"fields\":[{\"name\":\"addressId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"fullName\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"phoneNumber\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"region\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"province\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"city\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"barangay\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"streetAddress\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"postalCode\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"landmark\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"isDefault\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"AddressToUser\"}],\"dbName\":\"addresses\"},\"UserSettings\":{\"fields\":[{\"name\":\"settingsId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"displayName\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"bio\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"themeColor\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"notifications\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"emailUpdates\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"orderUpdates\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"promotionalEmails\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"smsNotifications\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"inAppNotifications\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"showProfile\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"showOrders\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"fontSize\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"highContrast\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"reducedMotion\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"defaultAddress\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"preferredTimeSlot\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"specialInstructions\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"storeHours\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"shippingTime\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"returnPolicy\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"minimumOrder\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"freeShippingThreshold\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"user\",\"kind\":\"object\",\"type\":\"User\",\"relationName\":\"UserToUserSettings\"}],\"dbName\":\"user_settings\"}},\"enums\":{},\"types\":{}}")
+config.runtimeDataModel = JSON.parse("{\"models\":{\"addresses\":{\"fields\":[{\"name\":\"addressId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"fullName\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"phoneNumber\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"region\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"province\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"city\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"barangay\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"streetAddress\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"postalCode\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"landmark\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"isDefault\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"users\",\"kind\":\"object\",\"type\":\"users\",\"relationName\":\"addressesTousers\"}],\"dbName\":null},\"cart_items\":{\"fields\":[{\"name\":\"cartItemId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"productId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"quantity\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"products\",\"kind\":\"object\",\"type\":\"products\",\"relationName\":\"cart_itemsToproducts\"},{\"name\":\"users\",\"kind\":\"object\",\"type\":\"users\",\"relationName\":\"cart_itemsTousers\"}],\"dbName\":null},\"comments\":{\"fields\":[{\"name\":\"commentId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"productId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"rating\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"content\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"sellerReply\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"sellerReplyAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"products\",\"kind\":\"object\",\"type\":\"products\",\"relationName\":\"commentsToproducts\"},{\"name\":\"users\",\"kind\":\"object\",\"type\":\"users\",\"relationName\":\"commentsTousers\"}],\"dbName\":null},\"conversations\":{\"fields\":[{\"name\":\"conversationId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"sellerId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"buyerId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"productId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"status\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"users_conversations_buyerIdTousers\",\"kind\":\"object\",\"type\":\"users\",\"relationName\":\"conversations_buyerIdTousers\"},{\"name\":\"products\",\"kind\":\"object\",\"type\":\"products\",\"relationName\":\"conversationsToproducts\"},{\"name\":\"users_conversations_sellerIdTousers\",\"kind\":\"object\",\"type\":\"users\",\"relationName\":\"conversations_sellerIdTousers\"},{\"name\":\"messages\",\"kind\":\"object\",\"type\":\"messages\",\"relationName\":\"conversationsTomessages\"}],\"dbName\":null},\"messages\":{\"fields\":[{\"name\":\"messageId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"conversationId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"senderId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"content\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"isRead\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"conversations\",\"kind\":\"object\",\"type\":\"conversations\",\"relationName\":\"conversationsTomessages\"},{\"name\":\"users\",\"kind\":\"object\",\"type\":\"users\",\"relationName\":\"messagesTousers\"}],\"dbName\":null},\"notifications\":{\"fields\":[{\"name\":\"notificationId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"title\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"message\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"type\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"isRead\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"users\",\"kind\":\"object\",\"type\":\"users\",\"relationName\":\"notificationsTousers\"}],\"dbName\":null},\"order_items\":{\"fields\":[{\"name\":\"orderItemId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"orderId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"productId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"quantity\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"price\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"orders\",\"kind\":\"object\",\"type\":\"orders\",\"relationName\":\"order_itemsToorders\"},{\"name\":\"products\",\"kind\":\"object\",\"type\":\"products\",\"relationName\":\"order_itemsToproducts\"}],\"dbName\":null},\"order_tracking_history\":{\"fields\":[{\"name\":\"trackingHistoryId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"orderId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"status\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"location\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"description\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"orders\",\"kind\":\"object\",\"type\":\"orders\",\"relationName\":\"order_tracking_historyToorders\"}],\"dbName\":null},\"orders\":{\"fields\":[{\"name\":\"orderId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"status\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"totalAmount\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"shippingAddress\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"billingAddress\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"paymentMethod\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"adminApprovalRequired\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"cancellationReason\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"cancelledAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"trackingNumber\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"estimatedDeliveryDate\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"shippedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"deliveredAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"order_items\",\"kind\":\"object\",\"type\":\"order_items\",\"relationName\":\"order_itemsToorders\"},{\"name\":\"order_tracking_history\",\"kind\":\"object\",\"type\":\"order_tracking_history\",\"relationName\":\"order_tracking_historyToorders\"},{\"name\":\"users\",\"kind\":\"object\",\"type\":\"users\",\"relationName\":\"ordersTousers\"}],\"dbName\":null},\"otps\":{\"fields\":[{\"name\":\"otpId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"email\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"code\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"verified\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"attempts\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"expiresAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"users\",\"kind\":\"object\",\"type\":\"users\",\"relationName\":\"otpsTousers\"}],\"dbName\":null},\"pending_registrations\":{\"fields\":[{\"name\":\"registrationId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"email\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"password\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"phoneNumber\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"role\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"expiresAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null},\"products\":{\"fields\":[{\"name\":\"productId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"description\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"price\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"category\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"image\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"stock\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"featured\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"rating\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"cart_items\",\"kind\":\"object\",\"type\":\"cart_items\",\"relationName\":\"cart_itemsToproducts\"},{\"name\":\"comments\",\"kind\":\"object\",\"type\":\"comments\",\"relationName\":\"commentsToproducts\"},{\"name\":\"conversations\",\"kind\":\"object\",\"type\":\"conversations\",\"relationName\":\"conversationsToproducts\"},{\"name\":\"order_items\",\"kind\":\"object\",\"type\":\"order_items\",\"relationName\":\"order_itemsToproducts\"},{\"name\":\"users\",\"kind\":\"object\",\"type\":\"users\",\"relationName\":\"productsTousers\"}],\"dbName\":null},\"recipe_ingredients\":{\"fields\":[{\"name\":\"ingredientId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"recipeId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"quantity\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"order\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"recipes\",\"kind\":\"object\",\"type\":\"recipes\",\"relationName\":\"recipe_ingredientsTorecipes\"}],\"dbName\":null},\"recipe_instructions\":{\"fields\":[{\"name\":\"instructionId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"recipeId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"stepNumber\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"instruction\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"recipes\",\"kind\":\"object\",\"type\":\"recipes\",\"relationName\":\"recipe_instructionsTorecipes\"}],\"dbName\":null},\"recipe_reviews\":{\"fields\":[{\"name\":\"reviewId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"recipeId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"rating\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"content\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"recipes\",\"kind\":\"object\",\"type\":\"recipes\",\"relationName\":\"recipe_reviewsTorecipes\"},{\"name\":\"users\",\"kind\":\"object\",\"type\":\"users\",\"relationName\":\"recipe_reviewsTousers\"}],\"dbName\":null},\"recipes\":{\"fields\":[{\"name\":\"recipeId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"title\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"description\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"image\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"prepTime\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"cookTime\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"servings\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"difficulty\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"rating\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"recipe_ingredients\",\"kind\":\"object\",\"type\":\"recipe_ingredients\",\"relationName\":\"recipe_ingredientsTorecipes\"},{\"name\":\"recipe_instructions\",\"kind\":\"object\",\"type\":\"recipe_instructions\",\"relationName\":\"recipe_instructionsTorecipes\"},{\"name\":\"recipe_reviews\",\"kind\":\"object\",\"type\":\"recipe_reviews\",\"relationName\":\"recipe_reviewsTorecipes\"},{\"name\":\"users\",\"kind\":\"object\",\"type\":\"users\",\"relationName\":\"recipesTousers\"},{\"name\":\"saved_recipes\",\"kind\":\"object\",\"type\":\"saved_recipes\",\"relationName\":\"recipesTosaved_recipes\"}],\"dbName\":null},\"saved_recipes\":{\"fields\":[{\"name\":\"savedRecipeId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"recipeId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"notes\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"recipes\",\"kind\":\"object\",\"type\":\"recipes\",\"relationName\":\"recipesTosaved_recipes\"},{\"name\":\"users\",\"kind\":\"object\",\"type\":\"users\",\"relationName\":\"saved_recipesTousers\"}],\"dbName\":null},\"seller_applications\":{\"fields\":[{\"name\":\"applicationId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"businessName\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"businessType\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"description\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"contactNumber\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"address\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"businessLogo\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"primaryId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"secondaryId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"status\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"users\",\"kind\":\"object\",\"type\":\"users\",\"relationName\":\"seller_applicationsTousers\"}],\"dbName\":null},\"user_settings\":{\"fields\":[{\"name\":\"settingsId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"displayName\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"bio\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"themeColor\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"notifications\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"emailUpdates\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"orderUpdates\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"promotionalEmails\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"smsNotifications\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"inAppNotifications\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"showProfile\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"showOrders\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"fontSize\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"highContrast\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"reducedMotion\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"defaultAddress\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"preferredTimeSlot\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"specialInstructions\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"storeHours\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"shippingTime\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"returnPolicy\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"minimumOrder\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"freeShippingThreshold\",\"kind\":\"scalar\",\"type\":\"Float\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"users\",\"kind\":\"object\",\"type\":\"users\",\"relationName\":\"user_settingsTousers\"}],\"dbName\":null},\"users\":{\"fields\":[{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"email\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"phoneNumber\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"password\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"role\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"remarks\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"profilePicture\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"emailVerified\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"resetToken\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"resetTokenExpiry\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"addresses\",\"kind\":\"object\",\"type\":\"addresses\",\"relationName\":\"addressesTousers\"},{\"name\":\"cart_items\",\"kind\":\"object\",\"type\":\"cart_items\",\"relationName\":\"cart_itemsTousers\"},{\"name\":\"comments\",\"kind\":\"object\",\"type\":\"comments\",\"relationName\":\"commentsTousers\"},{\"name\":\"conversations_conversations_buyerIdTousers\",\"kind\":\"object\",\"type\":\"conversations\",\"relationName\":\"conversations_buyerIdTousers\"},{\"name\":\"conversations_conversations_sellerIdTousers\",\"kind\":\"object\",\"type\":\"conversations\",\"relationName\":\"conversations_sellerIdTousers\"},{\"name\":\"messages\",\"kind\":\"object\",\"type\":\"messages\",\"relationName\":\"messagesTousers\"},{\"name\":\"notifications\",\"kind\":\"object\",\"type\":\"notifications\",\"relationName\":\"notificationsTousers\"},{\"name\":\"orders\",\"kind\":\"object\",\"type\":\"orders\",\"relationName\":\"ordersTousers\"},{\"name\":\"otps\",\"kind\":\"object\",\"type\":\"otps\",\"relationName\":\"otpsTousers\"},{\"name\":\"products\",\"kind\":\"object\",\"type\":\"products\",\"relationName\":\"productsTousers\"},{\"name\":\"recipe_reviews\",\"kind\":\"object\",\"type\":\"recipe_reviews\",\"relationName\":\"recipe_reviewsTousers\"},{\"name\":\"recipes\",\"kind\":\"object\",\"type\":\"recipes\",\"relationName\":\"recipesTousers\"},{\"name\":\"saved_recipes\",\"kind\":\"object\",\"type\":\"saved_recipes\",\"relationName\":\"saved_recipesTousers\"},{\"name\":\"seller_applications\",\"kind\":\"object\",\"type\":\"seller_applications\",\"relationName\":\"seller_applicationsTousers\"},{\"name\":\"user_settings\",\"kind\":\"object\",\"type\":\"user_settings\",\"relationName\":\"user_settingsTousers\"}],\"dbName\":null}},\"enums\":{},\"types\":{}}")
 
 async function decodeBase64AsWasm(wasmBase64: string): Promise<WebAssembly.Module> {
   const { Buffer } = await import('node:buffer')
@@ -58,8 +58,8 @@ export interface PrismaClientConstructor {
    * @example
    * ```
    * const prisma = new PrismaClient()
-   * // Fetch zero or more Users
-   * const users = await prisma.user.findMany()
+   * // Fetch zero or more Addresses
+   * const addresses = await prisma.addresses.findMany()
    * ```
    * 
    * Read more in our [docs](https://pris.ly/d/client).
@@ -80,8 +80,8 @@ export interface PrismaClientConstructor {
  * @example
  * ```
  * const prisma = new PrismaClient()
- * // Fetch zero or more Users
- * const users = await prisma.user.findMany()
+ * // Fetch zero or more Addresses
+ * const addresses = await prisma.addresses.findMany()
  * ```
  * 
  * Read more in our [docs](https://pris.ly/d/client).
@@ -175,204 +175,204 @@ export interface PrismaClient<
   }>>
 
       /**
-   * `prisma.user`: Exposes CRUD operations for the **User** model.
-    * Example usage:
-    * ```ts
-    * // Fetch zero or more Users
-    * const users = await prisma.user.findMany()
-    * ```
-    */
-  get user(): Prisma.UserDelegate<ExtArgs, { omit: OmitOpts }>;
-
-  /**
-   * `prisma.product`: Exposes CRUD operations for the **Product** model.
-    * Example usage:
-    * ```ts
-    * // Fetch zero or more Products
-    * const products = await prisma.product.findMany()
-    * ```
-    */
-  get product(): Prisma.ProductDelegate<ExtArgs, { omit: OmitOpts }>;
-
-  /**
-   * `prisma.recipe`: Exposes CRUD operations for the **Recipe** model.
-    * Example usage:
-    * ```ts
-    * // Fetch zero or more Recipes
-    * const recipes = await prisma.recipe.findMany()
-    * ```
-    */
-  get recipe(): Prisma.RecipeDelegate<ExtArgs, { omit: OmitOpts }>;
-
-  /**
-   * `prisma.recipeIngredient`: Exposes CRUD operations for the **RecipeIngredient** model.
-    * Example usage:
-    * ```ts
-    * // Fetch zero or more RecipeIngredients
-    * const recipeIngredients = await prisma.recipeIngredient.findMany()
-    * ```
-    */
-  get recipeIngredient(): Prisma.RecipeIngredientDelegate<ExtArgs, { omit: OmitOpts }>;
-
-  /**
-   * `prisma.recipeInstruction`: Exposes CRUD operations for the **RecipeInstruction** model.
-    * Example usage:
-    * ```ts
-    * // Fetch zero or more RecipeInstructions
-    * const recipeInstructions = await prisma.recipeInstruction.findMany()
-    * ```
-    */
-  get recipeInstruction(): Prisma.RecipeInstructionDelegate<ExtArgs, { omit: OmitOpts }>;
-
-  /**
-   * `prisma.cartItem`: Exposes CRUD operations for the **CartItem** model.
-    * Example usage:
-    * ```ts
-    * // Fetch zero or more CartItems
-    * const cartItems = await prisma.cartItem.findMany()
-    * ```
-    */
-  get cartItem(): Prisma.CartItemDelegate<ExtArgs, { omit: OmitOpts }>;
-
-  /**
-   * `prisma.order`: Exposes CRUD operations for the **Order** model.
-    * Example usage:
-    * ```ts
-    * // Fetch zero or more Orders
-    * const orders = await prisma.order.findMany()
-    * ```
-    */
-  get order(): Prisma.OrderDelegate<ExtArgs, { omit: OmitOpts }>;
-
-  /**
-   * `prisma.orderItem`: Exposes CRUD operations for the **OrderItem** model.
-    * Example usage:
-    * ```ts
-    * // Fetch zero or more OrderItems
-    * const orderItems = await prisma.orderItem.findMany()
-    * ```
-    */
-  get orderItem(): Prisma.OrderItemDelegate<ExtArgs, { omit: OmitOpts }>;
-
-  /**
-   * `prisma.orderTrackingHistory`: Exposes CRUD operations for the **OrderTrackingHistory** model.
-    * Example usage:
-    * ```ts
-    * // Fetch zero or more OrderTrackingHistories
-    * const orderTrackingHistories = await prisma.orderTrackingHistory.findMany()
-    * ```
-    */
-  get orderTrackingHistory(): Prisma.OrderTrackingHistoryDelegate<ExtArgs, { omit: OmitOpts }>;
-
-  /**
-   * `prisma.sellerApplication`: Exposes CRUD operations for the **SellerApplication** model.
-    * Example usage:
-    * ```ts
-    * // Fetch zero or more SellerApplications
-    * const sellerApplications = await prisma.sellerApplication.findMany()
-    * ```
-    */
-  get sellerApplication(): Prisma.SellerApplicationDelegate<ExtArgs, { omit: OmitOpts }>;
-
-  /**
-   * `prisma.conversation`: Exposes CRUD operations for the **Conversation** model.
-    * Example usage:
-    * ```ts
-    * // Fetch zero or more Conversations
-    * const conversations = await prisma.conversation.findMany()
-    * ```
-    */
-  get conversation(): Prisma.ConversationDelegate<ExtArgs, { omit: OmitOpts }>;
-
-  /**
-   * `prisma.message`: Exposes CRUD operations for the **Message** model.
-    * Example usage:
-    * ```ts
-    * // Fetch zero or more Messages
-    * const messages = await prisma.message.findMany()
-    * ```
-    */
-  get message(): Prisma.MessageDelegate<ExtArgs, { omit: OmitOpts }>;
-
-  /**
-   * `prisma.notification`: Exposes CRUD operations for the **Notification** model.
-    * Example usage:
-    * ```ts
-    * // Fetch zero or more Notifications
-    * const notifications = await prisma.notification.findMany()
-    * ```
-    */
-  get notification(): Prisma.NotificationDelegate<ExtArgs, { omit: OmitOpts }>;
-
-  /**
-   * `prisma.comment`: Exposes CRUD operations for the **Comment** model.
-    * Example usage:
-    * ```ts
-    * // Fetch zero or more Comments
-    * const comments = await prisma.comment.findMany()
-    * ```
-    */
-  get comment(): Prisma.CommentDelegate<ExtArgs, { omit: OmitOpts }>;
-
-  /**
-   * `prisma.recipeReview`: Exposes CRUD operations for the **RecipeReview** model.
-    * Example usage:
-    * ```ts
-    * // Fetch zero or more RecipeReviews
-    * const recipeReviews = await prisma.recipeReview.findMany()
-    * ```
-    */
-  get recipeReview(): Prisma.RecipeReviewDelegate<ExtArgs, { omit: OmitOpts }>;
-
-  /**
-   * `prisma.savedRecipe`: Exposes CRUD operations for the **SavedRecipe** model.
-    * Example usage:
-    * ```ts
-    * // Fetch zero or more SavedRecipes
-    * const savedRecipes = await prisma.savedRecipe.findMany()
-    * ```
-    */
-  get savedRecipe(): Prisma.SavedRecipeDelegate<ExtArgs, { omit: OmitOpts }>;
-
-  /**
-   * `prisma.otp`: Exposes CRUD operations for the **Otp** model.
-    * Example usage:
-    * ```ts
-    * // Fetch zero or more Otps
-    * const otps = await prisma.otp.findMany()
-    * ```
-    */
-  get otp(): Prisma.OtpDelegate<ExtArgs, { omit: OmitOpts }>;
-
-  /**
-   * `prisma.pendingRegistration`: Exposes CRUD operations for the **PendingRegistration** model.
-    * Example usage:
-    * ```ts
-    * // Fetch zero or more PendingRegistrations
-    * const pendingRegistrations = await prisma.pendingRegistration.findMany()
-    * ```
-    */
-  get pendingRegistration(): Prisma.PendingRegistrationDelegate<ExtArgs, { omit: OmitOpts }>;
-
-  /**
-   * `prisma.address`: Exposes CRUD operations for the **Address** model.
+   * `prisma.addresses`: Exposes CRUD operations for the **addresses** model.
     * Example usage:
     * ```ts
     * // Fetch zero or more Addresses
-    * const addresses = await prisma.address.findMany()
+    * const addresses = await prisma.addresses.findMany()
     * ```
     */
-  get address(): Prisma.AddressDelegate<ExtArgs, { omit: OmitOpts }>;
+  get addresses(): Prisma.addressesDelegate<ExtArgs, { omit: OmitOpts }>;
 
   /**
-   * `prisma.userSettings`: Exposes CRUD operations for the **UserSettings** model.
+   * `prisma.cart_items`: Exposes CRUD operations for the **cart_items** model.
     * Example usage:
     * ```ts
-    * // Fetch zero or more UserSettings
-    * const userSettings = await prisma.userSettings.findMany()
+    * // Fetch zero or more Cart_items
+    * const cart_items = await prisma.cart_items.findMany()
     * ```
     */
-  get userSettings(): Prisma.UserSettingsDelegate<ExtArgs, { omit: OmitOpts }>;
+  get cart_items(): Prisma.cart_itemsDelegate<ExtArgs, { omit: OmitOpts }>;
+
+  /**
+   * `prisma.comments`: Exposes CRUD operations for the **comments** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Comments
+    * const comments = await prisma.comments.findMany()
+    * ```
+    */
+  get comments(): Prisma.commentsDelegate<ExtArgs, { omit: OmitOpts }>;
+
+  /**
+   * `prisma.conversations`: Exposes CRUD operations for the **conversations** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Conversations
+    * const conversations = await prisma.conversations.findMany()
+    * ```
+    */
+  get conversations(): Prisma.conversationsDelegate<ExtArgs, { omit: OmitOpts }>;
+
+  /**
+   * `prisma.messages`: Exposes CRUD operations for the **messages** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Messages
+    * const messages = await prisma.messages.findMany()
+    * ```
+    */
+  get messages(): Prisma.messagesDelegate<ExtArgs, { omit: OmitOpts }>;
+
+  /**
+   * `prisma.notifications`: Exposes CRUD operations for the **notifications** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Notifications
+    * const notifications = await prisma.notifications.findMany()
+    * ```
+    */
+  get notifications(): Prisma.notificationsDelegate<ExtArgs, { omit: OmitOpts }>;
+
+  /**
+   * `prisma.order_items`: Exposes CRUD operations for the **order_items** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Order_items
+    * const order_items = await prisma.order_items.findMany()
+    * ```
+    */
+  get order_items(): Prisma.order_itemsDelegate<ExtArgs, { omit: OmitOpts }>;
+
+  /**
+   * `prisma.order_tracking_history`: Exposes CRUD operations for the **order_tracking_history** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Order_tracking_histories
+    * const order_tracking_histories = await prisma.order_tracking_history.findMany()
+    * ```
+    */
+  get order_tracking_history(): Prisma.order_tracking_historyDelegate<ExtArgs, { omit: OmitOpts }>;
+
+  /**
+   * `prisma.orders`: Exposes CRUD operations for the **orders** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Orders
+    * const orders = await prisma.orders.findMany()
+    * ```
+    */
+  get orders(): Prisma.ordersDelegate<ExtArgs, { omit: OmitOpts }>;
+
+  /**
+   * `prisma.otps`: Exposes CRUD operations for the **otps** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Otps
+    * const otps = await prisma.otps.findMany()
+    * ```
+    */
+  get otps(): Prisma.otpsDelegate<ExtArgs, { omit: OmitOpts }>;
+
+  /**
+   * `prisma.pending_registrations`: Exposes CRUD operations for the **pending_registrations** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Pending_registrations
+    * const pending_registrations = await prisma.pending_registrations.findMany()
+    * ```
+    */
+  get pending_registrations(): Prisma.pending_registrationsDelegate<ExtArgs, { omit: OmitOpts }>;
+
+  /**
+   * `prisma.products`: Exposes CRUD operations for the **products** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Products
+    * const products = await prisma.products.findMany()
+    * ```
+    */
+  get products(): Prisma.productsDelegate<ExtArgs, { omit: OmitOpts }>;
+
+  /**
+   * `prisma.recipe_ingredients`: Exposes CRUD operations for the **recipe_ingredients** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Recipe_ingredients
+    * const recipe_ingredients = await prisma.recipe_ingredients.findMany()
+    * ```
+    */
+  get recipe_ingredients(): Prisma.recipe_ingredientsDelegate<ExtArgs, { omit: OmitOpts }>;
+
+  /**
+   * `prisma.recipe_instructions`: Exposes CRUD operations for the **recipe_instructions** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Recipe_instructions
+    * const recipe_instructions = await prisma.recipe_instructions.findMany()
+    * ```
+    */
+  get recipe_instructions(): Prisma.recipe_instructionsDelegate<ExtArgs, { omit: OmitOpts }>;
+
+  /**
+   * `prisma.recipe_reviews`: Exposes CRUD operations for the **recipe_reviews** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Recipe_reviews
+    * const recipe_reviews = await prisma.recipe_reviews.findMany()
+    * ```
+    */
+  get recipe_reviews(): Prisma.recipe_reviewsDelegate<ExtArgs, { omit: OmitOpts }>;
+
+  /**
+   * `prisma.recipes`: Exposes CRUD operations for the **recipes** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Recipes
+    * const recipes = await prisma.recipes.findMany()
+    * ```
+    */
+  get recipes(): Prisma.recipesDelegate<ExtArgs, { omit: OmitOpts }>;
+
+  /**
+   * `prisma.saved_recipes`: Exposes CRUD operations for the **saved_recipes** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Saved_recipes
+    * const saved_recipes = await prisma.saved_recipes.findMany()
+    * ```
+    */
+  get saved_recipes(): Prisma.saved_recipesDelegate<ExtArgs, { omit: OmitOpts }>;
+
+  /**
+   * `prisma.seller_applications`: Exposes CRUD operations for the **seller_applications** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Seller_applications
+    * const seller_applications = await prisma.seller_applications.findMany()
+    * ```
+    */
+  get seller_applications(): Prisma.seller_applicationsDelegate<ExtArgs, { omit: OmitOpts }>;
+
+  /**
+   * `prisma.user_settings`: Exposes CRUD operations for the **user_settings** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more User_settings
+    * const user_settings = await prisma.user_settings.findMany()
+    * ```
+    */
+  get user_settings(): Prisma.user_settingsDelegate<ExtArgs, { omit: OmitOpts }>;
+
+  /**
+   * `prisma.users`: Exposes CRUD operations for the **users** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Users
+    * const users = await prisma.users.findMany()
+    * ```
+    */
+  get users(): Prisma.usersDelegate<ExtArgs, { omit: OmitOpts }>;
 }
 
 export function getPrismaClientClass(): PrismaClientConstructor {

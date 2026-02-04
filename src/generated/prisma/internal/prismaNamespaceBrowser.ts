@@ -51,26 +51,26 @@ export const AnyNull = runtime.AnyNull
 
 
 export const ModelName = {
-  User: 'User',
-  Product: 'Product',
-  Recipe: 'Recipe',
-  RecipeIngredient: 'RecipeIngredient',
-  RecipeInstruction: 'RecipeInstruction',
-  CartItem: 'CartItem',
-  Order: 'Order',
-  OrderItem: 'OrderItem',
-  OrderTrackingHistory: 'OrderTrackingHistory',
-  SellerApplication: 'SellerApplication',
-  Conversation: 'Conversation',
-  Message: 'Message',
-  Notification: 'Notification',
-  Comment: 'Comment',
-  RecipeReview: 'RecipeReview',
-  SavedRecipe: 'SavedRecipe',
-  Otp: 'Otp',
-  PendingRegistration: 'PendingRegistration',
-  Address: 'Address',
-  UserSettings: 'UserSettings'
+  addresses: 'addresses',
+  cart_items: 'cart_items',
+  comments: 'comments',
+  conversations: 'conversations',
+  messages: 'messages',
+  notifications: 'notifications',
+  order_items: 'order_items',
+  order_tracking_history: 'order_tracking_history',
+  orders: 'orders',
+  otps: 'otps',
+  pending_registrations: 'pending_registrations',
+  products: 'products',
+  recipe_ingredients: 'recipe_ingredients',
+  recipe_instructions: 'recipe_instructions',
+  recipe_reviews: 'recipe_reviews',
+  recipes: 'recipes',
+  saved_recipes: 'saved_recipes',
+  seller_applications: 'seller_applications',
+  user_settings: 'user_settings',
+  users: 'users'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -89,268 +89,7 @@ export const TransactionIsolationLevel = {
 export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof typeof TransactionIsolationLevel]
 
 
-export const UserScalarFieldEnum = {
-  userId: 'userId',
-  email: 'email',
-  phoneNumber: 'phoneNumber',
-  name: 'name',
-  password: 'password',
-  role: 'role',
-  remarks: 'remarks',
-  profilePicture: 'profilePicture',
-  emailVerified: 'emailVerified',
-  resetToken: 'resetToken',
-  resetTokenExpiry: 'resetTokenExpiry',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
-
-
-export const ProductScalarFieldEnum = {
-  productId: 'productId',
-  name: 'name',
-  description: 'description',
-  price: 'price',
-  category: 'category',
-  image: 'image',
-  stock: 'stock',
-  userId: 'userId',
-  featured: 'featured',
-  rating: 'rating',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type ProductScalarFieldEnum = (typeof ProductScalarFieldEnum)[keyof typeof ProductScalarFieldEnum]
-
-
-export const RecipeScalarFieldEnum = {
-  recipeId: 'recipeId',
-  userId: 'userId',
-  title: 'title',
-  description: 'description',
-  image: 'image',
-  prepTime: 'prepTime',
-  cookTime: 'cookTime',
-  servings: 'servings',
-  difficulty: 'difficulty',
-  rating: 'rating',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type RecipeScalarFieldEnum = (typeof RecipeScalarFieldEnum)[keyof typeof RecipeScalarFieldEnum]
-
-
-export const RecipeIngredientScalarFieldEnum = {
-  ingredientId: 'ingredientId',
-  recipeId: 'recipeId',
-  name: 'name',
-  quantity: 'quantity',
-  order: 'order'
-} as const
-
-export type RecipeIngredientScalarFieldEnum = (typeof RecipeIngredientScalarFieldEnum)[keyof typeof RecipeIngredientScalarFieldEnum]
-
-
-export const RecipeInstructionScalarFieldEnum = {
-  instructionId: 'instructionId',
-  recipeId: 'recipeId',
-  stepNumber: 'stepNumber',
-  instruction: 'instruction'
-} as const
-
-export type RecipeInstructionScalarFieldEnum = (typeof RecipeInstructionScalarFieldEnum)[keyof typeof RecipeInstructionScalarFieldEnum]
-
-
-export const CartItemScalarFieldEnum = {
-  cartItemId: 'cartItemId',
-  userId: 'userId',
-  productId: 'productId',
-  quantity: 'quantity',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type CartItemScalarFieldEnum = (typeof CartItemScalarFieldEnum)[keyof typeof CartItemScalarFieldEnum]
-
-
-export const OrderScalarFieldEnum = {
-  orderId: 'orderId',
-  userId: 'userId',
-  status: 'status',
-  totalAmount: 'totalAmount',
-  shippingAddress: 'shippingAddress',
-  billingAddress: 'billingAddress',
-  paymentMethod: 'paymentMethod',
-  adminApprovalRequired: 'adminApprovalRequired',
-  cancellationReason: 'cancellationReason',
-  cancelledAt: 'cancelledAt',
-  trackingNumber: 'trackingNumber',
-  courier: 'courier',
-  estimatedDeliveryDate: 'estimatedDeliveryDate',
-  shippedAt: 'shippedAt',
-  deliveredAt: 'deliveredAt',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type OrderScalarFieldEnum = (typeof OrderScalarFieldEnum)[keyof typeof OrderScalarFieldEnum]
-
-
-export const OrderItemScalarFieldEnum = {
-  orderItemId: 'orderItemId',
-  orderId: 'orderId',
-  productId: 'productId',
-  quantity: 'quantity',
-  price: 'price',
-  createdAt: 'createdAt'
-} as const
-
-export type OrderItemScalarFieldEnum = (typeof OrderItemScalarFieldEnum)[keyof typeof OrderItemScalarFieldEnum]
-
-
-export const OrderTrackingHistoryScalarFieldEnum = {
-  trackingHistoryId: 'trackingHistoryId',
-  orderId: 'orderId',
-  status: 'status',
-  location: 'location',
-  description: 'description',
-  createdAt: 'createdAt'
-} as const
-
-export type OrderTrackingHistoryScalarFieldEnum = (typeof OrderTrackingHistoryScalarFieldEnum)[keyof typeof OrderTrackingHistoryScalarFieldEnum]
-
-
-export const SellerApplicationScalarFieldEnum = {
-  applicationId: 'applicationId',
-  userId: 'userId',
-  businessName: 'businessName',
-  businessType: 'businessType',
-  description: 'description',
-  contactNumber: 'contactNumber',
-  address: 'address',
-  businessLogo: 'businessLogo',
-  primaryId: 'primaryId',
-  secondaryId: 'secondaryId',
-  status: 'status',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type SellerApplicationScalarFieldEnum = (typeof SellerApplicationScalarFieldEnum)[keyof typeof SellerApplicationScalarFieldEnum]
-
-
-export const ConversationScalarFieldEnum = {
-  conversationId: 'conversationId',
-  sellerId: 'sellerId',
-  buyerId: 'buyerId',
-  productId: 'productId',
-  status: 'status',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type ConversationScalarFieldEnum = (typeof ConversationScalarFieldEnum)[keyof typeof ConversationScalarFieldEnum]
-
-
-export const MessageScalarFieldEnum = {
-  messageId: 'messageId',
-  conversationId: 'conversationId',
-  senderId: 'senderId',
-  content: 'content',
-  isRead: 'isRead',
-  createdAt: 'createdAt'
-} as const
-
-export type MessageScalarFieldEnum = (typeof MessageScalarFieldEnum)[keyof typeof MessageScalarFieldEnum]
-
-
-export const NotificationScalarFieldEnum = {
-  notificationId: 'notificationId',
-  userId: 'userId',
-  title: 'title',
-  message: 'message',
-  type: 'type',
-  isRead: 'isRead',
-  createdAt: 'createdAt'
-} as const
-
-export type NotificationScalarFieldEnum = (typeof NotificationScalarFieldEnum)[keyof typeof NotificationScalarFieldEnum]
-
-
-export const CommentScalarFieldEnum = {
-  commentId: 'commentId',
-  productId: 'productId',
-  userId: 'userId',
-  rating: 'rating',
-  content: 'content',
-  sellerReply: 'sellerReply',
-  sellerReplyAt: 'sellerReplyAt',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type CommentScalarFieldEnum = (typeof CommentScalarFieldEnum)[keyof typeof CommentScalarFieldEnum]
-
-
-export const RecipeReviewScalarFieldEnum = {
-  reviewId: 'reviewId',
-  recipeId: 'recipeId',
-  userId: 'userId',
-  rating: 'rating',
-  content: 'content',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type RecipeReviewScalarFieldEnum = (typeof RecipeReviewScalarFieldEnum)[keyof typeof RecipeReviewScalarFieldEnum]
-
-
-export const SavedRecipeScalarFieldEnum = {
-  savedRecipeId: 'savedRecipeId',
-  userId: 'userId',
-  recipeId: 'recipeId',
-  notes: 'notes',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type SavedRecipeScalarFieldEnum = (typeof SavedRecipeScalarFieldEnum)[keyof typeof SavedRecipeScalarFieldEnum]
-
-
-export const OtpScalarFieldEnum = {
-  otpId: 'otpId',
-  userId: 'userId',
-  email: 'email',
-  code: 'code',
-  verified: 'verified',
-  attempts: 'attempts',
-  expiresAt: 'expiresAt',
-  createdAt: 'createdAt'
-} as const
-
-export type OtpScalarFieldEnum = (typeof OtpScalarFieldEnum)[keyof typeof OtpScalarFieldEnum]
-
-
-export const PendingRegistrationScalarFieldEnum = {
-  registrationId: 'registrationId',
-  email: 'email',
-  name: 'name',
-  password: 'password',
-  phoneNumber: 'phoneNumber',
-  role: 'role',
-  expiresAt: 'expiresAt',
-  createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
-} as const
-
-export type PendingRegistrationScalarFieldEnum = (typeof PendingRegistrationScalarFieldEnum)[keyof typeof PendingRegistrationScalarFieldEnum]
-
-
-export const AddressScalarFieldEnum = {
+export const AddressesScalarFieldEnum = {
   addressId: 'addressId',
   userId: 'userId',
   fullName: 'fullName',
@@ -367,10 +106,251 @@ export const AddressScalarFieldEnum = {
   updatedAt: 'updatedAt'
 } as const
 
-export type AddressScalarFieldEnum = (typeof AddressScalarFieldEnum)[keyof typeof AddressScalarFieldEnum]
+export type AddressesScalarFieldEnum = (typeof AddressesScalarFieldEnum)[keyof typeof AddressesScalarFieldEnum]
 
 
-export const UserSettingsScalarFieldEnum = {
+export const Cart_itemsScalarFieldEnum = {
+  cartItemId: 'cartItemId',
+  userId: 'userId',
+  productId: 'productId',
+  quantity: 'quantity',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type Cart_itemsScalarFieldEnum = (typeof Cart_itemsScalarFieldEnum)[keyof typeof Cart_itemsScalarFieldEnum]
+
+
+export const CommentsScalarFieldEnum = {
+  commentId: 'commentId',
+  productId: 'productId',
+  userId: 'userId',
+  rating: 'rating',
+  content: 'content',
+  sellerReply: 'sellerReply',
+  sellerReplyAt: 'sellerReplyAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CommentsScalarFieldEnum = (typeof CommentsScalarFieldEnum)[keyof typeof CommentsScalarFieldEnum]
+
+
+export const ConversationsScalarFieldEnum = {
+  conversationId: 'conversationId',
+  sellerId: 'sellerId',
+  buyerId: 'buyerId',
+  productId: 'productId',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ConversationsScalarFieldEnum = (typeof ConversationsScalarFieldEnum)[keyof typeof ConversationsScalarFieldEnum]
+
+
+export const MessagesScalarFieldEnum = {
+  messageId: 'messageId',
+  conversationId: 'conversationId',
+  senderId: 'senderId',
+  content: 'content',
+  isRead: 'isRead',
+  createdAt: 'createdAt'
+} as const
+
+export type MessagesScalarFieldEnum = (typeof MessagesScalarFieldEnum)[keyof typeof MessagesScalarFieldEnum]
+
+
+export const NotificationsScalarFieldEnum = {
+  notificationId: 'notificationId',
+  userId: 'userId',
+  title: 'title',
+  message: 'message',
+  type: 'type',
+  isRead: 'isRead',
+  createdAt: 'createdAt'
+} as const
+
+export type NotificationsScalarFieldEnum = (typeof NotificationsScalarFieldEnum)[keyof typeof NotificationsScalarFieldEnum]
+
+
+export const Order_itemsScalarFieldEnum = {
+  orderItemId: 'orderItemId',
+  orderId: 'orderId',
+  productId: 'productId',
+  quantity: 'quantity',
+  price: 'price',
+  createdAt: 'createdAt'
+} as const
+
+export type Order_itemsScalarFieldEnum = (typeof Order_itemsScalarFieldEnum)[keyof typeof Order_itemsScalarFieldEnum]
+
+
+export const Order_tracking_historyScalarFieldEnum = {
+  trackingHistoryId: 'trackingHistoryId',
+  orderId: 'orderId',
+  status: 'status',
+  location: 'location',
+  description: 'description',
+  createdAt: 'createdAt'
+} as const
+
+export type Order_tracking_historyScalarFieldEnum = (typeof Order_tracking_historyScalarFieldEnum)[keyof typeof Order_tracking_historyScalarFieldEnum]
+
+
+export const OrdersScalarFieldEnum = {
+  orderId: 'orderId',
+  userId: 'userId',
+  status: 'status',
+  totalAmount: 'totalAmount',
+  shippingAddress: 'shippingAddress',
+  billingAddress: 'billingAddress',
+  paymentMethod: 'paymentMethod',
+  adminApprovalRequired: 'adminApprovalRequired',
+  cancellationReason: 'cancellationReason',
+  cancelledAt: 'cancelledAt',
+  trackingNumber: 'trackingNumber',
+  estimatedDeliveryDate: 'estimatedDeliveryDate',
+  shippedAt: 'shippedAt',
+  deliveredAt: 'deliveredAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type OrdersScalarFieldEnum = (typeof OrdersScalarFieldEnum)[keyof typeof OrdersScalarFieldEnum]
+
+
+export const OtpsScalarFieldEnum = {
+  otpId: 'otpId',
+  userId: 'userId',
+  email: 'email',
+  code: 'code',
+  verified: 'verified',
+  attempts: 'attempts',
+  expiresAt: 'expiresAt',
+  createdAt: 'createdAt'
+} as const
+
+export type OtpsScalarFieldEnum = (typeof OtpsScalarFieldEnum)[keyof typeof OtpsScalarFieldEnum]
+
+
+export const Pending_registrationsScalarFieldEnum = {
+  registrationId: 'registrationId',
+  email: 'email',
+  name: 'name',
+  password: 'password',
+  phoneNumber: 'phoneNumber',
+  role: 'role',
+  expiresAt: 'expiresAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type Pending_registrationsScalarFieldEnum = (typeof Pending_registrationsScalarFieldEnum)[keyof typeof Pending_registrationsScalarFieldEnum]
+
+
+export const ProductsScalarFieldEnum = {
+  productId: 'productId',
+  name: 'name',
+  description: 'description',
+  price: 'price',
+  category: 'category',
+  image: 'image',
+  stock: 'stock',
+  userId: 'userId',
+  featured: 'featured',
+  rating: 'rating',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ProductsScalarFieldEnum = (typeof ProductsScalarFieldEnum)[keyof typeof ProductsScalarFieldEnum]
+
+
+export const Recipe_ingredientsScalarFieldEnum = {
+  ingredientId: 'ingredientId',
+  recipeId: 'recipeId',
+  name: 'name',
+  quantity: 'quantity',
+  order: 'order'
+} as const
+
+export type Recipe_ingredientsScalarFieldEnum = (typeof Recipe_ingredientsScalarFieldEnum)[keyof typeof Recipe_ingredientsScalarFieldEnum]
+
+
+export const Recipe_instructionsScalarFieldEnum = {
+  instructionId: 'instructionId',
+  recipeId: 'recipeId',
+  stepNumber: 'stepNumber',
+  instruction: 'instruction'
+} as const
+
+export type Recipe_instructionsScalarFieldEnum = (typeof Recipe_instructionsScalarFieldEnum)[keyof typeof Recipe_instructionsScalarFieldEnum]
+
+
+export const Recipe_reviewsScalarFieldEnum = {
+  reviewId: 'reviewId',
+  recipeId: 'recipeId',
+  userId: 'userId',
+  rating: 'rating',
+  content: 'content',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type Recipe_reviewsScalarFieldEnum = (typeof Recipe_reviewsScalarFieldEnum)[keyof typeof Recipe_reviewsScalarFieldEnum]
+
+
+export const RecipesScalarFieldEnum = {
+  recipeId: 'recipeId',
+  title: 'title',
+  description: 'description',
+  image: 'image',
+  prepTime: 'prepTime',
+  cookTime: 'cookTime',
+  servings: 'servings',
+  difficulty: 'difficulty',
+  rating: 'rating',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt',
+  userId: 'userId'
+} as const
+
+export type RecipesScalarFieldEnum = (typeof RecipesScalarFieldEnum)[keyof typeof RecipesScalarFieldEnum]
+
+
+export const Saved_recipesScalarFieldEnum = {
+  savedRecipeId: 'savedRecipeId',
+  userId: 'userId',
+  recipeId: 'recipeId',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type Saved_recipesScalarFieldEnum = (typeof Saved_recipesScalarFieldEnum)[keyof typeof Saved_recipesScalarFieldEnum]
+
+
+export const Seller_applicationsScalarFieldEnum = {
+  applicationId: 'applicationId',
+  userId: 'userId',
+  businessName: 'businessName',
+  businessType: 'businessType',
+  description: 'description',
+  contactNumber: 'contactNumber',
+  address: 'address',
+  businessLogo: 'businessLogo',
+  primaryId: 'primaryId',
+  secondaryId: 'secondaryId',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type Seller_applicationsScalarFieldEnum = (typeof Seller_applicationsScalarFieldEnum)[keyof typeof Seller_applicationsScalarFieldEnum]
+
+
+export const User_settingsScalarFieldEnum = {
   settingsId: 'settingsId',
   userId: 'userId',
   displayName: 'displayName',
@@ -399,7 +379,26 @@ export const UserSettingsScalarFieldEnum = {
   updatedAt: 'updatedAt'
 } as const
 
-export type UserSettingsScalarFieldEnum = (typeof UserSettingsScalarFieldEnum)[keyof typeof UserSettingsScalarFieldEnum]
+export type User_settingsScalarFieldEnum = (typeof User_settingsScalarFieldEnum)[keyof typeof User_settingsScalarFieldEnum]
+
+
+export const UsersScalarFieldEnum = {
+  userId: 'userId',
+  email: 'email',
+  phoneNumber: 'phoneNumber',
+  name: 'name',
+  password: 'password',
+  role: 'role',
+  remarks: 'remarks',
+  profilePicture: 'profilePicture',
+  emailVerified: 'emailVerified',
+  resetToken: 'resetToken',
+  resetTokenExpiry: 'resetTokenExpiry',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type UsersScalarFieldEnum = (typeof UsersScalarFieldEnum)[keyof typeof UsersScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -418,157 +417,7 @@ export const NullsOrder = {
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
 
 
-export const UserOrderByRelevanceFieldEnum = {
-  email: 'email',
-  phoneNumber: 'phoneNumber',
-  name: 'name',
-  password: 'password',
-  role: 'role',
-  remarks: 'remarks',
-  profilePicture: 'profilePicture',
-  resetToken: 'resetToken'
-} as const
-
-export type UserOrderByRelevanceFieldEnum = (typeof UserOrderByRelevanceFieldEnum)[keyof typeof UserOrderByRelevanceFieldEnum]
-
-
-export const ProductOrderByRelevanceFieldEnum = {
-  name: 'name',
-  description: 'description',
-  category: 'category',
-  image: 'image'
-} as const
-
-export type ProductOrderByRelevanceFieldEnum = (typeof ProductOrderByRelevanceFieldEnum)[keyof typeof ProductOrderByRelevanceFieldEnum]
-
-
-export const RecipeOrderByRelevanceFieldEnum = {
-  title: 'title',
-  description: 'description',
-  image: 'image',
-  difficulty: 'difficulty'
-} as const
-
-export type RecipeOrderByRelevanceFieldEnum = (typeof RecipeOrderByRelevanceFieldEnum)[keyof typeof RecipeOrderByRelevanceFieldEnum]
-
-
-export const RecipeIngredientOrderByRelevanceFieldEnum = {
-  name: 'name',
-  quantity: 'quantity'
-} as const
-
-export type RecipeIngredientOrderByRelevanceFieldEnum = (typeof RecipeIngredientOrderByRelevanceFieldEnum)[keyof typeof RecipeIngredientOrderByRelevanceFieldEnum]
-
-
-export const RecipeInstructionOrderByRelevanceFieldEnum = {
-  instruction: 'instruction'
-} as const
-
-export type RecipeInstructionOrderByRelevanceFieldEnum = (typeof RecipeInstructionOrderByRelevanceFieldEnum)[keyof typeof RecipeInstructionOrderByRelevanceFieldEnum]
-
-
-export const OrderOrderByRelevanceFieldEnum = {
-  status: 'status',
-  shippingAddress: 'shippingAddress',
-  billingAddress: 'billingAddress',
-  paymentMethod: 'paymentMethod',
-  cancellationReason: 'cancellationReason',
-  trackingNumber: 'trackingNumber',
-  courier: 'courier'
-} as const
-
-export type OrderOrderByRelevanceFieldEnum = (typeof OrderOrderByRelevanceFieldEnum)[keyof typeof OrderOrderByRelevanceFieldEnum]
-
-
-export const OrderTrackingHistoryOrderByRelevanceFieldEnum = {
-  status: 'status',
-  location: 'location',
-  description: 'description'
-} as const
-
-export type OrderTrackingHistoryOrderByRelevanceFieldEnum = (typeof OrderTrackingHistoryOrderByRelevanceFieldEnum)[keyof typeof OrderTrackingHistoryOrderByRelevanceFieldEnum]
-
-
-export const SellerApplicationOrderByRelevanceFieldEnum = {
-  businessName: 'businessName',
-  businessType: 'businessType',
-  description: 'description',
-  contactNumber: 'contactNumber',
-  address: 'address',
-  businessLogo: 'businessLogo',
-  primaryId: 'primaryId',
-  secondaryId: 'secondaryId',
-  status: 'status'
-} as const
-
-export type SellerApplicationOrderByRelevanceFieldEnum = (typeof SellerApplicationOrderByRelevanceFieldEnum)[keyof typeof SellerApplicationOrderByRelevanceFieldEnum]
-
-
-export const ConversationOrderByRelevanceFieldEnum = {
-  status: 'status'
-} as const
-
-export type ConversationOrderByRelevanceFieldEnum = (typeof ConversationOrderByRelevanceFieldEnum)[keyof typeof ConversationOrderByRelevanceFieldEnum]
-
-
-export const MessageOrderByRelevanceFieldEnum = {
-  content: 'content'
-} as const
-
-export type MessageOrderByRelevanceFieldEnum = (typeof MessageOrderByRelevanceFieldEnum)[keyof typeof MessageOrderByRelevanceFieldEnum]
-
-
-export const NotificationOrderByRelevanceFieldEnum = {
-  title: 'title',
-  message: 'message',
-  type: 'type'
-} as const
-
-export type NotificationOrderByRelevanceFieldEnum = (typeof NotificationOrderByRelevanceFieldEnum)[keyof typeof NotificationOrderByRelevanceFieldEnum]
-
-
-export const CommentOrderByRelevanceFieldEnum = {
-  content: 'content',
-  sellerReply: 'sellerReply'
-} as const
-
-export type CommentOrderByRelevanceFieldEnum = (typeof CommentOrderByRelevanceFieldEnum)[keyof typeof CommentOrderByRelevanceFieldEnum]
-
-
-export const RecipeReviewOrderByRelevanceFieldEnum = {
-  content: 'content'
-} as const
-
-export type RecipeReviewOrderByRelevanceFieldEnum = (typeof RecipeReviewOrderByRelevanceFieldEnum)[keyof typeof RecipeReviewOrderByRelevanceFieldEnum]
-
-
-export const SavedRecipeOrderByRelevanceFieldEnum = {
-  notes: 'notes'
-} as const
-
-export type SavedRecipeOrderByRelevanceFieldEnum = (typeof SavedRecipeOrderByRelevanceFieldEnum)[keyof typeof SavedRecipeOrderByRelevanceFieldEnum]
-
-
-export const OtpOrderByRelevanceFieldEnum = {
-  email: 'email',
-  code: 'code'
-} as const
-
-export type OtpOrderByRelevanceFieldEnum = (typeof OtpOrderByRelevanceFieldEnum)[keyof typeof OtpOrderByRelevanceFieldEnum]
-
-
-export const PendingRegistrationOrderByRelevanceFieldEnum = {
-  email: 'email',
-  name: 'name',
-  password: 'password',
-  phoneNumber: 'phoneNumber',
-  role: 'role'
-} as const
-
-export type PendingRegistrationOrderByRelevanceFieldEnum = (typeof PendingRegistrationOrderByRelevanceFieldEnum)[keyof typeof PendingRegistrationOrderByRelevanceFieldEnum]
-
-
-export const AddressOrderByRelevanceFieldEnum = {
+export const addressesOrderByRelevanceFieldEnum = {
   fullName: 'fullName',
   phoneNumber: 'phoneNumber',
   region: 'region',
@@ -580,10 +429,145 @@ export const AddressOrderByRelevanceFieldEnum = {
   landmark: 'landmark'
 } as const
 
-export type AddressOrderByRelevanceFieldEnum = (typeof AddressOrderByRelevanceFieldEnum)[keyof typeof AddressOrderByRelevanceFieldEnum]
+export type addressesOrderByRelevanceFieldEnum = (typeof addressesOrderByRelevanceFieldEnum)[keyof typeof addressesOrderByRelevanceFieldEnum]
 
 
-export const UserSettingsOrderByRelevanceFieldEnum = {
+export const commentsOrderByRelevanceFieldEnum = {
+  content: 'content',
+  sellerReply: 'sellerReply'
+} as const
+
+export type commentsOrderByRelevanceFieldEnum = (typeof commentsOrderByRelevanceFieldEnum)[keyof typeof commentsOrderByRelevanceFieldEnum]
+
+
+export const conversationsOrderByRelevanceFieldEnum = {
+  status: 'status'
+} as const
+
+export type conversationsOrderByRelevanceFieldEnum = (typeof conversationsOrderByRelevanceFieldEnum)[keyof typeof conversationsOrderByRelevanceFieldEnum]
+
+
+export const messagesOrderByRelevanceFieldEnum = {
+  content: 'content'
+} as const
+
+export type messagesOrderByRelevanceFieldEnum = (typeof messagesOrderByRelevanceFieldEnum)[keyof typeof messagesOrderByRelevanceFieldEnum]
+
+
+export const notificationsOrderByRelevanceFieldEnum = {
+  title: 'title',
+  message: 'message',
+  type: 'type'
+} as const
+
+export type notificationsOrderByRelevanceFieldEnum = (typeof notificationsOrderByRelevanceFieldEnum)[keyof typeof notificationsOrderByRelevanceFieldEnum]
+
+
+export const order_tracking_historyOrderByRelevanceFieldEnum = {
+  status: 'status',
+  location: 'location',
+  description: 'description'
+} as const
+
+export type order_tracking_historyOrderByRelevanceFieldEnum = (typeof order_tracking_historyOrderByRelevanceFieldEnum)[keyof typeof order_tracking_historyOrderByRelevanceFieldEnum]
+
+
+export const ordersOrderByRelevanceFieldEnum = {
+  status: 'status',
+  shippingAddress: 'shippingAddress',
+  billingAddress: 'billingAddress',
+  paymentMethod: 'paymentMethod',
+  cancellationReason: 'cancellationReason',
+  trackingNumber: 'trackingNumber'
+} as const
+
+export type ordersOrderByRelevanceFieldEnum = (typeof ordersOrderByRelevanceFieldEnum)[keyof typeof ordersOrderByRelevanceFieldEnum]
+
+
+export const otpsOrderByRelevanceFieldEnum = {
+  email: 'email',
+  code: 'code'
+} as const
+
+export type otpsOrderByRelevanceFieldEnum = (typeof otpsOrderByRelevanceFieldEnum)[keyof typeof otpsOrderByRelevanceFieldEnum]
+
+
+export const pending_registrationsOrderByRelevanceFieldEnum = {
+  email: 'email',
+  name: 'name',
+  password: 'password',
+  phoneNumber: 'phoneNumber',
+  role: 'role'
+} as const
+
+export type pending_registrationsOrderByRelevanceFieldEnum = (typeof pending_registrationsOrderByRelevanceFieldEnum)[keyof typeof pending_registrationsOrderByRelevanceFieldEnum]
+
+
+export const productsOrderByRelevanceFieldEnum = {
+  name: 'name',
+  description: 'description',
+  category: 'category',
+  image: 'image'
+} as const
+
+export type productsOrderByRelevanceFieldEnum = (typeof productsOrderByRelevanceFieldEnum)[keyof typeof productsOrderByRelevanceFieldEnum]
+
+
+export const recipe_ingredientsOrderByRelevanceFieldEnum = {
+  name: 'name',
+  quantity: 'quantity'
+} as const
+
+export type recipe_ingredientsOrderByRelevanceFieldEnum = (typeof recipe_ingredientsOrderByRelevanceFieldEnum)[keyof typeof recipe_ingredientsOrderByRelevanceFieldEnum]
+
+
+export const recipe_instructionsOrderByRelevanceFieldEnum = {
+  instruction: 'instruction'
+} as const
+
+export type recipe_instructionsOrderByRelevanceFieldEnum = (typeof recipe_instructionsOrderByRelevanceFieldEnum)[keyof typeof recipe_instructionsOrderByRelevanceFieldEnum]
+
+
+export const recipe_reviewsOrderByRelevanceFieldEnum = {
+  content: 'content'
+} as const
+
+export type recipe_reviewsOrderByRelevanceFieldEnum = (typeof recipe_reviewsOrderByRelevanceFieldEnum)[keyof typeof recipe_reviewsOrderByRelevanceFieldEnum]
+
+
+export const recipesOrderByRelevanceFieldEnum = {
+  title: 'title',
+  description: 'description',
+  image: 'image',
+  difficulty: 'difficulty'
+} as const
+
+export type recipesOrderByRelevanceFieldEnum = (typeof recipesOrderByRelevanceFieldEnum)[keyof typeof recipesOrderByRelevanceFieldEnum]
+
+
+export const saved_recipesOrderByRelevanceFieldEnum = {
+  notes: 'notes'
+} as const
+
+export type saved_recipesOrderByRelevanceFieldEnum = (typeof saved_recipesOrderByRelevanceFieldEnum)[keyof typeof saved_recipesOrderByRelevanceFieldEnum]
+
+
+export const seller_applicationsOrderByRelevanceFieldEnum = {
+  businessName: 'businessName',
+  businessType: 'businessType',
+  description: 'description',
+  contactNumber: 'contactNumber',
+  address: 'address',
+  businessLogo: 'businessLogo',
+  primaryId: 'primaryId',
+  secondaryId: 'secondaryId',
+  status: 'status'
+} as const
+
+export type seller_applicationsOrderByRelevanceFieldEnum = (typeof seller_applicationsOrderByRelevanceFieldEnum)[keyof typeof seller_applicationsOrderByRelevanceFieldEnum]
+
+
+export const user_settingsOrderByRelevanceFieldEnum = {
   displayName: 'displayName',
   bio: 'bio',
   themeColor: 'themeColor',
@@ -596,5 +580,19 @@ export const UserSettingsOrderByRelevanceFieldEnum = {
   returnPolicy: 'returnPolicy'
 } as const
 
-export type UserSettingsOrderByRelevanceFieldEnum = (typeof UserSettingsOrderByRelevanceFieldEnum)[keyof typeof UserSettingsOrderByRelevanceFieldEnum]
+export type user_settingsOrderByRelevanceFieldEnum = (typeof user_settingsOrderByRelevanceFieldEnum)[keyof typeof user_settingsOrderByRelevanceFieldEnum]
+
+
+export const usersOrderByRelevanceFieldEnum = {
+  email: 'email',
+  phoneNumber: 'phoneNumber',
+  name: 'name',
+  password: 'password',
+  role: 'role',
+  remarks: 'remarks',
+  profilePicture: 'profilePicture',
+  resetToken: 'resetToken'
+} as const
+
+export type usersOrderByRelevanceFieldEnum = (typeof usersOrderByRelevanceFieldEnum)[keyof typeof usersOrderByRelevanceFieldEnum]
 

@@ -11,28 +11,28 @@ export async function GET(req: NextRequest) {
     }
 
     // Get orders that contain the seller's products
-    const orders = await prisma.order.findMany({
+    const orders = await prisma.orders.findMany({
       where: {
-        orderItems: {
+        order_items: {
           some: {
-            product: {
+            products: {
               userId: parseInt(session.user.id),
             },
           },
         },
       },
       include: {
-        user: {
+        users: {
           select: { userId: true, name: true, email: true },
         },
-        orderItems: {
+        order_items: {
           where: {
-            product: {
+            products: {
               userId: parseInt(session.user.id),
             },
           },
           include: {
-            product: {
+            products: {
               select: { productId: true, name: true, price: true },
             },
           },
@@ -43,12 +43,12 @@ export async function GET(req: NextRequest) {
 
     // Calculate seller-specific totals for each order and map IDs
     const ordersWithSellerTotals = orders.map((order: any) => {
-      const sellerItems = order.orderItems.map((item: any) => ({
+      const sellerItems = order.order_items.map((item: any) => ({
         ...item,
         id: item.orderItemId,
-        product: {
-          ...item.product,
-          id: String(item.product.productId),
+        products: {
+          ...item.products,
+          id: String(item.products.productId),
         }
       }));
       const sellerTotal = sellerItems.reduce((sum: number, item: { price: number; quantity: number }) => sum + (item.price * item.quantity), 0);
@@ -56,11 +56,11 @@ export async function GET(req: NextRequest) {
       return {
         ...order,
         id: String(order.orderId),
-        user: {
-          ...order.user,
-          id: String(order.user.userId),
+        users: {
+          ...order.users,
+          id: String(order.users.userId),
         },
-        orderItems: sellerItems,
+        order_items: sellerItems,
         sellerItems,
         sellerTotal,
       };

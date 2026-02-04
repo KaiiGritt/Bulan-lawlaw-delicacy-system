@@ -15,7 +15,7 @@ export async function GET(
     }
 
     const params = await context.params;
-    const product = await prisma.product.findUnique({
+    const product = await prisma.products.findUnique({
       where: { productId: parseInt(params.id) },
     });
 
@@ -51,7 +51,7 @@ export async function PUT(
     }
 
     const params = await context.params;
-    const product = await prisma.product.findUnique({
+    const product = await prisma.products.findUnique({
       where: { productId: parseInt(params.id) },
     });
 
@@ -67,7 +67,7 @@ export async function PUT(
     const body = await req.json();
     const { name, description, price, category, image, stock } = body;
 
-    const updatedProductRaw = await prisma.product.update({
+    const updatedProductRaw = await prisma.products.update({
       where: { productId: parseInt(params.id) },
       data: {
         ...(name && { name }),
@@ -102,7 +102,7 @@ export async function DELETE(
     }
 
     const params = await context.params;
-    const product = await prisma.product.findUnique({
+    const product = await prisma.products.findUnique({
       where: { productId: parseInt(params.id) },
     });
 
@@ -116,7 +116,7 @@ export async function DELETE(
     }
 
     // Delete the product (cascading deletes will handle cart items, order items, etc.)
-    await prisma.product.delete({
+    await prisma.products.delete({
       where: { productId: parseInt(params.id) },
     });
 

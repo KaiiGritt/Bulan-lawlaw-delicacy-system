@@ -40,7 +40,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Check if user is part of the conversation
-    const conversation = await prisma.conversation.findUnique({
+    const conversation = await prisma.conversations.findUnique({
       where: { conversationId: parseInt(conversationId) },
       select: { sellerId: true, buyerId: true }
     })
@@ -59,10 +59,10 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    const messages = await prisma.message.findMany({
+    const messages = await prisma.messages.findMany({
       where: { conversationId: parseInt(conversationId) },
       include: {
-        sender: {
+        users: {
           select: { userId: true, name: true, email: true }
         }
       },
@@ -70,7 +70,7 @@ export async function GET(request: NextRequest) {
     })
 
     // Mark messages as read for the current user
-    await prisma.message.updateMany({
+    await prisma.messages.updateMany({
       where: {
         conversationId: parseInt(conversationId),
         senderId: { not: parseInt(session.user.id) },
@@ -84,8 +84,8 @@ export async function GET(request: NextRequest) {
       ...msg,
       id: msg.messageId,
       sender: {
-        ...msg.sender,
-        id: String(msg.sender.userId),
+        ...msg.users,
+        id: String(msg.users.userId),
       }
     }));
 
@@ -121,7 +121,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if user is part of the conversation
-    const conversation = await prisma.conversation.findUnique({
+    const conversation = await prisma.conversations.findUnique({
       where: { conversationId: conversationId },
       select: { sellerId: true, buyerId: true }
     })
@@ -141,23 +141,23 @@ export async function POST(request: NextRequest) {
     }
 
     // Create the message and update conversation timestamp
-    const message = await prisma.message.create({
+    const message = await prisma.messages.create({
       data: {
         conversationId,
         senderId: parseInt(session.user.id),
         content
       },
       include: {
-        sender: {
+        users: {
           select: { userId: true, name: true, email: true }
         }
       }
     })
 
     // Update conversation updatedAt
-    await prisma.conversation.update({
+    await prisma.conversations.update({
       where: { conversationId: conversationId },
-      data: { updatedAt: new Date() }
+      data: {  }
     })
 
     // Trigger Pusher event to notify sender and receiver (only if Pusher is configured)
@@ -171,7 +171,7 @@ export async function POST(request: NextRequest) {
           id: message.messageId,
           content: message.content,
           createdAt: message.createdAt,
-          sender: message.sender
+          sender: message.users
         },
         conversationId
       }
@@ -193,8 +193,8 @@ export async function POST(request: NextRequest) {
       ...message,
       id: message.messageId,
       sender: {
-        ...message.sender,
-        id: String(message.sender.userId),
+        ...message.users,
+        id: String(message.users.userId),
       }
     };
 

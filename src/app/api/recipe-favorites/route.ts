@@ -15,10 +15,10 @@ export async function GET() {
     const userId = parseInt(session.user.id)
 
     // Get saved recipes as favorites
-    const favorites = await prisma.savedRecipe.findMany({
+    const favorites = await prisma.saved_recipes.findMany({
       where: { userId },
       include: {
-        recipe: {
+        recipes: {
           select: {
             recipeId: true,
             title: true,
@@ -39,15 +39,15 @@ export async function GET() {
       id: fav.savedRecipeId.toString(),
       recipeId: fav.recipeId.toString(),
       createdAt: fav.createdAt.toISOString(),
-      recipe: {
-        id: fav.recipe.recipeId.toString(),
-        title: fav.recipe.title,
-        description: fav.recipe.description,
-        image: fav.recipe.image,
-        prepTime: fav.recipe.prepTime,
-        cookTime: fav.recipe.cookTime,
-        servings: fav.recipe.servings,
-        difficulty: fav.recipe.difficulty,
+      recipes: {
+        id: fav.recipes.recipeId.toString(),
+        title: fav.recipes.title,
+        description: fav.recipes.description,
+        image: fav.recipes.image,
+        prepTime: fav.recipes.prepTime,
+        cookTime: fav.recipes.cookTime,
+        servings: fav.recipes.servings,
+        difficulty: fav.recipes.difficulty,
       }
     }))
 
@@ -82,7 +82,7 @@ export async function POST(request: Request) {
     }
 
     // Check if already favorited
-    const existing = await prisma.savedRecipe.findUnique({
+    const existing = await prisma.saved_recipes.findUnique({
       where: {
         userId_recipeId: {
           userId,
@@ -98,13 +98,13 @@ export async function POST(request: Request) {
       )
     }
 
-    const favorite = await prisma.savedRecipe.create({
+    const favorite = await prisma.saved_recipes.create({
       data: {
         userId,
         recipeId: parseInt(recipeId)
       },
       include: {
-        recipe: true
+        recipes: true
       }
     })
 
@@ -112,15 +112,15 @@ export async function POST(request: Request) {
       id: favorite.savedRecipeId.toString(),
       recipeId: favorite.recipeId.toString(),
       createdAt: favorite.createdAt.toISOString(),
-      recipe: {
-        id: favorite.recipe.recipeId.toString(),
-        title: favorite.recipe.title,
-        description: favorite.recipe.description,
-        image: favorite.recipe.image,
-        prepTime: favorite.recipe.prepTime,
-        cookTime: favorite.recipe.cookTime,
-        servings: favorite.recipe.servings,
-        difficulty: favorite.recipe.difficulty,
+      recipes: {
+        id: favorite.recipes.recipeId.toString(),
+        title: favorite.recipes.title,
+        description: favorite.recipes.description,
+        image: favorite.recipes.image,
+        prepTime: favorite.recipes.prepTime,
+        cookTime: favorite.recipes.cookTime,
+        servings: favorite.recipes.servings,
+        difficulty: favorite.recipes.difficulty,
       }
     }, { status: 201 })
   } catch (error) {
@@ -155,7 +155,7 @@ export async function DELETE(request: Request) {
       )
     }
 
-    await prisma.savedRecipe.delete({
+    await prisma.saved_recipes.delete({
       where: {
         userId_recipeId: {
           userId,

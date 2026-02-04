@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if user already has an application
-    const existingApplication = await prisma.sellerApplication.findUnique({
+    const existingApplication = await prisma.seller_applications.findUnique({
       where: { userId: parseInt(session.user.id) }
     })
 
@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const application = await prisma.sellerApplication.create({
+    const application = await prisma.seller_applications.create({
       data: {
         userId: parseInt(session.user.id),
         businessName,
@@ -72,7 +72,7 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    const application = await prisma.sellerApplication.findUnique({
+    const application = await prisma.seller_applications.findUnique({
       where: { userId: parseInt(session.user.id) }
     })
 
@@ -106,9 +106,9 @@ export async function PUT(request: NextRequest) {
     }
 
     // Check if user is a seller
-    const user = await prisma.user.findUnique({
+    const user = await prisma.users.findUnique({
       where: { userId: parseInt(session.user.id) },
-      include: { sellerApplication: true }
+      include: { seller_applications: true }
     })
 
     if (!user || user.role !== 'seller') {
@@ -118,7 +118,7 @@ export async function PUT(request: NextRequest) {
       )
     }
 
-    if (!user.sellerApplication) {
+    if (!user.seller_applications) {
       return NextResponse.json(
         { error: 'No seller application found' },
         { status: 404 }
@@ -137,7 +137,7 @@ export async function PUT(request: NextRequest) {
     }
 
     // Update seller application
-    const updatedApplication = await prisma.sellerApplication.update({
+    const updatedApplication = await prisma.seller_applications.update({
       where: { userId: parseInt(session.user.id) },
       data: {
         businessName,
@@ -145,9 +145,9 @@ export async function PUT(request: NextRequest) {
         description,
         contactNumber,
         address,
-        businessLogo: businessLogo !== undefined ? businessLogo : user.sellerApplication.businessLogo,
-        primaryId: primaryId !== undefined ? primaryId : user.sellerApplication.primaryId,
-        secondaryId: secondaryId !== undefined ? secondaryId : user.sellerApplication.secondaryId,
+        businessLogo: businessLogo !== undefined ? businessLogo : user.seller_applications.businessLogo,
+        primaryId: primaryId !== undefined ? primaryId : user.seller_applications.primaryId,
+        secondaryId: secondaryId !== undefined ? secondaryId : user.seller_applications.secondaryId,
       }
     })
 

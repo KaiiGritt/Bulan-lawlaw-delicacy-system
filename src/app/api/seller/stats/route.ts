@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
     const userId = parseInt(session.user.id);
 
     // Get total products count
-    const totalProducts = await prisma.product.count({
+    const totalProducts = await prisma.products.count({
       where: { userId },
     });
 
@@ -22,31 +22,31 @@ export async function GET(request: NextRequest) {
     const pendingProducts = 0;
 
     // Get orders containing seller's products
-    const sellerProducts = await prisma.product.findMany({
+    const sellerProducts = await prisma.products.findMany({
       where: { userId },
       select: { productId: true },
     });
 
     const productIds = sellerProducts.map((p: { productId: number }) => p.productId);
 
-    const orders = await prisma.order.findMany({
+    const orders = await prisma.orders.findMany({
       where: {
-        orderItems: {
+        order_items: {
           some: {
             productId: { in: productIds },
           },
         },
       },
       include: {
-        user: {
+        users: {
           select: { name: true, email: true },
         },
-        orderItems: {
+        order_items: {
           where: {
             productId: { in: productIds },
           },
           include: {
-            product: {
+            products: {
               select: { name: true },
             },
           },
@@ -58,7 +58,7 @@ export async function GET(request: NextRequest) {
 
     // Calculate total revenue from seller's products
     const totalRevenue = orders.reduce((sum: number, order: any) => {
-      const sellerItemsTotal = order.orderItems.reduce((itemSum: number, item: any) => {
+      const sellerItemsTotal = order.order_items.reduce((itemSum: number, item: any) => {
         return itemSum + (item.price * item.quantity);
       }, 0);
       return sum + sellerItemsTotal;
@@ -74,8 +74,8 @@ export async function GET(request: NextRequest) {
         totalAmount: order.totalAmount,
         status: order.status,
         createdAt: order.createdAt.toISOString(),
-        user: order.user,
-        orderItems: order.orderItems,
+        user: order.users,
+        order_items: order.order_items,
       })),
     };
 
