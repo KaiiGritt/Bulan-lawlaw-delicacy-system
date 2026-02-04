@@ -23,7 +23,7 @@ export async function GET(req: NextRequest) {
     });
 
     // Map IDs for frontend compatibility
-    const addresses = addressesRaw.map(addr => ({
+    const addresses = addressesRaw.map((addr: typeof addressesRaw[number]) => ({
       ...addr,
       id: addr.addressId,
     }));

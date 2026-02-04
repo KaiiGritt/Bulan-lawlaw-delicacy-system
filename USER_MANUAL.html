@@ -1,0 +1,1227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lawlaw Delights - User Manual</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.7;
+            color: #1a1a2e;
+            background: #ffffff;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 50px;
+        }
+
+        /* Cover Page */
+        .cover-page {
+            text-align: center;
+            padding: 100px 0;
+            page-break-after: always;
+            border-bottom: 3px solid #e74c3c;
+            margin-bottom: 40px;
+        }
+
+        .cover-page h1 {
+            font-size: 42px;
+            color: #e74c3c;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .cover-page .subtitle {
+            font-size: 24px;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-weight: 500;
+        }
+
+        .cover-page .tagline {
+            font-size: 18px;
+            color: #7f8c8d;
+            font-style: italic;
+            margin-bottom: 60px;
+        }
+
+        .cover-page .doc-type {
+            font-size: 28px;
+            color: #34495e;
+            font-weight: 600;
+            margin-bottom: 20px;
+            padding: 15px 40px;
+            border: 2px solid #e74c3c;
+            display: inline-block;
+        }
+
+        .cover-page .version {
+            font-size: 14px;
+            color: #95a5a6;
+            margin-top: 80px;
+        }
+
+        /* Table of Contents */
+        .toc {
+            page-break-after: always;
+            padding: 30px 0;
+            border-bottom: 2px solid #ecf0f1;
+            margin-bottom: 40px;
+        }
+
+        .toc h2 {
+            font-size: 28px;
+            color: #2c3e50;
+            margin-bottom: 25px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #e74c3c;
+            display: inline-block;
+        }
+
+        .toc-list {
+            list-style: none;
+        }
+
+        .toc-list > li {
+            margin-bottom: 8px;
+        }
+
+        .toc-list a {
+            color: #34495e;
+            text-decoration: none;
+            font-size: 15px;
+            display: flex;
+            align-items: baseline;
+        }
+
+        .toc-list a:hover {
+            color: #e74c3c;
+        }
+
+        .toc-number {
+            font-weight: 600;
+            color: #e74c3c;
+            min-width: 35px;
+        }
+
+        .toc-list .sub-list {
+            list-style: none;
+            margin-left: 35px;
+            margin-top: 5px;
+        }
+
+        .toc-list .sub-list li {
+            margin-bottom: 4px;
+        }
+
+        .toc-list .sub-list a {
+            font-size: 13px;
+            color: #7f8c8d;
+        }
+
+        /* Headings */
+        h1 {
+            font-size: 32px;
+            color: #e74c3c;
+            margin: 50px 0 25px 0;
+            padding-bottom: 12px;
+            border-bottom: 3px solid #e74c3c;
+            page-break-after: avoid;
+        }
+
+        h2 {
+            font-size: 24px;
+            color: #2c3e50;
+            margin: 35px 0 18px 0;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #ecf0f1;
+            page-break-after: avoid;
+        }
+
+        h3 {
+            font-size: 18px;
+            color: #34495e;
+            margin: 25px 0 12px 0;
+            font-weight: 600;
+            page-break-after: avoid;
+        }
+
+        h4 {
+            font-size: 16px;
+            color: #576574;
+            margin: 20px 0 10px 0;
+            font-weight: 600;
+        }
+
+        /* Paragraphs */
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        /* Lists */
+        ul, ol {
+            margin: 15px 0 15px 25px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        li strong {
+            color: #2c3e50;
+        }
+
+        /* Code and paths */
+        code {
+            background: #f8f9fa;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 13px;
+            color: #e74c3c;
+            border: 1px solid #e9ecef;
+        }
+
+        /* Blockquotes / Notes */
+        .note {
+            background: linear-gradient(135deg, #fff9e6 0%, #fff3cd 100%);
+            border-left: 4px solid #f39c12;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .note strong {
+            color: #d68910;
+        }
+
+        .tip {
+            background: linear-gradient(135deg, #e8f8f5 0%, #d1f2eb 100%);
+            border-left: 4px solid #1abc9c;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .tip strong {
+            color: #16a085;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 14px;
+        }
+
+        th {
+            background: #e74c3c;
+            color: white;
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 10px 15px;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        tr:hover {
+            background: #fff5f5;
+        }
+
+        /* Status badges */
+        .status {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-pending { background: #ffeaa7; color: #d68910; }
+        .status-processing { background: #81ecec; color: #00838f; }
+        .status-shipped { background: #74b9ff; color: #0056b3; }
+        .status-delivered { background: #55efc4; color: #00695c; }
+        .status-cancelled { background: #fab1a0; color: #c0392b; }
+
+        /* Feature boxes */
+        .feature-box {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        .feature-box h4 {
+            margin-top: 0;
+            color: #e74c3c;
+        }
+
+        /* Section divider */
+        .section-divider {
+            text-align: center;
+            margin: 40px 0;
+            color: #bdc3c7;
+        }
+
+        .section-divider::before {
+            content: "---";
+            letter-spacing: 10px;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 60px;
+            padding-top: 30px;
+            border-top: 2px solid #ecf0f1;
+            text-align: center;
+            color: #95a5a6;
+            font-size: 13px;
+        }
+
+        /* Print styles */
+        @media print {
+            body {
+                padding: 20px;
+            }
+
+            .cover-page {
+                padding: 150px 0;
+            }
+
+            h1, h2, h3 {
+                page-break-after: avoid;
+            }
+
+            table, .feature-box, .note, .tip {
+                page-break-inside: avoid;
+            }
+        }
+
+        /* Numbered sections */
+        .section-number {
+            color: #e74c3c;
+            font-weight: 700;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Cover Page -->
+    <div class="cover-page">
+        <h1>Lawlaw Delights</h1>
+        <div class="subtitle">Bulan Lawlaw Delicacy System</div>
+        <div class="tagline">An Authentic Filipino Seafood Delicacy Marketplace</div>
+        <div class="doc-type">USER MANUAL</div>
+        <div class="version">
+            Version 1.0<br>
+            December 2025
+        </div>
+    </div>
+
+    <!-- Table of Contents -->
+    <div class="toc">
+        <h2>Table of Contents</h2>
+        <ol class="toc-list">
+            <li>
+                <a href="#introduction"><span class="toc-number">1.</span> Introduction</a>
+            </li>
+            <li>
+                <a href="#getting-started"><span class="toc-number">2.</span> Getting Started</a>
+                <ul class="sub-list">
+                    <li><a href="#creating-account">2.1 Creating an Account</a></li>
+                    <li><a href="#email-verification">2.2 Email Verification</a></li>
+                    <li><a href="#logging-in">2.3 Logging In</a></li>
+                    <li><a href="#password-recovery">2.4 Password Recovery</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="#user-guide"><span class="toc-number">3.</span> User Guide (Buyers)</a>
+                <ul class="sub-list">
+                    <li><a href="#browsing-products">3.1 Browsing Products</a></li>
+                    <li><a href="#product-details">3.2 Viewing Product Details</a></li>
+                    <li><a href="#shopping-cart">3.3 Shopping Cart</a></li>
+                    <li><a href="#checkout">3.4 Checkout Process</a></li>
+                    <li><a href="#managing-orders">3.5 Managing Orders</a></li>
+                    <li><a href="#order-tracking">3.6 Order Tracking</a></li>
+                    <li><a href="#writing-reviews">3.7 Writing Reviews</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="#recipes"><span class="toc-number">4.</span> Recipes</a>
+                <ul class="sub-list">
+                    <li><a href="#browsing-recipes">4.1 Browsing Recipes</a></li>
+                    <li><a href="#recipe-details">4.2 Viewing Recipe Details</a></li>
+                    <li><a href="#saving-recipes">4.3 Saving & Favoriting Recipes</a></li>
+                    <li><a href="#creating-recipes">4.4 Creating Your Own Recipes</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="#chat"><span class="toc-number">5.</span> Chat System</a>
+            </li>
+            <li>
+                <a href="#profile"><span class="toc-number">6.</span> Profile & Settings</a>
+                <ul class="sub-list">
+                    <li><a href="#managing-profile">6.1 Managing Your Profile</a></li>
+                    <li><a href="#managing-addresses">6.2 Managing Addresses</a></li>
+                    <li><a href="#notification-settings">6.3 Notification Settings</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="#seller-guide"><span class="toc-number">7.</span> Seller Guide</a>
+                <ul class="sub-list">
+                    <li><a href="#becoming-seller">7.1 Becoming a Seller</a></li>
+                    <li><a href="#seller-dashboard">7.2 Seller Dashboard</a></li>
+                    <li><a href="#managing-products">7.3 Managing Products</a></li>
+                    <li><a href="#seller-orders">7.4 Managing Orders</a></li>
+                    <li><a href="#seller-analytics">7.5 Seller Analytics</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="#admin-guide"><span class="toc-number">8.</span> Administrator Guide</a>
+                <ul class="sub-list">
+                    <li><a href="#admin-dashboard">8.1 Admin Dashboard Overview</a></li>
+                    <li><a href="#user-management">8.2 User Management</a></li>
+                    <li><a href="#product-moderation">8.3 Product Moderation</a></li>
+                    <li><a href="#admin-orders">8.4 Order Management</a></li>
+                    <li><a href="#seller-applications">8.5 Seller Applications</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="#security"><span class="toc-number">9.</span> Security Features</a>
+            </li>
+            <li>
+                <a href="#faq"><span class="toc-number">10.</span> Troubleshooting & FAQ</a>
+            </li>
+            <li>
+                <a href="#contact"><span class="toc-number">11.</span> Contact & Support</a>
+            </li>
+        </ol>
+    </div>
+
+    <!-- Section 1: Introduction -->
+    <h1 id="introduction"><span class="section-number">1.</span> Introduction</h1>
+
+    <p>Welcome to <strong>Lawlaw Delights</strong>, your premier destination for authentic Filipino seafood delicacies from Bulan. Our platform connects you with local sellers offering traditional delicacies, complete with recipes to help you enjoy these treats at home.</p>
+
+    <h3>Key Features</h3>
+    <ul>
+        <li><strong>Product Marketplace</strong> - Browse and purchase authentic Filipino delicacies</li>
+        <li><strong>Recipe Collection</strong> - Discover cooking recipes with step-by-step instructions</li>
+        <li><strong>Real-time Chat</strong> - Communicate directly with sellers</li>
+        <li><strong>Order Tracking</strong> - Track your orders from purchase to delivery</li>
+        <li><strong>Review System</strong> - Share your experiences and read others' feedback</li>
+    </ul>
+
+    <div class="section-divider"></div>
+
+    <!-- Section 2: Getting Started -->
+    <h1 id="getting-started"><span class="section-number">2.</span> Getting Started</h1>
+
+    <h2 id="creating-account">2.1 Creating an Account</h2>
+    <ol>
+        <li>Navigate to the <strong>Register</strong> page by clicking "Sign Up" or visiting <code>/register</code></li>
+        <li>Fill in the required information:
+            <ul>
+                <li><strong>Full Name</strong> - Your display name on the platform</li>
+                <li><strong>Email Address</strong> - A valid email for verification and notifications</li>
+                <li><strong>Password</strong> - Create a secure password</li>
+            </ul>
+        </li>
+        <li>Read and accept the <strong>Terms & Conditions</strong> and <strong>Privacy Policy</strong></li>
+        <li>Click <strong>Register</strong> to create your account</li>
+        <li>You can also sign up using <strong>Google OAuth</strong> for faster registration</li>
+    </ol>
+
+    <h2 id="email-verification">2.2 Email Verification</h2>
+    <p>After registration, you must verify your email:</p>
+    <ol>
+        <li>Check your email inbox for a verification code (OTP)</li>
+        <li>Enter the 6-digit OTP code on the verification page</li>
+        <li>If you didn't receive the code, click <strong>Resend Code</strong></li>
+        <li>Once verified, you'll have full access to your account</li>
+    </ol>
+
+    <div class="note">
+        <strong>Note:</strong> Unverified accounts have limited access. Complete verification to unlock all features.
+    </div>
+
+    <h2 id="logging-in">2.3 Logging In</h2>
+    <ol>
+        <li>Go to the <strong>Login</strong> page (<code>/login</code>)</li>
+        <li>Enter your registered email and password</li>
+        <li>Alternatively, use <strong>Sign in with Google</strong></li>
+        <li>Click <strong>Login</strong> to access your account</li>
+    </ol>
+
+    <h2 id="password-recovery">2.4 Password Recovery</h2>
+    <p>Forgot your password? Here's how to reset it:</p>
+    <ol>
+        <li>Click <strong>Forgot Password</strong> on the login page</li>
+        <li>Enter your registered email address</li>
+        <li>Check your email for a password reset link</li>
+        <li>Click the link and create a new password</li>
+        <li>Log in with your new credentials</li>
+    </ol>
+
+    <div class="section-divider"></div>
+
+    <!-- Section 3: User Guide -->
+    <h1 id="user-guide"><span class="section-number">3.</span> User Guide (Buyers)</h1>
+
+    <h2 id="browsing-products">3.1 Browsing Products</h2>
+
+    <h4>Homepage (<code>/</code>)</h4>
+    <ul>
+        <li>View <strong>Featured Products</strong> - Curated selections by our team</li>
+        <li>Explore <strong>Best Sellers</strong> - Highest-rated products</li>
+        <li>Check <strong>New Arrivals</strong> - Recently added items</li>
+    </ul>
+
+    <h4>Products Page (<code>/products</code>)</h4>
+    <ul>
+        <li>Browse the complete product catalog</li>
+        <li>Use filters to narrow your search</li>
+        <li>View product cards with:
+            <ul>
+                <li>Product image</li>
+                <li>Name and price</li>
+                <li>Average rating</li>
+                <li>Stock status (In Stock / Out of Stock / Low Stock)</li>
+            </ul>
+        </li>
+    </ul>
+
+    <h2 id="product-details">3.2 Viewing Product Details</h2>
+    <p>Click on any product to see:</p>
+    <ul>
+        <li><strong>Product Images</strong> - High-quality photos</li>
+        <li><strong>Description</strong> - Detailed product information</li>
+        <li><strong>Price</strong> - Current selling price</li>
+        <li><strong>Stock Level</strong> - Available quantity</li>
+        <li><strong>Seller Information</strong> - Who's selling this product</li>
+        <li><strong>Customer Reviews</strong> - Ratings and feedback from buyers</li>
+        <li><strong>Add to Cart</strong> - Button to add to your shopping cart</li>
+        <li><strong>Buy Now</strong> - Quick checkout option</li>
+        <li><strong>Chat with Seller</strong> - Start a conversation</li>
+    </ul>
+
+    <h2 id="shopping-cart">3.3 Shopping Cart</h2>
+
+    <h4>Adding Items:</h4>
+    <ol>
+        <li>Click <strong>Add to Cart</strong> on any product</li>
+        <li>Select the desired quantity</li>
+        <li>Confirm the addition</li>
+    </ol>
+
+    <h4>Managing Your Cart (<code>/cart</code>):</h4>
+    <ul>
+        <li>View all items in your cart</li>
+        <li>Adjust quantities using +/- buttons</li>
+        <li>Remove items by clicking the delete icon</li>
+        <li>See subtotal for each item</li>
+        <li>View cart total at the bottom</li>
+        <li>Click <strong>Proceed to Checkout</strong> when ready</li>
+    </ul>
+
+    <div class="note">
+        <strong>Note:</strong> You cannot purchase products from your own shop if you're a seller.
+    </div>
+
+    <h2 id="checkout">3.4 Checkout Process</h2>
+    <ol>
+        <li><strong>Review Cart</strong> - Verify items and quantities</li>
+        <li><strong>Select Address</strong> - Choose from saved addresses or add a new one</li>
+        <li><strong>Choose Payment Method:</strong>
+            <ul>
+                <li><strong>Cash on Delivery (COD)</strong> - Pay when you receive your order</li>
+                <li><strong>GCash</strong> - Mobile wallet payment</li>
+                <li><strong>Credit/Debit Card</strong> - Online card payment</li>
+            </ul>
+        </li>
+        <li><strong>Review Order</strong> - Final confirmation of all details</li>
+        <li><strong>Place Order</strong> - Complete your purchase</li>
+    </ol>
+
+    <h2 id="managing-orders">3.5 Managing Orders</h2>
+    <p>Access your orders at <strong>Orders</strong> (<code>/orders</code>):</p>
+
+    <h4>Order Status Types:</h4>
+    <table>
+        <tr>
+            <th>Status</th>
+            <th>Description</th>
+        </tr>
+        <tr>
+            <td><span class="status status-pending">Pending</span></td>
+            <td>Order received, awaiting processing</td>
+        </tr>
+        <tr>
+            <td><span class="status status-processing">Processing</span></td>
+            <td>Seller is preparing your order</td>
+        </tr>
+        <tr>
+            <td><span class="status status-shipped">Shipped</span></td>
+            <td>Order is on the way</td>
+        </tr>
+        <tr>
+            <td><span class="status status-delivered">Delivered</span></td>
+            <td>Order has been delivered</td>
+        </tr>
+        <tr>
+            <td><span class="status status-cancelled">Cancelled</span></td>
+            <td>Order was cancelled</td>
+        </tr>
+    </table>
+
+    <h4>Order Details (<code>/orders/[id]</code>):</h4>
+    <ul>
+        <li>Complete order information</li>
+        <li>List of items purchased</li>
+        <li>Shipping address</li>
+        <li>Payment method used</li>
+        <li>Order timeline</li>
+        <li>Tracking information (when shipped)</li>
+    </ul>
+
+    <h2 id="order-tracking">3.6 Order Tracking</h2>
+    <p>For shipped orders:</p>
+    <ol>
+        <li>Go to your order details</li>
+        <li>Find the <strong>Tracking Number</strong></li>
+        <li>View <strong>Tracking History</strong> - Complete timeline of your order</li>
+        <li>See <strong>Estimated Delivery Date</strong></li>
+        <li>Track real-time order status updates</li>
+    </ol>
+
+    <h2 id="writing-reviews">3.7 Writing Reviews</h2>
+    <p>After receiving your order:</p>
+    <ol>
+        <li>Go to the product page</li>
+        <li>Scroll to the <strong>Reviews</strong> section</li>
+        <li>Click <strong>Write a Review</strong></li>
+        <li>Select your rating (1-5 stars)</li>
+        <li>Write your feedback</li>
+        <li>Submit your review</li>
+    </ol>
+
+    <div class="tip">
+        <strong>Tip:</strong> Honest reviews help other buyers and sellers improve their products!
+    </div>
+
+    <div class="section-divider"></div>
+
+    <!-- Section 4: Recipes -->
+    <h1 id="recipes"><span class="section-number">4.</span> Recipes</h1>
+
+    <h2 id="browsing-recipes">4.1 Browsing Recipes</h2>
+    <p>Visit the <strong>Recipes</strong> page (<code>/recipes</code>) to:</p>
+    <ul>
+        <li>Browse all available recipes</li>
+        <li>Filter by <strong>Difficulty Level:</strong>
+            <ul>
+                <li><strong>Beginner</strong> - Simple recipes for starters</li>
+                <li><strong>Intermediate</strong> - Moderate cooking skills required</li>
+                <li><strong>Advanced</strong> - Complex recipes for experienced cooks</li>
+            </ul>
+        </li>
+        <li>See prep time, cook time, and servings</li>
+        <li>View average ratings</li>
+    </ul>
+
+    <h2 id="recipe-details">4.2 Viewing Recipe Details</h2>
+    <p>Click on a recipe to see:</p>
+    <ul>
+        <li><strong>Recipe Image</strong> - Appetizing photo</li>
+        <li><strong>Description</strong> - Overview of the dish</li>
+        <li><strong>Prep Time</strong> - Time needed to prepare ingredients</li>
+        <li><strong>Cook Time</strong> - Time needed to cook</li>
+        <li><strong>Total Time</strong> - Combined preparation time</li>
+        <li><strong>Servings</strong> - Number of portions</li>
+        <li><strong>Difficulty</strong> - Skill level required</li>
+        <li><strong>Ingredients List</strong> - Everything you need with quantities</li>
+        <li><strong>Step-by-Step Instructions</strong> - Numbered cooking steps</li>
+        <li><strong>Reviews</strong> - Community feedback and tips</li>
+    </ul>
+
+    <h2 id="saving-recipes">4.3 Saving & Favoriting Recipes</h2>
+
+    <h4>To Save a Recipe:</h4>
+    <ol>
+        <li>Open the recipe you want to save</li>
+        <li>Click the <strong>Save</strong> button</li>
+        <li>Optionally add personal notes</li>
+        <li>Access saved recipes in your <strong>Collections</strong> (<code>/collections</code>)</li>
+    </ol>
+
+    <h4>To Favorite a Recipe:</h4>
+    <ol>
+        <li>Click the <strong>Heart</strong> icon on any recipe</li>
+        <li>View all favorites in your Collections</li>
+    </ol>
+
+    <h2 id="creating-recipes">4.4 Creating Your Own Recipes</h2>
+    <p>Share your culinary creations with the community:</p>
+    <ol>
+        <li>Go to <strong>Add Recipe</strong> (<code>/add-recipe</code>)</li>
+        <li>Fill in the recipe details:
+            <ul>
+                <li><strong>Title</strong> - Name of your dish</li>
+                <li><strong>Description</strong> - Brief overview</li>
+                <li><strong>Difficulty Level</strong> - Beginner/Intermediate/Advanced</li>
+                <li><strong>Prep Time & Cook Time</strong></li>
+                <li><strong>Servings</strong></li>
+                <li><strong>Recipe Image</strong> - Upload an appetizing photo</li>
+            </ul>
+        </li>
+        <li>Add <strong>Ingredients:</strong>
+            <ul>
+                <li>Click "Add Ingredient"</li>
+                <li>Enter quantity and ingredient name</li>
+                <li>Repeat for all ingredients</li>
+            </ul>
+        </li>
+        <li>Add <strong>Instructions:</strong>
+            <ul>
+                <li>Enter each step in order</li>
+                <li>Be clear and detailed</li>
+            </ul>
+        </li>
+        <li>Click <strong>Submit Recipe</strong></li>
+    </ol>
+
+    <div class="section-divider"></div>
+
+    <!-- Section 5: Chat System -->
+    <h1 id="chat"><span class="section-number">5.</span> Chat System</h1>
+
+    <p>Communicate directly with sellers through our real-time chat:</p>
+
+    <h3>Starting a Conversation:</h3>
+    <ol>
+        <li>Go to any product page</li>
+        <li>Click <strong>Chat with Seller</strong></li>
+        <li>Type your message</li>
+        <li>Send to start the conversation</li>
+    </ol>
+
+    <h3>Chat Features (<code>/chat</code>):</h3>
+    <ul>
+        <li>Real-time messaging with WebSocket technology</li>
+        <li>View all your conversations</li>
+        <li>Emoji support for expressive communication</li>
+        <li>Message read receipts</li>
+        <li>Notification alerts for new messages</li>
+    </ul>
+
+    <div class="tip">
+        <strong>Tip:</strong> Use chat to ask about product details, shipping, or special requests!
+    </div>
+
+    <div class="section-divider"></div>
+
+    <!-- Section 6: Profile & Settings -->
+    <h1 id="profile"><span class="section-number">6.</span> Profile & Settings</h1>
+
+    <h2 id="managing-profile">6.1 Managing Your Profile</h2>
+    <p>Access your profile at <strong>Profile</strong> (<code>/profile</code>):</p>
+    <ul>
+        <li><strong>Profile Picture</strong> - Upload or change your avatar</li>
+        <li><strong>Display Name</strong> - Update your name</li>
+        <li><strong>Email</strong> - View your registered email</li>
+        <li><strong>Quick Actions</strong> - Access frequently used features</li>
+        <li><strong>Account Statistics</strong> - Order history, reviews, saved items</li>
+    </ul>
+
+    <h2 id="managing-addresses">6.2 Managing Addresses</h2>
+    <p>Manage shipping addresses at <strong>Addresses</strong> (<code>/addresses</code>):</p>
+
+    <h4>Adding a New Address:</h4>
+    <ol>
+        <li>Click <strong>Add New Address</strong></li>
+        <li>Fill in the details:
+            <ul>
+                <li><strong>Region</strong> - Select your region</li>
+                <li><strong>Province</strong> - Choose your province</li>
+                <li><strong>City/Municipality</strong> - Select your city</li>
+                <li><strong>Barangay</strong> - Choose your barangay</li>
+                <li><strong>Street Address</strong> - Enter your specific address</li>
+                <li><strong>Postal Code</strong> - Your area's postal code</li>
+                <li><strong>Landmarks</strong> - Optional helpful landmarks</li>
+            </ul>
+        </li>
+        <li>Save the address</li>
+    </ol>
+
+    <h4>Managing Addresses:</h4>
+    <ul>
+        <li><strong>Edit</strong> - Update address details</li>
+        <li><strong>Delete</strong> - Remove unused addresses</li>
+        <li><strong>Set as Default</strong> - Mark your primary shipping address</li>
+    </ul>
+
+    <h2 id="notification-settings">6.3 Notification Settings</h2>
+    <p>Customize your notifications in <strong>Settings</strong> (<code>/settings</code>):</p>
+    <ul>
+        <li>Email notifications for orders</li>
+        <li>Push notifications for messages</li>
+        <li>Marketing communications preferences</li>
+        <li>Accessibility options</li>
+        <li>Dark mode toggle</li>
+    </ul>
+
+    <div class="section-divider"></div>
+
+    <!-- Section 7: Seller Guide -->
+    <h1 id="seller-guide"><span class="section-number">7.</span> Seller Guide</h1>
+
+    <h2 id="becoming-seller">7.1 Becoming a Seller</h2>
+    <p>Want to sell on Lawlaw Delights? Here's how:</p>
+    <ol>
+        <li>Go to <strong>Seller Application</strong> (<code>/seller-application</code>)</li>
+        <li>Complete the application form:
+            <ul>
+                <li><strong>Business Name</strong> - Your shop name</li>
+                <li><strong>Business Description</strong> - What you sell</li>
+                <li><strong>Contact Information</strong> - Business contact details</li>
+                <li><strong>Valid ID</strong> - Upload identification document</li>
+                <li><strong>Business Permit</strong> - Upload relevant permits</li>
+            </ul>
+        </li>
+        <li>Submit your application</li>
+        <li>Wait for admin review and approval</li>
+        <li>Receive notification upon approval</li>
+    </ol>
+
+    <div class="note">
+        <strong>Note:</strong> Applications are reviewed within 1-3 business days.
+    </div>
+
+    <h2 id="seller-dashboard">7.2 Seller Dashboard</h2>
+    <p>Access your seller dashboard at <strong>Seller Dashboard</strong> (<code>/seller-dashboard</code>):</p>
+    <ul>
+        <li><strong>Overview</strong> - Quick stats and metrics</li>
+        <li><strong>Recent Orders</strong> - Latest customer orders</li>
+        <li><strong>Product Summary</strong> - Inventory at a glance</li>
+        <li><strong>Revenue Stats</strong> - Earnings overview</li>
+        <li><strong>Quick Actions</strong> - Fast access to common tasks</li>
+    </ul>
+
+    <h2 id="managing-products">7.3 Managing Products</h2>
+    <p>Access at <strong>Seller Products</strong> (<code>/seller-products</code>):</p>
+
+    <h4>Adding a Product:</h4>
+    <ol>
+        <li>Click <strong>Add New Product</strong></li>
+        <li>Fill in product details:
+            <ul>
+                <li><strong>Product Name</strong> - Clear, descriptive name</li>
+                <li><strong>Description</strong> - Detailed product information</li>
+                <li><strong>Price</strong> - Selling price</li>
+                <li><strong>Stock Quantity</strong> - Available inventory</li>
+                <li><strong>Category</strong> - Product category</li>
+                <li><strong>Product Image</strong> - Upload photos (max 2MB)</li>
+            </ul>
+        </li>
+        <li>Save the product</li>
+    </ol>
+
+    <h4>Editing Products:</h4>
+    <ol>
+        <li>Find the product in your inventory</li>
+        <li>Click <strong>Edit</strong></li>
+        <li>Update the necessary information</li>
+        <li>Save changes</li>
+    </ol>
+
+    <h4>Deleting Products:</h4>
+    <ol>
+        <li>Locate the product</li>
+        <li>Click <strong>Delete</strong></li>
+        <li>Confirm deletion</li>
+    </ol>
+
+    <div class="note">
+        <strong>Note:</strong> Only you and admins can edit or delete your products.
+    </div>
+
+    <h2 id="seller-orders">7.4 Managing Orders</h2>
+    <p>View orders for your products at <strong>Seller Orders</strong> (<code>/seller-orders</code>):</p>
+
+    <h4>Order Management:</h4>
+    <ul>
+        <li>View all orders containing your products</li>
+        <li>See customer details and shipping address</li>
+        <li>Update order status:
+            <ul>
+                <li>Mark as <code>Processing</code> when preparing</li>
+                <li>Mark as <code>Shipped</code> with tracking number</li>
+                <li>Mark as <code>Delivered</code> upon confirmation</li>
+            </ul>
+        </li>
+    </ul>
+
+    <h4>Fulfilling Orders:</h4>
+    <ol>
+        <li>Review the order details</li>
+        <li>Prepare the items</li>
+        <li>Update status to "Processing"</li>
+        <li>Ship the order</li>
+        <li>Add tracking number and update order status</li>
+        <li>Update status to "Shipped"</li>
+    </ol>
+
+    <h2 id="seller-analytics">7.5 Seller Analytics</h2>
+    <p>Track your performance at <strong>Seller Analytics</strong> (<code>/seller-analytics</code>):</p>
+    <ul>
+        <li><strong>Total Sales</strong> - Revenue over time</li>
+        <li><strong>Order Count</strong> - Number of orders</li>
+        <li><strong>Average Order Value</strong> - Typical purchase amount</li>
+        <li><strong>Top Products</strong> - Best-selling items</li>
+        <li><strong>Rating Overview</strong> - Customer satisfaction metrics</li>
+        <li><strong>Sales Charts</strong> - Visual performance graphs</li>
+    </ul>
+
+    <div class="section-divider"></div>
+
+    <!-- Section 8: Administrator Guide -->
+    <h1 id="admin-guide"><span class="section-number">8.</span> Administrator Guide</h1>
+
+    <h2 id="admin-dashboard">8.1 Admin Dashboard Overview</h2>
+    <p>Access the admin panel at <strong>Admin</strong> (<code>/admin</code>):</p>
+
+    <h4>Dashboard Tabs:</h4>
+    <table>
+        <tr>
+            <th>Tab</th>
+            <th>Function</th>
+        </tr>
+        <tr>
+            <td><strong>Overview</strong></td>
+            <td>Platform statistics at a glance</td>
+        </tr>
+        <tr>
+            <td><strong>Users</strong></td>
+            <td>User management</td>
+        </tr>
+        <tr>
+            <td><strong>Products</strong></td>
+            <td>Product moderation</td>
+        </tr>
+        <tr>
+            <td><strong>Orders</strong></td>
+            <td>Order management</td>
+        </tr>
+        <tr>
+            <td><strong>Analytics</strong></td>
+            <td>System-wide statistics</td>
+        </tr>
+        <tr>
+            <td><strong>Seller Applications</strong></td>
+            <td>Application review</td>
+        </tr>
+        <tr>
+            <td><strong>Messages</strong></td>
+            <td>Chat monitoring</td>
+        </tr>
+    </table>
+
+    <h2 id="user-management">8.2 User Management</h2>
+    <p><strong>Users Tab:</strong></p>
+    <ul>
+        <li><strong>View All Users</strong> - Complete user list with roles</li>
+        <li><strong>Search Users</strong> - Find specific accounts</li>
+        <li><strong>User Actions:</strong>
+            <ul>
+                <li><strong>View Profile</strong> - See user details</li>
+                <li><strong>Block User</strong> - Disable account access</li>
+                <li><strong>Unblock User</strong> - Restore account access</li>
+                <li><strong>Convert Role</strong> - Change user role (User/Seller/Admin)</li>
+                <li><strong>Reset Credentials</strong> - Reset user password</li>
+            </ul>
+        </li>
+    </ul>
+
+    <h2 id="product-moderation">8.3 Product Moderation</h2>
+    <p><strong>Products Tab:</strong></p>
+    <ul>
+        <li><strong>View All Products</strong> - Complete product catalog</li>
+        <li><strong>Product Actions:</strong>
+            <ul>
+                <li><strong>Feature Product</strong> - Add to featured section</li>
+                <li><strong>Unfeature Product</strong> - Remove from featured</li>
+                <li><strong>Change Category</strong> - Update product category</li>
+                <li><strong>Remove Product</strong> - Delete inappropriate listings</li>
+            </ul>
+        </li>
+    </ul>
+
+    <h2 id="admin-orders">8.4 Order Management</h2>
+    <p><strong>Orders Tab:</strong></p>
+    <ul>
+        <li><strong>View All Orders</strong> - System-wide order list</li>
+        <li><strong>Order Actions:</strong>
+            <ul>
+                <li><strong>View Details</strong> - See complete order info</li>
+                <li><strong>Cancel Order</strong> - Cancel problematic orders</li>
+                <li><strong>Approve Cancellation</strong> - Approve customer cancellation requests</li>
+            </ul>
+        </li>
+    </ul>
+
+    <h2 id="seller-applications">8.5 Seller Applications</h2>
+    <p><strong>Seller Applications Tab:</strong></p>
+    <ul>
+        <li><strong>Pending Applications</strong> - Applications awaiting review</li>
+        <li><strong>Review Application:</strong>
+            <ol>
+                <li>View business information</li>
+                <li>Check uploaded documents</li>
+                <li>Verify legitimacy</li>
+                <li><strong>Approve</strong> or <strong>Reject</strong> application</li>
+                <li>Add notes if needed</li>
+            </ol>
+        </li>
+    </ul>
+
+    <div class="section-divider"></div>
+
+    <!-- Section 9: Security Features -->
+    <h1 id="security"><span class="section-number">9.</span> Security Features</h1>
+
+    <p>Lawlaw Delights prioritizes your security:</p>
+
+    <div class="feature-box">
+        <h4>Account Security</h4>
+        <ul>
+            <li><strong>Password Hashing</strong> - Secure bcrypt encryption</li>
+            <li><strong>Email Verification</strong> - OTP-based account verification</li>
+            <li><strong>JWT Sessions</strong> - Secure token authentication</li>
+        </ul>
+    </div>
+
+    <div class="feature-box">
+        <h4>Session Protection</h4>
+        <ul>
+            <li><strong>30-Minute Timeout</strong> - Automatic logout after inactivity</li>
+            <li><strong>2-Minute Warning</strong> - Countdown alert before logout</li>
+            <li><strong>Activity Monitoring</strong> - Tracks mouse, keyboard, and scroll activity</li>
+        </ul>
+    </div>
+
+    <div class="feature-box">
+        <h4>Data Protection</h4>
+        <ul>
+            <li><strong>CSRF Protection</strong> - Prevents cross-site attacks</li>
+            <li><strong>SQL Injection Prevention</strong> - Secure database queries</li>
+            <li><strong>XSS Protection</strong> - Sanitized content rendering</li>
+            <li><strong>Role-Based Access</strong> - Appropriate permissions for each user type</li>
+        </ul>
+    </div>
+
+    <h3>Best Practices</h3>
+    <ul>
+        <li>Use a strong, unique password</li>
+        <li>Don't share your login credentials</li>
+        <li>Log out when using shared devices</li>
+        <li>Report suspicious activity immediately</li>
+    </ul>
+
+    <div class="section-divider"></div>
+
+    <!-- Section 10: Troubleshooting & FAQ -->
+    <h1 id="faq"><span class="section-number">10.</span> Troubleshooting & FAQ</h1>
+
+    <h3>Common Issues</h3>
+
+    <div class="feature-box">
+        <h4>Q: I didn't receive my verification email</h4>
+        <ul>
+            <li>Check your spam/junk folder</li>
+            <li>Click "Resend Code" on the verification page</li>
+            <li>Ensure you entered the correct email</li>
+        </ul>
+    </div>
+
+    <div class="feature-box">
+        <h4>Q: I can't log in to my account</h4>
+        <ul>
+            <li>Verify you're using the correct email</li>
+            <li>Try the "Forgot Password" option</li>
+            <li>Clear your browser cache and cookies</li>
+        </ul>
+    </div>
+
+    <div class="feature-box">
+        <h4>Q: My order status isn't updating</h4>
+        <ul>
+            <li>Refresh the page</li>
+            <li>Check your internet connection</li>
+            <li>Contact the seller via chat</li>
+        </ul>
+    </div>
+
+    <div class="feature-box">
+        <h4>Q: I can't upload images</h4>
+        <ul>
+            <li>Ensure file size is under 2MB</li>
+            <li>Use supported formats (JPG, PNG)</li>
+            <li>Try a different browser</li>
+        </ul>
+    </div>
+
+    <div class="feature-box">
+        <h4>Q: Chat messages aren't sending</h4>
+        <ul>
+            <li>Check your internet connection</li>
+            <li>Refresh the page</li>
+            <li>Try logging out and back in</li>
+        </ul>
+    </div>
+
+    <h3>Account Issues</h3>
+
+    <div class="feature-box">
+        <h4>Q: How do I delete my account?</h4>
+        <ul>
+            <li>Go to Settings > Delete Account</li>
+            <li>Confirm your decision</li>
+            <li>Your data will be permanently removed</li>
+        </ul>
+    </div>
+
+    <div class="feature-box">
+        <h4>Q: Can I change my email address?</h4>
+        <ul>
+            <li>Contact support for email changes</li>
+            <li>Email changes require verification</li>
+        </ul>
+    </div>
+
+    <div class="feature-box">
+        <h4>Q: How do I become a seller?</h4>
+        <ul>
+            <li>Submit a seller application</li>
+            <li>Wait for admin approval</li>
+            <li>Access will be granted upon approval</li>
+        </ul>
+    </div>
+
+    <div class="section-divider"></div>
+
+    <!-- Section 11: Contact & Support -->
+    <h1 id="contact"><span class="section-number">11.</span> Contact & Support</h1>
+
+    <h3>Getting Help</h3>
+    <p><strong>Contact Page</strong> (<code>/contact</code>):</p>
+    <ul>
+        <li>Submit inquiries through our contact form</li>
+        <li>Describe your issue in detail</li>
+        <li>Provide relevant order/account information</li>
+    </ul>
+
+    <h3>Support Channels</h3>
+    <ul>
+        <li><strong>In-App Chat</strong> - Contact sellers directly</li>
+        <li><strong>Email</strong> - Support via email notifications</li>
+        <li><strong>Contact Form</strong> - General inquiries</li>
+    </ul>
+
+    <h3>Policies</h3>
+    <ul>
+        <li><strong>Terms & Conditions</strong> (<code>/terms</code>) - Platform usage rules</li>
+        <li><strong>Privacy Policy</strong> (<code>/privacy</code>) - Data handling practices</li>
+    </ul>
+
+    <div class="section-divider"></div>
+
+    <!-- Quick Reference Table -->
+    <h2>Quick Reference</h2>
+    <table>
+        <tr>
+            <th>Feature</th>
+            <th>Location</th>
+        </tr>
+        <tr>
+            <td>Browse Products</td>
+            <td><code>/products</code></td>
+        </tr>
+        <tr>
+            <td>View Cart</td>
+            <td><code>/cart</code></td>
+        </tr>
+        <tr>
+            <td>My Orders</td>
+            <td><code>/orders</code></td>
+        </tr>
+        <tr>
+            <td>My Profile</td>
+            <td><code>/profile</code></td>
+        </tr>
+        <tr>
+            <td>My Addresses</td>
+            <td><code>/addresses</code></td>
+        </tr>
+        <tr>
+            <td>Recipes</td>
+            <td><code>/recipes</code></td>
+        </tr>
+        <tr>
+            <td>My Collections</td>
+            <td><code>/collections</code></td>
+        </tr>
+        <tr>
+            <td>Chat</td>
+            <td><code>/chat</code></td>
+        </tr>
+        <tr>
+            <td>Settings</td>
+            <td><code>/settings</code></td>
+        </tr>
+        <tr>
+            <td>Seller Dashboard</td>
+            <td><code>/seller-dashboard</code></td>
+        </tr>
+        <tr>
+            <td>Seller Products</td>
+            <td><code>/seller-products</code></td>
+        </tr>
+        <tr>
+            <td>Seller Orders</td>
+            <td><code>/seller-orders</code></td>
+        </tr>
+        <tr>
+            <td>Admin Panel</td>
+            <td><code>/admin</code></td>
+        </tr>
+    </table>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p><strong>Thank you for using Lawlaw Delights!</strong></p>
+        <p><em>Enjoy authentic Filipino seafood delicacies delivered to your doorstep.</em></p>
+        <br>
+        <p>Last Updated: December 2025 | Version 1.0</p>
+    </div>
+
+</body>
+</html>

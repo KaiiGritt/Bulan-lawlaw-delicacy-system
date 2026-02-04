@@ -1,0 +1,1360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lawlaw Delights - Database Schema & Queries</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Times+New+Roman&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 12pt;
+            line-height: 1.5;
+            color: #000;
+            background: #f0f0f0;
+            padding: 20px;
+        }
+
+        .document {
+            max-width: 8.5in;
+            margin: 0 auto;
+            background: white;
+            padding: 1in;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        /* Cover Page */
+        .cover-page {
+            text-align: center;
+            page-break-after: always;
+            min-height: 9in;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .cover-page h1 {
+            font-size: 28pt;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+
+        .cover-page .subtitle {
+            font-size: 18pt;
+            margin-bottom: 40px;
+        }
+
+        .cover-page .doc-title {
+            font-size: 24pt;
+            font-weight: bold;
+            border: 3px double #000;
+            padding: 20px 60px;
+            margin: 40px 0;
+        }
+
+        .cover-page .info {
+            font-size: 12pt;
+            margin-top: 100px;
+        }
+
+        .cover-page .info p {
+            margin: 5px 0;
+        }
+
+        /* Table of Contents */
+        .toc {
+            page-break-after: always;
+        }
+
+        .toc h2 {
+            font-size: 16pt;
+            text-align: center;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            border-bottom: 2px solid #000;
+            padding-bottom: 10px;
+        }
+
+        .toc-item {
+            display: flex;
+            justify-content: space-between;
+            margin: 8px 0;
+            border-bottom: 1px dotted #ccc;
+        }
+
+        .toc-item.main {
+            font-weight: bold;
+            margin-top: 15px;
+        }
+
+        .toc-item.sub {
+            padding-left: 30px;
+        }
+
+        /* Headings */
+        h1 {
+            font-size: 18pt;
+            font-weight: bold;
+            margin: 30px 0 15px 0;
+            text-transform: uppercase;
+            border-bottom: 2px solid #000;
+            padding-bottom: 5px;
+            page-break-after: avoid;
+        }
+
+        h2 {
+            font-size: 14pt;
+            font-weight: bold;
+            margin: 25px 0 12px 0;
+            page-break-after: avoid;
+        }
+
+        h3 {
+            font-size: 12pt;
+            font-weight: bold;
+            margin: 20px 0 10px 0;
+            page-break-after: avoid;
+        }
+
+        /* Paragraphs */
+        p {
+            margin: 10px 0;
+            text-align: justify;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 10pt;
+        }
+
+        th, td {
+            border: 1px solid #000;
+            padding: 8px 10px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            background-color: #e0e0e0;
+            font-weight: bold;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        /* Code blocks */
+        pre {
+            background-color: #f5f5f5;
+            border: 1px solid #ddd;
+            padding: 12px;
+            margin: 15px 0;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 9pt;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            page-break-inside: avoid;
+        }
+
+        code {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 10pt;
+            background-color: #f0f0f0;
+            padding: 2px 4px;
+        }
+
+        /* Lists */
+        ul, ol {
+            margin: 10px 0 10px 30px;
+        }
+
+        li {
+            margin: 5px 0;
+        }
+
+        /* Page break */
+        .page-break {
+            page-break-after: always;
+        }
+
+        /* Section numbering */
+        .section-num {
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        /* Figure/Table captions */
+        .caption {
+            font-style: italic;
+            text-align: center;
+            margin: 10px 0;
+            font-size: 10pt;
+        }
+
+        /* ERD box */
+        .erd-box {
+            background: #f9f9f9;
+            border: 1px solid #ccc;
+            padding: 20px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 8pt;
+            white-space: pre;
+            overflow-x: auto;
+        }
+
+        /* Print styles */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .document {
+                box-shadow: none;
+                padding: 0.5in;
+            }
+
+            pre {
+                font-size: 8pt;
+            }
+
+            table {
+                font-size: 9pt;
+            }
+        }
+
+        /* Header for each section */
+        .section-header {
+            background: #f0f0f0;
+            padding: 10px;
+            margin: 20px 0 15px 0;
+            border-left: 4px solid #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="document">
+
+        <!-- Cover Page -->
+        <div class="cover-page">
+            <h1>Lawlaw Delights</h1>
+            <div class="subtitle">Bulan Lawlaw Delicacy System</div>
+            <div class="doc-title">DATABASE SCHEMA<br>&<br>SQL QUERIES</div>
+            <div class="info">
+                <p><strong>Database Type:</strong> MySQL</p>
+                <p><strong>Platform:</strong> Railway</p>
+                <p><strong>Version:</strong> 1.0</p>
+                <p><strong>Date:</strong> December 2025</p>
+            </div>
+        </div>
+
+        <!-- Table of Contents -->
+        <div class="toc">
+            <h2>Table of Contents</h2>
+
+            <div class="toc-item main"><span>1. Introduction</span><span>3</span></div>
+            <div class="toc-item sub"><span>1.1 Database Overview</span><span>3</span></div>
+            <div class="toc-item sub"><span>1.2 Connection Information</span><span>3</span></div>
+
+            <div class="toc-item main"><span>2. Database Tables</span><span>4</span></div>
+            <div class="toc-item sub"><span>2.1 Users Table</span><span>4</span></div>
+            <div class="toc-item sub"><span>2.2 Products Table</span><span>5</span></div>
+            <div class="toc-item sub"><span>2.3 Recipes Tables</span><span>6</span></div>
+            <div class="toc-item sub"><span>2.4 Orders Tables</span><span>8</span></div>
+            <div class="toc-item sub"><span>2.5 Cart Items Table</span><span>10</span></div>
+            <div class="toc-item sub"><span>2.6 Comments Table</span><span>10</span></div>
+            <div class="toc-item sub"><span>2.7 Chat Tables</span><span>11</span></div>
+            <div class="toc-item sub"><span>2.8 Address Table</span><span>12</span></div>
+            <div class="toc-item sub"><span>2.9 Other Tables</span><span>13</span></div>
+
+            <div class="toc-item main"><span>3. Entity Relationship Diagram</span><span>15</span></div>
+
+            <div class="toc-item main"><span>4. SQL Queries</span><span>16</span></div>
+            <div class="toc-item sub"><span>4.1 User Queries</span><span>16</span></div>
+            <div class="toc-item sub"><span>4.2 Product Queries</span><span>17</span></div>
+            <div class="toc-item sub"><span>4.3 Recipe Queries</span><span>18</span></div>
+            <div class="toc-item sub"><span>4.4 Order Queries</span><span>19</span></div>
+            <div class="toc-item sub"><span>4.5 Cart Queries</span><span>20</span></div>
+            <div class="toc-item sub"><span>4.6 Review Queries</span><span>21</span></div>
+            <div class="toc-item sub"><span>4.7 Chat Queries</span><span>22</span></div>
+            <div class="toc-item sub"><span>4.8 Analytics Queries</span><span>23</span></div>
+
+            <div class="toc-item main"><span>5. Database Indexes</span><span>24</span></div>
+        </div>
+
+        <!-- Section 1: Introduction -->
+        <h1><span class="section-num">1.</span> INTRODUCTION</h1>
+
+        <h2>1.1 Database Overview</h2>
+        <p>This document provides a comprehensive reference for the Lawlaw Delights database schema, including all table definitions, relationships, and common SQL queries used throughout the application.</p>
+
+        <p>The database supports the following key functionalities:</p>
+        <ul>
+            <li>User authentication and management (buyers, sellers, administrators)</li>
+            <li>Product catalog and inventory management</li>
+            <li>Recipe collection with ingredients and instructions</li>
+            <li>Shopping cart and order processing</li>
+            <li>Real-time chat system between buyers and sellers</li>
+            <li>Product and recipe reviews/ratings</li>
+            <li>Notification system</li>
+            <li>Seller application and approval workflow</li>
+        </ul>
+
+        <h2>1.2 Connection Information</h2>
+        <table>
+            <tr>
+                <th>Property</th>
+                <th>Value</th>
+            </tr>
+            <tr>
+                <td>Database Type</td>
+                <td>MySQL</td>
+            </tr>
+            <tr>
+                <td>Host</td>
+                <td>hopper.proxy.rlwy.net</td>
+            </tr>
+            <tr>
+                <td>Port</td>
+                <td>33001</td>
+            </tr>
+            <tr>
+                <td>Database Name</td>
+                <td>railway</td>
+            </tr>
+            <tr>
+                <td>Character Set</td>
+                <td>utf8mb4</td>
+            </tr>
+            <tr>
+                <td>Collation</td>
+                <td>utf8mb4_unicode_ci</td>
+            </tr>
+        </table>
+
+        <div class="page-break"></div>
+
+        <!-- Section 2: Database Tables -->
+        <h1><span class="section-num">2.</span> DATABASE TABLES</h1>
+
+        <p>The database consists of 20 tables organized into functional groups. Below is a summary of all tables:</p>
+
+        <table>
+            <tr>
+                <th>Table Name</th>
+                <th>Description</th>
+                <th>Primary Key</th>
+            </tr>
+            <tr><td>users</td><td>User accounts (buyers, sellers, admins)</td><td>userId</td></tr>
+            <tr><td>products</td><td>Product listings</td><td>productId</td></tr>
+            <tr><td>recipes</td><td>Cooking recipes</td><td>recipeId</td></tr>
+            <tr><td>recipe_ingredients</td><td>Ingredients for recipes</td><td>ingredientId</td></tr>
+            <tr><td>recipe_instructions</td><td>Step-by-step cooking instructions</td><td>instructionId</td></tr>
+            <tr><td>recipe_reviews</td><td>User reviews on recipes</td><td>reviewId</td></tr>
+            <tr><td>saved_recipes</td><td>User's saved/favorite recipes</td><td>savedRecipeId</td></tr>
+            <tr><td>cart_items</td><td>Shopping cart items</td><td>cartItemId</td></tr>
+            <tr><td>orders</td><td>Customer orders</td><td>orderId</td></tr>
+            <tr><td>order_items</td><td>Items within orders</td><td>orderItemId</td></tr>
+            <tr><td>order_tracking_history</td><td>Order tracking timeline</td><td>trackingHistoryId</td></tr>
+            <tr><td>addresses</td><td>User shipping addresses</td><td>addressId</td></tr>
+            <tr><td>comments</td><td>Product reviews/ratings</td><td>commentId</td></tr>
+            <tr><td>conversations</td><td>Chat conversations</td><td>conversationId</td></tr>
+            <tr><td>messages</td><td>Chat messages</td><td>messageId</td></tr>
+            <tr><td>notifications</td><td>User notifications</td><td>notificationId</td></tr>
+            <tr><td>seller_applications</td><td>Seller registration requests</td><td>applicationId</td></tr>
+            <tr><td>user_settings</td><td>User preferences</td><td>settingsId</td></tr>
+            <tr><td>otps</td><td>OTP codes for verification</td><td>otpId</td></tr>
+            <tr><td>pending_registrations</td><td>Unverified registrations</td><td>registrationId</td></tr>
+        </table>
+        <p class="caption">Table 2.1: Database Tables Overview</p>
+
+        <div class="page-break"></div>
+
+        <h2>2.1 Users Table</h2>
+        <p>Stores all user accounts including buyers, sellers, and administrators.</p>
+
+        <table>
+            <tr>
+                <th>Column</th>
+                <th>Type</th>
+                <th>Constraints</th>
+                <th>Description</th>
+            </tr>
+            <tr><td>userId</td><td>INT</td><td>PRIMARY KEY, AUTO_INCREMENT</td><td>Unique user identifier</td></tr>
+            <tr><td>email</td><td>VARCHAR(255)</td><td>NOT NULL, UNIQUE</td><td>User email address</td></tr>
+            <tr><td>phoneNumber</td><td>VARCHAR(255)</td><td>UNIQUE</td><td>User phone number</td></tr>
+            <tr><td>name</td><td>VARCHAR(255)</td><td>NULL</td><td>Display name</td></tr>
+            <tr><td>password</td><td>VARCHAR(255)</td><td>NOT NULL</td><td>Hashed password (bcrypt)</td></tr>
+            <tr><td>role</td><td>VARCHAR(50)</td><td>DEFAULT 'user'</td><td>user, seller, or admin</td></tr>
+            <tr><td>remarks</td><td>TEXT</td><td>NULL</td><td>Admin remarks</td></tr>
+            <tr><td>profilePicture</td><td>LONGTEXT</td><td>NULL</td><td>Base64 encoded image</td></tr>
+            <tr><td>emailVerified</td><td>BOOLEAN</td><td>DEFAULT FALSE</td><td>Email verification status</td></tr>
+            <tr><td>resetToken</td><td>VARCHAR(255)</td><td>NULL</td><td>Password reset token</td></tr>
+            <tr><td>resetTokenExpiry</td><td>DATETIME</td><td>NULL</td><td>Reset token expiration</td></tr>
+            <tr><td>createdAt</td><td>DATETIME</td><td>DEFAULT NOW()</td><td>Account creation date</td></tr>
+            <tr><td>updatedAt</td><td>DATETIME</td><td>NOT NULL</td><td>Last update timestamp</td></tr>
+        </table>
+        <p class="caption">Table 2.2: Users Table Structure</p>
+
+        <h3>SQL Definition:</h3>
+<pre>
+CREATE TABLE `users` (
+    `userId`           INT AUTO_INCREMENT PRIMARY KEY,
+    `email`            VARCHAR(255) NOT NULL UNIQUE,
+    `phoneNumber`      VARCHAR(255) UNIQUE,
+    `name`             VARCHAR(255),
+    `password`         VARCHAR(255) NOT NULL,
+    `role`             VARCHAR(50) DEFAULT 'user',
+    `remarks`          TEXT,
+    `profilePicture`   LONGTEXT,
+    `emailVerified`    BOOLEAN DEFAULT FALSE,
+    `resetToken`       VARCHAR(255),
+    `resetTokenExpiry` DATETIME,
+    `createdAt`        DATETIME DEFAULT CURRENT_TIMESTAMP,
+    `updatedAt`        DATETIME
+);
+</pre>
+
+        <div class="page-break"></div>
+
+        <h2>2.2 Products Table</h2>
+        <p>Product listings created by sellers.</p>
+
+        <table>
+            <tr>
+                <th>Column</th>
+                <th>Type</th>
+                <th>Constraints</th>
+                <th>Description</th>
+            </tr>
+            <tr><td>productId</td><td>INT</td><td>PRIMARY KEY, AUTO_INCREMENT</td><td>Unique product identifier</td></tr>
+            <tr><td>name</td><td>VARCHAR(255)</td><td>NOT NULL</td><td>Product name</td></tr>
+            <tr><td>description</td><td>TEXT</td><td>NOT NULL</td><td>Product description</td></tr>
+            <tr><td>price</td><td>FLOAT</td><td>NOT NULL</td><td>Price in PHP</td></tr>
+            <tr><td>category</td><td>VARCHAR(255)</td><td>NOT NULL</td><td>Product category</td></tr>
+            <tr><td>image</td><td>LONGTEXT</td><td>NOT NULL</td><td>Base64 encoded image</td></tr>
+            <tr><td>stock</td><td>INT</td><td>DEFAULT 0</td><td>Available quantity</td></tr>
+            <tr><td>userId</td><td>INT</td><td>FOREIGN KEY</td><td>Seller's user ID</td></tr>
+            <tr><td>featured</td><td>BOOLEAN</td><td>DEFAULT FALSE</td><td>Featured product flag</td></tr>
+            <tr><td>rating</td><td>FLOAT</td><td>DEFAULT 0</td><td>Average rating (0-5)</td></tr>
+            <tr><td>createdAt</td><td>DATETIME</td><td>DEFAULT NOW()</td><td>Creation date</td></tr>
+            <tr><td>updatedAt</td><td>DATETIME</td><td>NOT NULL</td><td>Last update</td></tr>
+        </table>
+        <p class="caption">Table 2.3: Products Table Structure</p>
+
+        <h3>SQL Definition:</h3>
+<pre>
+CREATE TABLE `products` (
+    `productId`   INT AUTO_INCREMENT PRIMARY KEY,
+    `name`        VARCHAR(255) NOT NULL,
+    `description` TEXT NOT NULL,
+    `price`       FLOAT NOT NULL,
+    `category`    VARCHAR(255) NOT NULL,
+    `image`       LONGTEXT NOT NULL,
+    `stock`       INT DEFAULT 0,
+    `userId`      INT NOT NULL,
+    `featured`    BOOLEAN DEFAULT FALSE,
+    `rating`      FLOAT DEFAULT 0,
+    `createdAt`   DATETIME DEFAULT CURRENT_TIMESTAMP,
+    `updatedAt`   DATETIME,
+    FOREIGN KEY (`userId`) REFERENCES `users`(`userId`) ON DELETE CASCADE
+);
+</pre>
+
+        <div class="page-break"></div>
+
+        <h2>2.3 Recipes Tables</h2>
+        <p>The recipe system consists of three related tables: recipes, recipe_ingredients, and recipe_instructions.</p>
+
+        <h3>2.3.1 Recipes Table</h3>
+        <table>
+            <tr>
+                <th>Column</th>
+                <th>Type</th>
+                <th>Constraints</th>
+                <th>Description</th>
+            </tr>
+            <tr><td>recipeId</td><td>INT</td><td>PRIMARY KEY, AUTO_INCREMENT</td><td>Unique recipe identifier</td></tr>
+            <tr><td>title</td><td>VARCHAR(255)</td><td>NOT NULL</td><td>Recipe title</td></tr>
+            <tr><td>description</td><td>TEXT</td><td>NOT NULL</td><td>Recipe description</td></tr>
+            <tr><td>image</td><td>LONGTEXT</td><td>NOT NULL</td><td>Base64 encoded image</td></tr>
+            <tr><td>prepTime</td><td>INT</td><td>NOT NULL</td><td>Prep time (minutes)</td></tr>
+            <tr><td>cookTime</td><td>INT</td><td>NOT NULL</td><td>Cook time (minutes)</td></tr>
+            <tr><td>servings</td><td>INT</td><td>NOT NULL</td><td>Number of servings</td></tr>
+            <tr><td>difficulty</td><td>VARCHAR(50)</td><td>NOT NULL</td><td>Easy, Medium, Hard</td></tr>
+            <tr><td>rating</td><td>FLOAT</td><td>DEFAULT 0</td><td>Average rating</td></tr>
+            <tr><td>userId</td><td>INT</td><td>FOREIGN KEY</td><td>Author's user ID</td></tr>
+            <tr><td>createdAt</td><td>DATETIME</td><td>DEFAULT NOW()</td><td>Creation date</td></tr>
+            <tr><td>updatedAt</td><td>DATETIME</td><td>NOT NULL</td><td>Last update</td></tr>
+        </table>
+        <p class="caption">Table 2.4: Recipes Table Structure</p>
+
+        <h3>SQL Definition:</h3>
+<pre>
+CREATE TABLE `recipes` (
+    `recipeId`    INT AUTO_INCREMENT PRIMARY KEY,
+    `title`       VARCHAR(255) NOT NULL,
+    `description` TEXT NOT NULL,
+    `image`       LONGTEXT NOT NULL,
+    `prepTime`    INT NOT NULL,
+    `cookTime`    INT NOT NULL,
+    `servings`    INT NOT NULL,
+    `difficulty`  VARCHAR(50) NOT NULL,
+    `rating`      FLOAT DEFAULT 0,
+    `userId`      INT,
+    `createdAt`   DATETIME DEFAULT CURRENT_TIMESTAMP,
+    `updatedAt`   DATETIME,
+    FOREIGN KEY (`userId`) REFERENCES `users`(`userId`)
+);
+</pre>
+
+        <h3>2.3.2 Recipe Ingredients Table</h3>
+<pre>
+CREATE TABLE `recipe_ingredients` (
+    `ingredientId` INT AUTO_INCREMENT PRIMARY KEY,
+    `recipeId`     INT NOT NULL,
+    `name`         VARCHAR(255) NOT NULL,
+    `quantity`     VARCHAR(255),
+    `order`        INT NOT NULL,
+    FOREIGN KEY (`recipeId`) REFERENCES `recipes`(`recipeId`) ON DELETE CASCADE
+);
+</pre>
+
+        <h3>2.3.3 Recipe Instructions Table</h3>
+<pre>
+CREATE TABLE `recipe_instructions` (
+    `instructionId` INT AUTO_INCREMENT PRIMARY KEY,
+    `recipeId`      INT NOT NULL,
+    `stepNumber`    INT NOT NULL,
+    `instruction`   TEXT NOT NULL,
+    FOREIGN KEY (`recipeId`) REFERENCES `recipes`(`recipeId`) ON DELETE CASCADE
+);
+</pre>
+
+        <h3>2.3.4 Recipe Reviews Table</h3>
+<pre>
+CREATE TABLE `recipe_reviews` (
+    `reviewId`  INT AUTO_INCREMENT PRIMARY KEY,
+    `recipeId`  INT NOT NULL,
+    `userId`    INT NOT NULL,
+    `rating`    INT NOT NULL,
+    `content`   VARCHAR(255) NOT NULL,
+    `createdAt` DATETIME DEFAULT CURRENT_TIMESTAMP,
+    `updatedAt` DATETIME,
+    FOREIGN KEY (`recipeId`) REFERENCES `recipes`(`recipeId`) ON DELETE CASCADE,
+    FOREIGN KEY (`userId`) REFERENCES `users`(`userId`) ON DELETE CASCADE,
+    UNIQUE (`recipeId`, `userId`)
+);
+</pre>
+
+        <h3>2.3.5 Saved Recipes Table</h3>
+<pre>
+CREATE TABLE `saved_recipes` (
+    `savedRecipeId` INT AUTO_INCREMENT PRIMARY KEY,
+    `userId`        INT NOT NULL,
+    `recipeId`      INT NOT NULL,
+    `notes`         TEXT,
+    `createdAt`     DATETIME DEFAULT CURRENT_TIMESTAMP,
+    `updatedAt`     DATETIME,
+    FOREIGN KEY (`recipeId`) REFERENCES `recipes`(`recipeId`) ON DELETE CASCADE,
+    FOREIGN KEY (`userId`) REFERENCES `users`(`userId`) ON DELETE CASCADE,
+    UNIQUE (`userId`, `recipeId`)
+);
+</pre>
+
+        <div class="page-break"></div>
+
+        <h2>2.4 Orders Tables</h2>
+        <p>The order system consists of three tables: orders, order_items, and order_tracking_history.</p>
+
+        <h3>2.4.1 Orders Table</h3>
+        <table>
+            <tr>
+                <th>Column</th>
+                <th>Type</th>
+                <th>Constraints</th>
+                <th>Description</th>
+            </tr>
+            <tr><td>orderId</td><td>INT</td><td>PRIMARY KEY, AUTO_INCREMENT</td><td>Unique order identifier</td></tr>
+            <tr><td>userId</td><td>INT</td><td>FOREIGN KEY</td><td>Customer's user ID</td></tr>
+            <tr><td>status</td><td>VARCHAR(50)</td><td>DEFAULT 'pending'</td><td>Order status</td></tr>
+            <tr><td>totalAmount</td><td>FLOAT</td><td>NOT NULL</td><td>Total order amount</td></tr>
+            <tr><td>shippingAddress</td><td>TEXT</td><td>NOT NULL</td><td>Shipping address JSON</td></tr>
+            <tr><td>billingAddress</td><td>TEXT</td><td>NOT NULL</td><td>Billing address JSON</td></tr>
+            <tr><td>paymentMethod</td><td>VARCHAR(50)</td><td>NOT NULL</td><td>COD, GCash, Card</td></tr>
+            <tr><td>adminApprovalRequired</td><td>BOOLEAN</td><td>DEFAULT FALSE</td><td>Needs admin approval</td></tr>
+            <tr><td>cancellationReason</td><td>VARCHAR(255)</td><td>NULL</td><td>Reason if cancelled</td></tr>
+            <tr><td>cancelledAt</td><td>DATETIME</td><td>NULL</td><td>Cancellation timestamp</td></tr>
+            <tr><td>trackingNumber</td><td>VARCHAR(255)</td><td>NULL</td><td>Shipping tracking #</td></tr>
+            <tr><td>courier</td><td>VARCHAR(255)</td><td>NULL</td><td>Courier service name</td></tr>
+            <tr><td>estimatedDeliveryDate</td><td>DATETIME</td><td>NULL</td><td>Expected delivery</td></tr>
+            <tr><td>shippedAt</td><td>DATETIME</td><td>NULL</td><td>Ship date</td></tr>
+            <tr><td>deliveredAt</td><td>DATETIME</td><td>NULL</td><td>Delivery date</td></tr>
+            <tr><td>createdAt</td><td>DATETIME</td><td>DEFAULT NOW()</td><td>Order date</td></tr>
+            <tr><td>updatedAt</td><td>DATETIME</td><td>NOT NULL</td><td>Last update</td></tr>
+        </table>
+        <p class="caption">Table 2.5: Orders Table Structure</p>
+
+        <h3>Order Status Values:</h3>
+        <table>
+            <tr><th>Status</th><th>Description</th></tr>
+            <tr><td>pending</td><td>Order placed, awaiting processing</td></tr>
+            <tr><td>processing</td><td>Order is being prepared</td></tr>
+            <tr><td>shipped</td><td>Order has been shipped</td></tr>
+            <tr><td>delivered</td><td>Order delivered to customer</td></tr>
+            <tr><td>cancelled</td><td>Order was cancelled</td></tr>
+        </table>
+
+        <h3>SQL Definition:</h3>
+<pre>
+CREATE TABLE `orders` (
+    `orderId`               INT AUTO_INCREMENT PRIMARY KEY,
+    `userId`                INT NOT NULL,
+    `status`                VARCHAR(50) DEFAULT 'pending',
+    `totalAmount`           FLOAT NOT NULL,
+    `shippingAddress`       TEXT NOT NULL,
+    `billingAddress`        TEXT NOT NULL,
+    `paymentMethod`         VARCHAR(50) NOT NULL,
+    `adminApprovalRequired` BOOLEAN DEFAULT FALSE,
+    `cancellationReason`    VARCHAR(255),
+    `cancelledAt`           DATETIME,
+    `trackingNumber`        VARCHAR(255),
+    `courier`               VARCHAR(255),
+    `estimatedDeliveryDate` DATETIME,
+    `shippedAt`             DATETIME,
+    `deliveredAt`           DATETIME,
+    `createdAt`             DATETIME DEFAULT CURRENT_TIMESTAMP,
+    `updatedAt`             DATETIME,
+    FOREIGN KEY (`userId`) REFERENCES `users`(`userId`) ON DELETE CASCADE
+);
+</pre>
+
+        <h3>2.4.2 Order Items Table</h3>
+<pre>
+CREATE TABLE `order_items` (
+    `orderItemId` INT AUTO_INCREMENT PRIMARY KEY,
+    `orderId`     INT NOT NULL,
+    `productId`   INT NOT NULL,
+    `quantity`    INT NOT NULL,
+    `price`       FLOAT NOT NULL,
+    `createdAt`   DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (`orderId`) REFERENCES `orders`(`orderId`) ON DELETE CASCADE,
+    FOREIGN KEY (`productId`) REFERENCES `products`(`productId`) ON DELETE CASCADE
+);
+</pre>
+
+        <h3>2.4.3 Order Tracking History Table</h3>
+<pre>
+CREATE TABLE `order_tracking_history` (
+    `trackingHistoryId` INT AUTO_INCREMENT PRIMARY KEY,
+    `orderId`           INT NOT NULL,
+    `status`            VARCHAR(50) NOT NULL,
+    `location`          VARCHAR(255),
+    `description`       VARCHAR(255) NOT NULL,
+    `createdAt`         DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (`orderId`) REFERENCES `orders`(`orderId`) ON DELETE CASCADE
+);
+</pre>
+
+        <div class="page-break"></div>
+
+        <h2>2.5 Cart Items Table</h2>
+<pre>
+CREATE TABLE `cart_items` (
+    `cartItemId` INT AUTO_INCREMENT PRIMARY KEY,
+    `userId`     INT NOT NULL,
+    `productId`  INT NOT NULL,
+    `quantity`   INT DEFAULT 1,
+    `createdAt`  DATETIME DEFAULT CURRENT_TIMESTAMP,
+    `updatedAt`  DATETIME,
+    FOREIGN KEY (`userId`) REFERENCES `users`(`userId`) ON DELETE CASCADE,
+    FOREIGN KEY (`productId`) REFERENCES `products`(`productId`) ON DELETE CASCADE,
+    UNIQUE (`userId`, `productId`)
+);
+</pre>
+
+        <h2>2.6 Comments Table (Product Reviews)</h2>
+        <table>
+            <tr>
+                <th>Column</th>
+                <th>Type</th>
+                <th>Constraints</th>
+                <th>Description</th>
+            </tr>
+            <tr><td>commentId</td><td>INT</td><td>PRIMARY KEY, AUTO_INCREMENT</td><td>Unique comment ID</td></tr>
+            <tr><td>productId</td><td>INT</td><td>FOREIGN KEY</td><td>Product being reviewed</td></tr>
+            <tr><td>userId</td><td>INT</td><td>FOREIGN KEY</td><td>Reviewer's user ID</td></tr>
+            <tr><td>rating</td><td>INT</td><td>NOT NULL</td><td>Rating 1-5 stars</td></tr>
+            <tr><td>content</td><td>VARCHAR(255)</td><td>NOT NULL</td><td>Review text</td></tr>
+            <tr><td>sellerReply</td><td>VARCHAR(255)</td><td>NULL</td><td>Seller's response</td></tr>
+            <tr><td>sellerReplyAt</td><td>DATETIME</td><td>NULL</td><td>Reply timestamp</td></tr>
+            <tr><td>createdAt</td><td>DATETIME</td><td>DEFAULT NOW()</td><td>Review date</td></tr>
+            <tr><td>updatedAt</td><td>DATETIME</td><td>NOT NULL</td><td>Last update</td></tr>
+        </table>
+        <p class="caption">Table 2.6: Comments Table Structure</p>
+
+<pre>
+CREATE TABLE `comments` (
+    `commentId`     INT AUTO_INCREMENT PRIMARY KEY,
+    `productId`     INT NOT NULL,
+    `userId`        INT NOT NULL,
+    `rating`        INT NOT NULL,
+    `content`       VARCHAR(255) NOT NULL,
+    `sellerReply`   VARCHAR(255),
+    `sellerReplyAt` DATETIME,
+    `createdAt`     DATETIME DEFAULT CURRENT_TIMESTAMP,
+    `updatedAt`     DATETIME,
+    FOREIGN KEY (`productId`) REFERENCES `products`(`productId`) ON DELETE CASCADE,
+    FOREIGN KEY (`userId`) REFERENCES `users`(`userId`) ON DELETE CASCADE,
+    UNIQUE (`productId`, `userId`)
+);
+</pre>
+
+        <div class="page-break"></div>
+
+        <h2>2.7 Chat Tables</h2>
+
+        <h3>2.7.1 Conversations Table</h3>
+<pre>
+CREATE TABLE `conversations` (
+    `conversationId` INT AUTO_INCREMENT PRIMARY KEY,
+    `sellerId`       INT NOT NULL,
+    `buyerId`        INT NOT NULL,
+    `productId`      INT NOT NULL,
+    `status`         VARCHAR(50) DEFAULT 'active',
+    `createdAt`      DATETIME DEFAULT CURRENT_TIMESTAMP,
+    `updatedAt`      DATETIME,
+    FOREIGN KEY (`sellerId`) REFERENCES `users`(`userId`) ON DELETE CASCADE,
+    FOREIGN KEY (`buyerId`) REFERENCES `users`(`userId`) ON DELETE CASCADE,
+    FOREIGN KEY (`productId`) REFERENCES `products`(`productId`) ON DELETE CASCADE,
+    UNIQUE (`sellerId`, `buyerId`, `productId`)
+);
+</pre>
+
+        <h3>2.7.2 Messages Table</h3>
+<pre>
+CREATE TABLE `messages` (
+    `messageId`      INT AUTO_INCREMENT PRIMARY KEY,
+    `conversationId` INT NOT NULL,
+    `senderId`       INT NOT NULL,
+    `content`        VARCHAR(255) NOT NULL,
+    `isRead`         BOOLEAN DEFAULT FALSE,
+    `createdAt`      DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (`conversationId`) REFERENCES `conversations`(`conversationId`) ON DELETE CASCADE,
+    FOREIGN KEY (`senderId`) REFERENCES `users`(`userId`) ON DELETE CASCADE
+);
+</pre>
+
+        <h3>2.7.3 Notifications Table</h3>
+<pre>
+CREATE TABLE `notifications` (
+    `notificationId` INT AUTO_INCREMENT PRIMARY KEY,
+    `userId`         INT NOT NULL,
+    `title`          VARCHAR(255) NOT NULL,
+    `message`        VARCHAR(255) NOT NULL,
+    `type`           VARCHAR(50) NOT NULL,
+    `isRead`         BOOLEAN DEFAULT FALSE,
+    `createdAt`      DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (`userId`) REFERENCES `users`(`userId`) ON DELETE CASCADE
+);
+</pre>
+
+        <div class="page-break"></div>
+
+        <h2>2.8 Addresses Table</h2>
+        <p>Philippines-specific address format with region, province, city, and barangay.</p>
+
+        <table>
+            <tr>
+                <th>Column</th>
+                <th>Type</th>
+                <th>Description</th>
+            </tr>
+            <tr><td>addressId</td><td>INT</td><td>Primary key</td></tr>
+            <tr><td>userId</td><td>INT</td><td>User who owns this address</td></tr>
+            <tr><td>fullName</td><td>VARCHAR(255)</td><td>Recipient name</td></tr>
+            <tr><td>phoneNumber</td><td>VARCHAR(50)</td><td>Contact number</td></tr>
+            <tr><td>region</td><td>VARCHAR(255)</td><td>Region (e.g., Bicol Region)</td></tr>
+            <tr><td>province</td><td>VARCHAR(255)</td><td>Province (e.g., Sorsogon)</td></tr>
+            <tr><td>city</td><td>VARCHAR(255)</td><td>City/Municipality (e.g., Bulan)</td></tr>
+            <tr><td>barangay</td><td>VARCHAR(255)</td><td>Barangay</td></tr>
+            <tr><td>streetAddress</td><td>VARCHAR(255)</td><td>Street, building, house #</td></tr>
+            <tr><td>postalCode</td><td>VARCHAR(20)</td><td>ZIP code</td></tr>
+            <tr><td>landmark</td><td>VARCHAR(255)</td><td>Optional landmark</td></tr>
+            <tr><td>isDefault</td><td>BOOLEAN</td><td>Default address flag</td></tr>
+        </table>
+
+<pre>
+CREATE TABLE `addresses` (
+    `addressId`     INT AUTO_INCREMENT PRIMARY KEY,
+    `userId`        INT NOT NULL,
+    `fullName`      VARCHAR(255) NOT NULL,
+    `phoneNumber`   VARCHAR(50) NOT NULL,
+    `region`        VARCHAR(255) NOT NULL,
+    `province`      VARCHAR(255) NOT NULL,
+    `city`          VARCHAR(255) NOT NULL,
+    `barangay`      VARCHAR(255) NOT NULL,
+    `streetAddress` VARCHAR(255) NOT NULL,
+    `postalCode`    VARCHAR(20) NOT NULL,
+    `landmark`      VARCHAR(255),
+    `isDefault`     BOOLEAN DEFAULT FALSE,
+    `createdAt`     DATETIME DEFAULT CURRENT_TIMESTAMP,
+    `updatedAt`     DATETIME,
+    FOREIGN KEY (`userId`) REFERENCES `users`(`userId`) ON DELETE CASCADE
+);
+</pre>
+
+        <div class="page-break"></div>
+
+        <h2>2.9 Other Tables</h2>
+
+        <h3>2.9.1 Seller Applications Table</h3>
+<pre>
+CREATE TABLE `seller_applications` (
+    `applicationId` INT AUTO_INCREMENT PRIMARY KEY,
+    `userId`        INT NOT NULL UNIQUE,
+    `businessName`  VARCHAR(255) NOT NULL,
+    `businessType`  VARCHAR(255) NOT NULL,
+    `description`   VARCHAR(255) NOT NULL,
+    `contactNumber` VARCHAR(50) NOT NULL,
+    `address`       VARCHAR(255) NOT NULL,
+    `businessLogo`  LONGTEXT,
+    `primaryId`     LONGTEXT,
+    `secondaryId`   LONGTEXT,
+    `status`        VARCHAR(50) DEFAULT 'pending',
+    `createdAt`     DATETIME DEFAULT CURRENT_TIMESTAMP,
+    `updatedAt`     DATETIME,
+    FOREIGN KEY (`userId`) REFERENCES `users`(`userId`) ON DELETE CASCADE
+);
+</pre>
+
+        <h3>2.9.2 User Settings Table</h3>
+<pre>
+CREATE TABLE `user_settings` (
+    `settingsId`            INT AUTO_INCREMENT PRIMARY KEY,
+    `userId`                INT NOT NULL UNIQUE,
+    `displayName`           VARCHAR(255),
+    `bio`                   TEXT,
+    `themeColor`            VARCHAR(50) DEFAULT 'green',
+    `notifications`         BOOLEAN DEFAULT TRUE,
+    `emailUpdates`          BOOLEAN DEFAULT TRUE,
+    `orderUpdates`          BOOLEAN DEFAULT TRUE,
+    `promotionalEmails`     BOOLEAN DEFAULT FALSE,
+    `smsNotifications`      BOOLEAN DEFAULT FALSE,
+    `inAppNotifications`    BOOLEAN DEFAULT TRUE,
+    `showProfile`           BOOLEAN DEFAULT TRUE,
+    `showOrders`            BOOLEAN DEFAULT FALSE,
+    `fontSize`              VARCHAR(20) DEFAULT 'medium',
+    `highContrast`          BOOLEAN DEFAULT FALSE,
+    `reducedMotion`         BOOLEAN DEFAULT FALSE,
+    `defaultAddress`        TEXT,
+    `preferredTimeSlot`     VARCHAR(50) DEFAULT 'anytime',
+    `specialInstructions`   TEXT,
+    `storeHours`            VARCHAR(255),
+    `shippingTime`          VARCHAR(255),
+    `returnPolicy`          TEXT,
+    `minimumOrder`          FLOAT,
+    `freeShippingThreshold` FLOAT,
+    `createdAt`             DATETIME DEFAULT CURRENT_TIMESTAMP,
+    `updatedAt`             DATETIME,
+    FOREIGN KEY (`userId`) REFERENCES `users`(`userId`) ON DELETE CASCADE
+);
+</pre>
+
+        <h3>2.9.3 OTPs Table</h3>
+<pre>
+CREATE TABLE `otps` (
+    `otpId`     INT AUTO_INCREMENT PRIMARY KEY,
+    `userId`    INT,
+    `email`     VARCHAR(255) NOT NULL,
+    `code`      VARCHAR(10) NOT NULL,
+    `verified`  BOOLEAN DEFAULT FALSE,
+    `attempts`  INT DEFAULT 0,
+    `expiresAt` DATETIME NOT NULL,
+    `createdAt` DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (`userId`) REFERENCES `users`(`userId`) ON DELETE CASCADE,
+    INDEX (`email`)
+);
+</pre>
+
+        <h3>2.9.4 Pending Registrations Table</h3>
+<pre>
+CREATE TABLE `pending_registrations` (
+    `registrationId` INT AUTO_INCREMENT PRIMARY KEY,
+    `email`          VARCHAR(255) NOT NULL UNIQUE,
+    `name`           VARCHAR(255) NOT NULL,
+    `password`       VARCHAR(255) NOT NULL,
+    `phoneNumber`    VARCHAR(50),
+    `role`           VARCHAR(50) DEFAULT 'user',
+    `expiresAt`      DATETIME NOT NULL,
+    `createdAt`      DATETIME DEFAULT CURRENT_TIMESTAMP,
+    `updatedAt`      DATETIME
+);
+</pre>
+
+        <div class="page-break"></div>
+
+        <!-- Section 3: ERD -->
+        <h1><span class="section-num">3.</span> ENTITY RELATIONSHIP DIAGRAM</h1>
+
+        <div class="erd-box">
+                                         ┌─────────────────┐
+                                         │     users       │
+                                         ├─────────────────┤
+                                         │ userId (PK)     │
+                                         │ email           │
+                                         │ name            │
+                                         │ role            │
+                                         └────────┬────────┘
+                                                  │
+          ┌──────────────┬────────────────────────┼────────────────────────┬──────────────┐
+          │              │                        │                        │              │
+          ▼              ▼                        ▼                        ▼              ▼
+┌─────────────────┐ ┌──────────┐        ┌────────────────┐        ┌───────────┐   ┌─────────────┐
+│    products     │ │  orders  │        │   addresses    │        │  recipes  │   │user_settings│
+├─────────────────┤ ├──────────┤        ├────────────────┤        ├───────────┤   ├─────────────┤
+│ productId (PK)  │ │orderId   │        │ addressId (PK) │        │ recipeId  │   │ settingsId  │
+│ userId (FK)     │ │userId(FK)│        │ userId (FK)    │        │userId(FK) │   │ userId (FK) │
+└────────┬────────┘ └────┬─────┘        └────────────────┘        └─────┬─────┘   └─────────────┘
+         │               │                                              │
+         │               ▼                                              │
+         │        ┌─────────────┐                                       │
+         │        │ order_items │                                       │
+         │        ├─────────────┤                                       ▼
+         │        │orderItemId  │                           ┌───────────────────────┐
+         │        │orderId (FK) │                           │  recipe_ingredients   │
+         │        │productId(FK)│                           ├───────────────────────┤
+         │        └─────────────┘                           │ ingredientId (PK)     │
+         │                                                  │ recipeId (FK)         │
+         ▼                                                  └───────────────────────┘
+┌─────────────────┐                                     ┌───────────────────────┐
+│    comments     │                                     │  recipe_instructions  │
+├─────────────────┤                                     ├───────────────────────┤
+│ commentId (PK)  │                                     │ instructionId (PK)    │
+│ productId (FK)  │                                     │ recipeId (FK)         │
+│ userId (FK)     │                                     └───────────────────────┘
+└─────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                              RELATIONSHIP SUMMARY                                │
+├─────────────────────────────────────────────────────────────────────────────────┤
+│  users (1) ──────< (N) products           User can have many products           │
+│  users (1) ──────< (N) orders             User can have many orders             │
+│  users (1) ──────< (N) addresses          User can have many addresses          │
+│  users (1) ──────< (N) recipes            User can create many recipes          │
+│  users (1) ──────< (1) user_settings      User has one settings record          │
+│  users (1) ──────< (1) seller_applications User has one application             │
+│  orders (1) ─────< (N) order_items        Order contains many items             │
+│  orders (1) ─────< (N) order_tracking     Order has tracking history            │
+│  products (1) ───< (N) order_items        Product can be in many orders         │
+│  products (1) ───< (N) comments           Product can have many reviews         │
+│  products (1) ───< (N) cart_items         Product can be in many carts          │
+│  recipes (1) ────< (N) recipe_ingredients Recipe has many ingredients           │
+│  recipes (1) ────< (N) recipe_instructions Recipe has many steps                │
+│  recipes (1) ────< (N) recipe_reviews     Recipe can have many reviews          │
+│  conversations (1) < (N) messages         Conversation has many messages        │
+└─────────────────────────────────────────────────────────────────────────────────┘
+        </div>
+        <p class="caption">Figure 3.1: Entity Relationship Diagram</p>
+
+        <div class="page-break"></div>
+
+        <!-- Section 4: SQL Queries -->
+        <h1><span class="section-num">4.</span> SQL QUERIES</h1>
+
+        <h2>4.1 User Queries</h2>
+
+<pre>
+-- Get all users
+SELECT * FROM users;
+
+-- Get user by email
+SELECT * FROM users WHERE email = 'example@email.com';
+
+-- Get all sellers
+SELECT * FROM users WHERE role = 'seller';
+
+-- Get all admins
+SELECT * FROM users WHERE role = 'admin';
+
+-- Count users by role
+SELECT role, COUNT(*) as count FROM users GROUP BY role;
+
+-- Get recently registered users (last 10)
+SELECT * FROM users ORDER BY createdAt DESC LIMIT 10;
+
+-- Get verified users only
+SELECT * FROM users WHERE emailVerified = TRUE;
+
+-- Search users by name
+SELECT * FROM users WHERE name LIKE '%search_term%';
+</pre>
+
+        <h2>4.2 Product Queries</h2>
+
+<pre>
+-- Get all products
+SELECT * FROM products;
+
+-- Get products by seller
+SELECT * FROM products WHERE userId = 1;
+
+-- Get featured products
+SELECT * FROM products WHERE featured = TRUE;
+
+-- Get products by category
+SELECT * FROM products WHERE category = 'Fresh Fish';
+
+-- Get products with seller info
+SELECT p.*, u.name as sellerName
+FROM products p
+JOIN users u ON p.userId = u.userId;
+
+-- Get top rated products
+SELECT * FROM products ORDER BY rating DESC LIMIT 10;
+
+-- Get low stock products (less than 10)
+SELECT * FROM products WHERE stock < 10 AND stock > 0;
+
+-- Get out of stock products
+SELECT * FROM products WHERE stock = 0;
+
+-- Search products by name
+SELECT * FROM products WHERE name LIKE '%lawlaw%';
+
+-- Get products with review count
+SELECT p.*, COUNT(c.commentId) as reviewCount
+FROM products p
+LEFT JOIN comments c ON p.productId = c.productId
+GROUP BY p.productId;
+</pre>
+
+        <div class="page-break"></div>
+
+        <h2>4.3 Recipe Queries</h2>
+
+<pre>
+-- Get all recipes
+SELECT * FROM recipes;
+
+-- Get recipes by user
+SELECT * FROM recipes WHERE userId = 1;
+
+-- Get recipes with ingredients
+SELECT r.*, ri.name as ingredient, ri.quantity
+FROM recipes r
+LEFT JOIN recipe_ingredients ri ON r.recipeId = ri.recipeId
+ORDER BY r.recipeId, ri.order;
+
+-- Get recipes with instructions
+SELECT r.*, rin.stepNumber, rin.instruction
+FROM recipes r
+LEFT JOIN recipe_instructions rin ON r.recipeId = rin.recipeId
+ORDER BY r.recipeId, rin.stepNumber;
+
+-- Get recipes by difficulty
+SELECT * FROM recipes WHERE difficulty = 'Easy';
+
+-- Get quick recipes (under 30 min total)
+SELECT * FROM recipes WHERE (prepTime + cookTime) <= 30;
+
+-- Get top rated recipes
+SELECT * FROM recipes ORDER BY rating DESC LIMIT 10;
+
+-- Count recipes by difficulty
+SELECT difficulty, COUNT(*) as count FROM recipes GROUP BY difficulty;
+
+-- Get full recipe details
+SELECT
+    r.*,
+    u.name as authorName,
+    (SELECT COUNT(*) FROM recipe_reviews WHERE recipeId = r.recipeId) as reviewCount
+FROM recipes r
+LEFT JOIN users u ON r.userId = u.userId
+WHERE r.recipeId = 1;
+</pre>
+
+        <h2>4.4 Order Queries</h2>
+
+<pre>
+-- Get all orders
+SELECT * FROM orders;
+
+-- Get orders by user
+SELECT * FROM orders WHERE userId = 1;
+
+-- Get orders by status
+SELECT * FROM orders WHERE status = 'pending';
+
+-- Get recent orders
+SELECT * FROM orders ORDER BY createdAt DESC LIMIT 20;
+
+-- Get orders with items
+SELECT o.*, oi.quantity, oi.price, p.name as productName
+FROM orders o
+JOIN order_items oi ON o.orderId = oi.orderId
+JOIN products p ON oi.productId = p.productId;
+
+-- Get total sales (delivered orders only)
+SELECT SUM(totalAmount) as totalSales FROM orders WHERE status = 'delivered';
+
+-- Get sales by day
+SELECT DATE(createdAt) as date, SUM(totalAmount) as dailySales
+FROM orders
+WHERE status = 'delivered'
+GROUP BY DATE(createdAt)
+ORDER BY date DESC;
+
+-- Get order tracking history
+SELECT oth.*, o.status as currentStatus
+FROM order_tracking_history oth
+JOIN orders o ON oth.orderId = o.orderId
+WHERE oth.orderId = 1
+ORDER BY oth.createdAt;
+
+-- Get orders count by status
+SELECT status, COUNT(*) as count FROM orders GROUP BY status;
+</pre>
+
+        <div class="page-break"></div>
+
+        <h2>4.5 Cart Queries</h2>
+
+<pre>
+-- Get user's cart with product details
+SELECT ci.*, p.name, p.price, p.image, p.stock
+FROM cart_items ci
+JOIN products p ON ci.productId = p.productId
+WHERE ci.userId = 1;
+
+-- Get cart total
+SELECT SUM(ci.quantity * p.price) as total
+FROM cart_items ci
+JOIN products p ON ci.productId = p.productId
+WHERE ci.userId = 1;
+
+-- Get cart item count
+SELECT COUNT(*) as itemCount FROM cart_items WHERE userId = 1;
+
+-- Clear user's cart
+DELETE FROM cart_items WHERE userId = 1;
+
+-- Update cart item quantity
+UPDATE cart_items SET quantity = 3 WHERE cartItemId = 1;
+
+-- Remove item from cart
+DELETE FROM cart_items WHERE cartItemId = 1;
+</pre>
+
+        <h2>4.6 Review Queries</h2>
+
+<pre>
+-- Get product reviews with user info
+SELECT c.*, u.name as userName, u.profilePicture
+FROM comments c
+JOIN users u ON c.userId = u.userId
+WHERE c.productId = 1
+ORDER BY c.createdAt DESC;
+
+-- Get average rating for product
+SELECT AVG(rating) as avgRating, COUNT(*) as reviewCount
+FROM comments WHERE productId = 1;
+
+-- Get all reviews by user
+SELECT c.*, p.name as productName
+FROM comments c
+JOIN products p ON c.productId = p.productId
+WHERE c.userId = 1;
+
+-- Get recipe reviews
+SELECT rr.*, u.name as userName
+FROM recipe_reviews rr
+JOIN users u ON rr.userId = u.userId
+WHERE rr.recipeId = 1
+ORDER BY rr.createdAt DESC;
+
+-- Get reviews with seller replies
+SELECT * FROM comments WHERE sellerReply IS NOT NULL;
+</pre>
+
+        <div class="page-break"></div>
+
+        <h2>4.7 Chat Queries</h2>
+
+<pre>
+-- Get user's conversations
+SELECT c.*,
+       seller.name as sellerName,
+       buyer.name as buyerName,
+       p.name as productName
+FROM conversations c
+JOIN users seller ON c.sellerId = seller.userId
+JOIN users buyer ON c.buyerId = buyer.userId
+JOIN products p ON c.productId = p.productId
+WHERE c.sellerId = 1 OR c.buyerId = 1
+ORDER BY c.updatedAt DESC;
+
+-- Get messages in conversation
+SELECT m.*, u.name as senderName
+FROM messages m
+JOIN users u ON m.senderId = u.userId
+WHERE m.conversationId = 1
+ORDER BY m.createdAt;
+
+-- Get unread message count for user
+SELECT COUNT(*) as unreadCount
+FROM messages m
+JOIN conversations c ON m.conversationId = c.conversationId
+WHERE (c.sellerId = 1 OR c.buyerId = 1)
+  AND m.senderId != 1
+  AND m.isRead = FALSE;
+
+-- Mark messages as read
+UPDATE messages SET isRead = TRUE
+WHERE conversationId = 1 AND senderId != 1;
+
+-- Get latest message per conversation
+SELECT c.*, m.content as lastMessage, m.createdAt as lastMessageTime
+FROM conversations c
+LEFT JOIN messages m ON c.conversationId = m.conversationId
+WHERE m.messageId = (
+    SELECT MAX(messageId) FROM messages WHERE conversationId = c.conversationId
+);
+</pre>
+
+        <h2>4.8 Analytics Queries</h2>
+
+<pre>
+-- Get overall platform statistics
+SELECT
+    (SELECT COUNT(*) FROM users) as totalUsers,
+    (SELECT COUNT(*) FROM users WHERE role = 'seller') as totalSellers,
+    (SELECT COUNT(*) FROM products) as totalProducts,
+    (SELECT COUNT(*) FROM orders) as totalOrders,
+    (SELECT COUNT(*) FROM recipes) as totalRecipes;
+
+-- Get sales summary
+SELECT
+    COUNT(*) as totalOrders,
+    SUM(totalAmount) as totalRevenue,
+    AVG(totalAmount) as avgOrderValue
+FROM orders WHERE status = 'delivered';
+
+-- Get top selling products
+SELECT p.name, SUM(oi.quantity) as totalSold, SUM(oi.quantity * oi.price) as revenue
+FROM order_items oi
+JOIN products p ON oi.productId = p.productId
+JOIN orders o ON oi.orderId = o.orderId
+WHERE o.status = 'delivered'
+GROUP BY p.productId
+ORDER BY totalSold DESC
+LIMIT 10;
+
+-- Get monthly sales report
+SELECT
+    YEAR(createdAt) as year,
+    MONTH(createdAt) as month,
+    COUNT(*) as orders,
+    SUM(totalAmount) as revenue
+FROM orders
+WHERE status = 'delivered'
+GROUP BY YEAR(createdAt), MONTH(createdAt)
+ORDER BY year DESC, month DESC;
+
+-- Get user registration trends
+SELECT DATE(createdAt) as date, COUNT(*) as newUsers
+FROM users
+GROUP BY DATE(createdAt)
+ORDER BY date DESC
+LIMIT 30;
+
+-- Get seller performance
+SELECT u.name as sellerName,
+       COUNT(DISTINCT o.orderId) as totalOrders,
+       SUM(oi.quantity * oi.price) as totalRevenue
+FROM users u
+JOIN products p ON u.userId = p.userId
+JOIN order_items oi ON p.productId = oi.productId
+JOIN orders o ON oi.orderId = o.orderId
+WHERE u.role = 'seller' AND o.status = 'delivered'
+GROUP BY u.userId
+ORDER BY totalRevenue DESC;
+</pre>
+
+        <div class="page-break"></div>
+
+        <!-- Section 5: Database Indexes -->
+        <h1><span class="section-num">5.</span> DATABASE INDEXES</h1>
+
+        <p>The following indexes are defined to optimize query performance:</p>
+
+        <table>
+            <tr>
+                <th>Table</th>
+                <th>Index Name</th>
+                <th>Columns</th>
+                <th>Purpose</th>
+            </tr>
+            <tr><td>users</td><td>users_email_key</td><td>email</td><td>Unique email lookup</td></tr>
+            <tr><td>users</td><td>users_phoneNumber_key</td><td>phoneNumber</td><td>Unique phone lookup</td></tr>
+            <tr><td>products</td><td>products_userId_fkey</td><td>userId</td><td>Products by seller</td></tr>
+            <tr><td>recipes</td><td>recipes_userId_fkey</td><td>userId</td><td>Recipes by author</td></tr>
+            <tr><td>orders</td><td>orders_userId_fkey</td><td>userId</td><td>Orders by customer</td></tr>
+            <tr><td>order_items</td><td>order_items_orderId_fkey</td><td>orderId</td><td>Items by order</td></tr>
+            <tr><td>order_items</td><td>order_items_productId_fkey</td><td>productId</td><td>Orders by product</td></tr>
+            <tr><td>cart_items</td><td>cart_items_userId_productId_key</td><td>userId, productId</td><td>Unique cart items</td></tr>
+            <tr><td>comments</td><td>comments_productId_userId_key</td><td>productId, userId</td><td>One review per user/product</td></tr>
+            <tr><td>messages</td><td>messages_conversationId_fkey</td><td>conversationId</td><td>Messages by conversation</td></tr>
+            <tr><td>addresses</td><td>addresses_userId_fkey</td><td>userId</td><td>Addresses by user</td></tr>
+            <tr><td>notifications</td><td>notifications_userId_fkey</td><td>userId</td><td>Notifications by user</td></tr>
+            <tr><td>otps</td><td>otps_email_idx</td><td>email</td><td>OTP lookup by email</td></tr>
+        </table>
+        <p class="caption">Table 5.1: Database Indexes</p>
+
+        <h3>Creating Additional Indexes (if needed):</h3>
+<pre>
+-- Index for product category searches
+CREATE INDEX idx_products_category ON products(category);
+
+-- Index for featured products
+CREATE INDEX idx_products_featured ON products(featured);
+
+-- Index for order status filtering
+CREATE INDEX idx_orders_status ON orders(status);
+
+-- Index for recipe difficulty filtering
+CREATE INDEX idx_recipes_difficulty ON recipes(difficulty);
+
+-- Index for notification read status
+CREATE INDEX idx_notifications_isRead ON notifications(isRead);
+</pre>
+
+        <div class="page-break"></div>
+
+        <!-- Footer -->
+        <div style="text-align: center; margin-top: 50px; padding-top: 20px; border-top: 2px solid #000;">
+            <p><strong>Lawlaw Delights - Database Schema & SQL Queries</strong></p>
+            <p>Bulan Lawlaw Delicacy System</p>
+            <p style="margin-top: 20px; font-size: 10pt; color: #666;">
+                Document Version: 1.0<br>
+                Last Updated: December 2025
+            </p>
+        </div>
+
+    </div>
+</body>
+</html>
