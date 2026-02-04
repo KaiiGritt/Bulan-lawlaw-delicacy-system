@@ -107,7 +107,7 @@ export async function POST(
     });
 
     const averageRating = allReviews.length > 0
-      ? allReviews.reduce((sum, review) => sum + review.rating, 0) / allReviews.length
+      ? allReviews.reduce((sum: number, review: typeof allReviews[number]) => sum + review.rating, 0) / allReviews.length
       : 0;
 
     await prisma.recipes.update({
@@ -160,7 +160,7 @@ export async function DELETE(
     });
 
     const averageRating = allReviews.length > 0
-      ? allReviews.reduce((sum, review) => sum + review.rating, 0) / allReviews.length
+      ? allReviews.reduce((sum: number, review: typeof allReviews[number]) => sum + review.rating, 0) / allReviews.length
       : 0;
 
     await prisma.recipes.update({
