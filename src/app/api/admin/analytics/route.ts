@@ -42,7 +42,7 @@ export async function GET(req: NextRequest) {
       }
     });
 
-    const totalSales = orders.reduce((sum, order) => sum + order.totalAmount, 0);
+    const totalSales = orders.reduce((sum: number, order: typeof orders[number]) => sum + order.totalAmount, 0);
     const totalOrders = orders.length;
     const averageOrderValue = totalOrders > 0 ? totalSales / totalOrders : 0;
 
