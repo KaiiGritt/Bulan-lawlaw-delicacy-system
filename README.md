@@ -308,7 +308,7 @@ We follow [Conventional Commits](https://www.conventionalcommits.org/):
 - Real-time order status updates
 - Email notifications
 - Tracking number integration
-- Courier service management
+- Complete order status tracking
 - Complete tracking history timeline
 
 See [ORDER_TRACKING_FEATURE.md](./ORDER_TRACKING_FEATURE.md) for details.

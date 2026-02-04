@@ -7,7 +7,7 @@ Comprehensive order tracking system with real-time status updates, email notific
 
 ### 1. Database Schema Updates
 - **Order Model**: Added tracking fields
-  - `trackingNumber`: Courier tracking number
+  - `trackingNumber`: Tracking number (optional)
   - `estimatedDeliveryDate`: Expected delivery date
   - `shippedAt`: Timestamp when order was shipped
   - `deliveredAt`: Timestamp when order was delivered
@@ -22,7 +22,7 @@ Comprehensive order tracking system with real-time status updates, email notific
 #### GET /api/orders/[id]/tracking
 - Retrieve order tracking information and history
 - Accessible by order owner and admins
-- Returns tracking number, courier, delivery date, and full history
+- Returns tracking number, delivery date, and full history
 
 #### POST /api/orders/[id]/tracking
 - Add new tracking status update (Seller/Admin only)
@@ -31,7 +31,7 @@ Comprehensive order tracking system with real-time status updates, email notific
 
 #### PUT /api/orders/[id]/tracking
 - Update tracking information (Seller/Admin only)
-- Update tracking number, courier, delivery date, or status
+- Update tracking number, delivery date, or status
 - Auto-sets shipped/delivered timestamps
 - Sends email notification on status changes
 
@@ -49,7 +49,7 @@ Comprehensive order tracking system with real-time status updates, email notific
 - Real-time tracking information
 - Visual timeline with connecting lines
 - Estimated delivery date display
-- Tracking number and courier info
+- Tracking number display
 - Empty state when no tracking updates
 
 #### SellerTrackingManager Component
@@ -61,7 +61,6 @@ Comprehensive order tracking system with real-time status updates, email notific
 
 **Features**:
 - Easy-to-use forms with validation
-- Philippine courier services dropdown
 - Date picker for estimated delivery
 - Rich status descriptions
 - Loading states and error handling
@@ -118,33 +117,22 @@ pending → processing → shipped → out_for_delivery → delivered
 2. Go to Orders tab
 3. Select an order
 4. Use "Update Tracking Info" to add tracking number and courier
-5. Use "Add Status Update" to log new tracking events
+5. Use "Add Status Update" to log new tracking eventsestimated delivery date
 6. Customer receives automatic email notification
 
 ### For Admins
 - Same as sellers, with access to all orders
 - Can manage tracking for any order in the system
 
-## Courier Services Supported
-
-- J&T Express
-- LBC
-- Lalamove
-- Grab Express
-- Flash Express
-- Ninja Van
-- GoGo Express
-- Other (custom)
-
 ## Future Enhancements
 
 ### Ready to Implement
 1. **SMS Notifications**: Integration with Twilio/Semaphore
 2. **Push Notifications**: Browser push notifications
-3. **Courier API Integration**: Auto-fetch tracking from courier APIs
-4. **Estimated Delivery Calculations**: Smart delivery date predictions
-5. **Tracking Page**: Public tracking page with order ID
-6. **WhatsApp Notifications**: Send updates via WhatsApp Business API
+3. **Estimated Delivery Calculations**: Smart delivery date predictions
+4. **Tracking Page**: Public tracking page with order ID
+5. **WhatsApp Notifications**: Send updates via WhatsApp Business API
+6. **Merchant-to-Merchant Handoff**: Multi-level delivery tracking
 
 ### Additional Ideas
 - Package photos at each checkpoint

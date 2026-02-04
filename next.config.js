@@ -20,9 +20,6 @@ const nextConfig = {
     ],
   },
   serverExternalPackages: ['formidable'],
-  experimental: {
-    serverComponentsExternalPackages: ['formidable'],
-  },
 };
 
 module.exports = nextConfig;
